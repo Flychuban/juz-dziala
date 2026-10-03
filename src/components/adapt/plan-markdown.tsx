@@ -40,7 +40,7 @@ const components: Components = {
     </ol>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="border-primary bg-surface mt-3 max-w-[72ch] border-l-4 px-4 py-2 print:bg-transparent [&>p:first-child]:mt-0 [&>p]:mt-2">
+    <blockquote className="border-primary bg-surface mt-3 max-w-[72ch] border-l-4 px-4 py-2 print:bg-transparent [&>p]:mt-2 [&>p:first-child]:mt-0">
       {children}
     </blockquote>
   ),
@@ -68,11 +68,11 @@ const components: Components = {
     <a
       href={href}
       target="_blank"
-      rel="noopener noreferrer"
+      rel="noreferrer nofollow"
       className="text-foreground underline decoration-1 underline-offset-4 hover:decoration-2"
     >
       {children}
-      <span className="sr-only"> (otwiera się w nowej karcie)</span>
+      <span className="sr-only"> (otwiera się w nowym oknie)</span>
     </a>
   ),
   strong: ({ children }) => <strong className="font-bold">{children}</strong>,
@@ -87,7 +87,15 @@ export function PlanMarkdown({
 }) {
   return (
     <div className={cn("text-base leading-relaxed", className)}>
-      <Markdown remarkPlugins={[remarkGfm]} components={components}>
+      {/* The plan text is client-supplied (the Middleman sends it): untrusted.
+          No images (no tracking pixels or remote loads); raw HTML is never
+          rendered (react-markdown default) and link URLs are sanitised. */}
+      <Markdown
+        remarkPlugins={[remarkGfm]}
+        components={components}
+        disallowedElements={["img"]}
+        unwrapDisallowed
+      >
         {markdown}
       </Markdown>
     </div>

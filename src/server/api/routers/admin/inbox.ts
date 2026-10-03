@@ -281,7 +281,10 @@ export const adminInboxRouter = createTRPCRouter({
                   createdAt: cases.createdAt,
                 })
                 .from(cases)
-                .where(inArray(cases.id, triage.similarCaseIds))
+                // An expert sees only similar cases assigned to them.
+                .where(
+                  and(inArray(cases.id, triage.similarCaseIds), scope(ctx)),
+                )
             : [],
           casePayloads(c, { staff: true }),
         ]);
@@ -335,6 +338,11 @@ export const adminInboxRouter = createTRPCRouter({
         triage,
         suggestedExpert: suggested,
         similarCases: similar,
+        /** Similar cases the viewer may not open (other experts' cases). */
+        similarHiddenCount: Math.max(
+          0,
+          (triage?.similarCaseIds.length ?? 0) - similar.length,
+        ),
         people: ppl,
         messages: thread,
         deliveries: log,

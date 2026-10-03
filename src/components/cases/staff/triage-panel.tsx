@@ -18,7 +18,7 @@ import {
 } from "~/lib/domain";
 import { CRISIS_RESOURCES } from "~/server/domain/crisis";
 import { api, type RouterOutputs } from "~/trpc/react";
-import { fmtDate } from "../format";
+import { fmtDate, plural } from "../format";
 import { AI_STATUS_LABEL, caseHref, CRISIS_LABEL } from "./labels";
 
 type Data = RouterOutputs["admin"]["inbox"]["get"];
@@ -217,8 +217,20 @@ export function TriagePanel({
                     </li>
                   ))}
                 </ul>
-              ) : (
+              ) : data.similarHiddenCount === 0 ? (
                 "brak"
+              ) : null}
+              {data.similarHiddenCount > 0 && (
+                <p className="text-muted-foreground text-sm">
+                  {data.similarCases.length > 0 ? "Oraz " : ""}
+                  {data.similarHiddenCount}{" "}
+                  {plural(data.similarHiddenCount, [
+                    "podobna sprawa prowadzona",
+                    "podobne sprawy prowadzone",
+                    "podobnych spraw prowadzonych",
+                  ])}{" "}
+                  przez inne osoby (bez dostępu).
+                </p>
               )}
             </dd>
           </dl>
