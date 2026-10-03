@@ -1,0 +1,346 @@
+{
+  "source": "GUS, Bank Danych Lokalnych (API v1)",
+  "api": "https://bdl.stat.gov.pl/api/v1",
+  "capturedAt": "2026-10-03T15:49:08.685Z",
+  "subject": {
+    "id": "P2137",
+    "name": "Ludność wg grup wieku i płci",
+    "description": "Dane wg podziału administracyjnego na dzień 31 grudnia.",
+    "lastUpdate": "2026-05-06T09:18:21.973"
+  },
+  "year": 2025,
+  "baseYear": 2015,
+  "variables": {
+    "total": {
+      "id": 72305,
+      "n1": "ogółem",
+      "n2": "ogółem",
+      "unit": "osoba",
+      "subjectId": "P2137",
+      "verifiedAt": "2026-10-03T15:48:37.355Z"
+    },
+    "age65_69": {
+      "id": 72239,
+      "n1": "65-69",
+      "n2": "ogółem",
+      "unit": "osoba",
+      "subjectId": "P2137",
+      "verifiedAt": "2026-10-03T15:48:38.957Z"
+    },
+    "age70plus": {
+      "id": 72240,
+      "n1": "70 i więcej",
+      "n2": "ogółem",
+      "unit": "osoba",
+      "subjectId": "P2137",
+      "verifiedAt": "2026-10-03T15:48:40.559Z"
+    },
+    "age80_84": {
+      "id": 76024,
+      "n1": "80-84",
+      "n2": "ogółem",
+      "unit": "osoba",
+      "subjectId": "P2137",
+      "verifiedAt": "2026-10-03T15:48:42.159Z"
+    },
+    "age85plus": {
+      "id": 76025,
+      "n1": "85 i więcej",
+      "n2": "ogółem",
+      "unit": "osoba",
+      "subjectId": "P2137",
+      "verifiedAt": "2026-10-03T15:48:43.760Z"
+    }
+  },
+  "derived": {
+    "population": "zmienna 72305 (ogółem), stan na 31 XII 2025",
+    "pop65": "72239 (65-69) + 72240 (70 i więcej), 2025",
+    "pop80": "76024 (80-84) + 76025 (85 i więcej), 2025",
+    "popChange10y": "zmiana ludności ogółem 2015→2025 w %, zaokrąglona do 0,1; liczona dla gminy w jej obecnym kodzie (lub poprzedniku o tym samym numerze i nazwie). Zmiany granic między gminami nie są korygowane.",
+    "teryt": "id BDL [2..4] + [7..9] + [9..11] + [11] → WWPPGGR; sprawdzone z warstwą gmin PRG (repozytorium waszkiewiczja/GeoJSON-Polska-Wojewodztwa-Powiaty-Gminy)"
+  },
+  "counts": {
+    "bdlLevel6Units": 299,
+    "gminaUnitsKind123": 199,
+    "currentGminas": 183,
+    "historicalUnitsSkipped": [
+      {
+        "bdlId": "011212006142",
+        "name": "Świątniki Górne"
+      },
+      {
+        "bdlId": "011212008042",
+        "name": "Książ Wielki"
+      },
+      {
+        "bdlId": "011212014022",
+        "name": "Koszyce"
+      },
+      {
+        "bdlId": "011212014032",
+        "name": "Nowe Brzesko"
+      },
+      {
+        "bdlId": "011212205032",
+        "name": "Bobowa"
+      },
+      {
+        "bdlId": "011212210001",
+        "name": "Miejska strefa usług publicznych"
+      },
+      {
+        "bdlId": "011212312021",
+        "name": "Sławków"
+      },
+      {
+        "bdlId": "011212402032",
+        "name": "Czchów"
+      },
+      {
+        "bdlId": "011212404072",
+        "name": "Szczucin"
+      },
+      {
+        "bdlId": "011212416012",
+        "name": "Ciężkowice"
+      },
+      {
+        "bdlId": "011212416052",
+        "name": "Radłów"
+      },
+      {
+        "bdlId": "011212416062",
+        "name": "Ryglice"
+      },
+      {
+        "bdlId": "011212416132",
+        "name": "Wojnicz"
+      },
+      {
+        "bdlId": "011212416142",
+        "name": "Zakliczyn"
+      },
+      {
+        "bdlId": "011216911021",
+        "name": "Szczawnica"
+      },
+      {
+        "bdlId": "011216911032",
+        "name": "Czarny Dunajec"
+      }
+    ],
+    "byKind": {
+      "miejska": 14,
+      "wiejska": 119,
+      "miejsko-wiejska": 50
+    },
+    "nulls": {
+      "population": 0,
+      "pop65": 0,
+      "pop80": 0,
+      "popChange10y": 2
+    }
+  },
+  "predecessorPairings": [
+    {
+      "teryt": "1208043",
+      "name": "Książ Wielki",
+      "currentBdlId": "011212008043",
+      "predecessorBdlId": "011212008042"
+    },
+    {
+      "teryt": "1214023",
+      "name": "Koszyce",
+      "currentBdlId": "011212014023",
+      "predecessorBdlId": "011212014022"
+    },
+    {
+      "teryt": "1211033",
+      "name": "Czarny Dunajec",
+      "currentBdlId": "011216911033",
+      "predecessorBdlId": "011216911032"
+    }
+  ],
+  "unitNotes": [
+    {
+      "teryt": "1206143",
+      "bdlId": "011212006143",
+      "name": "Świątniki Górne",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.1997 r. (Dz.U. z 1996 r. Nr 155, poz. 760)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1208043",
+      "bdlId": "011212008043",
+      "name": "Książ Wielki",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.2023 r. (Dz.U. poz.2769 z 2022 r.)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1214023",
+      "bdlId": "011212014023",
+      "name": "Koszyce",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.2019 r. (Dz.U. poz.1456 z 2018 r.)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1214033",
+      "bdlId": "011212014033",
+      "name": "Nowe Brzesko",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.2011 r. (Dz.U. z 2010 r. Nr 257, poz. 1727)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1205033",
+      "bdlId": "011212205033",
+      "name": "Bobowa",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.2009 r. (Dz.U. z 2008 r. Nr 215, poz. 1358)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1207052",
+      "bdlId": "011212207052",
+      "name": "Kamienica",
+      "description": "wyodrębnienie gminy Szczawa",
+      "affectsChange": true
+    },
+    {
+      "teryt": "1207112",
+      "bdlId": "011212207112",
+      "name": "Słopnice",
+      "description": "Utworzenie gminy wiejskiej z dniem 01.01.1997 r. (Dz.U. z 1996 r. Nr 155, poz. 761)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1207132",
+      "bdlId": "011212207132",
+      "name": "Szczawa",
+      "description": "Utworzenie gminy wiejskiej z dniem 01.01.2025 r. (Dz.U. z 2024 r. poz. 1453)",
+      "affectsChange": true
+    },
+    {
+      "teryt": "1210022",
+      "bdlId": "011212210022",
+      "name": "Chełmiec",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.2018 r. (Dz.U. poz.2248 z 2017 r.); zmiana rodzaju gminy z miejsko-wiejskiego na wiejski z dniem 02.01.2018 r. (Dz.U. poz.2493 z 2017 r.)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1210073",
+      "bdlId": "011212210073",
+      "name": "Krynica-Zdrój",
+      "description": "Zmiana nazwy gminy z Krynica z dniem 01.01.2002 r. (Dz.U. z 2001 r. Nr 116, poz. 1241 i Nr 157, poz. 1840)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1210133",
+      "bdlId": "011212210133",
+      "name": "Piwniczna-Zdrój",
+      "description": "Zmiana nazwy gminy z Piwniczna z dniem 01.01.2002 r. (Dz.U. z 2001 r. Nr 116, poz. 1241 i Nr 157, poz. 1840)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1202033",
+      "bdlId": "011212402033",
+      "name": "Czchów",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.2000 r. (Dz.U. z 1999 r. Nr 110, poz. 1268)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1204073",
+      "bdlId": "011212404073",
+      "name": "Szczucin",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.2009 r. (Dz.U. z 2008 r. Nr 215, poz. 1358)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1216013",
+      "bdlId": "011212416013",
+      "name": "Ciężkowice",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.1998 r. (Dz.U. z 1997 r. Nr 130, poz. 847)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1216053",
+      "bdlId": "011212416053",
+      "name": "Radłów",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.2010 r. (Dz.U. z 2009 r. Nr 202, poz. 1559)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1216063",
+      "bdlId": "011212416063",
+      "name": "Ryglice",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.2001 r. (Dz.U. z 2001 r. Nr 12, poz. 100)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1216133",
+      "bdlId": "011212416133",
+      "name": "Wojnicz",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.2007 r. (Dz.U. z 2006 r. Nr 214, poz. 1577)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1216143",
+      "bdlId": "011212416143",
+      "name": "Zakliczyn",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.2006 r. (Dz.U. z 2005 r. Nr 206, poz. 1706)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1216162",
+      "bdlId": "011212416162",
+      "name": "Szerzyny",
+      "description": "Przeniesienie gminy z powiatu jasielskiego w woj. podkarpackim do powiatu tarnowskiego w woj. małopolskim z dniem 01.01.2003 r. (Dz.U. z 2002 r. Nr 191, poz. 1594)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1211023",
+      "bdlId": "011216911023",
+      "name": "Szczawnica",
+      "description": "Zmiana rodzaju gminy z miejskiego na miejsko-wiejski z dniem 01.01.2008 r. (Dz.U. z 2007 r. Nr 136, poz. 961 i Nr 192, poz. 1386)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1211033",
+      "bdlId": "011216911033",
+      "name": "Czarny Dunajec",
+      "description": "Zmiana rodzaju gminy z wiejskiego na miejsko-wiejski z dniem 01.01.2023 r. (Dz.U. poz.2769 z 2022 r.)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1211123",
+      "bdlId": "011216911123",
+      "name": "Rabka-Zdrój",
+      "description": "Zmiana nazwy gminy z Rabka z dniem 01.01.2002 r. (Dz.U. z 2001 r. Nr 116, poz. 1241 i Nr 157, poz. 1840)",
+      "affectsChange": false
+    },
+    {
+      "teryt": "1211132",
+      "bdlId": "011216911132",
+      "name": "Spytkowice",
+      "description": "Utworzenie gminy wiejskiej z dniem 01.01.1998 r. (Dz.U. z 1997 r. Nr 116, poz. 742)",
+      "affectsChange": false
+    }
+  ],
+  "popChange10yWithheld": [
+    {
+      "teryt": "1207052",
+      "bdlId": "011212207052",
+      "reason": "zmiana terytorium gminy po 2015 r.: wyodrębnienie gminy Szczawa"
+    },
+    {
+      "teryt": "1207132",
+      "bdlId": "011212207132",
+      "reason": "zmiana terytorium gminy po 2015 r.: Utworzenie gminy wiejskiej z dniem 01.01.2025 r. (Dz.U. z 2024 r. poz. 1453)"
+    }
+  ],
+  "prgCheck": {
+    "checked": 183,
+    "mismatches": []
+  },
+  "notes": [
+    "183 gmin zamiast często podawanych 182 — w BDL i w PRG istnieje nowo utworzona gmina: Szczawa (1207132): Utworzenie gminy wiejskiej z dniem 01.01.2025 r. (Dz.U. z 2024 r. poz. 1453)."
+  ]
+}
