@@ -1,9 +1,21 @@
 import { describe, expect, it } from "vitest";
 
-import { parseGminas, parseKnowledge, powiatOf } from "./data-files";
+import { parseCallInnovations, parseGminas, parseKnowledge, powiatOf } from "./data-files";
 
 describe("parseKnowledge", () => {
   const source = { title: "Mapa Wyzwań Społecznych Małopolski", url: "https://example.org/mapa.pdf" };
+
+  it("reads the Mapa Wyzwań figure shape with the document's date", () => {
+    const facts = parseKnowledge({
+      source: { ...source, date: "2024-11" },
+      areas: [{ key: "family", label: "Rodzina", figures: [{ value: "3,5%", label: "Wzrost liczby dzieci w pieczy", scope: "Polska", year: "2023", page: 4 }] }],
+    });
+    expect(facts.get("family")).toMatchObject({
+      text: "Wzrost liczby dzieci w pieczy: 3,5% (Polska, 2023)",
+      sourceDate: "2024-11",
+      page: "4",
+    });
+  });
 
   it("takes the first figure of an area, with the document's source", () => {
     const facts = parseKnowledge({
@@ -16,6 +28,7 @@ describe("parseKnowledge", () => {
       text: "Co czwarty mieszkaniec ma 60+ lat.",
       sourceTitle: source.title,
       sourceUrl: source.url,
+      sourceDate: null,
       page: "12",
     });
   });
@@ -57,6 +70,19 @@ describe("parseKnowledge", () => {
   });
 });
 
+describe("parseCallInnovations", () => {
+  it("maps each call to the card ids it lists", () => {
+    const m = parseCallInnovations([
+      { id: "usluga-wrazliwa-1", innovations: [{ slug: "bez-presji-z-depresji", cardId: "c005" }, { cardId: "c087" }] },
+      { id: "iws-2-0", innovations: [] },
+      { id: "broken" },
+    ]);
+    expect([...m.keys()]).toEqual(["usluga-wrazliwa-1"]);
+    expect(m.get("usluga-wrazliwa-1")).toEqual(new Set(["c005", "c087"]));
+    expect(parseCallInnovations(null).size).toBe(0);
+  });
+});
+
 describe("powiatOf", () => {
   it("takes województwo + powiat from a gmina TERYT", () => {
     expect(powiatOf("1206011")).toBe("1206");
@@ -77,9 +103,17 @@ describe("parseGminas", () => {
       ],
     });
     expect(list).toEqual([
-      { teryt: "1261011", name: "Kraków", powiatTeryt: "1261", powiatName: "m. Kraków" },
-      { teryt: "1206011", name: "Zabierzów", powiatTeryt: "1206", powiatName: "krakowski" },
+      { teryt: "1261011", name: "Kraków", kind: null, powiatTeryt: "1261", powiatName: "m. Kraków" },
+      { teryt: "1206011", name: "Zabierzów", kind: null, powiatTeryt: "1206", powiatName: "krakowski" },
     ]);
+  });
+
+  it("reads the real data/gminas.json shape (kind, powiatTeryt, powiatName)", () => {
+    expect(
+      parseGminas([
+        { teryt: "1201011", name: "Bochnia", kind: "miejska", powiatTeryt: "1201", powiatName: "powiat bocheński" },
+      ]),
+    ).toEqual([{ teryt: "1201011", name: "Bochnia", kind: "miejska", powiatTeryt: "1201", powiatName: "powiat bocheński" }]);
   });
 
   it("returns an empty list for anything else", () => {

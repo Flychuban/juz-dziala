@@ -19,6 +19,8 @@ export type KnowledgeFact = {
   text: string;
   sourceTitle: string;
   sourceUrl: string | null;
+  /** Publication date of the source as written there (e.g. "2024-11"), when given. */
+  sourceDate: string | null;
   /** Page reference in the source document, when given. */
   page: string | null;
 };
@@ -57,6 +59,7 @@ export function parseKnowledge(json: unknown): Map<MapaArea, KnowledgeFact> {
   const source = isRec(json.source) ? json.source : {};
   const defaultTitle = str(source.title);
   const defaultUrl = str(source.url);
+  const defaultDate = str(source.date);
   for (const a of json.areas) {
     if (!isRec(a) || !isMapaArea(a.key)) continue;
     const label = str(a.label) ?? a.key;
@@ -73,6 +76,7 @@ export function parseKnowledge(json: unknown): Map<MapaArea, KnowledgeFact> {
       text: pick.text,
       sourceTitle,
       sourceUrl: pick.sourceUrl ?? defaultUrl,
+      sourceDate: pick.sourceTitle ? null : defaultDate,
       page: pick.page ?? pages[0] ?? null,
     });
   }
@@ -83,7 +87,14 @@ export function parseKnowledge(json: unknown): Map<MapaArea, KnowledgeFact> {
 // gminas.json: tolerant of [{teryt,name,powiat}] / {gminas:[…]} and field aliases
 // ---------------------------------------------------------------------------
 
-export type Gmina = { teryt: string; name: string; powiatTeryt: string; powiatName: string | null };
+export type Gmina = {
+  teryt: string;
+  name: string;
+  /** „miejska", „wiejska", „miejsko-wiejska" — tells apart gminas sharing a name. */
+  kind: string | null;
+  powiatTeryt: string;
+  powiatName: string | null;
+};
 
 /** A gmina TERYT is WWPPGG(R): województwo, powiat, gmina, type digit. */
 export function powiatOf(teryt: string | null | undefined): string | null {
@@ -108,10 +119,12 @@ export function parseGminas(json: unknown): Gmina[] {
     if (!name || teryt.length < 6 || seen.has(teryt)) continue;
     seen.add(teryt);
     const powiat = isRec(g.powiat) ? g.powiat : null;
+    const givenPowiat = (str(g.powiatTeryt) ?? "").replace(/[^0-9]/g, "");
     out.push({
       teryt,
       name,
-      powiatTeryt: powiatOf(teryt)!,
+      kind: str(g.kind) ?? str(g.type),
+      powiatTeryt: givenPowiat.length === 4 ? givenPowiat : powiatOf(teryt)!,
       powiatName: str(g.powiatName) ?? str(powiat?.name) ?? (typeof g.powiat === "string" ? g.powiat : null),
     });
   }
@@ -143,6 +156,37 @@ let gminaCache: Gmina[] | null = null;
 export function gminas(): Gmina[] {
   gminaCache ??= parseGminas(readJson("gminas.json"));
   return gminaCache;
+}
+
+export function gminaByTeryt(teryt: string | null | undefined): Gmina | null {
+  if (!teryt) return null;
+  return gminas().find((g) => g.teryt === teryt) ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// calls.json: which cards each call listed (e.g. Usługa Wrażliwa, by card id)
+// ---------------------------------------------------------------------------
+
+/** callId → card ids the call document lists as eligible innovations. */
+export function parseCallInnovations(json: unknown): Map<string, Set<string>> {
+  const out = new Map<string, Set<string>>();
+  const list = Array.isArray(json) ? json : isRec(json) && Array.isArray(json.calls) ? json.calls : [];
+  for (const c of list) {
+    if (!isRec(c) || !str(c.id) || !Array.isArray(c.innovations)) continue;
+    const ids = new Set<string>();
+    for (const i of c.innovations) {
+      const id = isRec(i) ? str(i.cardId) : str(i);
+      if (id) ids.add(id);
+    }
+    if (ids.size > 0) out.set(str(c.id)!, ids);
+  }
+  return out;
+}
+
+let callCache: Map<string, Set<string>> | null = null;
+export function callInnovations(): Map<string, Set<string>> {
+  callCache ??= parseCallInnovations(readJson("calls.json"));
+  return callCache;
 }
 
 export function powiatName(powiatTeryt: string | null): string | null {

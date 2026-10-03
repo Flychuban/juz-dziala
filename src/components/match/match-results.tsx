@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import { pluralPl as plural, SourceLine, UserTerms } from "~/components/kit";
 import { MAPA_AREA_LABEL } from "~/lib/domain";
 import { api } from "~/trpc/react";
 import { CrisisBanner } from "./crisis-banner";
-import { plural } from "./format";
-import { SourceLine, UserTerms } from "./local-kit";
+import { knowledgeDetail } from "./format";
 import { RequestHelp } from "./request-help";
 import { ResultCard, type MatchViewData } from "./result-card";
 import { btnSecondary } from "./styles";
@@ -82,7 +82,19 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
         <h1 ref={h1} tabIndex={-1} className="text-4xl font-bold outline-none">
           Gotowe rozwiązania dla Ciebie
         </h1>
-        <UserTerms terms={view.userTerms} />
+        {view.userTerms.length > 0 && (
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="text-lg font-semibold">Twoje słowa:</span>
+            <UserTerms terms={view.userTerms} />
+          </div>
+        )}
+        {view.place && (
+          <p className="text-muted-foreground">
+            Gmina: {view.place.gminaName ?? view.place.gminaTeryt}
+            {view.place.gminaKind ? ` (gmina ${view.place.gminaKind})` : ""}
+            {view.place.powiatName ? `, ${view.place.powiatName}` : ""}
+          </p>
+        )}
         <p className="text-muted-foreground">
           Szukaliśmy w {view.libraryCount} kartach Biblioteki Innowacji Społecznych ROPS.{" "}
           <Link href="/" className="text-foreground underline" data-no-print>
@@ -119,10 +131,7 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
           </p>
         </section>
       ) : (
-        <section aria-labelledby="results-heading" className="flex flex-col gap-5">
-          <h2 id="results-heading" className="sr-only">
-            Wyniki
-          </h2>
+        <section aria-label="Wyniki" className="flex flex-col gap-5">
           {(view.note ?? (failed ? "ai_error" : null)) && (
             <p className="border-hairline bg-surface rounded-lg border p-3">{NOTE_TEXT[view.note ?? "ai_error"]}</p>
           )}
@@ -143,8 +152,9 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
               <p className="mt-2 text-lg">{view.knowledge.text}</p>
               <div className="mt-2">
                 <SourceLine
-                  name={view.knowledge.page ? `${view.knowledge.sourceTitle}, s. ${view.knowledge.page}` : view.knowledge.sourceTitle}
-                  url={view.knowledge.sourceUrl}
+                  source={view.knowledge.sourceTitle}
+                  href={view.knowledge.sourceUrl}
+                  detail={knowledgeDetail(view.knowledge.page, view.knowledge.sourceDate)}
                 />
               </div>
             </section>
@@ -159,7 +169,7 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
                   ? `W ostatnich ${view.similar.days} dniach nikt inny nie pytał o obszar „${MAPA_AREA_LABEL[topArea]}”. Twoje zgłoszenie pomoże ROPS zobaczyć tę potrzebę.`
                   : `W ostatnich ${view.similar.days} dniach ${view.similar.count} ${plural(view.similar.count, "osoba pytała", "osoby pytały", "osób pytało")} o obszar „${MAPA_AREA_LABEL[topArea]}”.`}
                 {view.similar.powiatCount !== null && view.similar.count > 0
-                  ? ` Z tego ${view.similar.powiatCount} z ${view.similar.powiatName ? `powiatu ${view.similar.powiatName}` : "Twojego powiatu"}.`
+                  ? ` Z tego ${view.similar.powiatCount} z Twojego powiatu${view.similar.powiatName ? ` (${view.similar.powiatName})` : ""}.`
                   : ""}
               </p>
               <p className="text-muted-foreground mt-2 text-sm">Liczymy anonimowe wyszukiwania w serwisie, bez treści opisów.</p>
@@ -168,7 +178,15 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
         </div>
       )}
 
-      <RequestHelp runId={runId} query={view.query} areas={view.areas} abstained={abstained} />
+      <RequestHelp
+        runId={runId}
+        query={view.query}
+        areas={view.areas}
+        gminaTeryt={view.place?.gminaTeryt ?? null}
+        powiatTeryt={view.place?.powiatTeryt ?? null}
+        resultTitles={abstained ? [] : view.results.map((r) => r.card.title)}
+        abstained={abstained}
+      />
 
       <div data-no-print>
         <button type="button" className={btnSecondary} onClick={() => window.print()}>

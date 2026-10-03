@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useId, useRef, useState } from "react";
 
 import { api } from "~/trpc/react";
-import { gminaOptionLabel as optionLabel, resolveGmina, type GminaOption } from "./format";
+import type { GminaOption } from "./format";
+import { GminaCombobox } from "./gmina-combobox";
 import { btnPrimary, btnSecondary } from "./styles";
 import { VoiceInput } from "./voice-input";
 
@@ -20,10 +21,10 @@ export function ProblemForm({ gminas }: { gminas: GminaOption[] }) {
   const router = useRouter();
   const utils = api.useUtils();
   const [text, setText] = useState("");
-  const [gmina, setGmina] = useState("");
+  const [gmina, setGmina] = useState<GminaOption | null>(null);
   const [error, setError] = useState<string | null>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
-  const ids = { text: useId(), hint: useId(), gmina: useId(), gminaHint: useId(), list: useId(), err: useId() };
+  const ids = { text: useId(), hint: useId(), err: useId() };
 
   const start = api.match.start.useMutation({
     onSuccess: (view) => {
@@ -48,7 +49,7 @@ export function ProblemForm({ gminas }: { gminas: GminaOption[] }) {
       return;
     }
     setError(null);
-    start.mutate({ text, gminaTeryt: resolveGmina(gmina, gminas) });
+    start.mutate({ text, ...(gmina ? { gminaTeryt: gmina.teryt } : {}) });
   };
 
   return (
@@ -101,30 +102,7 @@ export function ProblemForm({ gminas }: { gminas: GminaOption[] }) {
         </ul>
       </div>
 
-      {gminas.length > 0 && (
-        <div className="flex max-w-md flex-col gap-2">
-          <label htmlFor={ids.gmina} className="font-semibold">
-            Gmina (nieobowiązkowo)
-          </label>
-          <p id={ids.gminaHint} className="text-muted-foreground text-sm">
-            Zacznij pisać nazwę i wybierz z listy. Pomoże nam pokazać podobne sprawy z Twojego powiatu.
-          </p>
-          <input
-            id={ids.gmina}
-            list={ids.list}
-            value={gmina}
-            onChange={(e) => setGmina(e.target.value)}
-            autoComplete="off"
-            aria-describedby={ids.gminaHint}
-            className="border-input bg-background min-h-12 rounded-lg border-2 px-3 text-lg"
-          />
-          <datalist id={ids.list}>
-            {gminas.map((g) => (
-              <option key={g.teryt} value={optionLabel(g)} />
-            ))}
-          </datalist>
-        </div>
-      )}
+      {gminas.length > 0 && <GminaCombobox options={gminas} value={gmina} onSelect={setGmina} />}
 
       <div className="flex flex-wrap items-start gap-4">
         <button type="submit" className={btnPrimary} disabled={start.isPending}>
