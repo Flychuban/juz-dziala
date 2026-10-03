@@ -1,5 +1,11 @@
 /** Shapes stored in jsonb by the Sprawa engine. Client-safe. */
-import type { MapaArea, Urgency } from "~/lib/domain";
+import {
+  CASE_KIND_LABEL,
+  type CaseKind,
+  type CaseStatus,
+  type MapaArea,
+  type Urgency,
+} from "~/lib/domain";
 
 export type TriageCard = {
   id: string;
@@ -42,5 +48,26 @@ export type CaseTriage = {
 
 /** Staff display names in the thread. */
 export const TEAM_NAME = "Zespół Hubu ROPS";
+/** What residents see instead: they know „ROPS", not the Hub's team name. */
+export const RESIDENT_TEAM_NAME = "ROPS Kraków";
+
+/** Closing line of every reply to a resident: the thread stays open. */
+export const REPLY_CLOSING =
+  "Jeśli masz pytania, odpisz tutaj — odpowiemy w tym wątku.";
+
+/** Resident-facing status words (the enums and staff labels stay as they are). */
+export const RESIDENT_STATUS_LABEL: Record<CaseStatus, string> = {
+  new: "Przyjęta",
+  triaged: "Czytamy",
+  in_progress: "Szukamy odpowiedzi",
+  answered: "Masz odpowiedź",
+  closed: "Zamknięta",
+};
+
+/** Resident-facing kind names: a need is a request for help. */
+export const RESIDENT_KIND_LABEL: Record<CaseKind, string> = {
+  ...CASE_KIND_LABEL,
+  need: "Prośba o pomoc",
+};
 export const SYSTEM_NAME = "Już Działa";
 export const AUTHOR_NAME = "Autor sprawy";

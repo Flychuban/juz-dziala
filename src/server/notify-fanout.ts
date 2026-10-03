@@ -9,13 +9,17 @@ import {
 import { eq } from "drizzle-orm";
 
 import { env } from "~/env";
-import { CASE_KIND_LABEL, CASE_STATUS_LABEL } from "~/lib/domain";
+import { CASE_KIND_LABEL } from "~/lib/domain";
 import {
   takeDelivery,
   type DeliveryOutcome,
 } from "~/server/cases/delivery-intent";
 import { insertMessage } from "~/server/cases/messages";
-import { SYSTEM_NAME, TEAM_NAME } from "~/server/cases/types";
+import {
+  RESIDENT_STATUS_LABEL,
+  RESIDENT_TEAM_NAME,
+  SYSTEM_NAME,
+} from "~/server/cases/types";
 import { db } from "~/server/db";
 import { cases, messages, notifications } from "~/server/db/schema";
 import { decrypt } from "~/server/lib/crypto";
@@ -149,8 +153,8 @@ async function onCaseTriaged(caseId: string) {
       recipient: `case:${c.id}`,
       caseId: c.id,
       kind: "case.triaged",
-      title: "Sprawa wstępnie oceniona",
-      body: "Zespół Hubu zajmie się nią wkrótce.",
+      title: "Czytamy Twoją sprawę",
+      body: "Odpowiemy zwykle w ciągu 2 dni roboczych.",
       href: authorHref(c.code),
     },
   ];
@@ -184,8 +188,8 @@ async function onCaseStatus(caseId: string, status: string) {
   const c = await loadCase(caseId);
   if (!c) return;
   const label =
-    status in CASE_STATUS_LABEL
-      ? CASE_STATUS_LABEL[status as keyof typeof CASE_STATUS_LABEL]
+    status in RESIDENT_STATUS_LABEL
+      ? RESIDENT_STATUS_LABEL[status as keyof typeof RESIDENT_STATUS_LABEL]
       : status;
   await db.insert(notifications).values({
     recipient: `case:${c.id}`,
@@ -250,7 +254,11 @@ async function onMessageCreated(caseId: string, messageId: string) {
     return;
   }
 
-  const from = m.authorName ?? TEAM_NAME;
+  // The resident sees „ROPS Kraków" for the team, an expert by name.
+  const from =
+    m.authorKind === "expert" && m.authorName
+      ? m.authorName
+      : RESIDENT_TEAM_NAME;
   const rows: NotificationRow[] = [
     {
       recipient: `case:${c.id}`,

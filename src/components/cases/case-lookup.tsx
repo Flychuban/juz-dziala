@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { CASE_KIND_LABEL } from "~/lib/domain";
+import { RESIDENT_KIND_LABEL } from "~/server/cases/types";
 import { api } from "~/trpc/react";
 import { fmtDate, looseCaseCode } from "./format";
 import { forgetCase, readMyCases, type SavedCase } from "./my-cases";
@@ -162,7 +162,7 @@ export function MyCases() {
                     {c.code}
                   </Link>
                   <p>
-                    {CASE_KIND_LABEL[c.kind]}: {c.title}
+                    {RESIDENT_KIND_LABEL[c.kind]}: {c.title}
                   </p>
                   <p className="text-muted-foreground text-sm">
                     Status: {STEP_LABEL[c.status]} · zgłoszona{" "}

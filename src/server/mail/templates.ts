@@ -1,6 +1,7 @@
 import "server-only";
 
 import { env } from "~/env";
+import { RESIDENT_KIND_LABEL, RESIDENT_TEAM_NAME } from "~/server/cases/types";
 import {
   AUTHOR_ROLE_LABEL,
   CASE_KIND_LABEL,
@@ -25,7 +26,8 @@ export const caseUrl = (code: string) => `${siteUrl()}/case/${code}`;
 export const adminCaseUrl = (code: string) =>
   `${siteUrl()}/admin/cases/${code}`;
 
-const SIGNATURE = `Zespół Hubu ROPS
+/** Residents know „ROPS", not the Hub's team name. */
+const SIGNATURE = `${RESIDENT_TEAM_NAME}
 ${SITE.hub}
 ${SITE.owner}`;
 
@@ -41,7 +43,7 @@ export function receiptEmail(c: { code: string; kind: CaseKind }): Mail {
     subject: `Przyjęliśmy Twoją sprawę ${c.code}`,
     text: `Dzień dobry,
 
-dziękujemy. Twoja sprawa („${CASE_KIND_LABEL[c.kind]}”) została przyjęta.
+dziękujemy. Twoja sprawa („${RESIDENT_KIND_LABEL[c.kind]}”) została przyjęta.
 
 Kod sprawy: ${c.code}
 

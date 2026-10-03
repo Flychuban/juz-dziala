@@ -63,8 +63,8 @@ export default async function Page({
       </dl>
       <PlanMarkdown markdown={plan.markdown} className="mt-6" />
       <p className="text-muted-foreground mt-10 text-sm print:text-black">
-        Projekt planu do omówienia z Zespołem Hubu. Kwoty i terminy oznaczone
-        „do weryfikacji” wymagają sprawdzenia. {SITE.owner}.
+        Projekt planu do omówienia z ROPS. Kwoty i terminy oznaczone „do
+        weryfikacji” wymagają sprawdzenia. {SITE.owner}.
       </p>
     </div>
   );

@@ -12,6 +12,7 @@ import {
   URGENCY_LABEL,
 } from "~/lib/domain";
 import { api } from "~/trpc/react";
+import { SampleBadge } from "~/components/kit";
 import { FeedbackSummary } from "~/components/tests/feedback-summary";
 import {
   IdeaSection,
@@ -104,14 +105,15 @@ export function CaseWorkspace({
       {back}
       <header className="mt-2 flex flex-col gap-2">
         <p className="flex flex-wrap items-center gap-2 text-sm">
-          <span className="font-mono text-base font-bold">{c.code}</span>
-          <span aria-hidden="true">·</span>
-          <span>{CASE_KIND_LABEL[c.kind]}</span>
-          <span aria-hidden="true">·</span>
+          <span className="font-mono text-base font-bold">{c.code}</span>{" "}
+          <span aria-hidden="true">·</span>{" "}
+          <span>{CASE_KIND_LABEL[c.kind]}</span>{" "}
+          <span aria-hidden="true">·</span>{" "}
           <span className="font-semibold">{CASE_STATUS_LABEL[c.status]}</span>
           {c.urgency && (
             <>
-              <span aria-hidden="true">·</span>
+              {" "}
+              <span aria-hidden="true">·</span>{" "}
               <span
                 className={
                   c.urgency === "high"
@@ -127,9 +129,10 @@ export function CaseWorkspace({
             </>
           )}
           {c.isSample && (
-            <span className="border-hairline rounded border px-2">
-              przykładowe
-            </span>
+            <>
+              {" "}
+              <SampleBadge />
+            </>
           )}
         </p>
         <h1 className="text-3xl font-bold break-words">{c.title}</h1>

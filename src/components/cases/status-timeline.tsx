@@ -2,16 +2,11 @@ import { CheckIcon, CircleDotIcon, CircleIcon } from "lucide-react";
 
 import type { CaseStatus } from "~/lib/domain";
 import { cn } from "~/lib/utils";
+import { RESIDENT_STATUS_LABEL } from "~/server/cases/types";
 import { fmtDateTime } from "./format";
 
-/** Resident-facing step names (the staff label for "new" is „Nowa"). */
-export const STEP_LABEL: Record<CaseStatus, string> = {
-  new: "Przyjęta",
-  triaged: "Wstępnie oceniona",
-  in_progress: "W toku",
-  answered: "Odpowiedziano",
-  closed: "Zamknięta",
-};
+/** Resident-facing step names (staff screens keep CASE_STATUS_LABEL). */
+export const STEP_LABEL: Record<CaseStatus, string> = RESIDENT_STATUS_LABEL;
 
 export type TimelineStep = {
   status: CaseStatus;

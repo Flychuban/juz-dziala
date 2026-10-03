@@ -1,7 +1,9 @@
 import { EyeOffIcon } from "lucide-react";
 
 import type { MessageAuthorKind } from "~/lib/domain";
+import { ReadAloud } from "~/components/kit";
 import { cn } from "~/lib/utils";
+import { RESIDENT_TEAM_NAME } from "~/server/cases/types";
 import { fmtDateTime } from "./format";
 
 export type ThreadMessage = {
@@ -42,7 +44,7 @@ function who(m: ThreadMessage, viewer: "author" | "staff"): string {
     case "author":
       return viewer === "author" ? "Ty" : "Autor sprawy";
     case "rops":
-      return m.authorName ?? TEAM;
+      return viewer === "author" ? RESIDENT_TEAM_NAME : (m.authorName ?? TEAM);
     case "expert":
       return m.authorName ?? "Ekspert Hubu";
     case "system":
@@ -58,9 +60,12 @@ function who(m: ThreadMessage, viewer: "author" | "staff"): string {
 export function CaseThread({
   messages,
   viewer,
+  readAloud = false,
 }: {
   messages: ThreadMessage[];
   viewer: "author" | "staff";
+  /** „Czytaj na głos" under every ROPS/expert message. */
+  readAloud?: boolean;
 }) {
   if (!messages.length) {
     return <p className="text-muted-foreground">Brak wiadomości.</p>;
@@ -112,6 +117,15 @@ export function CaseThread({
               </p>
             )}
             <MessageBody text={m.body} />
+            {readAloud &&
+              (m.authorKind === "rops" || m.authorKind === "expert") && (
+                <div className="mt-2" data-no-print>
+                  <ReadAloud
+                    text={`${who(m, viewer)}: ${m.body.replace(/^#{1,6}\s+/gmu, "")}`}
+                    label="Czytaj odpowiedź na głos"
+                  />
+                </div>
+              )}
           </li>
         );
       })}
