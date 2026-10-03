@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq, isNotNull } from "drizzle-orm";
+import { and, eq, isNotNull, or } from "drizzle-orm";
 import { z } from "zod";
 
 import type { MapaArea } from "~/lib/domain";
@@ -73,23 +73,17 @@ function toItem(r: {
 }
 
 /**
- * Innovations open for testers (`testingOpen`, set by ROPS). When none is
- * flagged, the cards ROPS chose for dissemination („wybrana do
- * upowszechniania") are offered as candidates — and the page says so.
+ * Innovations open for testers (`testingOpen`, set by ROPS) come first; the
+ * cards ROPS chose for dissemination („wybrana do upowszechniania") follow as
+ * candidates, labelled as such on the page.
  */
-export async function testingList(): Promise<{ mode: "open" | "candidates"; items: TestableInnovation[] }> {
-  const open = await db
+export async function testingList(): Promise<{ open: TestableInnovation[]; candidates: TestableInnovation[] }> {
+  const rows = await db
     .select(columns)
     .from(innovations)
-    .where(and(eq(innovations.status, "published"), eq(innovations.testingOpen, true)));
-  if (open.length > 0) {
-    return { mode: "open", items: open.map(toItem).sort((a, b) => a.title.localeCompare(b.title, "pl")) };
-  }
-  const candidates = await db
-    .select(columns)
-    .from(innovations)
-    .where(and(eq(innovations.status, "published"), isNotNull(innovations.badge)));
-  return { mode: "candidates", items: candidates.map(toItem).sort((a, b) => a.title.localeCompare(b.title, "pl")) };
+    .where(and(eq(innovations.status, "published"), or(eq(innovations.testingOpen, true), isNotNull(innovations.badge))));
+  const items = rows.map(toItem).sort((a, b) => a.title.localeCompare(b.title, "pl"));
+  return { open: items.filter((i) => i.testingOpen), candidates: items.filter((i) => !i.testingOpen) };
 }
 
 export async function testableBySlug(slug: string): Promise<TestableInnovation | null> {

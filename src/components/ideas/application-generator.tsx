@@ -7,10 +7,10 @@ import remarkGfm from "remark-gfm";
 import { EyeIcon, FilePenLineIcon, SendIcon, SparklesIcon } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
-import { draftToFields, fieldsToMarkdown, unverifiedNumbers, type FormFieldDef } from "~/server/ideas/application-rules";
+import { draftToFields, fieldsToMarkdown, gapsLine, unverifiedNumbers, type FormFieldDef } from "~/server/ideas/application-rules";
 import { GAP, type ApplicationField, type StoredApplication } from "~/server/ideas/schema";
 import { api } from "~/trpc/react";
-import { errorText } from "./client-utils";
+import { errorText, safeStorage } from "./client-utils";
 import { TextAreaField } from "./form";
 
 type DraftSource = "ai" | "template" | "manual";
@@ -21,6 +21,8 @@ const mdClass =
 function countGaps(fields: readonly ApplicationField[]) {
   return fields.filter((f) => !f.value.trim() || f.value.includes(GAP)).length;
 }
+
+type SavedDraft = { fields: ApplicationField[]; source: DraftSource; at: string };
 
 /**
  * The application generator: streams a Markdown draft (AI, or the AI-free
@@ -48,15 +50,41 @@ export function ApplicationGenerator({
   const [error, setError] = useState("");
   const [preview, setPreview] = useState(false);
   const [sentGaps, setSentGaps] = useState(0);
+  const [restored, setRestored] = useState(false);
+  const storageKey = `jd_application_${code}`;
+  const loaded = useRef(false);
   const editHeading = useRef<HTMLHeadingElement>(null);
   const sentHeading = useRef<HTMLHeadingElement>(null);
   const submit = api.ideas.submitApplication.useMutation();
   const t = token ? `?t=${encodeURIComponent(token)}` : "";
 
+  // Restore a draft kept on this device (newer than the one sent to ROPS, if any).
   useEffect(() => {
-    if (phase === "edit" && !existing) editHeading.current?.focus();
+    const saved = safeStorage.get<SavedDraft>(storageKey);
+    const keys = new Set(call.formFields.map((f) => f.key));
+    if (
+      saved?.fields?.length &&
+      saved.fields.every((f) => keys.has(f.key)) &&
+      (!existing || saved.at > existing.submittedAt)
+    ) {
+      setFields(call.formFields.map((f) => ({ key: f.key, label: f.label, value: saved.fields.find((x) => x.key === f.key)?.value ?? "" })));
+      setSource(saved.source);
+      setPhase("edit");
+      setRestored(true);
+    }
+    loaded.current = true;
+  }, [storageKey, call.formFields, existing]);
+
+  // Autosave the generated draft and every edit.
+  useEffect(() => {
+    if (!loaded.current || phase !== "edit" || fields.length === 0 || fields === existing?.fields) return;
+    safeStorage.set(storageKey, { fields, source, at: new Date().toISOString() } satisfies SavedDraft);
+  }, [fields, source, phase, storageKey, existing]);
+
+  useEffect(() => {
+    if (phase === "edit" && !existing && !restored) editHeading.current?.focus();
     if (phase === "sent") sentHeading.current?.focus();
-  }, [phase, existing]);
+  }, [phase, existing, restored]);
 
   const flagged = useMemo(
     () => (source === "ai" ? unverifiedNumbers(fieldsToMarkdown(fields), [...sources, ...call.formFields.map((f) => `${f.label} ${f.hint ?? ""}`)]) : []),
@@ -109,6 +137,8 @@ export function ApplicationGenerator({
     try {
       const res = await submit.mutateAsync({ code, token, callId: call.id, fields, draftSource: source });
       setSentGaps(res.gaps);
+      safeStorage.remove(storageKey);
+      setRestored(false);
       setPhase("sent");
     } catch (e) {
       setError(errorText(e));
@@ -179,6 +209,11 @@ export function ApplicationGenerator({
             <h2 id="edit-h" ref={editHeading} tabIndex={-1} className="font-display text-2xl font-bold outline-none">
               Sprawdź i popraw wniosek
             </h2>
+            {restored ? (
+              <p role="status" className="border-hairline bg-surface mt-3 rounded-md border p-3">
+                Przywróciliśmy szkic zapisany na tym urządzeniu.
+              </p>
+            ) : null}
             {existing?.fields === fields ? (
               <p className="mt-2">
                 Wysłałaś/eś ten wniosek {new Date(existing.submittedAt).toLocaleString("pl-PL", { dateStyle: "long", timeStyle: "short" })}. Możesz go
@@ -195,7 +230,7 @@ export function ApplicationGenerator({
               <p className="text-muted-foreground mt-2 text-sm">Szkic napisała sztuczna inteligencja na podstawie Twoich danych. Przeczytaj go uważnie przed wysłaniem.</p>
             ) : null}
             <p role="status" aria-live="polite" className="mt-3 text-lg font-semibold">
-              Do uzupełnienia: {countGaps(fields)} z {fields.length} pól.
+              {gapsLine(countGaps(fields))}
             </p>
             {flagged.length ? (
               <div role="note" className="border-hairline bg-warning-bg mt-3 rounded-md border border-l-4 p-4">
@@ -216,7 +251,7 @@ export function ApplicationGenerator({
               onChange={(v) => setFields((all) => all.map((x) => (x.key === f.key ? { ...x, value: v } : x)))}
               maxLength={8000}
               rows={5}
-              required={false}
+              required
             />
           ))}
 

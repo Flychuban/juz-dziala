@@ -28,6 +28,7 @@ export function ChoiceCards<T extends string>({
   onChange,
   columns = 1,
   legendClassName,
+  optional = false,
 }: {
   legend: string;
   hint?: React.ReactNode;
@@ -37,11 +38,16 @@ export function ChoiceCards<T extends string>({
   onChange: (v: T) => void;
   columns?: 1 | 2;
   legendClassName?: string;
+  /** Adds „(nieobowiązkowe)" to the legend. */
+  optional?: boolean;
 }) {
   const hintId = useId();
   return (
     <fieldset aria-describedby={hint ? hintId : undefined} className="min-w-0">
-      <legend className={cn("mb-2 text-lg font-semibold", legendClassName)}>{legend}</legend>
+      <legend className={cn("mb-2 text-lg font-semibold", legendClassName)}>
+        {legend}
+        {optional ? <span className="text-muted-foreground font-normal"> (nieobowiązkowe)</span> : null}
+      </legend>
       {hint ? (
         <div id={hintId} className="text-muted-foreground mb-3">
           {hint}
@@ -78,6 +84,7 @@ export function CheckCards<T extends string>({
   onChange,
   columns = 2,
   legendClassName,
+  optional = false,
 }: {
   legend: string;
   hint?: React.ReactNode;
@@ -86,12 +93,17 @@ export function CheckCards<T extends string>({
   onChange: (v: T[]) => void;
   columns?: 1 | 2;
   legendClassName?: string;
+  /** Adds „(nieobowiązkowe)" to the legend. */
+  optional?: boolean;
 }) {
   const hintId = useId();
   const toggle = (v: T) => onChange(values.includes(v) ? values.filter((x) => x !== v) : [...values, v]);
   return (
     <fieldset aria-describedby={hint ? hintId : undefined} className="min-w-0">
-      <legend className={cn("mb-2 text-lg font-semibold", legendClassName)}>{legend}</legend>
+      <legend className={cn("mb-2 text-lg font-semibold", legendClassName)}>
+        {legend}
+        {optional ? <span className="text-muted-foreground font-normal"> (nieobowiązkowe)</span> : null}
+      </legend>
       {hint ? (
         <div id={hintId} className="text-muted-foreground mb-3">
           {hint}

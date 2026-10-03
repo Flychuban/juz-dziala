@@ -84,7 +84,7 @@ export function AskExpertWizard({
     {
       id: "contact",
       title: "Jak mamy odpowiedzieć?",
-      description: "Odpowiedź zobaczysz zawsze po kodzie sprawy. Kontakt jest nieobowiązkowy.",
+      description: "Odpowiedź zobaczysz zawsze po kodzie sprawy.",
       content: (
         <div className="flex flex-col gap-8">
           <WhoFieldset value={who} onChange={setWho} legend="Pytasz jako" />

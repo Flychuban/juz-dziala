@@ -70,6 +70,7 @@ export default async function Page({
           className="mt-6"
           source={`Social Innovation Canvas — INNO AGH, wersja ${def.source.version ?? "—"} z ${formatDatePl(def.source.versionDate)}, na podstawie Social Innovation Canvas The New Global School`}
           href={def.source.url}
+          detail="pytania zapisaliśmy w formie „Ty”"
           date={def.source.capturedAt}
         />
       </PageHeader>

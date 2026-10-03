@@ -133,43 +133,66 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
           </p>
         }
       />
-      <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
-        <section aria-labelledby="list-h">
-          <h2 id="list-h" className="font-display text-2xl font-bold">
-            {list.mode === "open" ? "Rozwiązania, które szukają testerów" : "Kandydaci do testów"}
+      <div className="mx-auto flex max-w-6xl flex-col gap-14 px-4 py-10 md:py-12">
+        <section aria-labelledby="open-h">
+          <h2 id="open-h" className="font-display text-2xl font-bold">
+            Rozwiązania, które szukają testerów
           </h2>
-          {list.mode === "candidates" ? (
+          {list.open.length ? (
+            <>
+              <p className="mt-2 max-w-prose">ROPS otworzył testy tych rozwiązań. Zgłoś się — zespół odezwie się z terminem i szczegółami.</p>
+              <p className="text-muted-foreground mt-2">{countPl(list.open.length, "rozwiązanie", "rozwiązania", "rozwiązań")}</p>
+              <ul className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {list.open.map((i) => (
+                  <li key={i.id}>
+                    <TestableCard item={i} />
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <EmptyState
+              className="mt-6"
+              icon={<FlaskConicalIcon />}
+              title="Teraz żadne rozwiązanie nie ma otwartych testów"
+              description={<p>Poniżej są kandydaci do testów — możesz zgłosić chęć testowania albo je ocenić.</p>}
+            />
+          )}
+        </section>
+
+        {list.candidates.length ? (
+          <section aria-labelledby="candidates-h">
+            <h2 id="candidates-h" className="font-display text-2xl font-bold">
+              Kandydaci do testów
+            </h2>
             <p role="note" className="border-hairline bg-surface mt-4 max-w-prose rounded-md border border-l-4 p-4">
-              Teraz żadne rozwiązanie nie ma otwartego naboru testerów. Poniżej są rozwiązania, które ROPS wybrał do upowszechniania — możesz zgłosić chęć
-              testowania albo je ocenić. Zespół ROPS odezwie się, gdy testy ruszą.
+              Te rozwiązania ROPS wybrał do upowszechniania, ale nie mają teraz otwartego naboru testerów. Możesz zgłosić chęć testowania albo je ocenić —
+              zespół ROPS odezwie się, gdy testy ruszą.
             </p>
-          ) : null}
-          <p className="text-muted-foreground mt-4">
-            {countPl(list.items.length, "rozwiązanie", "rozwiązania", "rozwiązań")}
-          </p>
-          {list.items.length ? (
+            <p className="text-muted-foreground mt-4">{countPl(list.candidates.length, "rozwiązanie", "rozwiązania", "rozwiązań")}</p>
             <ul className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {list.items.map((i) => (
+              {list.candidates.map((i) => (
                 <li key={i.id}>
                   <TestableCard item={i} />
                 </li>
               ))}
             </ul>
-          ) : (
-            <EmptyState
-              className="mt-6"
-              icon={<FlaskConicalIcon />}
-              title="Brak rozwiązań do testowania"
-              description={<p>Zajrzyj do Biblioteki — każde rozwiązanie możesz ocenić z jego karty.</p>}
-              action={
-                <Button asChild>
-                  <Link href="/library">Przejdź do Biblioteki</Link>
-                </Button>
-              }
-            />
-          )}
-          <SourceLine className="mt-8" source="Biblioteka Innowacji Społecznych ROPS Kraków" href={LIBRARY_URL} />
-        </section>
+          </section>
+        ) : null}
+
+        {!list.open.length && !list.candidates.length ? (
+          <EmptyState
+            icon={<FlaskConicalIcon />}
+            title="Brak rozwiązań do testowania"
+            description={<p>Zajrzyj do Biblioteki — każde rozwiązanie możesz ocenić z jego karty.</p>}
+            action={
+              <Button asChild>
+                <Link href="/library">Przejdź do Biblioteki</Link>
+              </Button>
+            }
+          />
+        ) : null}
+        <SourceLine source="Biblioteka Innowacji Społecznych ROPS Kraków" href={LIBRARY_URL} />
       </div>
     </>
   );

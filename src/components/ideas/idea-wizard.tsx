@@ -183,6 +183,13 @@ export function IdeaWizard({
     );
   }
 
+  // On phones the assistant panel sits under the form; this anchor sits above „Dalej".
+  const assistantLink = (
+    <a href="#asystent" className="text-primary inline-flex min-h-12 items-center gap-1 font-semibold underline underline-offset-4 lg:hidden">
+      Zobacz podpowiedzi asystenta <span aria-hidden="true">↓</span>
+    </a>
+  );
+
   const assistDraft = { title: draft.title, description: draft.description, targetGroup: draft.targetGroup, areas: draft.areas, stage: draft.stage };
 
   const steps: StepperStep[] = [
@@ -231,12 +238,14 @@ export function IdeaWizard({
             rows={4}
           />
           <CheckCards
-            legend="Obszary Mapy Wyzwań Społecznych (nieobowiązkowe)"
+            legend="Obszary Mapy Wyzwań Społecznych"
             hint="Zaznacz jeden lub kilka. Asystent AI może podpowiedzieć, które pasują."
             options={MAPA_AREAS.map((a) => ({ value: a, label: MAPA_AREA_LABEL[a] }))}
             values={draft.areas}
             onChange={(v) => set("areas", v)}
+            optional
           />
+          {assistantLink}
         </div>
       ),
       validate: () => (draft.targetGroup.trim().length < IDEA_LIMITS.targetGroup.min ? "Napisz, komu pomysł ma pomóc." : null),
@@ -245,14 +254,17 @@ export function IdeaWizard({
       id: "stage",
       title: "Na jakim etapie jest?",
       content: (
-        <ChoiceCards
-          legend="Etap pomysłu"
-          legendClassName="sr-only"
-          name="stage"
-          options={IDEA_STAGES.map((s) => ({ value: s, label: IDEA_STAGE_LABEL[s], description: stageHints[s] ?? null }))}
-          value={draft.stage}
-          onChange={(v) => set("stage", v)}
-        />
+        <div className="flex flex-col gap-6">
+          <ChoiceCards
+            legend="Etap pomysłu"
+            legendClassName="sr-only"
+            name="stage"
+            options={IDEA_STAGES.map((s) => ({ value: s, label: IDEA_STAGE_LABEL[s], description: stageHints[s] ?? null }))}
+            value={draft.stage}
+            onChange={(v) => set("stage", v)}
+          />
+          {assistantLink}
+        </div>
       ),
       validate: () => (draft.stage ? null : "Wybierz etap — to pomoże dobrać wsparcie."),
     },
@@ -278,6 +290,7 @@ export function IdeaWizard({
               {submitError}
             </p>
           ) : null}
+          {assistantLink}
         </div>
       ),
       validate: () => {
@@ -290,6 +303,7 @@ export function IdeaWizard({
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-12">
       <div className="min-w-0">
+        <h2 className="font-display text-muted-foreground mb-4 text-xl font-bold">Fiszka pomysłu</h2>
         {restored ? (
           <div className="border-hairline bg-surface mb-6 flex flex-wrap items-center justify-between gap-3 rounded-md border p-4" role="status">
             <p>Przywróciliśmy szkic zapisany na tym urządzeniu.</p>
@@ -309,7 +323,7 @@ export function IdeaWizard({
         />
         <p className="text-muted-foreground mt-6 text-sm">Szkic zapisuje się automatycznie na tym urządzeniu. Nie zakładasz konta.</p>
       </div>
-      <aside aria-label="Pomoc przy pomyśle" className="flex flex-col gap-6">
+      <aside id="asystent" aria-label="Pomoc przy pomyśle" className="flex scroll-mt-6 flex-col gap-6">
         {step >= 1 ? (
           <>
             <SimilarCheck text={`${draft.title}\n${draft.description}\n${draft.targetGroup}`} />

@@ -52,7 +52,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
   return (
     <>
       <PageHeader
-        eyebrow="Komunikacja"
+        eyebrow="Sieć"
         title="Sieć i mentorzy"
         lead={
           <p>
@@ -142,10 +142,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
                       {p.displayName}
                       {p.isSample ? <SampleBadge /> : null}
                     </h3>
-                    <p className="text-muted-foreground font-semibold">
-                      {ROLE_LABEL[p.role]}
-                      {p.title ? ` · ${p.title}` : ""}
-                    </p>
+                    <p className="text-muted-foreground font-semibold">{p.title ?? ROLE_LABEL[p.role]}</p>
                     {p.orgName ? <p>{p.orgName}</p> : null}
                     {p.bio ? <p>{p.bio}</p> : null}
                     {p.areas.length ? (
