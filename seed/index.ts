@@ -5,11 +5,13 @@
  */
 import { seedLibrary } from "./library";
 import { seedCalls, seedNetwork } from "./network";
+import { seedSamplePeople } from "~/server/cases/sample-people";
 
 const steps: { name: string; run: () => Promise<void> }[] = [
   { name: "library", run: seedLibrary },
   { name: "calls", run: seedCalls },
   { name: "network", run: seedNetwork },
+  { name: "people (przykładowi mentorzy)", run: seedSamplePeople },
 ];
 
 async function main() {
