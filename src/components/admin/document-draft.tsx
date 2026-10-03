@@ -1,0 +1,338 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import {
+  CircleAlertIcon,
+  FileTextIcon,
+  PencilLineIcon,
+  FileSearchIcon,
+} from "lucide-react";
+
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
+import { SECTION_KEYS, type MapaArea, type SectionKey } from "~/lib/domain";
+import { cn } from "~/lib/utils";
+import {
+  InnovationEditor,
+  type DraftFieldView,
+  type EditorCard,
+} from "./innovation-editor";
+
+type Kind = "pdf" | "text" | "url";
+
+type Draft = {
+  title: DraftFieldView;
+  sections: Record<SectionKey, DraftFieldView>;
+  mapaAreas: MapaArea[];
+  keywords: string[];
+  videoUrl: string | null;
+  warnings: string[];
+  source: { kind: Kind; name: string; url: string | null };
+};
+type Response =
+  | { ok: true; draft: Draft; costUsd: number }
+  | { ok: false; reason: string; message: string };
+
+const MAX_BYTES = 10 * 1024 * 1024;
+
+const EMPTY: EditorCard = {
+  id: null,
+  slug: null,
+  title: "",
+  sections: Object.fromEntries(SECTION_KEYS.map((k) => [k, ""])) as Record<
+    SectionKey,
+    string
+  >,
+  mapaAreas: [],
+  categories: [],
+  keywords: [],
+  videoUrl: null,
+  testingOpen: false,
+  status: "draft",
+  sourceUrl: "",
+  licence: "",
+};
+
+const KINDS: { key: Kind; label: string; hint: string }[] = [
+  {
+    key: "pdf",
+    label: "Plik PDF",
+    hint: "Folder, raport lub opis innowacji — do 10 MB.",
+  },
+  {
+    key: "text",
+    label: "Wklejony tekst",
+    hint: "Skopiuj opis z dokumentu lub e-maila.",
+  },
+  {
+    key: "url",
+    label: "Adres strony",
+    hint: "Publiczna strona WWW albo link do pliku PDF.",
+  },
+];
+
+/** „Dodaj z dokumentu": source → AI draft with quotes → editor (or a manual empty form). */
+export function DocumentDraft({
+  categories,
+}: {
+  categories: { slug: string; label: string }[];
+}) {
+  const [kind, setKind] = useState<Kind>("pdf");
+  const [file, setFile] = useState<File | null>(null);
+  const [text, setText] = useState("");
+  const [url, setUrl] = useState("");
+  const [state, setState] = useState<"idle" | "loading" | "done" | "manual">(
+    "idle",
+  );
+  const [problem, setProblem] = useState<string | null>(null);
+  const [draft, setDraft] = useState<Draft | null>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (state === "done" || state === "manual") heading.current?.focus();
+  }, [state]);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setProblem(null);
+    const fd = new FormData();
+    fd.set("kind", kind);
+    if (kind === "pdf") {
+      if (!file) return setProblem("Wybierz plik PDF.");
+      if (file.size > MAX_BYTES)
+        return setProblem("Plik jest większy niż 10 MB.");
+      fd.set("file", file);
+    } else if (kind === "text") {
+      if (text.trim().length < 80)
+        return setProblem("Wklej dłuższy tekst — co najmniej kilka zdań.");
+      fd.set("text", text);
+    } else {
+      if (!/^https?:\/\/\S+$/.test(url.trim()))
+        return setProblem("Podaj pełny adres (https://…).");
+      fd.set("url", url.trim());
+    }
+    setState("loading");
+    try {
+      const res = await fetch("/admin/library/new/draft", {
+        method: "POST",
+        body: fd,
+      });
+      const data = (await res.json()) as Response;
+      if (data.ok) {
+        setDraft(data.draft);
+        setState("done");
+      } else {
+        setProblem(data.message);
+        setState(data.reason === "input" ? "idle" : "manual");
+      }
+    } catch {
+      setProblem(
+        "Nie udało się połączyć z serwerem. Spróbuj ponownie albo wypełnij kartę ręcznie.",
+      );
+      setState("idle");
+    }
+  }
+
+  if ((state === "done" && draft) || state === "manual") {
+    const initial: EditorCard = draft
+      ? {
+          ...EMPTY,
+          title: draft.title.text,
+          sections: Object.fromEntries(
+            SECTION_KEYS.map((k) => [k, draft.sections[k].text]),
+          ) as Record<SectionKey, string>,
+          mapaAreas: draft.mapaAreas,
+          keywords: draft.keywords,
+          videoUrl: draft.videoUrl,
+          sourceUrl: draft.source.url ?? "",
+        }
+      : {
+          // Without AI: keep what the person already gave us.
+          ...EMPTY,
+          sections: {
+            ...EMPTY.sections,
+            solution: kind === "text" ? text.trim() : "",
+          },
+          sourceUrl: kind === "url" ? url.trim() : "",
+        };
+    return (
+      <div>
+        <h2
+          ref={heading}
+          tabIndex={-1}
+          className="font-display text-2xl font-bold outline-none"
+        >
+          {draft ? "Szkic do sprawdzenia" : "Nowa karta — wypełnij ręcznie"}
+        </h2>
+        {draft ? (
+          <p className="text-foreground/85 mt-2 max-w-[68ch]">
+            Asystent przygotował szkic z dokumentu „{draft.source.name}”. Przy
+            każdym polu jest cytat, na którym się oparł. Porównaj je, popraw
+            tekst i zaznacz „Sprawdziłam/em” — dopiero wtedy zapiszesz szkic.
+            Szkic nie jest widoczny publicznie.
+          </p>
+        ) : problem ? (
+          <Alert variant="warning" role="status" className="mt-4">
+            <CircleAlertIcon aria-hidden="true" />
+            <AlertTitle>Bez asystenta AI</AlertTitle>
+            <AlertDescription>{problem}</AlertDescription>
+          </Alert>
+        ) : null}
+        <div className="mt-8">
+          <InnovationEditor
+            mode="create"
+            initial={initial}
+            categories={categories}
+            draft={
+              draft
+                ? {
+                    title: draft.title,
+                    ...draft.sections,
+                    warnings: draft.warnings,
+                  }
+                : undefined
+            }
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} noValidate className="max-w-3xl space-y-8">
+      <fieldset>
+        <legend className="font-display text-2xl font-bold">
+          Skąd wziąć opis?
+        </legend>
+        <ul className="mt-4 grid gap-3 md:grid-cols-3">
+          {KINDS.map((k) => (
+            <li key={k.key}>
+              <label
+                className={cn(
+                  "flex h-full min-h-12 cursor-pointer gap-3 rounded-md border p-4",
+                  kind === k.key ? "border-primary bg-accent" : "border-input",
+                )}
+              >
+                <input
+                  type="radio"
+                  name="kind"
+                  value={k.key}
+                  checked={kind === k.key}
+                  onChange={() => setKind(k.key)}
+                  className="mt-1 size-5 shrink-0 accent-[var(--primary)]"
+                />
+                <span>
+                  <span className="block font-bold">{k.label}</span>
+                  <span className="text-foreground/85 block text-[0.9375rem]">
+                    {k.hint}
+                  </span>
+                </span>
+              </label>
+            </li>
+          ))}
+        </ul>
+      </fieldset>
+
+      {kind === "pdf" ? (
+        <div>
+          <p id="doc-file-label" className="block text-lg font-bold">
+            Plik PDF
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <input
+              id="doc-file"
+              type="file"
+              accept="application/pdf,.pdf"
+              aria-labelledby="doc-file-label doc-file-button"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              className="peer sr-only"
+            />
+            <label
+              id="doc-file-button"
+              htmlFor="doc-file"
+              className="border-primary text-primary bg-background hover:bg-accent inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-md border px-5 font-semibold peer-focus-visible:shadow-[0_0_0_3px_var(--ring),0_0_0_7px_var(--focus)]"
+            >
+              <FileTextIcon aria-hidden="true" className="size-5" />
+              Wybierz plik PDF
+            </label>
+            <span className="text-[0.9375rem]" aria-live="polite">
+              {file
+                ? `${file.name} · ${(file.size / 1024 / 1024).toLocaleString("pl-PL", { maximumFractionDigits: 1 })} MB`
+                : "Nie wybrano pliku."}
+            </span>
+          </div>
+        </div>
+      ) : kind === "text" ? (
+        <div>
+          <label htmlFor="doc-text" className="block text-lg font-bold">
+            Tekst opisu
+          </label>
+          <Textarea
+            id="doc-text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="mt-2 min-h-64"
+          />
+        </div>
+      ) : (
+        <div>
+          <label htmlFor="doc-url" className="block text-lg font-bold">
+            Adres strony lub pliku
+          </label>
+          <Input
+            id="doc-url"
+            type="url"
+            inputMode="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://rops.krakow.pl/…"
+            className="mt-2"
+          />
+        </div>
+      )}
+
+      <p className="border-hairline bg-surface rounded-md border p-4 text-[0.9375rem]">
+        Tekst i strony WWW anonimizujemy przed wysłaniem do asystenta AI. Plik
+        PDF trafia do asystenta bez zmian — używaj dokumentów publicznych.
+        Asystent pisze tylko na podstawie dokumentu i przy każdym polu podaje
+        cytat.
+      </p>
+
+      <div aria-live="polite">
+        {state === "loading" ? (
+          <p className="font-semibold">
+            Asystent czyta dokument… To może potrwać do minuty.
+          </p>
+        ) : problem ? (
+          <Alert variant="destructive">
+            <CircleAlertIcon aria-hidden="true" />
+            <AlertTitle>Popraw dane</AlertTitle>
+            <AlertDescription>{problem}</AlertDescription>
+          </Alert>
+        ) : null}
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        <Button type="submit" size="lg" disabled={state === "loading"}>
+          <FileSearchIcon aria-hidden="true" />
+          {state === "loading" ? "Przygotowuję szkic…" : "Przygotuj szkic"}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          onClick={() => {
+            setProblem(null);
+            setDraft(null);
+            setState("manual");
+          }}
+        >
+          <PencilLineIcon aria-hidden="true" />
+          Wypełnij ręcznie
+        </Button>
+      </div>
+    </form>
+  );
+}

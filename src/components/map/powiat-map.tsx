@@ -83,14 +83,21 @@ function binFor(bins: Bin[], v: number) {
   return bins.find((b) => v >= b.from && v <= b.to) ?? bins.at(-1);
 }
 
-function displayName(name: string) {
-  return name.replace(/^powiat\s+/i, "").trim();
+/** „powiat bocheński" for land powiats, „Kraków" for cities (from the map or the fallback list). */
+function fullName(key: string, name?: string) {
+  const n = (name ?? POWIAT_NAMES[key] ?? key).trim();
+  if (/^powiat\s/i.test(n))
+    return n.replace(/^powiat\s+(m\.\s*)?/i, (_m, city: string | undefined) =>
+      city ? "" : "powiat ",
+    );
+  return key.startsWith("126") ? n : `powiat ${n}`;
 }
 
 /**
  * PowiatMap — a choropleth of the 22 powiats of Małopolska with a legend
  * and, always, a data table (<table> with caption) as the accessible
- * alternative. Each powiat is focusable with the label „Powiat X: N"; hover
+ * alternative. Each powiat is focusable with the label „Powiat X: N" (cities:
+ * „Kraków: N"); hover
  * or focus shows the value under the map.
  *
  * Server component: reads data/powiaty.topo.json (object `powiaty`, properties
@@ -135,7 +142,9 @@ export async function PowiatMap({
   const topo = await loadTopology();
   let shapes: MapShape[] = [];
   let height = 0;
-  const names = new Map<string, string>(Object.entries(POWIAT_NAMES));
+  const names = new Map<string, string>(
+    Object.keys(POWIAT_NAMES).map((k) => [k, fullName(k)]),
+  );
 
   if (topo) {
     try {
@@ -161,8 +170,8 @@ export async function PowiatMap({
         const d = gen(f);
         if (!key || !d) return [];
         const name = f.properties?.name
-          ? displayName(f.properties.name)
-          : (POWIAT_NAMES[key] ?? key);
+          ? fullName(key, f.properties.name)
+          : fullName(key);
         names.set(key, name);
         const v = vals.get(key);
         return [

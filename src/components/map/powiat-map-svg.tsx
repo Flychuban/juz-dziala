@@ -15,7 +15,8 @@ export type MapShape = {
 const NUM = new Intl.NumberFormat("pl-PL", { maximumFractionDigits: 1 });
 
 function describe(s: MapShape) {
-  return `Powiat ${s.name}: ${s.value === null ? "brak danych" : NUM.format(s.value)}`;
+  const name = s.name.charAt(0).toUpperCase() + s.name.slice(1);
+  return `${name}: ${s.value === null ? "brak danych" : NUM.format(s.value)}`;
 }
 
 /**
