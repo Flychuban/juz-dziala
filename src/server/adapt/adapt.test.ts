@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
+import { SECTION_LABEL } from "~/lib/domain";
 import type { LibraryCard } from "~/server/domain/types";
 import { kAnonymize } from "./needs-count";
 import { createPlanAssembler } from "./plan-stream";
@@ -19,6 +20,7 @@ import {
   buildProfile,
   featuredRuralGmina,
   median,
+  matchTheme,
   medianShare80,
   powiatLocative,
   profileSignals,
@@ -44,6 +46,7 @@ const toProfileCard = (c: LibraryCard): ProfileCard => ({
   mapaAreas: c.mapaAreas,
   keywords: c.keywords,
   solution: c.sections.solution,
+  problems: c.sections.problems,
   badge: c.badge,
 });
 const toPlanCard = (c: LibraryCard): PlanCard => ({
@@ -171,8 +174,23 @@ describe("the printed recommendation rule", () => {
       expect(r.matches.length).toBeGreaterThan(0);
       for (const m of r.matches) expect(m.evidence.length).toBeGreaterThan(5);
     }
-    // „Mobilne centrum pomocy dla osób starszych" fits seniors + transport.
+    // „Mobilne centrum pomocy dla osób starszych" fits seniors + transport,
+    // and the list leads with seniors, then getting around.
     expect(recs[0]!.card.id).toBe("c052");
+    expect(recs[1]!.matches.map((m) => m.theme)).toContain("mobility");
+  });
+
+  it("mobility means getting around, for disability or seniors cards only", () => {
+    const card = (id: string) => cards.find((c) => c.id === id)!;
+    // „Dostępna szermierka" mentions transport in passing.
+    expect(matchTheme(card("c019"), "mobility")).toBeNull();
+    // „aplikacja mobilna" / „urządzenie mobilne" are not mobility.
+    expect(matchTheme(card("c008"), "mobility")).toBeNull();
+    expect(matchTheme(card("c082"), "mobility")).toBeNull();
+    // carrying a child in a shopping trolley is not transport.
+    expect(matchTheme(card("c110"), "mobility")).toBeNull();
+    expect(matchTheme(card("c021"), "mobility")?.evidence).toContain("Transport Publiczny");
+    expect(matchTheme(card("c052"), "mobility")?.evidence).toContain("dojazdem");
   });
 
   it("falls back to cards selected for dissemination when nothing fires", () => {
@@ -244,12 +262,22 @@ describe("template plan (no AI)", () => {
     expect(md).toContain(TODO);
   });
 
-  it("quotes only real card sentences, with their ids", () => {
+  it("quotes only real card sentences, cited by section, never by internal id", () => {
     const md = templatePlan(ctx);
-    const ids = [...md.matchAll(/zdanie (c\d+\.s\d+)\)/g)].map((m) => m[1]);
-    expect(ids.length).toBeGreaterThan(3);
-    const real = new Set(ctx.card.sentences.map((s) => s.id));
-    for (const id of ids) expect(real.has(id!)).toBe(true);
+    expect(md).not.toMatch(/c\d{3}\.s\d+/);
+    const quotes = [
+      ...md.matchAll(/„([^”]+)” \*\(karta, sekcja „([^”]+)”\)\*/g),
+    ];
+    expect(quotes.length).toBeGreaterThan(3);
+    const unescape = (t: string) => t.replace(/\\([\\*_`[\]|])/g, "$1");
+    for (const q of quotes) {
+      const s = ctx.card.sentences.find(
+        (x) => x.text.replace(/\s+/g, " ").trim() === unescape(q[1]!),
+      );
+      expect(s, q[1]).toBeDefined();
+      expect(q[2]).toBe(SECTION_LABEL[s!.section]);
+    }
+    expect(md).toContain("(karta, sekcja „Grupa docelowa”)");
   });
 
   it("section 2 carries the GUS figures and the share of 65+ for a seniors card", () => {
@@ -292,7 +320,7 @@ describe("template plan (no AI)", () => {
 
 describe("streamed AI plan assembly", () => {
   const ctx = ctxFor("c066", "1204032");
-  const sentences = new Map(ctx.card.sentences.map((s) => [s.id, s.text]));
+  const sentences = new Map(ctx.card.sentences.map((s) => [s.id, s]));
   const make = () =>
     createPlanAssembler({
       header: planHeader(ctx),
@@ -341,8 +369,19 @@ describe("streamed AI plan assembly", () => {
       `${firstId}]]\n> [[c999.s1]]\nDalej.\n`,
     ]);
     expect(out).toContain(`„${firstText.replace(/\s+/g, " ").trim().slice(0, 20)}`);
-    expect(out).toContain(`zdanie ${firstId}`);
+    expect(out).toContain(
+      `(karta, sekcja „${SECTION_LABEL[ctx.card.sentences[0]!.section]}”)`,
+    );
+    expect(out).not.toContain(firstId);
     expect(out).not.toContain("c999.s1");
+  });
+
+  it("scrubs sentence ids the model wrote in prose", () => {
+    const { out } = run([
+      `## 1. Cel\nJak mówi karta (zdanie ${firstId}), to działa ${firstId}.\n`,
+    ]);
+    expect(out).toContain("Jak mówi karta, to działa.");
+    expect(out).not.toMatch(/c\d{3}\.s\d+/);
   });
 
   it("completes a plan the model abandoned, from the template", () => {

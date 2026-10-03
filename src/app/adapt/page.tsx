@@ -34,7 +34,7 @@ export default async function AdaptPage({
         breadcrumbs={[
           { label: "Biblioteka Innowacji Społecznych", href: "/library" },
         ]}
-        eyebrow="Middleman Innowacji · dla OPS, CUS, PCPR i organizacji"
+        eyebrow="Middleman Innowacji — asystent wdrożenia · dla OPS, CUS, PCPR i organizacji"
         title="Zaplanuj usługę"
         lead={
           <p>

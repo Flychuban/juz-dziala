@@ -45,7 +45,14 @@ const components: Components = {
     </blockquote>
   ),
   table: ({ children }) => (
-    <div className="border-hairline mt-4 overflow-x-auto rounded-md border print:overflow-visible">
+    // A wide table scrolls sideways on a phone: the region takes focus so
+    // the keyboard can scroll it too (WCAG 2.1.1).
+    <div
+      role="region"
+      aria-label="Tabela — na wąskim ekranie przewiń w bok"
+      tabIndex={0}
+      className="border-hairline mt-4 overflow-x-auto rounded-md border print:overflow-visible"
+    >
       <table className="tabular w-full border-collapse text-left text-[0.9375rem] print:text-[10pt]">
         {children}
       </table>

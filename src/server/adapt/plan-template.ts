@@ -8,7 +8,7 @@
  * from the model.
  */
 import { formatDatePl, pluralPl } from "~/components/kit/format";
-import { CALL_STATUS_LABEL, type MapaArea } from "~/lib/domain";
+import { CALL_STATUS_LABEL, SECTION_LABEL, type MapaArea } from "~/lib/domain";
 import {
   BUDGET_BOUNDS,
   BUDGET_LABEL,
@@ -69,9 +69,12 @@ export function mdText(text: string): string {
     .replace(/([\\*_`[\]|])/g, "\\$1");
 }
 
-/** A card sentence as we print it — always OUR text for the id. */
-export function quoteSentence(s: Pick<CardSentence, "id" | "text">): string {
-  return `„${mdText(s.text)}” *(karta, zdanie ${s.id})*`;
+/**
+ * A card sentence as we print it — always OUR text for the id, cited by the
+ * card section it comes from. Internal sentence ids never reach the reader.
+ */
+export function quoteSentence(s: Pick<CardSentence, "text" | "section">): string {
+  return `„${mdText(s.text)}” *(karta, sekcja „${SECTION_LABEL[s.section]}”)*`;
 }
 
 function quoteBlock(sentences: CardSentence[]): string {

@@ -21,16 +21,97 @@ import {
   share,
   type ProfileCard,
 } from "~/server/adapt/profile";
+import type { Gmina } from "~/server/adapt/types";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import type { Db } from "~/server/db";
 import { innovations } from "~/server/db/schema";
 import { firstSentence } from "./library";
+
+/**
+ * The profile, the powiat's (k-anonymous) needs, the printed rule and the
+ * six fitting innovations for one gmina. One function, so the featured
+ * example on /municipality and /municipality/[teryt] can never disagree
+ * about which innovation comes first.
+ */
+async function gminaView(db: Db, gmina: Gmina, all: Gmina[]) {
+  const profile = buildProfile(gmina, all);
+  const [needs, rows, ramowy] = await Promise.all([
+    powiatNeeds(db, gmina.powiatTeryt),
+    db
+      .select({
+        id: innovations.id,
+        slug: innovations.slug,
+        title: innovations.title,
+        mapaAreas: innovations.mapaAreas,
+        keywords: innovations.keywords,
+        sections: innovations.sections,
+        sentences: innovations.sentences,
+        categoryLabels: innovations.categoryLabels,
+        badge: innovations.badge,
+        capturedAt: innovations.capturedAt,
+      })
+      .from(innovations)
+      .where(eq(innovations.status, "published")),
+    ramowyPlanIndex(db),
+  ]);
+  const signals = profileSignals(profile, needs.areas);
+  const cards: ProfileCard[] = rows.map((r) => ({
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    mapaAreas: r.mapaAreas,
+    keywords: r.keywords,
+    solution: r.sections.solution ?? "",
+    problems: r.sections.problems ?? "",
+    badge: r.badge,
+  }));
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const recs = recommend(cards, signals, {
+    limit: 6,
+    ramowyPlanIds: new Set(ramowy.keys()),
+  });
+  const libraryCapturedAt = rows.reduce<Date | null>(
+    (max, r) => (!max || r.capturedAt > max ? r.capturedAt : max),
+    null,
+  );
+  return {
+    profile,
+    needs: { ...needs, windowDays: NEEDS_WINDOW_DAYS },
+    signals,
+    libraryCapturedAt,
+    recommendations: recs.flatMap((r) => {
+      const row = byId.get(r.card.id);
+      if (!row) return [];
+      const rp = ramowy.get(r.card.id);
+      return [
+        {
+          id: r.card.id,
+          slug: r.card.slug,
+          title: r.card.title,
+          areas: r.card.mapaAreas,
+          areaLabels: r.card.mapaAreas.map((a) => MAPA_AREA_LABEL[a]),
+          categoryLabels: row.categoryLabels,
+          summary: firstSentence(row.sentences, row.sections),
+          badge: !!r.card.badge,
+          ramowyPlan: rp
+            ? { callName: rp.callName, sourceUrl: rp.sourceUrl }
+            : null,
+          matches: r.matches,
+        },
+      ];
+    }),
+  };
+}
 
 /** Module VII — „Dla gminy": GUS profile, k-anonymous needs, fitting innovations. */
 export const municipalityRouter = createTRPCRouter({
   /** /municipality: every gmina, 80+ share per powiat, a featured example. */
-  overview: publicProcedure.query(async () => {
+  overview: publicProcedure.query(async ({ ctx }) => {
     const all = await loadGminas();
-    const featured = featuredRuralGmina(all);
+    const featuredGmina = featuredRuralGmina(all);
+    const featured = featuredGmina
+      ? await gminaView(ctx.db, featuredGmina, all)
+      : null;
     return {
       gminas: all.map((g) => ({
         teryt: g.teryt,
@@ -45,7 +126,16 @@ export const municipalityRouter = createTRPCRouter({
       })),
       powiatShares80: powiatShares80(all),
       medianShare80: medianShare80(all),
-      featured: featured ? buildProfile(featured, all) : null,
+      featured: featured
+        ? {
+            ...featured.profile,
+            top: featured.recommendations.slice(0, 3).map((r) => ({
+              slug: r.slug,
+              title: r.title,
+              matches: r.matches.map((m) => m.label),
+            })),
+          }
+        : null,
       gus: await gusSourceGeneral(),
     };
   }),
@@ -59,73 +149,10 @@ export const municipalityRouter = createTRPCRouter({
         loadGminas(),
       ]);
       if (!gmina) return null;
-      const profile = buildProfile(gmina, all);
-      const [gus, needs, rows, ramowy] = await Promise.all([
+      const [gus, view] = await Promise.all([
         gusSourceFor(gmina),
-        powiatNeeds(ctx.db, gmina.powiatTeryt),
-        ctx.db
-          .select({
-            id: innovations.id,
-            slug: innovations.slug,
-            title: innovations.title,
-            mapaAreas: innovations.mapaAreas,
-            keywords: innovations.keywords,
-            sections: innovations.sections,
-            sentences: innovations.sentences,
-            categoryLabels: innovations.categoryLabels,
-            badge: innovations.badge,
-            capturedAt: innovations.capturedAt,
-          })
-          .from(innovations)
-          .where(eq(innovations.status, "published")),
-        ramowyPlanIndex(ctx.db),
+        gminaView(ctx.db, gmina, all),
       ]);
-      const signals = profileSignals(profile, needs.areas);
-      const cards: ProfileCard[] = rows.map((r) => ({
-        id: r.id,
-        slug: r.slug,
-        title: r.title,
-        mapaAreas: r.mapaAreas,
-        keywords: r.keywords,
-        solution: r.sections.solution ?? "",
-        badge: r.badge,
-      }));
-      const byId = new Map(rows.map((r) => [r.id, r]));
-      const recs = recommend(cards, signals, {
-        limit: 6,
-        ramowyPlanIds: new Set(ramowy.keys()),
-      });
-      const libraryCapturedAt = rows.reduce<Date | null>(
-        (max, r) => (!max || r.capturedAt > max ? r.capturedAt : max),
-        null,
-      );
-      return {
-        profile,
-        gus,
-        needs: { ...needs, windowDays: NEEDS_WINDOW_DAYS },
-        signals,
-        libraryCapturedAt,
-        recommendations: recs.flatMap((r) => {
-          const row = byId.get(r.card.id);
-          if (!row) return [];
-          const rp = ramowy.get(r.card.id);
-          return [
-            {
-              id: r.card.id,
-              slug: r.card.slug,
-              title: r.card.title,
-              areas: r.card.mapaAreas,
-              areaLabels: r.card.mapaAreas.map((a) => MAPA_AREA_LABEL[a]),
-              categoryLabels: row.categoryLabels,
-              summary: firstSentence(row.sentences, row.sections),
-              badge: !!r.card.badge,
-              ramowyPlan: rp
-                ? { callName: rp.callName, sourceUrl: rp.sourceUrl }
-                : null,
-              matches: r.matches,
-            },
-          ];
-        }),
-      };
+      return { ...view, gus };
     }),
 });

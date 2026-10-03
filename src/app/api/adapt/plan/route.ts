@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
     header: planHeader(ctx),
     sections: templateSections(ctx),
     fixed: FIXED_SECTIONS,
-    sentences: new Map(ctx.card.sentences.map((s) => [s.id, s.text])),
+    sentences: new Map(ctx.card.sentences.map((s) => [s.id, s])),
     footer: ({ fallbackUsed }) => planFooter(ctx, "ai", { fallbackUsed }),
   });
   return new Response(stream, { headers: headers("ai") });

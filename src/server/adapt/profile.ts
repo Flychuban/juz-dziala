@@ -5,7 +5,7 @@
  * The rule is deliberately plain so that a gmina employee can check it:
  *   - udział osób 80+ wyższy niż mediana gmin Małopolski → seniorzy;
  *   - ludność maleje (10 lat) → seniorzy + wykluczenie cyfrowe + dojazd;
- *   - gmina wiejska lub miejsko-wiejska → dojazd i usługi mobilne;
+ *   - gmina wiejska lub miejsko-wiejska → dojazd i poruszanie się;
  *   - obszary Mapy, w których w powiecie zgłoszono ≥ 5 potrzeb → te obszary.
  */
 import { foldWithMap, pluralPl } from "~/components/kit/format";
@@ -84,27 +84,41 @@ export type ThemeId = "seniors" | "digital" | "mobility" | `area:${MapaArea}`;
 
 type KeywordTheme = {
   label: string;
-  /** Word starts (folded) looked for in title, keywords and „Na czym polega". */
-  stems: string[];
-  /** Exact folded phrases, matched at a word start and ending at a word end. */
-  phrases: string[];
+  /** Run on the folded text (no diacritics, lower case). */
+  pattern: RegExp;
+  /** Which part of the card is read. */
+  text: (card: ProfileCard) => string;
+  /** When set, only cards in one of these Mapa areas can match. */
+  areas?: MapaArea[];
 };
+
+const W = "(?<![\\p{L}\\p{N}])"; // word start
+const L = "\\p{L}*"; // rest of the word
 
 const KEYWORD_THEMES: Record<"digital" | "mobility", KeywordTheme> = {
   digital: {
     label: "Wykluczenie cyfrowe i usługi na odległość",
-    stems: ["cyfrow", "internet", "smartfon", "zdaln", "teleasyst", "telerehab"],
-    phrases: ["kody qr", "kodow qr"],
+    pattern: new RegExp(
+      `${W}(cyfrow${L}|internet${L}|smartfon${L}|zdaln${L}|teleasyst${L}|telerehab${L}|kod(?:y|ow) qr)`,
+      "u",
+    ),
+    text: (c) => `${c.title} | ${c.keywords.join(" | ")} | ${c.solution}`,
   },
+  /*
+   * Getting around: only cards for people with disabilities or seniors, and
+   * only what the card says the solution IS or SOLVES. „przewóz" is the noun
+ * (transporting people), not „przewozić dziecko w wózku". „mobilny" counts as
+   * mobility (mobilność) or a service that comes to people (mobilne
+   * centrum / usługi / pomoc / punkt) — not „aplikacja mobilna".
+   */
   mobility: {
-    label: "Dojazd i usługi mobilne",
-    stems: ["transport", "dojazd", "dojezdz", "dowoz"],
-    phrases: [
-      "mobilne centrum",
-      "mobilna pomoc",
-      "mobilna gielda",
-      "mobilny punkt",
-    ],
+    label: "Dojazd i poruszanie się",
+    pattern: new RegExp(
+      `${W}(dojazd${L}|dojezdz${L}|przewoz(?:u|em|ie|y|ow)?(?!\\p{L})|przewozeni${L}|transport${L} publiczn${L}|mobilnosc${L}|mobiln${L} (?:centrum|pomoc${L}|uslug${L}|punkt${L}|zesp${L}))`,
+      "u",
+    ),
+    text: (c) => `${c.solution} | ${c.problems}`,
+    areas: ["disability", "seniors"],
   },
 };
 
@@ -121,6 +135,7 @@ export type ProfileCard = {
   mapaAreas: MapaArea[];
   keywords: string[];
   solution: string;
+  problems: string;
   badge: string | null;
 };
 
@@ -131,36 +146,16 @@ export type ThemeMatch = {
   evidence: string;
 };
 
+/** The words that made the match, as the card writes them; null = no match. */
 function keywordEvidence(card: ProfileCard, t: KeywordTheme): string | null {
-  const raw = `${card.title} | ${card.keywords.join(" | ")} | ${card.solution}`;
-  // Match on the folded text, quote the words as the card writes them.
-  const { folded: text, map } = foldWithMap(raw);
-  const original = (from: number, to: number) =>
-    raw.slice(map[from] ?? 0, (map[to - 1] ?? raw.length - 1) + 1);
-  const startsWord = (at: number) =>
-    at === 0 || !/[\p{L}\p{N}]/u.test(text[at - 1]!);
-  for (const p of t.phrases) {
-    let at = text.indexOf(p);
-    while (at >= 0) {
-      const after = text[at + p.length] ?? "";
-      if (startsWord(at) && !/[\p{L}\p{N}]/u.test(after)) {
-        return original(at, at + p.length);
-      }
-      at = text.indexOf(p, at + 1);
-    }
-  }
-  for (const s of t.stems) {
-    let at = text.indexOf(s);
-    while (at >= 0) {
-      if (startsWord(at)) {
-        let end = at + s.length;
-        while (end < text.length && /[\p{L}\p{N}]/u.test(text[end]!)) end++;
-        return original(at, end);
-      }
-      at = text.indexOf(s, at + 1);
-    }
-  }
-  return null;
+  if (t.areas && !t.areas.some((a) => card.mapaAreas.includes(a))) return null;
+  const raw = t.text(card);
+  const { folded, map } = foldWithMap(raw);
+  const m = t.pattern.exec(folded);
+  if (!m?.[1]) return null;
+  const from = m.index + m[0].length - m[1].length;
+  const to = from + m[1].length;
+  return raw.slice(map[from] ?? 0, (map[to - 1] ?? raw.length - 1) + 1);
 }
 
 /** Does the card fit the theme, and how do we know? */
@@ -232,7 +227,7 @@ export function profileSignals(
   if (p.kind !== "miejska") {
     out.push({
       id: "rural",
-      text: `${p.kind === "wiejska" ? "Gmina wiejska" : "Gmina miejsko-wiejska (z obszarami wiejskimi)"} — do usług trzeba często dojechać → rozwiązania ułatwiające dojazd i usługi mobilne.`,
+      text: `${p.kind === "wiejska" ? "Gmina wiejska" : "Gmina miejsko-wiejska (z obszarami wiejskimi)"} — do usług trzeba często dojechać → rozwiązania ułatwiające dojazd i poruszanie się.`,
       themes: ["mobility"],
       weight: 1,
     });
@@ -356,7 +351,9 @@ export function recommend(
       taken.add(r.card.id);
     }
   }
-  return picked.sort(tie);
+  // The per-reason picks lead (in the order of the reasons' weight), so the
+  // list opens with what the profile asks for most; the fill follows by score.
+  return picked;
 }
 
 /**
