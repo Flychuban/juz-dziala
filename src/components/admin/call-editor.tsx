@@ -21,6 +21,7 @@ import {
   type CallStatus,
   type MapaArea,
 } from "~/lib/domain";
+import { countPl } from "~/components/kit/format";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
@@ -40,12 +41,17 @@ export type CallForm = {
   notes: string;
 };
 
-const DELIVERY_STATUS: Record<string, string> = {
-  sent: "Wysłano",
-  simulated: "SMS — symulacja (prototyp)",
-  skipped: "Pominięto — poczta nie jest skonfigurowana",
-  failed: "Błąd wysyłki",
-};
+/** What happened to one notice, in words. Demo mode simulates sending. */
+function deliveryLabel(channel: "email" | "sms", status: string): string {
+  if (status === "sent") return "Wysłano";
+  if (status === "failed") return "Błąd wysyłki";
+  if (status === "simulated")
+    return channel === "email"
+      ? "Zapisano powiadomienie (tryb demonstracyjny — wysyłka symulowana)"
+      : "SMS — symulacja";
+  if (status === "skipped") return "Nie wysłano — poczta nie jest skonfigurowana";
+  return status;
+}
 
 const toNum = (s: string) => {
   const n = Number(s.replace(/\s/g, "").replace(",", "."));
@@ -320,19 +326,13 @@ export function CallEditor({
             </AlertTitle>
             <AlertDescription>
               <p>Temat wiadomości: „{publish.data.subject}”</p>
-              {publish.data.deliveries.some((d) => d.status === "skipped") ? (
-                <p>
-                  E-maile oznaczone „Pominięto” nie wyszły, bo na tym serwerze
-                  nie skonfigurowano poczty. Po jej skonfigurowaniu wysyłka
-                  działa bez zmian.
-                </p>
-              ) : null}
+
               {publish.data.deliveries.length ? (
                 <ul className="mt-2 space-y-1">
                   {publish.data.deliveries.map((d, i) => (
                     <li key={i} className="tabular">
                       {d.channel === "sms" ? "SMS" : "E-mail"} · {d.toMasked} ·{" "}
-                      {DELIVERY_STATUS[d.status] ?? d.status}
+                      {deliveryLabel(d.channel, d.status)}
                     </li>
                   ))}
                 </ul>
@@ -363,8 +363,8 @@ export function CallEditor({
         </Button>
         <p className="text-foreground/85 tabular text-[0.9375rem]">
           {reach === 0
-            ? "Nikt nie subskrybuje naborów ani wybranych obszarów."
-            : `Subskrybenci naborów${f.areas.length ? " i wybranych obszarów" : ""}: najwyżej ${reach}.`}
+            ? "Nikt nie zapisał się jeszcze na powiadomienia o naborach ani o wybranych obszarach."
+            : `Powiadomimy ${countPl(reach, "zapisaną osobę", "zapisane osoby", "zapisanych osób")}.`}
         </p>
       </div>
     </form>

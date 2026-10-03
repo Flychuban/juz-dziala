@@ -58,9 +58,8 @@ export default function RootLayout({
         <TRPCReactProvider>
           <TooltipProvider>
             {env.DEMO_MODE === "1" && (
-              <p className="bg-warning-bg text-foreground border-hairline border-b px-4 py-2 text-center text-sm [overflow-wrap:anywhere]">
-                Wersja demonstracyjna: zgłoszenia mogą zobaczyć inne osoby
-                testujące serwis. Nie wpisuj prawdziwych danych osobowych.
+              <p className="bg-warning-bg text-foreground border-hairline border-b px-4 py-1.5 text-center text-sm leading-snug [overflow-wrap:anywhere]">
+                Wersja demonstracyjna — nie wpisuj prawdziwych danych.
               </p>
             )}
             <SiteHeader />

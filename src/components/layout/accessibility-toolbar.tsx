@@ -21,7 +21,7 @@ function save(key: string, value: string) {
 }
 
 const BTN =
-  "border-input bg-background text-foreground hover:bg-accent inline-flex min-h-11 items-center justify-center rounded-md border px-3 text-sm font-semibold disabled:opacity-50 aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background";
+  "border-input bg-background text-foreground hover:bg-accent inline-flex min-h-12 items-center justify-center rounded-md border px-3 text-sm font-semibold disabled:opacity-50 aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background";
 
 export function AccessibilityToolbar() {
   const [size, setSize] = useState<(typeof SIZES)[number]>("");
@@ -53,8 +53,8 @@ export function AccessibilityToolbar() {
         type="button"
         onClick={() => applySize(SIZES[Math.max(0, idx - 1)] ?? "")}
         disabled={idx <= 0}
-        className={`${BTN} min-w-11 px-2`}
-        aria-label="Zmniejsz tekst"
+        className={`${BTN} min-w-12 px-2`}
+        aria-label="A− — zmniejsz tekst"
       >
         A−
       </button>
@@ -64,8 +64,8 @@ export function AccessibilityToolbar() {
           applySize(SIZES[Math.min(SIZES.length - 1, idx + 1)] ?? "xl")
         }
         disabled={idx >= SIZES.length - 1}
-        className={`${BTN} min-w-11 px-2 text-base`}
-        aria-label="Powiększ tekst"
+        className={`${BTN} min-w-12 px-2 text-base`}
+        aria-label="A+ — powiększ tekst"
       >
         A+
       </button>

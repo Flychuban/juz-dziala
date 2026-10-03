@@ -133,7 +133,8 @@ export default async function TrendsPage({
             </p>
           ) : overview.sample > 0 ? (
             <p className="mb-6 flex flex-wrap items-center gap-2">
-              <SampleBadge />W tym {overview.sample} przykładowych.
+              <SampleBadge />W tym{" "}
+              {countPl(overview.sample, "przykładowa", "przykładowe", "przykładowych")}.
             </p>
           ) : null}
           <dl className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-3">

@@ -35,7 +35,7 @@ export default async function HomePage() {
   return (
     <>
       <section aria-labelledby="home-title" className="border-hairline bg-surface border-b [overflow-wrap:anywhere]">
-        <div className="mx-auto grid grid-cols-1 max-w-6xl gap-10 px-4 pt-8 pb-10 md:pt-10 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-14">
+        <div className="mx-auto grid grid-cols-1 max-w-6xl gap-10 px-4 pt-6 pb-10 md:pt-10 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-14">
           <div className="min-w-0">
             <h1
               id="home-title"
