@@ -50,7 +50,7 @@ export default async function Page({
   });
 
   return (
-    <div className="mx-auto max-w-[210mm] px-4 py-8 print:max-w-none print:p-0">
+    <div className="mx-auto max-w-[210mm] px-4 py-8 [overflow-wrap:anywhere] print:max-w-none print:p-0">
       <style>{"@page { size: A4; margin: 16mm; }"}</style>
       <div className="mb-6 flex flex-wrap items-center gap-3" data-no-print>
         <PrintButton label="Drukuj kartkę" />
@@ -67,7 +67,7 @@ export default async function Page({
           {SITE.name} · {SITE.hub}
         </p>
         <h1 className="mt-4 text-3xl font-bold">Kod Twojej sprawy</h1>
-        <p className="mt-3 font-mono text-5xl font-bold tracking-wider break-all">
+        <p className="mt-3 font-mono text-[clamp(1.75rem,9vw,3rem)] leading-tight font-bold tracking-wider print:text-[40pt]">
           {c.code}
         </p>
 

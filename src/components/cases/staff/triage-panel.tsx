@@ -80,7 +80,7 @@ export function TriagePanel({
         <Button
           type="button"
           variant="outline"
-          className="min-h-12 px-3 text-base"
+          className="h-auto min-h-12 max-w-full px-3 text-base whitespace-normal"
           disabled={retriage.isPending}
           onClick={() => {
             setMsg("");
@@ -184,7 +184,7 @@ export function TriagePanel({
                       <Button
                         type="button"
                         variant="outline"
-                        className="min-h-12 px-3 text-base"
+                        className="h-auto min-h-12 max-w-full px-3 text-base whitespace-normal"
                         disabled={assign.isPending}
                         onClick={() =>
                           assign.mutate({
@@ -250,7 +250,7 @@ export function TriagePanel({
             <div>
               <Button
                 type="button"
-                className="min-h-12 px-4 text-base"
+                className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
                 disabled={!draft.trim()}
                 onClick={() => onUseDraft(draft)}
               >

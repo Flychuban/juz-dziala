@@ -27,7 +27,7 @@ export default async function Page({
   if (!plan) notFound();
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 print:max-w-none print:p-0">
+    <div className="mx-auto max-w-4xl px-4 py-8 [overflow-wrap:anywhere] print:max-w-none print:p-0">
       <style>{"@page { size: A4; margin: 16mm; }"}</style>
       <div className="mb-6 flex flex-wrap items-center gap-3" data-no-print>
         <PrintButton label="Drukuj plan" />

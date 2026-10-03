@@ -50,7 +50,7 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
 
   if (q.isPending) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-10">
+      <div className="mx-auto max-w-3xl px-4 py-10 [overflow-wrap:anywhere]">
         <p role="status" className="text-lg">
           Wczytuję sprawę {code}…
         </p>
@@ -59,7 +59,7 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
   }
   if (q.error) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-10">
+      <div className="mx-auto max-w-3xl px-4 py-10 [overflow-wrap:anywhere]">
         <h1 className="text-3xl font-bold">Nie możemy otworzyć tej sprawy</h1>
         <p role="alert" className="mt-3 text-lg">
           {q.error.data?.code === "NOT_FOUND" ||
@@ -76,7 +76,7 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
 
   const c = q.data;
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 print:max-w-none print:p-0">
+    <div className="mx-auto max-w-3xl px-4 py-8 [overflow-wrap:anywhere] print:max-w-none print:p-0">
       <p className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
         Moja sprawa
       </p>
@@ -96,13 +96,17 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
           <Button
             type="button"
             variant="outline"
-            className="min-h-12 px-4 text-base"
+            className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
             onClick={() => window.print()}
           >
             <PrinterIcon aria-hidden="true" />
             Drukuj
           </Button>
-          <Button asChild variant="outline" className="min-h-12 px-4 text-base">
+          <Button
+            asChild
+            variant="outline"
+            className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
+          >
             <Link href={`/case/${c.code}/print`}>
               <QrCodeIcon aria-hidden="true" />
               Kartka z kodem QR (A4)
@@ -263,7 +267,7 @@ function AuthorReply({
           <Button
             type="submit"
             disabled={reply.isPending}
-            className="min-h-12 px-5 text-base"
+            className="h-auto min-h-12 max-w-full px-5 text-base whitespace-normal"
           >
             <SendIcon aria-hidden="true" />
             {reply.isPending ? "Wysyłam…" : "Wyślij wiadomość"}

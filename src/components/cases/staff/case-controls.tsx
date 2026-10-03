@@ -85,7 +85,7 @@ export function CaseControls({ data }: { data: Data }) {
           <Button
             type="submit"
             variant="outline"
-            className="min-h-12 px-4 text-base"
+            className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
             disabled={setStatusM.isPending || status === data.case.status}
           >
             Zapisz
@@ -125,7 +125,7 @@ export function CaseControls({ data }: { data: Data }) {
             <Button
               type="submit"
               variant="outline"
-              className="min-h-12 px-4 text-base"
+              className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
               disabled={
                 assignM.isPending || assignee === (data.case.assigneeId ?? "")
               }

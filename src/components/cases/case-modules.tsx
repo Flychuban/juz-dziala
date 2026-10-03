@@ -90,7 +90,11 @@ export function PlanSection({
         </p>
       )}
       <div className="mt-4 flex flex-wrap gap-3" data-no-print>
-        <Button asChild variant="outline" className="min-h-12 px-4 text-base">
+        <Button
+          asChild
+          variant="outline"
+          className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
+        >
           <Link href={`/case/${code}/plan`}>
             <PrinterIcon aria-hidden="true" />
             Drukuj plan
@@ -263,13 +267,21 @@ export function IdeaSection({
 
       {viewer === "author" ? (
         <div className="mt-5 flex flex-wrap gap-3" data-no-print>
-          <Button asChild variant="outline" className="min-h-12 px-4 text-base">
+          <Button
+            asChild
+            variant="outline"
+            className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
+          >
             <Link href={withToken(`/ideas/${code}/canvas`, token)}>
               <LayoutGridIcon aria-hidden="true" />
               {idea.hasCanvas ? "Twój Canvas" : "Rozpisz pomysł na Canvasie"}
             </Link>
           </Button>
-          <Button asChild variant="outline" className="min-h-12 px-4 text-base">
+          <Button
+            asChild
+            variant="outline"
+            className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
+          >
             <Link href={withToken(`/ideas/${code}/application`, token)}>
               <FileTextIcon aria-hidden="true" />
               {idea.application ? "Twój wniosek" : "Przygotuj wniosek"}

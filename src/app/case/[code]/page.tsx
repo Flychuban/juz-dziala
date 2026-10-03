@@ -21,7 +21,7 @@ export default async function Page({
 
   if (!code) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-10">
+      <div className="mx-auto max-w-3xl px-4 py-10 [overflow-wrap:anywhere]">
         <h1 className="text-3xl font-bold">Moja sprawa</h1>
         <div className="mt-8">
           <CaseLookup

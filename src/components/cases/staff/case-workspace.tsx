@@ -77,7 +77,7 @@ export function CaseWorkspace({
 
   if (q.isPending) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-8">
+      <div className="mx-auto max-w-6xl px-4 py-8 [overflow-wrap:anywhere]">
         {back}
         <p role="status" className="mt-4 text-lg">
           Wczytuję sprawę {code}…
@@ -87,7 +87,7 @@ export function CaseWorkspace({
   }
   if (q.error) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-8">
+      <div className="mx-auto max-w-6xl px-4 py-8 [overflow-wrap:anywhere]">
         {back}
         <h1 className="mt-4 text-3xl font-bold">Nie można otworzyć sprawy</h1>
         <p role="alert" className="mt-2 text-lg">
@@ -100,7 +100,7 @@ export function CaseWorkspace({
   const d = q.data;
   const c = d.case;
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-6xl px-4 py-8 [overflow-wrap:anywhere]">
       {back}
       <header className="mt-2 flex flex-col gap-2">
         <p className="flex flex-wrap items-center gap-2 text-sm">
@@ -143,7 +143,7 @@ export function CaseWorkspace({
         {announce}
       </p>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
+      <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
         <div className="flex min-w-0 flex-col gap-6">
           {d.match && <MatchSection match={d.match} />}
 
