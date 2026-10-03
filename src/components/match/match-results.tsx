@@ -142,7 +142,7 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
       )}
 
       {(view.knowledge ?? view.similar) && (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {view.knowledge && (
             <section aria-labelledby="fact-heading" className="border-hairline rounded-lg border p-5">
               <h2 id="fact-heading" className="text-xl font-bold">

@@ -76,7 +76,7 @@ export function renderReport(files: readonly ProjectFile[]): string {
   lines.push(
     `Stan na: ${date}. Narzędzie: axe-core (@axe-core/playwright) w przeglądarce Chromium uruchamianej przez Playwright.`,
     `Reguły: WCAG 2.0 i 2.1, poziomy A i AA (${files[0]?.tags.join(", ") ?? ""}). Ekrany: telefon 360 px i komputer 1280 px.`,
-    "Na telefonie sprawdzamy też powiększenie 200% (WCAG 1.4.10): strona ułożona na 180 px szerokości nie może przewijać się w poziomie.",
+    "Na telefonie sprawdzamy też powiększenie 200% (WCAG 1.4.10): strona ułożona na 320 px (WCAG 1.4.10) szerokości nie może przewijać się w poziomie.",
     "",
     `Wynik: ${passed.length} z ${all.length} sprawdzeń bez naruszeń poważnych i krytycznych; ${reflowFails.length} ${reflowFails.length === 1 ? "ekran przewija" : "ekranów przewija"} się w poziomie przy 200%.`,
     "",

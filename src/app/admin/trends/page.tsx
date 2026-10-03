@@ -79,7 +79,7 @@ export default async function TrendsPage({
         <form
           method="get"
           action="/admin/trends"
-          className="grid max-w-3xl gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+          className="grid grid-cols-1 max-w-3xl gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
         >
           <div>
             <label htmlFor="t-area" className="block font-semibold">
@@ -136,7 +136,7 @@ export default async function TrendsPage({
               <SampleBadge />W tym {overview.sample} przykładowych.
             </p>
           ) : null}
-          <dl className="grid gap-x-8 gap-y-6 sm:grid-cols-3">
+          <dl className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-3">
             {[
               { label: "Opisane potrzeby", value: overview.total },
               {
@@ -199,7 +199,7 @@ export default async function TrendsPage({
                 {overview.byArea.map((a) => (
                   <li
                     key={a.area}
-                    className="grid gap-2 sm:grid-cols-[16rem_minmax(0,1fr)] sm:items-center"
+                    className="grid grid-cols-1 gap-2 sm:grid-cols-[16rem_minmax(0,1fr)] sm:items-center"
                   >
                     <span className="font-semibold">{a.label}</span>
                     <span className="flex items-center gap-3">
@@ -306,7 +306,7 @@ export default async function TrendsPage({
               W tym okresie każda potrzeba miała dopasowanie.
             </p>
           ) : (
-            <ol className="mt-8 grid gap-5 lg:grid-cols-2">
+            <ol className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-2">
               {spots.slice(0, 12).map((s) => (
                 <li
                   key={`${s.area}-${s.powiat}`}

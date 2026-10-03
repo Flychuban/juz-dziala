@@ -127,7 +127,7 @@ export function StarRating({ value, onChange }: { value: number | null; onChange
   return (
     <fieldset className="min-w-0">
       <legend className="mb-3 text-lg font-semibold">Twoja ocena (od 1 do 5)</legend>
-      <div className="grid gap-3 sm:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-5">
         {([1, 2, 3, 4, 5] as const).map((n) => (
           <label
             key={n}

@@ -9,7 +9,7 @@ import { Slot } from "radix-ui";
  * outline, reserved for distinctions such as „Wybrana do upowszechniania".
  */
 const badgeVariants = cva(
-  "group/badge inline-flex w-fit shrink-0 items-center gap-1.5 rounded-sm border px-2 py-0.5 text-sm leading-snug font-semibold no-underline transition-colors [&>svg]:pointer-events-none [&>svg]:size-4 [&>svg]:shrink-0",
+  "group/badge inline-flex w-fit max-w-full shrink-0 items-center [overflow-wrap:anywhere] gap-1.5 rounded-sm border px-2 py-0.5 text-sm leading-snug font-semibold no-underline transition-colors [&>svg]:pointer-events-none [&>svg]:size-4 [&>svg]:shrink-0",
   {
     variants: {
       variant: {

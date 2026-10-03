@@ -56,6 +56,16 @@ const ETR = [
       "Przycisk Kontrast zmienia kolory na bardziej wyraźne.",
     ],
   },
+  {
+    h: "Jak czytać prościej?",
+    p: [
+      "Na górze strony jest przycisk Tekst łatwy.",
+      "Naciśnij go.",
+      "Przy każdym rozwiązaniu zobaczysz krótki, prosty opis.",
+      "Ten opis przygotowuje komputer na podstawie karty.",
+      "Pełny opis jest zawsze pod spodem.",
+    ],
+  },
 ];
 
 export default function EasyReadPage() {

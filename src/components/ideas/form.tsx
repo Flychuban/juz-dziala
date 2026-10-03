@@ -47,7 +47,7 @@ export function ChoiceCards<T extends string>({
           {hint}
         </div>
       ) : null}
-      <div className={cn("grid gap-3", columns === 2 && "sm:grid-cols-2")}>
+      <div className={cn("grid grid-cols-1 gap-3", columns === 2 && "sm:grid-cols-2")}>
         {options.map((o) => (
           <label key={o.value} className={cardClass}>
             <input
@@ -58,7 +58,7 @@ export function ChoiceCards<T extends string>({
               onChange={() => onChange(o.value)}
               className="accent-primary mt-0.5 size-6 shrink-0"
             />
-            <span>
+            <span className="min-w-0">
               <span className="block text-base font-semibold">{o.label}</span>
               {o.description ? <span className="text-muted-foreground block text-[0.9375rem]">{o.description}</span> : null}
             </span>
@@ -97,7 +97,7 @@ export function CheckCards<T extends string>({
           {hint}
         </div>
       ) : null}
-      <div className={cn("grid gap-3", columns === 2 && "sm:grid-cols-2")}>
+      <div className={cn("grid grid-cols-1 gap-3", columns === 2 && "sm:grid-cols-2")}>
         {options.map((o) => (
           <label key={o.value} className={cardClass}>
             <input
@@ -107,7 +107,7 @@ export function CheckCards<T extends string>({
               onChange={() => toggle(o.value)}
               className="accent-primary mt-0.5 size-6 shrink-0"
             />
-            <span>
+            <span className="min-w-0">
               <span className="block text-base font-semibold">{o.label}</span>
               {o.description ? <span className="text-muted-foreground block text-[0.9375rem]">{o.description}</span> : null}
             </span>

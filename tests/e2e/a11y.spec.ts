@@ -3,7 +3,8 @@
  * Serious and critical violations fail the test; every result, including
  * moderate and minor ones, is written to test-results/a11y-<project>.json for
  * scripts/a11y-report.ts. On the 360 px project each route is also checked
- * for horizontal scrolling at 200 % zoom (WCAG 1.4.10).
+ * for horizontal scrolling at 320 CSS px (WCAG 1.4.10 reflow; fails the
+ * test) and, for information only, at 180 px (200 % zoom on a 360 px phone).
  */
 import { expect, test, type Page } from "@playwright/test";
 
@@ -29,7 +30,10 @@ async function audit(page: Page, route: Route, project: string, url: string): Pr
     checkedAt: new Date().toISOString(),
     violations,
   };
-  if (project === "mobile-360") result.reflow = await checkReflow(page);
+  if (project === "mobile-360") {
+    result.reflow = await checkReflow(page, 320);
+    result.reflowStrict = await checkReflow(page, 180);
+  }
   saveResult(result);
   return result;
 }
@@ -39,8 +43,17 @@ function assertClean(result: RouteResult) {
   expect.soft(blocking, `Poważne/krytyczne naruszenia WCAG na ${result.route}`).toBe("");
   if (result.reflow) {
     expect
-      .soft(result.reflow.ok, `Przewijanie w poziomie przy 200% na ${result.route}: ${result.reflow.scrollWidth} > ${result.reflow.innerWidth}`)
+      .soft(
+        result.reflow.ok,
+        `Przewijanie w poziomie przy 320 px (WCAG 1.4.10) na ${result.route}: ${result.reflow.scrollWidth} > ${result.reflow.innerWidth}\n  ${result.reflow.culprits.join("\n  ")}`,
+      )
       .toBe(true);
+  }
+  if (result.reflowStrict) {
+    test.info().annotations.push({
+      type: "info",
+      description: `180 px (200% na 360 px, ponad WCAG): ${result.reflowStrict.ok ? "bez przewijania" : `przewijanie ${result.reflowStrict.scrollWidth} px`}`,
+    });
   }
 }
 

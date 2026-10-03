@@ -206,7 +206,7 @@ export function DocumentDraft({
         <legend className="font-display text-2xl font-bold">
           Skąd wziąć opis?
         </legend>
-        <ul className="mt-4 grid gap-3 md:grid-cols-3">
+        <ul className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
           {KINDS.map((k) => (
             <li key={k.key}>
               <label

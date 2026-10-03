@@ -1,6 +1,11 @@
 import { type Metadata } from "next";
 import Link from "next/link";
-import { ChevronDownIcon, SearchXIcon } from "lucide-react";
+import {
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  SearchXIcon,
+} from "lucide-react";
 
 import {
   countPl,
@@ -15,6 +20,7 @@ import { queryStems } from "~/server/api/routers/library";
 import { api } from "~/trpc/server";
 import {
   ActiveFilters,
+  libraryHref,
   LibraryFilters,
   type LibraryParams,
 } from "./_components/filters";
@@ -65,6 +71,19 @@ export default async function LibraryPage({
   // Nothing matched every word: show cards matching some of them, and say so.
   const partial = items.length === 0 && terms.length > 1;
   if (partial) items = await api.library.list({ ...query, match: "any" });
+
+  const PAGE_SIZE = 24;
+  const pageCount = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const pageRaw = Number(one(sp.page) ?? 1);
+  const page = Number.isInteger(pageRaw)
+    ? Math.min(Math.max(pageRaw, 1), pageCount)
+    : 1;
+  const shown = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pageHref = (n: number) => {
+    const base = libraryHref(params);
+    if (n <= 1) return base;
+    return `${base}${base.includes("?") ? "&" : "?"}page=${n}`;
+  };
 
   const filterCount =
     (params.area ? 1 : 0) + (params.category ? 1 : 0) + (params.video ? 1 : 0);
@@ -152,6 +171,14 @@ export default async function LibraryPage({
               {params.q ? (
                 <span className="font-normal"> dla „{params.q}”</span>
               ) : null}
+              {pageCount > 1 ? (
+                <span className="text-foreground/85 block text-base font-normal">
+                  Strona {page} z {pageCount} · pozycje{" "}
+                  <span className="tabular">
+                    {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, items.length)}
+                  </span>
+                </span>
+              ) : null}
             </p>
             {partial && items.length > 0 ? (
               <p className="border-input bg-surface rounded-md border border-dashed px-4 py-2 text-base">
@@ -164,8 +191,8 @@ export default async function LibraryPage({
           </div>
 
           {items.length > 0 ? (
-            <ul className="grid gap-4 sm:grid-cols-2 lg:gap-5">
-              {items.map((item) => (
+            <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-5">
+              {shown.map((item) => (
                 <li key={item.id}>
                   <InnovationCard item={item} headingLevel="h3" terms={terms} />
                 </li>
@@ -195,6 +222,49 @@ export default async function LibraryPage({
               }
             />
           )}
+
+          {pageCount > 1 ? (
+            <nav aria-label="Strony wyników" className="mt-8">
+              <ul className="flex flex-wrap items-center gap-2">
+                {page > 1 ? (
+                  <li>
+                    <Button asChild variant="outline">
+                      <Link href={pageHref(page - 1)}>
+                        <ChevronLeftIcon aria-hidden="true" />
+                        Poprzednia strona
+                      </Link>
+                    </Button>
+                  </li>
+                ) : null}
+                {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
+                  <li key={n}>
+                    <Link
+                      href={pageHref(n)}
+                      aria-current={n === page ? "page" : undefined}
+                      className={
+                        n === page
+                          ? "border-primary bg-primary text-primary-foreground tabular inline-flex min-h-12 min-w-12 items-center justify-center rounded-md border font-semibold no-underline"
+                          : "border-input hover:bg-surface tabular inline-flex min-h-12 min-w-12 items-center justify-center rounded-md border font-semibold no-underline"
+                      }
+                    >
+                      <span className="sr-only">Strona </span>
+                      {n}
+                    </Link>
+                  </li>
+                ))}
+                {page < pageCount ? (
+                  <li>
+                    <Button asChild variant="outline">
+                      <Link href={pageHref(page + 1)}>
+                        Następna strona
+                        <ChevronRightIcon aria-hidden="true" />
+                      </Link>
+                    </Button>
+                  </li>
+                ) : null}
+              </ul>
+            </nav>
+          ) : null}
 
           <SourceLine
             className="mt-10"

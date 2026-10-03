@@ -147,6 +147,9 @@
     @apply bg-background text-foreground antialiased;
     line-height: 1.6;
     font-feature-settings: "tnum" 0;
+    /* Reflow (WCAG 1.4.10): long Polish compounds and URLs break instead of
+       pushing the page sideways at 320 px. */
+    overflow-wrap: break-word;
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
@@ -168,6 +171,12 @@
     cursor: pointer;
   }
   .tabular { font-variant-numeric: tabular-nums; }
+  /* „Tekst łatwy" mode (toolbar toggle, data-easy="1" on <html>): calmer,
+     more open text everywhere; the easy versions of cards appear by themselves. */
+  html[data-easy="1"] body {
+    line-height: 1.75;
+    word-spacing: 0.06em;
+  }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;

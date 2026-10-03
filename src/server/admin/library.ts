@@ -146,9 +146,19 @@ export async function saveInnovation(
   const published =
     input.status === "published" && before.status !== "published";
 
+  // The cached „tekst łatwy" was written from the old text: drop it so it is
+  // rewritten from the edited card on the next request.
+  const contentChanged = Object.keys(diff).some(
+    (k) => k === "title" || k.startsWith("sections."),
+  );
   await db
     .update(innovations)
-    .set({ ...after, updatedBy: actor, updatedAt: new Date() })
+    .set({
+      ...after,
+      ...(contentChanged ? { easyText: null } : {}),
+      updatedBy: actor,
+      updatedAt: new Date(),
+    })
     .where(eq(innovations.id, id));
   await db.insert(auditLog).values({
     actor,

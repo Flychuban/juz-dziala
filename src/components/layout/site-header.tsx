@@ -23,23 +23,23 @@ export async function SiteHeader() {
     <header data-site-header className="border-hairline bg-background border-b">
       <div className="border-hairline bg-surface border-b">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-1.5 text-sm">
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground min-w-0">
             {SITE.ownerShort} · {SITE.ownerLine}
           </span>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             <AccessibilityToolbar />
             <DemoRoleSwitcher current={staff?.role ?? null} />
           </div>
         </div>
       </div>
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3">
-        <Link href="/" className="group flex flex-col no-underline">
+        <Link href="/" className="group flex min-w-0 flex-col no-underline">
           <span className="font-display text-foreground text-2xl font-bold tracking-tight">
             {SITE.name}
           </span>
           <span className="text-muted-foreground text-sm">{SITE.hub}</span>
         </Link>
-        <nav aria-label="Główna nawigacja">
+        <nav aria-label="Główna nawigacja" className="min-w-0">
           <ul className="flex flex-wrap items-center gap-1">
             {PUBLIC_NAV.map((item) => (
               <li key={item.href}>
@@ -57,10 +57,10 @@ export async function SiteHeader() {
       {staff && (
         <div className="border-hairline bg-secondary border-t">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-1.5">
-            <span className="text-sm font-semibold">
+            <span className="min-w-0 text-sm font-semibold">
               {STAFF_ROLE_LABEL[staff.role]}: {staff.name}
             </span>
-            <nav aria-label="Panel pracownika">
+            <nav aria-label="Panel pracownika" className="min-w-0">
               <ul className="flex flex-wrap gap-1">
                 {staffNav.map((item) => (
                   <li key={item.href}>
@@ -75,7 +75,7 @@ export async function SiteHeader() {
               </ul>
             </nav>
             {(staff.role === "rops" || staff.role === "expert") && (
-              <div className="ml-auto">
+              <div className="min-w-0 sm:ml-auto">
                 <StaffBell />
               </div>
             )}

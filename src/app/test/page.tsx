@@ -89,7 +89,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
               <h2 id="choose-h" className="font-display text-2xl font-bold">
                 Co chcesz zrobić?
               </h2>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Link
                   href={`${back}&mode=signup`}
                   className="border-input hover:bg-surface flex min-h-24 flex-col gap-2 rounded-lg border-2 p-5"
@@ -148,7 +148,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
             {countPl(list.items.length, "rozwiązanie", "rozwiązania", "rozwiązań")}
           </p>
           {list.items.length ? (
-            <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {list.items.map((i) => (
                 <li key={i.id}>
                   <TestableCard item={i} />

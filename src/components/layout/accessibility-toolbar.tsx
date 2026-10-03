@@ -3,8 +3,11 @@
 import { useEffect, useState } from "react";
 
 /**
- * A+/A− and high contrast. Preferences persist in localStorage when allowed;
- * everything works without it. (Polished by the a11y pass agent.)
+ * A− / A+, high contrast and „Tekst łatwy" (easy-to-read mode). Each
+ * preference is an attribute on <html> (data-text-size, data-contrast,
+ * data-easy) applied before paint by the root layout, and persisted in
+ * localStorage when allowed; everything works without storage.
+ * Toggles use aria-pressed and show their state visibly (filled button).
  */
 const SIZES = ["", "lg", "xl"] as const;
 
@@ -17,14 +20,19 @@ function save(key: string, value: string) {
   }
 }
 
+const BTN =
+  "border-input bg-background text-foreground hover:bg-accent inline-flex min-h-11 items-center justify-center rounded-md border px-3 text-sm font-semibold disabled:opacity-50 aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background";
+
 export function AccessibilityToolbar() {
   const [size, setSize] = useState<(typeof SIZES)[number]>("");
   const [contrast, setContrast] = useState(false);
+  const [easy, setEasy] = useState(false);
 
   useEffect(() => {
     const d = document.documentElement;
     setSize((d.dataset.textSize as (typeof SIZES)[number]) ?? "");
     setContrast(d.dataset.contrast === "high");
+    setEasy(d.dataset.easy === "1");
   }, []);
 
   const applySize = (next: (typeof SIZES)[number]) => {
@@ -39,13 +47,13 @@ export function AccessibilityToolbar() {
     <div
       role="group"
       aria-label="Ustawienia wyświetlania"
-      className="flex items-center gap-1"
+      className="flex flex-wrap items-center gap-1"
     >
       <button
         type="button"
         onClick={() => applySize(SIZES[Math.max(0, idx - 1)] ?? "")}
         disabled={idx <= 0}
-        className="border-input inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border px-2 text-sm font-semibold disabled:opacity-50"
+        className={`${BTN} min-w-11 px-2`}
         aria-label="Zmniejsz tekst"
       >
         A−
@@ -56,7 +64,7 @@ export function AccessibilityToolbar() {
           applySize(SIZES[Math.min(SIZES.length - 1, idx + 1)] ?? "xl")
         }
         disabled={idx >= SIZES.length - 1}
-        className="border-input inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border px-2 text-base font-semibold disabled:opacity-50"
+        className={`${BTN} min-w-11 px-2 text-base`}
         aria-label="Powiększ tekst"
       >
         A+
@@ -71,9 +79,23 @@ export function AccessibilityToolbar() {
           else delete document.documentElement.dataset.contrast;
           save("jd_contrast", next ? "high" : "");
         }}
-        className="border-input inline-flex min-h-11 items-center rounded-md border px-3 text-sm font-medium"
+        className={BTN}
       >
         Kontrast
+      </button>
+      <button
+        type="button"
+        aria-pressed={easy}
+        onClick={() => {
+          const next = !easy;
+          setEasy(next);
+          if (next) document.documentElement.dataset.easy = "1";
+          else delete document.documentElement.dataset.easy;
+          save("jd_easy", next ? "1" : "");
+        }}
+        className={BTN}
+      >
+        Tekst łatwy
       </button>
     </div>
   );

@@ -9,7 +9,7 @@ import { cn } from "cn";
  * (or `role={undefined}`) for static, non-urgent notices.
  */
 const alertVariants = cva(
-  "group/alert relative grid w-full gap-1 rounded-md border border-l-4 px-4 py-3 text-left text-base has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-28 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-3 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-5",
+  "group/alert relative grid grid-cols-1 w-full gap-1 rounded-md border border-l-4 px-4 py-3 text-left text-base has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-28 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-3 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-5",
   {
     variants: {
       variant: {

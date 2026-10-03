@@ -11,6 +11,7 @@ import { cache } from "react";
 
 import {
   AreaTag,
+  EasyText,
   ExternalLink,
   PageHeader,
   ReadAloud,
@@ -69,13 +70,20 @@ function CardText({ text }: { text: string }) {
       list = [];
     }
   };
+  let bulletNext = false;
   for (const b of blocks) {
+    // Some cards put the list marker on its own line: „-" then the item.
+    if (/^[-–•·*]$/u.test(b)) {
+      bulletNext = true;
+      continue;
+    }
     const m = /^[-–•·*]\s*(.+)$/u.exec(b);
-    if (m?.[1]) list.push(m[1]);
+    if (m?.[1] ?? bulletNext) list.push(m?.[1] ?? b);
     else {
       flush();
       out.push(<p key={`p${out.length}`}>{b}</p>);
     }
+    bulletNext = false;
   }
   flush();
   return <div className="max-w-[68ch] space-y-4">{out}</div>;
@@ -125,7 +133,7 @@ export default async function InnovationPage({ params }: { params: Params }) {
         </div>
       </PageHeader>
 
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-10 md:py-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-14">
+      <div className="mx-auto grid grid-cols-1 max-w-6xl gap-10 px-4 py-10 md:py-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-14">
         {/* Actions first in reading order; to the right on wide screens. */}
         <aside
           aria-labelledby="actions-heading"
@@ -197,6 +205,7 @@ export default async function InnovationPage({ params }: { params: Params }) {
         </aside>
 
         <article className="min-w-0 lg:col-start-1 lg:row-start-1">
+          <EasyText slug={card.slug} title={card.title} className="mb-10" />
           {card.videoUrl ? (
             <section aria-labelledby="video-heading" className="mb-12">
               <h2 id="video-heading" className="sr-only">
@@ -233,16 +242,6 @@ export default async function InnovationPage({ params }: { params: Params }) {
             );
           })}
 
-          {card.easyText ? (
-            <details className="border-hairline bg-surface group mt-10 rounded-lg border">
-              <summary className="flex min-h-12 cursor-pointer items-center px-5 py-3 text-lg font-semibold">
-                Tekst łatwy do czytania
-              </summary>
-              <div className="border-hairline border-t px-5 py-4">
-                <CardText text={card.easyText} />
-              </div>
-            </details>
-          ) : null}
 
           <section
             aria-labelledby="sites-heading"

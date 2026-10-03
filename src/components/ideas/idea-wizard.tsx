@@ -288,7 +288,7 @@ export function IdeaWizard({
   ];
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-12">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-12">
       <div className="min-w-0">
         {restored ? (
           <div className="border-hairline bg-surface mb-6 flex flex-wrap items-center justify-between gap-3 rounded-md border p-4" role="status">

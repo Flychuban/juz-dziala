@@ -4,13 +4,15 @@
  * Server-safe: SourceLine, SampleBadge, PageHeader, EmptyState, Stat,
  *   AreaTag, TwojaSciezka, StatusTimeline, Highlight, UserTerms,
  *   InnovationCard, ExternalLink (+ helpers in ./format).
- * Client ("use client"): CaseCode, ReadAloud, VideoEmbed, Stepper.
+ * Client ("use client"): CaseCode, ReadAloud, VideoEmbed, Stepper, EasyText,
+ *   useEasyMode.
  *
  * Map: PowiatMap lives in "~/components/map" (server component; reads
  * data/powiaty.topo.json).
  */
 export { AreaTag } from "./area-tag";
 export { CaseCode } from "./case-code";
+export { EasyText } from "./easy-text";
 export { EmptyState } from "./empty-state";
 export { ExternalLink } from "./external-link";
 export {
@@ -32,5 +34,6 @@ export { Stat } from "./stat";
 export { StatusTimeline, type TimelineItem } from "./status-timeline";
 export { Stepper, type StepperStep } from "./stepper";
 export { PATH_STEP_LABELS, TwojaSciezka, type PathStep } from "./twoja-sciezka";
+export { useEasyMode } from "./use-easy-mode";
 export { VideoEmbed } from "./video-embed";
 export { youtubeId, youtubeThumb } from "./youtube";

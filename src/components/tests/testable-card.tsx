@@ -28,7 +28,7 @@ export function TestableCard({ item, headingLevel = "h3" }: { item: TestableCard
           </span>
         ) : null}
         {item.badge ? (
-          <span className="border-brand-accent text-brand-accent inline-flex items-center gap-1 rounded-sm border px-2 py-0.5 text-sm font-semibold">
+          <span className="border-brand-accent text-brand-accent inline-flex max-w-full items-center gap-1 rounded-sm border px-2 py-0.5 text-sm font-semibold [overflow-wrap:anywhere]">
             <AwardIcon aria-hidden="true" className="size-4" />
             Wybrana do upowszechniania
           </span>
@@ -48,13 +48,13 @@ export function TestableCard({ item, headingLevel = "h3" }: { item: TestableCard
         </div>
       ) : null}
       <div className="mt-auto flex flex-wrap gap-3 pt-2">
-        <Button asChild size="sm">
+        <Button asChild>
           <Link href={`${base}&mode=signup`} aria-label={`Chcę testować: ${item.title}`}>
             <FlaskConicalIcon aria-hidden="true" />
             Chcę testować
           </Link>
         </Button>
-        <Button asChild size="sm" variant="secondary">
+        <Button asChild variant="secondary">
           <Link href={`${base}&mode=rate`} aria-label={`Oceń: ${item.title}`}>
             <StarIcon aria-hidden="true" />
             Oceń
