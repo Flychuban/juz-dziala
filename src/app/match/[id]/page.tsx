@@ -20,7 +20,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
     throw e;
   }
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
+    <div className="mx-auto max-w-4xl px-4 py-10 [overflow-wrap:anywhere]">
       <MatchResults runId={id} initial={view} />
     </div>
   );

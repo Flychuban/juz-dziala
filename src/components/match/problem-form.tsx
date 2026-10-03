@@ -79,6 +79,15 @@ export function ProblemForm({ gminas }: { gminas: GminaOption[] }) {
         )}
       </div>
 
+      {gminas.length > 0 && <GminaCombobox options={gminas} value={gmina} onSelect={setGmina} />}
+
+      <div className="flex flex-wrap items-start gap-4">
+        <button type="submit" className={btnPrimary} disabled={start.isPending}>
+          {start.isPending ? "Szukamy…" : "Szukaj rozwiązań"}
+        </button>
+        <VoiceInput value={text} onChange={setText} describedBy={ids.hint} />
+      </div>
+
       <div className="flex flex-col gap-3">
         <p className="font-semibold" id="examples-label">
           Albo zacznij od przykładu:
@@ -100,15 +109,6 @@ export function ProblemForm({ gminas }: { gminas: GminaOption[] }) {
             </li>
           ))}
         </ul>
-      </div>
-
-      {gminas.length > 0 && <GminaCombobox options={gminas} value={gmina} onSelect={setGmina} />}
-
-      <div className="flex flex-wrap items-start gap-4">
-        <button type="submit" className={btnPrimary} disabled={start.isPending}>
-          {start.isPending ? "Szukamy…" : "Szukaj rozwiązań"}
-        </button>
-        <VoiceInput value={text} onChange={setText} describedBy={ids.hint} />
       </div>
     </form>
   );

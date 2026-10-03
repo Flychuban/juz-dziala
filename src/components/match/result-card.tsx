@@ -115,7 +115,7 @@ export function ResultCard({ r, index, pending }: { r: ResultCardData; index: nu
   return (
     <article
       aria-labelledby={headingId}
-      className="border-hairline bg-background rounded-lg border p-5 sm:p-7 print:break-inside-avoid"
+      className="border-hairline bg-background rounded-lg border p-5 max-[22rem]:px-3 sm:p-7 print:break-inside-avoid"
     >
       <div className="flex flex-wrap items-center gap-2">
         {r.verified ? (
@@ -179,7 +179,7 @@ export function ResultCard({ r, index, pending }: { r: ResultCardData; index: nu
         <Link href={`/library/${r.card.slug}`} className={btnSecondary}>
           Szczegóły<span className="sr-only">: {r.card.title}</span>
         </Link>
-        <ReadAloud text={readAloudText(r)} className="min-h-12 px-4 text-base" />
+        <ReadAloud text={readAloudText(r)} className="h-auto min-h-12 shrink px-4 text-base whitespace-normal" />
         {r.card.videoUrl && (
           <button
             type="button"
