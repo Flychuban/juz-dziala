@@ -7,6 +7,12 @@ import { Dialog as DialogPrimitive } from "radix-ui";
 import { Button } from "~/components/ui/button";
 import { XIcon } from "lucide-react";
 
+/*
+ * Dialog — Radix dialog on our tokens: a hairline panel over a dimmed ink
+ * scrim (no blur, no shadow). The close control has a visible word,
+ * „Zamknij", not just a cross. Prefer a page over a dialog for resident flows.
+ */
+
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
@@ -39,7 +45,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed inset-0 isolate z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs",
+        "data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed inset-0 isolate z-50 bg-[color-mix(in_srgb,var(--foreground)_55%,transparent)] duration-100",
         className,
       )}
       {...props}
@@ -61,7 +67,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "bg-popover text-popover-foreground ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl p-4 text-sm ring-1 duration-100 outline-none sm:max-w-sm",
+          "border-hairline bg-popover text-popover-foreground data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed top-1/2 left-1/2 z-50 grid max-h-[calc(100dvh-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-5 overflow-y-auto rounded-lg border p-6 text-base duration-100 outline-none sm:max-w-lg",
           className,
         )}
         {...props}
@@ -71,11 +77,11 @@ function DialogContent({
           <DialogPrimitive.Close data-slot="dialog-close" asChild>
             <Button
               variant="ghost"
+              size="sm"
               className="absolute top-2 right-2"
-              size="icon-sm"
             >
-              <XIcon />
-              <span className="sr-only">Close</span>
+              <XIcon aria-hidden="true" />
+              Zamknij
             </Button>
           </DialogPrimitive.Close>
         )}
@@ -88,7 +94,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-2", className)}
+      className={cn("flex flex-col gap-2 pr-28", className)}
       {...props}
     />
   );
@@ -106,7 +112,7 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "bg-muted/50 -mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t p-4 sm:flex-row sm:justify-end",
+        "border-hairline bg-surface -mx-6 -mb-6 flex flex-col-reverse gap-3 rounded-b-lg border-t px-6 py-4 sm:flex-row sm:justify-end",
         className,
       )}
       {...props}
@@ -114,7 +120,7 @@ function DialogFooter({
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close asChild>
-          <Button variant="outline">Close</Button>
+          <Button variant="outline">Zamknij</Button>
         </DialogPrimitive.Close>
       )}
     </div>
@@ -129,7 +135,7 @@ function DialogTitle({
     <DialogPrimitive.Title
       data-slot="dialog-title"
       className={cn(
-        "font-heading text-base leading-none font-medium",
+        "font-display text-2xl leading-tight font-bold tracking-tight",
         className,
       )}
       {...props}
@@ -145,7 +151,7 @@ function DialogDescription({
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn(
-        "text-muted-foreground *:[a]:hover:text-foreground text-sm *:[a]:underline *:[a]:underline-offset-3",
+        "text-muted-foreground text-base *:[a]:underline *:[a]:underline-offset-4",
         className,
       )}
       {...props}
