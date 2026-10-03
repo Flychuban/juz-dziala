@@ -21,7 +21,7 @@ import {
   type StoredAi,
   type StoredKeyword,
 } from "./core";
-import { knowledgeFacts, powiatOf, type KnowledgeFact } from "./data-files";
+import { gminaByTeryt, gminas, knowledgeFacts, powiatOf, type KnowledgeFact } from "./data-files";
 import { loadPaths, similarRuns, type Path, type Similar } from "./joins";
 import { getLibrary } from "./library";
 
@@ -58,10 +58,20 @@ export type ResultCard = {
   path: Path;
 };
 
+export type Place = {
+  gminaTeryt: string;
+  gminaName: string | null;
+  gminaKind: string | null;
+  powiatTeryt: string | null;
+  powiatName: string | null;
+};
+
 export type MatchView = {
   runId: string;
   createdAt: string;
   query: string;
+  /** The gmina picked on the home page, when any. */
+  place: Place | null;
   crisis: { urgent: boolean; categories: CrisisCategory[] };
   stage: Decision["stage"];
   note: Decision["note"];
@@ -89,9 +99,15 @@ async function buildView(run: Run, catalog: Catalog, ctx: Ctx): Promise<MatchVie
     return c ? [c] : [];
   });
   const topArea = decision.areas[0];
+  const place = placeOf(run);
   const [paths, similar] = await Promise.all([
     loadPaths(ctx.db, cards),
-    similarRuns(ctx.db, { runId: run.id, area: topArea, powiatTeryt: run.powiatTeryt }),
+    similarRuns(ctx.db, {
+      runId: run.id,
+      area: topArea,
+      powiatTeryt: run.powiatTeryt,
+      powiatName: place?.powiatName ?? null,
+    }),
   ]);
   const results: ResultCard[] = decision.results.flatMap((r) => {
     const c = catalog.byId.get(r.cardId);
@@ -115,7 +131,7 @@ async function buildView(run: Run, catalog: Catalog, ctx: Ctx): Promise<MatchVie
         userTerms: r.userTerms,
         evidence: r.evidence,
         firstStep: r.firstStep,
-        path: paths.get(c.id) ?? { sites: [], helpers: [], funding: [] },
+        path: paths.get(c.id) ?? { sites: [], helpers: [], funding: null },
       },
     ];
   });
@@ -125,6 +141,7 @@ async function buildView(run: Run, catalog: Catalog, ctx: Ctx): Promise<MatchVie
     runId: run.id,
     createdAt: run.createdAt.toISOString(),
     query: run.queryRedacted,
+    place,
     crisis: { urgent: run.crisis || crisis.urgent, categories: crisis.categories },
     stage: decision.stage,
     note: decision.note,
@@ -136,6 +153,29 @@ async function buildView(run: Run, catalog: Catalog, ctx: Ctx): Promise<MatchVie
     similar,
     libraryCount: catalog.cards.length,
   };
+}
+
+function placeOf(run: Run): Place | null {
+  if (!run.gminaTeryt) return null;
+  const g = gminaByTeryt(run.gminaTeryt);
+  return {
+    gminaTeryt: run.gminaTeryt,
+    gminaName: g?.name ?? null,
+    gminaKind: g?.kind ?? null,
+    powiatTeryt: run.powiatTeryt,
+    powiatName: g?.powiatName ?? null,
+  };
+}
+
+/** A gmina code is kept only when it is in data/gminas.json (or any 6–7 digits when that file is absent). */
+function resolvePlace(gminaTeryt: string | null | undefined): { gminaTeryt: string | null; powiatTeryt: string | null } {
+  const digits = gminaTeryt?.replace(/[^0-9]/g, "");
+  if (digits === undefined || digits === "") return { gminaTeryt: null, powiatTeryt: null };
+  if (gminas().length > 0) {
+    const g = gminaByTeryt(digits);
+    return g ? { gminaTeryt: g.teryt, powiatTeryt: g.powiatTeryt } : { gminaTeryt: null, powiatTeryt: null };
+  }
+  return { gminaTeryt: digits, powiatTeryt: powiatOf(digits) };
 }
 
 async function loadRun(db: Db, runId: string): Promise<Run> {
@@ -156,14 +196,13 @@ export async function startMatch(
   const crisis = detectCrisis(redacted);
   const catalog = await getLibrary();
   const keyword = runKeyword(catalog, redacted);
-  const digits = input.gminaTeryt?.replace(/[^0-9]/g, "");
-  const gmina = digits === undefined || digits === "" ? null : digits;
+  const place = resolvePlace(input.gminaTeryt);
   const [run] = await ctx.db
     .insert(matchRuns)
     .values({
       queryRedacted: redacted,
-      gminaTeryt: gmina,
-      powiatTeryt: powiatOf(gmina),
+      gminaTeryt: place.gminaTeryt,
+      powiatTeryt: place.powiatTeryt,
       areas: runAreas(catalog, keyword),
       keywordResult: keyword,
       status: "keyword",

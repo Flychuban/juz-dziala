@@ -1,5 +1,5 @@
 import { CRISIS_RESOURCES } from "~/server/domain/crisis";
-import { formatDatePl } from "./format";
+import { formatDatePl } from "~/components/kit";
 
 /**
  * Shown first on the results page when the text suggests danger to life or

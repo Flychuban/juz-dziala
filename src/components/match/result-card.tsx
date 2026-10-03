@@ -1,85 +1,100 @@
 "use client";
 
+import { CheckIcon, PlayIcon } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
+import {
+  AreaTag,
+  formatDatePl,
+  Highlight,
+  ReadAloud,
+  SourceLine,
+  TwojaSciezka,
+  VideoEmbed,
+  type PathStep,
+} from "~/components/kit";
 import { CALL_STATUS_LABEL, SECTION_LABEL } from "~/lib/domain";
 import type { RouterOutputs } from "~/trpc/react";
-import { formatDatePl } from "./format";
-import { AreaTag, Highlight, ReadAloud, SampleBadge, SourceLine, TwojaSciezka, type PathStep } from "./local-kit";
+import { shortCallName } from "./format";
 import { btnSecondary } from "./styles";
 
 export type MatchViewData = RouterOutputs["match"]["get"];
 export type ResultCardData = MatchViewData["results"][number];
+type Funding = NonNullable<ResultCardData["path"]["funding"]>;
 
-const NO_DATA = <p className="text-muted-foreground">brak danych w karcie</p>;
+function windowText(f: Funding): string {
+  const from = formatDatePl(f.windowFrom);
+  const to = formatDatePl(f.windowTo);
+  if (from && to) return `${from} – ${to}`;
+  return to ? `do ${to}` : "";
+}
+
+function fundingStep(f: Funding | null): PathStep {
+  if (!f) {
+    return {
+      label: "Skąd pieniądze",
+      title: "Brak naboru w naszych danych",
+      detail: "Zapytaj ROPS o możliwości finansowania.",
+    };
+  }
+  const status = CALL_STATUS_LABEL[f.status].toLowerCase();
+  const when = windowText(f);
+  if (f.reason === "listed") {
+    return {
+      label: "Skąd pieniądze",
+      title: "Usługa Wrażliwa",
+      detail: `To rozwiązanie jest na liście innowacji do wdrożenia w tym naborze. Nabór: ${status}${when ? `, ${when}` : ""}.`,
+      href: f.sourceUrl,
+      linkLabel: "Zobacz nabór",
+    };
+  }
+  return {
+    label: "Skąd pieniądze",
+    title: shortCallName(f.name),
+    detail: `Nabór na innowacje społeczne: ${status}${when ? `, ${when}` : ""}.${f.status === "demo" ? " Dane przykładowe." : ""}`,
+    href: f.sourceUrl,
+    linkLabel: "Zobacz nabór",
+  };
+}
 
 function pathSteps(r: ResultCardData): PathStep[] {
   const { sites, helpers, funding } = r.path;
+  const helper = helpers[0];
   return [
-    { label: "Rozwiązanie", content: <p>{r.card.title}</p> },
     {
-      label: "Działa już w",
-      content:
-        sites.length === 0 ? (
-          NO_DATA
-        ) : (
-          <ul>
-            {sites.map((s) => (
-              <li key={`${s.place}-${s.stage}`}>
-                {s.place}
-                {s.isSample && <SampleBadge />}
-              </li>
-            ))}
-          </ul>
-        ),
+      label: "Rozwiązanie",
+      title: r.card.title,
+      detail: r.card.categoryLabels[0] ?? null,
+      href: `/library/${r.card.slug}`,
+      linkLabel: "Zobacz kartę",
     },
-    {
-      label: "Kto pomoże",
-      content:
-        helpers.length === 0 ? (
-          <p className="text-muted-foreground">Zespół Hubu ROPS — poproś o pomoc poniżej.</p>
-        ) : (
-          <ul>
-            {helpers.map((h) => (
-              <li key={`${h.kind}-${h.name}`}>
-                {h.kind === "author" ? "Autorzy rozwiązania: " : h.kind === "mentor" ? "Mentor: " : ""}
-                {h.sourceUrl && h.kind !== "author" ? (
-                  <a href={h.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">
-                    {h.name}
-                  </a>
-                ) : (
-                  h.name
-                )}
-                {h.detail ? ` — ${h.detail}` : null}
-                {h.isSample && <SampleBadge />}
-              </li>
-            ))}
-          </ul>
-        ),
-    },
-    {
-      label: "Skąd pieniądze",
-      content:
-        funding.length === 0 ? (
-          <p className="text-muted-foreground">Brak otwartego naboru w naszych danych. Zapytaj ROPS o możliwości.</p>
-        ) : (
-          <ul>
-            {funding.map((f) => (
-              <li key={f.id}>
-                {f.sourceUrl ? (
-                  <a href={f.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">
-                    {f.name}
-                  </a>
-                ) : (
-                  f.name
-                )}{" "}
-                — {CALL_STATUS_LABEL[f.status]}
-                {f.windowTo ? `, do ${formatDatePl(f.windowTo)}` : ""}
-              </li>
-            ))}
-          </ul>
-        ),
-    },
+    sites.length > 0
+      ? {
+          label: "Działa już w",
+          title: sites.map((s) => s.place).join(", "),
+          detail: sites.some((s) => s.isSample) ? "Dane przykładowe." : null,
+        }
+      : {
+          label: "Działa już w",
+          title: "Brak informacji",
+          detail: "W karcie brak informacji o wdrożeniach — zapytaj ROPS.",
+        },
+    helper
+      ? {
+          label: "Kto pomoże",
+          title: helper.name,
+          detail:
+            helper.kind === "org"
+              ? `${helper.detail && helper.detail !== "inna" ? `${helper.detail} · ` : ""}autorzy rozwiązania`
+              : helper.kind === "mentor"
+                ? `${helper.detail ?? "Mentor"}${helper.isSample ? " · dane przykładowe" : ""}`
+                : "Autorzy rozwiązania (z karty).",
+          href: helper.kind === "mentor" ? "/network" : null,
+          linkLabel: "Sieć mentorów",
+        }
+      : { label: "Kto pomoże", title: "Zespół Hubu ROPS", detail: "Poproś o pomoc poniżej." },
+    fundingStep(funding),
   ];
 }
 
@@ -96,15 +111,19 @@ function readAloudText(r: ResultCardData): string {
 
 export function ResultCard({ r, index, pending }: { r: ResultCardData; index: number; pending: boolean }) {
   const headingId = `result-${r.card.id}`;
+  const [showVideo, setShowVideo] = useState(false);
   return (
-    <article aria-labelledby={headingId} className="border-hairline rounded-lg border p-5 print:break-inside-avoid">
+    <article
+      aria-labelledby={headingId}
+      className="border-hairline bg-background rounded-lg border p-5 sm:p-7 print:break-inside-avoid"
+    >
       <div className="flex flex-wrap items-center gap-2">
         {r.verified ? (
-          <span className="border-success text-success inline-flex items-center gap-1 rounded-md border-2 px-2 py-0.5 text-sm font-semibold">
-            <span aria-hidden="true">✓</span> Sprawdzone przez AI
+          <span className="border-success text-success inline-flex items-center gap-1 rounded-sm border-2 px-2 py-0.5 text-sm font-bold">
+            <CheckIcon aria-hidden="true" className="size-4" /> Sprawdzone przez AI
           </span>
         ) : (
-          <span className="border-input text-muted-foreground inline-flex items-center rounded-md border px-2 py-0.5 text-sm font-semibold">
+          <span className="border-input text-muted-foreground inline-flex items-center rounded-sm border px-2 py-0.5 text-sm font-semibold">
             {pending ? "Wstępne wyniki" : "Wynik wyszukiwania słów"}
           </span>
         )}
@@ -113,47 +132,45 @@ export function ResultCard({ r, index, pending }: { r: ResultCardData; index: nu
         ))}
       </div>
 
-      <h3 id={headingId} className="mt-3 text-2xl font-bold">
+      <h2 id={headingId} className="mt-3 text-2xl font-bold sm:text-[1.75rem]">
         <span className="sr-only">Rozwiązanie {index + 1}: </span>
         <Link href={`/library/${r.card.slug}`} className="text-foreground underline-offset-4 hover:underline">
           {r.card.title}
         </Link>
-      </h3>
+      </h2>
 
-      <p className="mt-3 text-lg">
+      <p className="mt-3 text-lg leading-relaxed">
         <Highlight text={r.why} terms={r.userTerms} />
       </p>
 
       {r.evidence.length > 0 && (
-        <figure className="mt-4">
+        <figure className="mt-5">
           <blockquote className="border-primary border-l-4 pl-4">
             {r.evidence.map((e) => (
-              <p key={e.id} className="mt-1 first:mt-0">
-                <span className="text-muted-foreground block text-sm">{SECTION_LABEL[e.section]}</span>
-                „{e.text}”
+              <p key={e.id} className="mt-2 first:mt-0">
+                <span className="text-muted-foreground block text-sm font-semibold">{SECTION_LABEL[e.section]}</span>„
+                {e.text}”
               </p>
             ))}
           </blockquote>
           <figcaption className="mt-2 pl-5">
             <SourceLine
-              name={`Biblioteka Innowacji Społecznych ROPS, karta „${r.card.title}”`}
-              url={r.card.sourceUrl}
+              source={`Biblioteka Innowacji Społecznych ROPS, karta „${r.card.title}”`}
+              href={r.card.sourceUrl}
               date={r.card.capturedAt}
             />
           </figcaption>
         </figure>
       )}
 
-      <div className="mt-5">
-        <TwojaSciezka steps={pathSteps(r)} />
-      </div>
+      <TwojaSciezka steps={pathSteps(r)} headingLevel="h3" className="mt-6" />
 
       {r.firstStep ? (
-        <p className="mt-4 text-lg">
+        <p className="mt-5 text-lg">
           <strong>Pierwszy krok:</strong> {r.firstStep}
         </p>
       ) : r.card.whoCanUse ? (
-        <p className="mt-4">
+        <p className="mt-5">
           <strong>Kto może skorzystać (z karty):</strong> {r.card.whoCanUse}
         </p>
       ) : null}
@@ -162,13 +179,20 @@ export function ResultCard({ r, index, pending }: { r: ResultCardData; index: nu
         <Link href={`/library/${r.card.slug}`} className={btnSecondary}>
           Szczegóły<span className="sr-only">: {r.card.title}</span>
         </Link>
-        <ReadAloud text={readAloudText(r)} className={btnSecondary} />
+        <ReadAloud text={readAloudText(r)} className="min-h-12 px-4 text-base" />
         {r.card.videoUrl && (
-          <a href={r.card.videoUrl} target="_blank" rel="noopener noreferrer" className={btnSecondary}>
-            Film<span className="sr-only"> o rozwiązaniu {r.card.title} (otwiera się w nowej karcie)</span>
-          </a>
+          <button
+            type="button"
+            className={btnSecondary}
+            aria-expanded={showVideo}
+            onClick={() => setShowVideo((v) => !v)}
+          >
+            <PlayIcon aria-hidden="true" className="size-4" />
+            {showVideo ? "Ukryj film" : "Film"}
+          </button>
         )}
       </div>
+      {r.card.videoUrl && showVideo && <VideoEmbed url={r.card.videoUrl} title={r.card.title} className="mt-4" />}
     </article>
   );
 }

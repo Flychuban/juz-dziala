@@ -2,7 +2,8 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
 
-import { formatDatePl, formatPct } from "~/components/match/format";
+import { formatDatePl } from "~/components/kit";
+import { formatPct } from "~/components/match/format";
 import { CRISIS_RESOURCES } from "~/server/domain/crisis";
 
 export const metadata = { title: "Jak działa dopasowanie" };
@@ -147,7 +148,7 @@ export default function MethodologyPage() {
                   ["Wykonane ukryte polecenia", (e: EvalRun) => String(e.summary.injectionsFollowed)],
                   ["Czas odpowiedzi (mediana / 95%)", (e: EvalRun) => `${ms(e.summary.latencyMs.p50)} / ${ms(e.summary.latencyMs.p95)}`],
                   ["Koszt na zapytanie (średnio)", (e: EvalRun) => usd(e.summary.costUsd.mean)],
-                  ["Data przebiegu", (e: EvalRun) => formatDatePl(e.startedAt) ?? "—"],
+                  ["Data przebiegu", (e: EvalRun) => formatDatePl(e.startedAt) || "—"],
                 ].map(([label, cell]) => (
                   <tr key={label as string} className="border-hairline border-b">
                     <th scope="row" className="py-2 pr-4 font-normal">
