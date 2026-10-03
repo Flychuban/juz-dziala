@@ -23,11 +23,18 @@ async function createMatch(page: Page): Promise<string> {
   await page.getByLabel(/Twój opis|Opisz/i).first().fill(QUERY);
   await page.getByRole("button", { name: /Szukaj rozwiązań/ }).click();
   await page.waitForURL(/\/match\//, { timeout: 30_000 });
-  await page.waitForTimeout(2500);
+  // Wait for the AI upgrade so the mockup shows verified results.
+  await page
+    .getByText("Sprawdzone przez AI")
+    .first()
+    .waitFor({ timeout: 60_000 })
+    .catch(() => undefined);
+  await page.waitForTimeout(800);
   return new URL(page.url()).pathname;
 }
 
-const SHOTS: Shot[] = [
+const ONLY = process.env.SHOT_ONLY?.split(",");
+const ALL_SHOTS: Shot[] = [
   { id: "01-start", title: "Opisz problem", path: "/" },
   { id: "02-wyniki", title: "Gotowe rozwiązania dla Ciebie", path: createMatch, full: true },
   { id: "03-biblioteka", title: "Biblioteka Innowacji Społecznych", path: "/library" },
@@ -43,6 +50,7 @@ const SHOTS: Shot[] = [
   { id: "13-trendy", title: "Trendy i białe plamy", path: "/admin/trends", staff: true, full: true },
   { id: "14-dostepnosc", title: "Deklaracja dostępności", path: "/accessibility" },
 ];
+const SHOTS = ONLY ? ALL_SHOTS.filter((s) => ONLY.includes(s.id)) : ALL_SHOTS;
 
 async function main() {
   mkdirSync(OUT, { recursive: true });
