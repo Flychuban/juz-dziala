@@ -1,0 +1,70 @@
+/**
+ * Makiety UX/UI: screenshots of the real screens at phone (390 px) and desktop
+ * (1280 px) widths, into docs/makiety/. Run against a deployed or local app:
+ *   SHOT_BASE_URL=https://juz-dziala.vercel.app pnpm exec tsx scripts/screenshots.ts
+ */
+import { mkdirSync } from "node:fs";
+
+import { chromium, type Page } from "@playwright/test";
+
+const BASE = process.env.SHOT_BASE_URL ?? "http://localhost:3000";
+const OUT = "docs/makiety";
+const VIEWPORTS = [
+  { name: "telefon", width: 390, height: 844 },
+  { name: "komputer", width: 1280, height: 860 },
+] as const;
+
+type Shot = { id: string; title: string; path: string | ((p: Page) => Promise<string>); staff?: boolean; full?: boolean };
+
+const QUERY = "Mama ma 73 lata, owdowiała, mieszka sama pod Limanową, prawie nie wychodzi z domu i myli leki.";
+
+async function createMatch(page: Page): Promise<string> {
+  await page.goto(`${BASE}/`);
+  await page.getByLabel(/Twój opis|Opisz/i).first().fill(QUERY);
+  await page.getByRole("button", { name: /Szukaj rozwiązań/ }).click();
+  await page.waitForURL(/\/match\//, { timeout: 30_000 });
+  await page.waitForTimeout(2500);
+  return new URL(page.url()).pathname;
+}
+
+const SHOTS: Shot[] = [
+  { id: "01-start", title: "Opisz problem", path: "/" },
+  { id: "02-wyniki", title: "Gotowe rozwiązania dla Ciebie", path: createMatch, full: true },
+  { id: "03-biblioteka", title: "Biblioteka Innowacji Społecznych", path: "/library" },
+  { id: "04-karta", title: "Karta innowacji", path: "/library/mobilne-centrum-pomocy-dla-osob-starszych" },
+  { id: "05-kondycja", title: "Kondycja Małopolski — Seniorzy", path: "/knowledge/seniors" },
+  { id: "06-pomysl", title: "Kreator pomysłów", path: "/ideas/new" },
+  { id: "07-tester", title: "Tester innowacji", path: "/test" },
+  { id: "08-siec", title: "Sieć i mentorzy", path: "/network" },
+  { id: "09-gmina", title: "Dla gminy", path: "/municipality" },
+  { id: "10-middleman", title: "Zaplanuj usługę", path: "/adapt" },
+  { id: "11-pulpit", title: "Panel ROPS — pulpit", path: "/admin", staff: true },
+  { id: "12-sprawy", title: "Panel ROPS — sprawy", path: "/admin/cases", staff: true },
+  { id: "13-trendy", title: "Trendy i białe plamy", path: "/admin/trends", staff: true, full: true },
+  { id: "14-dostepnosc", title: "Deklaracja dostępności", path: "/accessibility" },
+];
+
+async function main() {
+  mkdirSync(OUT, { recursive: true });
+  const browser = await chromium.launch();
+  for (const vp of VIEWPORTS) {
+    const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, locale: "pl-PL", deviceScaleFactor: 2 });
+    const page = await ctx.newPage();
+    let staff = false;
+    for (const s of SHOTS) {
+      if (s.staff && !staff) {
+        await page.goto(`${BASE}/api/demo-login?role=rops&next=/admin`);
+        staff = true;
+      }
+      const path = typeof s.path === "string" ? s.path : await s.path(page);
+      if (typeof s.path === "string") await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
+      await page.waitForTimeout(600);
+      await page.screenshot({ path: `${OUT}/${s.id}-${vp.name}.png`, fullPage: s.full ?? vp.name === "telefon" });
+      console.log(`✓ ${s.id} ${vp.name}`);
+    }
+    await ctx.close();
+  }
+  await browser.close();
+}
+
+void main();

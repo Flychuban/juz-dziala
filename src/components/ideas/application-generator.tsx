@@ -168,7 +168,7 @@ export function ApplicationGenerator({
                 {phase === "streaming" ? "Piszemy szkic — to może potrwać do minuty." : "Szkic gotowy."}
               </p>
               <div className={mdClass}>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown || "…"}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]} disallowedElements={["img"]} unwrapDisallowed>{markdown || "…"}</ReactMarkdown>
               </div>
             </div>
           ) : null}
@@ -227,7 +227,7 @@ export function ApplicationGenerator({
             </summary>
             {preview ? (
               <div className={`${mdClass} mt-2`}>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{fieldsToMarkdown(fields.map((f) => ({ ...f, value: f.value || GAP })))}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]} disallowedElements={["img"]} unwrapDisallowed>{fieldsToMarkdown(fields.map((f) => ({ ...f, value: f.value || GAP })))}</ReactMarkdown>
               </div>
             ) : null}
           </details>
