@@ -26,8 +26,8 @@ const PLN = new Intl.NumberFormat("pl-PL", {
 });
 const DELIVERY_STATUS: Record<string, string> = {
   sent: "wysłano",
-  simulated: "SMS — symulacja",
-  skipped: "pominięto (brak poczty)",
+  simulated: "symulacja",
+  skipped: "nie wysłano (brak poczty)",
   failed: "błąd",
 };
 

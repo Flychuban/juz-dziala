@@ -23,7 +23,7 @@ export function SampleBadge({
       )}
     >
       {label}
-      <span className="sr-only"> (dane przykładowe, nie prawdziwe)</span>
+      <span className="sr-only"> (dane przykładowe, nieprawdziwe)</span>
     </span>
   );
 }

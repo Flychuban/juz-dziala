@@ -1,9 +1,15 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 
 import { FOOTER_NAV, SECONDARY_NAV } from "~/config/nav";
 import { SITE } from "~/lib/domain";
+import { STAFF_COOKIE, verifyStaffSession } from "~/server/auth/session";
+import { DemoRoleSwitcher } from "./demo-role-switcher";
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const staff = await verifyStaffSession(
+    (await cookies()).get(STAFF_COOKIE)?.value,
+  );
   return (
     <footer
       data-site-footer
@@ -46,6 +52,13 @@ export function SiteFooter() {
             ))}
           </ul>
         </nav>
+      </div>
+      <div className="border-hairline border-t">
+        <div className="mx-auto max-w-6xl px-4 py-6 md:max-w-6xl">
+          <div className="max-w-md">
+            <DemoRoleSwitcher current={staff?.role ?? null} variant="inline" />
+          </div>
+        </div>
       </div>
       <div className="border-hairline border-t">
         <p className="text-muted-foreground mx-auto max-w-6xl px-4 py-4 text-sm">
