@@ -85,7 +85,7 @@ const STEPS: { title: string; body: string }[] = [
 export default function MethodologyPage() {
   const evals = latestEvals();
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
+    <div className="mx-auto max-w-4xl px-4 py-10 [overflow-wrap:anywhere]">
       <h1 className="text-4xl font-bold">Jak działa dopasowanie</h1>
       <p className="mt-4 max-w-prose text-xl">
         Odpowiadamy wyłącznie na podstawie kart Biblioteki Innowacji Społecznych ROPS. Każde dopasowanie ma cytat z karty,
@@ -98,7 +98,7 @@ export default function MethodologyPage() {
         </h2>
         <ol className="mt-4 flex flex-col gap-4">
           {STEPS.map((s, i) => (
-            <li key={s.title} className="border-hairline grid gap-2 rounded-lg border p-4 sm:grid-cols-[3rem_1fr]">
+            <li key={s.title} className="border-hairline grid gap-2 rounded-lg border p-4 max-[22rem]:px-3 sm:grid-cols-[3rem_1fr]">
               <span aria-hidden="true" className="font-display text-primary text-3xl font-bold">
                 {i + 1}
               </span>
