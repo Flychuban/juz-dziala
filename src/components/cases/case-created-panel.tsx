@@ -80,7 +80,7 @@ export function CaseCreatedPanel({
         >
           <Link href={`/case/${code}/print`}>
             <PrinterIcon aria-hidden="true" />
-            Drukuj kod z kodem QR
+            Wydrukuj kartkę z kodem
           </Link>
         </Button>
       </div>

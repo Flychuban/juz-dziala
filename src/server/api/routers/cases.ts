@@ -40,7 +40,9 @@ export const casesRouter = createTRPCRouter({
         idea: undefined,
         canvas: undefined,
         plan: undefined,
-        isSample: false,
+        // Only automated tests may flag their cases as sample data, and only
+        // with a „[test]" title — `seed/clean-tests.ts` removes them.
+        isSample: input.isSample === true && input.title.startsWith("[test]"),
       });
       return { code: r.code, accessToken: r.accessToken };
     }),

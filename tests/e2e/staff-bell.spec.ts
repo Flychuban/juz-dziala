@@ -12,6 +12,8 @@ import { expect, test, type Browser, type TestInfo } from "@playwright/test";
 
 import { settle } from "./helpers";
 
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+
 const TITLE_BADGE = /^\(\d+\) Nowa sprawa · Już Działa$/u;
 
 async function contexts(browser: Browser, testInfo: TestInfo) {
@@ -57,6 +59,7 @@ async function createCase(
         title,
         body: "Sąsiad po udarze mieszka sam i nikt nie robi mu zakupów. Szukam pomocy dla seniora.",
         contactPref: "none",
+        isSample: true,
       },
     },
   });
@@ -80,7 +83,7 @@ test("dzwonek ROPS: licznik, tytuł karty i powiadomienie na pulpicie po nowej s
   const bell = staff.getByRole("button", { name: /^Powiadomienia/u });
   await expect(bell).toBeVisible();
 
-  const title = `Test dzwonka ${Date.now()} ${testInfo.project.name}`;
+  const title = `[test] Dzwonek ${Date.now()} ${testInfo.project.name}`;
   const { code } = await createCase(await authorContext.newPage(), title);
 
   // Within one poll (5 s) plus slack: the badge, the tab title, the desktop notification.
@@ -99,7 +102,7 @@ test("dzwonek ROPS: licznik, tytuł karty i powiadomienie na pulpicie po nowej s
   // The dropdown lists the case and leads to it.
   await bell.click();
   const item = staff.getByRole("link", {
-    name: new RegExp(`Nowa sprawa: Potrzeba.*${title}`, "u"),
+    name: new RegExp(`Nowa sprawa: Potrzeba.*${escapeRe(title)}`, "u"),
   });
   await expect(item).toBeVisible();
   await item.click();
@@ -119,13 +122,13 @@ test("„Użyj szkicu” wypełnia odpowiedź, a autor słyszy ją przez aria-li
   const author = await authorContext.newPage();
   const { code, accessToken } = await createCase(
     author,
-    `Test odpowiedzi ${Date.now()}`,
+    `[test] Odpowiedź ${Date.now()}`,
   );
 
   // The author keeps the case page open (it polls every 5 s).
   await author.goto(`/case/${code}?t=${encodeURIComponent(accessToken)}`);
   await expect(
-    author.getByRole("heading", { name: "Rozmowa z Zespołem Hubu" }),
+    author.getByRole("heading", { name: "Rozmowa z ROPS" }),
   ).toBeVisible();
   const live = author.locator(
     'section[aria-labelledby="thread-heading"] [aria-live="polite"]',
@@ -148,10 +151,10 @@ test("„Użyj szkicu” wypełnia odpowiedź, a autor słyszy ją przez aria-li
     staff.getByText("Odpowiedź jest w wątku", { exact: false }),
   ).toBeVisible();
 
-  await expect(live).toHaveText(/Nowa odpowiedź od: Zespół Hubu ROPS/u, {
+  await expect(live).toHaveText(/Nowa odpowiedź od: ROPS Kraków/u, {
     timeout: 15_000,
   });
-  await expect(author.getByText("Zespół Hubu ROPS").first()).toBeVisible();
+  await expect(author.getByText("ROPS Kraków").first()).toBeVisible();
 
   await staffContext.close();
   await authorContext.close();

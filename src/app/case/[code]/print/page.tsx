@@ -6,9 +6,10 @@ import QRCode from "qrcode";
 
 import { fmtDate } from "~/components/cases/format";
 import { PrintButton } from "~/components/cases/print-button";
-import { CASE_KIND_LABEL, SITE } from "~/lib/domain";
+import { SITE } from "~/lib/domain";
 import { normalizeCaseCode } from "~/server/domain/case-code";
 import { findCaseByCode } from "~/server/cases/queries";
+import { RESIDENT_KIND_LABEL } from "~/server/cases/types";
 
 export const metadata = { title: "Kod sprawy do druku" };
 
@@ -82,7 +83,7 @@ export default async function Page({
           />
           <dl className="grid content-start gap-x-4 gap-y-2 sm:grid-cols-[auto_1fr]">
             <dt className="text-muted-foreground print:text-black">Rodzaj</dt>
-            <dd className="font-semibold">{CASE_KIND_LABEL[c.kind]}</dd>
+            <dd className="font-semibold">{RESIDENT_KIND_LABEL[c.kind]}</dd>
             <dt className="text-muted-foreground print:text-black">Temat</dt>
             <dd className="font-semibold break-words">{c.title}</dd>
             <dt className="text-muted-foreground print:text-black">
@@ -107,7 +108,7 @@ export default async function Page({
             <span className="font-semibold break-all">{base}/case</span> i wpisz
             kod sprawy: <span className="font-mono font-bold">{c.code}</span>.
           </li>
-          <li>Przeczytaj odpowiedź Zespołu Hubu. Możesz od razu odpisać.</li>
+          <li>Przeczytaj odpowiedź ROPS. Możesz od razu odpisać.</li>
         </ol>
         <p className="mt-6 text-lg">
           Odpowiadamy zwykle w ciągu 2 dni roboczych.

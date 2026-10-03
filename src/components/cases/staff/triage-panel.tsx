@@ -9,6 +9,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { SampleBadge } from "~/components/kit";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import {
@@ -174,9 +175,10 @@ export function TriagePanel({
                     {data.suggestedExpert.title &&
                       ` — ${data.suggestedExpert.title}`}
                     {data.suggestedExpert.isSample && (
-                      <span className="border-hairline ml-2 rounded border px-1.5 text-sm">
-                        przykładowe
-                      </span>
+                      <>
+                        {" "}
+                        <SampleBadge className="ml-1" />
+                      </>
                     )}
                   </span>
                   {isRops &&

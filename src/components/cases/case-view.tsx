@@ -1,12 +1,13 @@
 "use client";
 
-import { PrinterIcon, QrCodeIcon, SendIcon } from "lucide-react";
+import { PrinterIcon, SendIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
-import { CASE_KIND_LABEL } from "~/lib/domain";
+import { useEasyMode } from "~/components/kit";
+import { RESIDENT_KIND_LABEL, RESIDENT_TEAM_NAME } from "~/server/cases/types";
 import { api } from "~/trpc/react";
 import { CaseCode } from "./case-code";
 import { IdeaSection, InnovationSection, PlanSection } from "./case-modules";
@@ -27,6 +28,7 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
       retry: (n, err) => err.data?.code !== "NOT_FOUND" && n < 2,
     },
   );
+  const easy = useEasyMode();
   const [announce, setAnnounce] = useState("");
   const staffSeen = useRef<number | null>(null);
   const remembered = useRef(false);
@@ -41,7 +43,11 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
     if (staffSeen.current !== null && staff.length > staffSeen.current) {
       const last = staff[staff.length - 1];
       setAnnounce(
-        `Nowa odpowiedź od: ${last?.authorName ?? "Zespół Hubu ROPS"}.`,
+        `Nowa odpowiedź od: ${
+          last?.authorKind === "expert" && last.authorName
+            ? last.authorName
+            : RESIDENT_TEAM_NAME
+        }.`,
       );
     }
     staffSeen.current = staff.length;
@@ -77,13 +83,22 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
   const c = q.data;
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 [overflow-wrap:anywhere] print:max-w-none print:p-0">
+      {easy && (
+        <p
+          className="border-hairline bg-surface mb-4 rounded-md border p-3"
+          data-no-print
+        >
+          Ta strona nie ma jeszcze wersji łatwej — zobacz{" "}
+          <Link href="/easy-read">Tekst łatwy do czytania</Link>.
+        </p>
+      )}
       <p className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
         Moja sprawa
       </p>
       <h1 className="mt-1 text-3xl font-bold break-words">{c.title}</h1>
       <dl className="mt-3 grid gap-x-6 gap-y-1 sm:grid-cols-[auto_1fr]">
         <dt className="text-muted-foreground">Rodzaj</dt>
-        <dd className="font-semibold">{CASE_KIND_LABEL[c.kind]}</dd>
+        <dd className="font-semibold">{RESIDENT_KIND_LABEL[c.kind]}</dd>
         <dt className="text-muted-foreground">Status</dt>
         <dd className="font-semibold">{STEP_LABEL[c.status]}</dd>
         <dt className="text-muted-foreground">Zgłoszona</dt>
@@ -94,22 +109,13 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
         <CaseCode code={c.code} />
         <div className="mt-4 flex flex-wrap gap-3" data-no-print>
           <Button
-            type="button"
-            variant="outline"
-            className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
-            onClick={() => window.print()}
-          >
-            <PrinterIcon aria-hidden="true" />
-            Drukuj
-          </Button>
-          <Button
             asChild
             variant="outline"
             className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
           >
             <Link href={`/case/${c.code}/print`}>
-              <QrCodeIcon aria-hidden="true" />
-              Kartka z kodem QR (A4)
+              <PrinterIcon aria-hidden="true" />
+              Wydrukuj kartkę z kodem
             </Link>
           </Button>
         </div>
@@ -163,7 +169,7 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
 
       <section aria-labelledby="thread-heading" className="mt-8">
         <h2 id="thread-heading" className="text-2xl font-bold">
-          Rozmowa z Zespołem Hubu
+          Rozmowa z ROPS
         </h2>
         <p className="text-muted-foreground mt-1" data-no-print>
           Strona sprawdza nowe odpowiedzi co kilka sekund.
@@ -171,6 +177,7 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
         <div className="mt-4">
           <CaseThread
             viewer="author"
+            readAloud
             messages={c.messages.map((m) => ({ ...m, visibleToAuthor: true }))}
           />
         </div>
@@ -204,7 +211,7 @@ function AuthorReply({
       data-no-print
     >
       <h2 id="reply-heading" className="text-2xl font-bold">
-        Napisz do Zespołu Hubu
+        Napisz do ROPS
       </h2>
       <form
         noValidate
@@ -221,7 +228,7 @@ function AuthorReply({
             const r = await reply.mutateAsync({ code, body });
             setBody("");
             setError("");
-            setDone("Wiadomość wysłana. Zespół Hubu dostał powiadomienie.");
+            setDone("Wiadomość wysłana. ROPS dostał powiadomienie.");
             await onSent();
             document.getElementById(`msg-${r.id}`)?.focus();
           } catch (err) {

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { SampleBadge } from "~/components/kit";
 import { Button } from "~/components/ui/button";
 import {
   CASE_KIND_LABEL,
@@ -245,7 +246,7 @@ export function InboxList({
                       <span className="bg-primary text-primary-foreground rounded px-2 py-0.5 font-bold">
                         Nowe
                       </span>
-                    )}
+                    )}{" "}
                     {r.urgency === "high" && (
                       <span className="border-destructive text-destructive inline-flex items-center gap-1 rounded border px-2 py-0.5 font-semibold">
                         <AlertTriangleIcon
@@ -254,16 +255,17 @@ export function InboxList({
                         />
                         Pilne
                       </span>
-                    )}
-                    <span className="font-mono font-semibold">{r.code}</span>
-                    <span aria-hidden="true">·</span>
+                    )}{" "}
+                    <span className="font-mono font-semibold">{r.code}</span>{" "}
+                    <span aria-hidden="true">·</span>{" "}
                     <span className="border-input rounded-sm border px-2 py-0.5 font-semibold">
                       {CASE_KIND_LABEL[r.kind]}
                     </span>
                     {r.isSample && (
-                      <span className="border-hairline rounded border px-2 py-0.5">
-                        przykładowe
-                      </span>
+                      <>
+                        {" "}
+                        <SampleBadge />
+                      </>
                     )}
                   </p>
                   <Link
