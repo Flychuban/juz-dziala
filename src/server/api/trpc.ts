@@ -1,43 +1,36 @@
 /**
- * YOU PROBABLY DON'T NEED TO EDIT THIS FILE, UNLESS:
- * 1. You want to modify request context (see Part 1).
- * 2. You want to create a new middleware or type of procedure (see Part 3).
- *
- * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
- * need to use are documented accordingly near the end.
+ * tRPC setup: context (db, staff session, anonymous session id), procedures
+ * and the per-session rate limiter. Routers live in ./routers — one per module.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
+import { sql } from "drizzle-orm";
 import superjson from "superjson";
-import { ZodError } from "zod";
+import { ZodError, z } from "zod";
 
+import { type StaffRole } from "~/lib/domain";
+import {
+  readCookie,
+  SESSION_COOKIE,
+  STAFF_COOKIE,
+  verifyStaffSession,
+} from "~/server/auth/session";
 import { db } from "~/server/db";
+import { rateLimits } from "~/server/db/schema";
 
-/**
- * 1. CONTEXT
- *
- * This section defines the "contexts" that are available in the backend API.
- *
- * These allow you to access things when processing a request, like the database, the session, etc.
- *
- * This helper generates the "internals" for a tRPC context. The API handler and RSC clients each
- * wrap this and provides the required context.
- *
- * @see https://trpc.io/docs/server/context
- */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const staff = await verifyStaffSession(
+    readCookie(opts.headers, STAFF_COOKIE),
+  );
+  const sessionId = readCookie(opts.headers, SESSION_COOKIE) ?? null;
   return {
     db,
+    staff,
+    sessionId,
     ...opts,
   };
 };
+export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
 
-/**
- * 2. INITIALIZATION
- *
- * This is where the tRPC API is initialized, connecting the context and transformer. We also parse
- * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
- * errors on the backend.
- */
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
@@ -46,61 +39,67 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       data: {
         ...shape.data,
         zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+          error.cause instanceof ZodError ? z.flattenError(error.cause) : null,
       },
     };
   },
 });
 
-/**
- * Create a server-side caller.
- *
- * @see https://trpc.io/docs/server/server-side-calls
- */
 export const createCallerFactory = t.createCallerFactory;
-
-/**
- * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
- *
- * These are the pieces you use to build your tRPC API. You should import these a lot in the
- * "/src/server/api/routers" directory.
- */
-
-/**
- * This is how you create new routers and sub-routers in your tRPC API.
- *
- * @see https://trpc.io/docs/router
- */
 export const createTRPCRouter = t.router;
 
-/**
- * Middleware for timing procedure execution and adding an artificial delay in development.
- *
- * You can remove this if you don't like it, but it can help catch unwanted waterfalls by simulating
- * network latency that would occur in production but not in local development.
- */
 const timingMiddleware = t.middleware(async ({ next, path }) => {
   const start = Date.now();
-
-  if (t._config.isDev) {
-    // artificial delay in dev
-    const waitMs = Math.floor(Math.random() * 400) + 100;
-    await new Promise((resolve) => setTimeout(resolve, waitMs));
-  }
-
   const result = await next();
-
-  const end = Date.now();
-  console.log(`[TRPC] ${path} took ${end - start}ms to execute`);
-
+  if (t._config.isDev)
+    console.log(`[TRPC] ${path} took ${Date.now() - start}ms`);
   return result;
 });
 
-/**
- * Public (unauthenticated) procedure
- *
- * This is the base piece you use to build new queries and mutations on your tRPC API. It does not
- * guarantee that a user querying is authorized, but you can still access user session data if they
- * are logged in.
- */
+/** Anyone. Residents use only public procedures. */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+/** Staff only, by role. ROPS can do everything staff can. */
+export const roleProcedure = (...roles: StaffRole[]) =>
+  publicProcedure.use(({ ctx, next }) => {
+    if (!ctx.staff) {
+      throw new TRPCError({ code: "UNAUTHORIZED", message: "Zaloguj się." });
+    }
+    if (ctx.staff.role !== "rops" && !roles.includes(ctx.staff.role)) {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Brak uprawnień." });
+    }
+    return next({ ctx: { ...ctx, staff: ctx.staff } });
+  });
+
+/**
+ * Fixed-window rate limit keyed by the anonymous session cookie (falls back
+ * to a shared bucket). Use before every AI call from a public procedure.
+ */
+export async function rateLimit(
+  ctx: Context,
+  bucket: string,
+  { limit, windowSec }: { limit: number; windowSec: number },
+): Promise<void> {
+  const key = `${bucket}:${ctx.sessionId ?? "anon"}`;
+  const now = new Date();
+  const windowStart = new Date(
+    Math.floor(now.getTime() / (windowSec * 1000)) * windowSec * 1000,
+  );
+  const rows = await ctx.db
+    .insert(rateLimits)
+    .values({ key, windowStart, count: 1 })
+    .onConflictDoUpdate({
+      target: rateLimits.key,
+      set: {
+        count: sql`case when ${rateLimits.windowStart} = ${windowStart.toISOString()}::timestamptz then ${rateLimits.count} + 1 else 1 end`,
+        windowStart,
+      },
+    })
+    .returning({ count: rateLimits.count });
+  if ((rows[0]?.count ?? 0) > limit) {
+    throw new TRPCError({
+      code: "TOO_MANY_REQUESTS",
+      message: "Za dużo zapytań w krótkim czasie. Spróbuj za chwilę.",
+    });
+  }
+}

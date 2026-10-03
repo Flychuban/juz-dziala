@@ -9,7 +9,7 @@ const compat = new FlatCompat({
 
 export default tseslint.config(
   {
-    ignores: [".next"],
+    ignores: [".next", "data/**", "eval/results/**", "playwright-report/**"],
   },
   ...compat.extends("next/core-web-vitals"),
   {
@@ -34,6 +34,9 @@ export default tseslint.config(
         { argsIgnorePattern: "^_" },
       ],
       "@typescript-eslint/require-await": "off",
+      // Polish copy uses quotes everywhere; React escapes text content anyway.
+      "react/no-unescaped-entities": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "warn",
       "@typescript-eslint/no-misused-promises": [
         "error",
         { checksVoidReturn: { attributes: false } },

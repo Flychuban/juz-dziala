@@ -3,10 +3,11 @@ import { type Config } from "drizzle-kit";
 import { env } from "~/env";
 
 export default {
-  schema: "./src/server/db/schema.ts",
+  schema: "./src/server/db/schema/index.ts",
   dialect: "postgresql",
   dbCredentials: {
-    url: env.DATABASE_URL,
+    // Migrations need a direct (unpooled) connection on Neon.
+    url: env.DATABASE_URL_UNPOOLED ?? env.DATABASE_URL,
   },
-  tablesFilter: ["juz-dziala_*"],
+  tablesFilter: ["jd_*"],
 } satisfies Config;

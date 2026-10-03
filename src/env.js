@@ -2,43 +2,44 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 export const env = createEnv({
-  /**
-   * Specify your server-side environment variables schema here. This way you can ensure the app
-   * isn't built with invalid env vars.
-   */
   server: {
     DATABASE_URL: z.string().url(),
+    DATABASE_URL_UNPOOLED: z.string().url().optional(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    /** Claude API. Without it, matching falls back to keywords only. */
+    ANTHROPIC_API_KEY: z.string().optional(),
+    /** Signs staff session cookies (≥32 chars). */
+    SESSION_SECRET: z.string().min(32).default("dev-only-secret-change-me-0123456789abcdef"),
+    /** 32-byte base64 key for AES-GCM contact encryption. */
+    CONTACT_ENC_KEY: z.string().optional(),
+    /** E-mail: Resend (verified domain) or SMTP fallback. */
+    RESEND_API_KEY: z.string().optional(),
+    MAIL_FROM: z.string().optional(),
+    SMTP_URL: z.string().optional(),
+    /** Where ROPS staff notifications go. */
+    ROPS_INBOX_EMAIL: z.string().optional(),
+    /** "1" = public demo: one-click staff login, contacts masked, e-mail needs confirmation. */
+    DEMO_MODE: z.enum(["0", "1"]).default("1"),
   },
-
-  /**
-   * Specify your client-side environment variables schema here. This way you can ensure the app
-   * isn't built with invalid env vars. To expose them to the client, prefix them with
-   * `NEXT_PUBLIC_`.
-   */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
   },
-
-  /**
-   * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g.
-   * middlewares) or client-side so we need to destruct manually.
-   */
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED,
     NODE_ENV: process.env.NODE_ENV,
-    // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+    SESSION_SECRET: process.env.SESSION_SECRET,
+    CONTACT_ENC_KEY: process.env.CONTACT_ENC_KEY,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    MAIL_FROM: process.env.MAIL_FROM,
+    SMTP_URL: process.env.SMTP_URL,
+    ROPS_INBOX_EMAIL: process.env.ROPS_INBOX_EMAIL,
+    DEMO_MODE: process.env.DEMO_MODE,
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   },
-  /**
-   * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
-   * useful for Docker builds.
-   */
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
-  /**
-   * Makes it so that empty strings are treated as undefined. `SOME_VAR: z.string()` and
-   * `SOME_VAR=''` will throw an error.
-   */
   emptyStringAsUndefined: true,
 });
