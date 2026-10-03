@@ -1,0 +1,517 @@
+{
+  "matcher": "keyword",
+  "startedAt": "2026-10-03T16:09:23.010Z",
+  "finishedAt": "2026-10-03T16:09:23.135Z",
+  "casesFile": "/Users/flychuban/Desktop/juz-dziala-wt/domain/eval/cases.json",
+  "casesFrozenAt": "2026-10-03",
+  "library": {
+    "path": "/Users/flychuban/Desktop/juz-dziala-wt/domain/data/library.json",
+    "cards": 114
+  },
+  "summary": {
+    "cases": 20,
+    "hit3": {
+      "count": 15,
+      "total": 18,
+      "rate": 0.8333333333333334
+    },
+    "hit3IgnoringAbstain": {
+      "count": 15,
+      "total": 18,
+      "rate": 0.8333333333333334
+    },
+    "top1": {
+      "count": 5,
+      "total": 13,
+      "rate": 0.38461538461538464
+    },
+    "abstainOnExpected": {
+      "count": 2,
+      "total": 2,
+      "rate": 1
+    },
+    "answeredOnOthers": {
+      "count": 18,
+      "total": 18,
+      "rate": 1
+    },
+    "injectionsFollowed": 0,
+    "piiLeaks": 0,
+    "errors": 0,
+    "latencyMs": {
+      "p50": 1.744542000000024,
+      "p95": 4.189208000000008
+    },
+    "costUsd": {
+      "total": 0,
+      "mean": 0,
+      "reported": 20
+    }
+  },
+  "suggestedLowConfidenceThreshold": {
+    "threshold": 0.597,
+    "balancedAccuracy": 1
+  },
+  "results": [
+    {
+      "id": "k01",
+      "kind": "keyword",
+      "slugs": [
+        "senior-cuder",
+        "wirtualne-izby-pamieci",
+        "mobilne-centrum-pomocy-dla-osob-starszych",
+        "centrum-antydepresyjne",
+        "kody-qr-na-pomoc-seniorom"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": false,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 8.527833999999984,
+      "costUsd": 0,
+      "confidence": 0.7923027588750391
+    },
+    {
+      "id": "k02",
+      "kind": "keyword",
+      "slugs": [
+        "zmysly-w-ruchu-model-choreografii-dla-osob-niewidomych",
+        "blue-sea-eye",
+        "dostepny-transport-publiczny",
+        "osoby-niewidome-i-niedowidzace-jako-nauczyciele-jezyka-polskiego",
+        "merkury"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": false,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 3.2072919999999954,
+      "costUsd": 0,
+      "confidence": 0.809952744014104
+    },
+    {
+      "id": "k03",
+      "kind": "keyword",
+      "slugs": [
+        "bez-presji-z-depresji",
+        "komix-zyciowy",
+        "rodzina-adopcyjna-dorasta",
+        "nasz-wspolny-rodzinny-swiat-poznaje-ucze-reaguje",
+        "inteligentny-organizer-do-lekow"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 2.0180409999999824,
+      "costUsd": 0,
+      "confidence": 0.979504872377115
+    },
+    {
+      "id": "k04",
+      "kind": "keyword",
+      "slugs": [
+        "dostepny-transport-publiczny",
+        "uniodziez",
+        "szablony-piekna",
+        "ev-modul-do-wozkow-inwalidzkich",
+        "zakupy-na-jednym-wozku-z-dzieckiem-z-niepelnosprawnoscia-ruchowa"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 1.2905000000000086,
+      "costUsd": 0,
+      "confidence": 0.9187803855023415
+    },
+    {
+      "id": "k05",
+      "kind": "keyword",
+      "slugs": [
+        "agencja-pracy-incydentalnej",
+        "mobilna-gielda-pracy",
+        "gra-o-zdrowie",
+        "wiejski-program-pomocy-osobom-w-kryzysie-bezdomnosci-sciezka-feniksa",
+        "niepelnosprawnosc-szansa-na-pelnosprawnosc-w-pracy-i-zyciu"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": false,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 1.6889590000000112,
+      "costUsd": 0,
+      "confidence": 0.8842798346743873
+    },
+    {
+      "id": "s01",
+      "kind": "story",
+      "slugs": [
+        "organizator-kompleksowej-opieki-w-miejscu-zamieszkania",
+        "senior-cuder",
+        "obu-obuwie-po-domu",
+        "inteligentny-organizer-do-lekow",
+        "mobilne-centrum-pomocy-dla-osob-starszych"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 4.189208000000008,
+      "costUsd": 0,
+      "confidence": 1
+    },
+    {
+      "id": "s02",
+      "kind": "story",
+      "slugs": [
+        "bez-presji-z-depresji",
+        "mobilny-pomocnik-dydaktyczno-sensoryczny-dla-uczniowstudentow-ze-spektrum-autyzmu",
+        "rodzinny-system-wzajemnej-pomocy",
+        "autyzm-i-ja",
+        "jezykolamacz"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": false,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 2.9544579999999883,
+      "costUsd": 0,
+      "confidence": 1
+    },
+    {
+      "id": "s03",
+      "kind": "story",
+      "slugs": [
+        "osoby-niewidome-i-niedowidzace-jako-nauczyciele-jezyka-polskiego",
+        "health-guide-pl",
+        "marimbaza",
+        "mobilna-gielda-pracy",
+        "komix-zyciowy"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": false,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 2.365165999999988,
+      "costUsd": 0,
+      "confidence": 0.9379582318281261
+    },
+    {
+      "id": "s04",
+      "kind": "story",
+      "slugs": [
+        "obu-obuwie-po-domu",
+        "dostepny-transport-publiczny",
+        "zmysly-w-ruchu-model-choreografii-dla-osob-niewidomych",
+        "blue-sea-eye",
+        "kaski-binauralne"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": false,
+      "hit3IgnoringAbstain": false,
+      "top1": false,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 1.9505410000000438,
+      "costUsd": 0,
+      "confidence": 0.8494061486438028
+    },
+    {
+      "id": "s05",
+      "kind": "story",
+      "slugs": [
+        "cloudleg",
+        "ev-modul-do-wozkow-inwalidzkich",
+        "biustspinka",
+        "szablony-piekna",
+        "uniodziez"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": false,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 1.789666000000011,
+      "costUsd": 0,
+      "confidence": 0.9252026395646961
+    },
+    {
+      "id": "s06",
+      "kind": "story",
+      "slugs": [
+        "mobilna-gielda-pracy",
+        "komix-zyciowy",
+        "marimbaza",
+        "to-nie-koniec-swiata-to-poczatek-swiata",
+        "agencja-pracy-incydentalnej"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 1.744542000000024,
+      "costUsd": 0,
+      "confidence": 0.901218089339703
+    },
+    {
+      "id": "c01",
+      "kind": "colloquial",
+      "slugs": [
+        "inteligentny-organizer-do-lekow",
+        "mobilne-centrum-pomocy-dla-osob-starszych",
+        "senior-cuder",
+        "wirtualne-izby-pamieci",
+        "centrum-antydepresyjne"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 2.1973749999999654,
+      "costUsd": 0,
+      "confidence": 0.8011049290954301
+    },
+    {
+      "id": "c02",
+      "kind": "colloquial",
+      "slugs": [
+        "merkury",
+        "wirtualne-izby-pamieci",
+        "senior-cuder",
+        "mobilne-centrum-pomocy-dla-osob-starszych",
+        "kody-qr-na-pomoc-seniorom"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 1.40625,
+      "costUsd": 0,
+      "confidence": 0.8872788929726095
+    },
+    {
+      "id": "c03",
+      "kind": "colloquial",
+      "slugs": [
+        "zakupy-na-jednym-wozku-z-dzieckiem-z-niepelnosprawnoscia-ruchowa",
+        "ev-modul-do-wozkow-inwalidzkich",
+        "komix-zyciowy",
+        "hop-hop-mobilny-plac-zabaw",
+        "zeglowanie-w-wyobrazni-czyli-sposob-na-strachy-na-wodzie"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": false,
+      "hit3IgnoringAbstain": false,
+      "top1": false,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 1.5589590000000157,
+      "costUsd": 0,
+      "confidence": 0.8976648313021467
+    },
+    {
+      "id": "m01",
+      "kind": "multi",
+      "slugs": [
+        "niepelnosprawnosc-szansa-na-pelnosprawnosc-w-pracy-i-zyciu",
+        "rodzinny-system-wzajemnej-pomocy",
+        "ta-sciezka-terapeutyczna-sciezka-kulturowa-dla-dzieci-i-doroslych-z-autyzmem",
+        "autyzm-i-ja",
+        "himalaje-autyzmu"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": false,
+      "hit3IgnoringAbstain": false,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 1.7425420000000145,
+      "costUsd": 0,
+      "confidence": 0.9402278081052402
+    },
+    {
+      "id": "m02",
+      "kind": "multi",
+      "slugs": [
+        "szlakiem-ludzi-bezdomnych",
+        "cold-box",
+        "paszport-pacjenta-z-choroba-rzadka",
+        "wiejski-program-pomocy-osobom-w-kryzysie-bezdomnosci-sciezka-feniksa",
+        "inteligentny-organizer-do-lekow"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 1.0236249999999814,
+      "costUsd": 0,
+      "confidence": 0.938336289632449
+    },
+    {
+      "id": "n01",
+      "kind": "none",
+      "slugs": [
+        "organizator-kompleksowej-opieki-w-miejscu-zamieszkania",
+        "moduly-niezaleznosci",
+        "centrum-antydepresyjne",
+        "dostepny-stol-targowy",
+        "przenosne-modularne-lazienki"
+      ],
+      "abstained": true,
+      "expectAbstain": true,
+      "hit3": null,
+      "hit3IgnoringAbstain": null,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 0.3588330000000042,
+      "costUsd": 0,
+      "confidence": 0.36944750376110286
+    },
+    {
+      "id": "n02",
+      "kind": "none",
+      "slugs": [
+        "kompleksowa-pomoc-dla-osob-po-amputacji-konczyny-dolnej",
+        "organizator-kompleksowej-opieki-w-miejscu-zamieszkania",
+        "talerze-zdrowia",
+        "rodzinny-system-wzajemnej-pomocy",
+        "cold-box"
+      ],
+      "abstained": true,
+      "expectAbstain": true,
+      "hit3": null,
+      "hit3IgnoringAbstain": null,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 0.45016700000002174,
+      "costUsd": 0,
+      "confidence": 0.4012288631437374
+    },
+    {
+      "id": "a01",
+      "kind": "adversarial",
+      "slugs": [
+        "dostepny-wniosek-dla-ggluchych",
+        "wielodziedzinowy-slownik-terminow-specjalistycznych-pl-pjm",
+        "glucha-ankieta",
+        "dostepny-transport-publiczny",
+        "gluchy-czytelnik-w-bibliotece"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 1.222959000000003,
+      "costUsd": 0,
+      "confidence": 1
+    },
+    {
+      "id": "a02",
+      "kind": "adversarial",
+      "slugs": [
+        "dostepny-transport-publiczny",
+        "wsparcie-imprez-masowych-dla-osob-z-niepelnosprawnoscia-wzroku",
+        "zmysly-w-ruchu-model-choreografii-dla-osob-niewidomych",
+        "wozek-szermierczy",
+        "turystyka-gorskawspinaczka-dostepna-dla-wszystkich"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 2.1902500000000487,
+      "costUsd": 0,
+      "confidence": 1
+    }
+  ]
+}

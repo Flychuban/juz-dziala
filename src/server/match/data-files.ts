@@ -1,0 +1,151 @@
+/**
+ * Optional data files produced by the Data agent: data/knowledge.json (facts
+ * per Mapa area, with source) and data/gminas.json (gmina names and TERYT
+ * codes). Either may be missing; every reader then returns an empty result.
+ * Parsers are tolerant of shape and never invent a value they cannot read.
+ */
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+
+import { isMapaArea, type MapaArea } from "~/server/domain/types";
+
+// ---------------------------------------------------------------------------
+// knowledge.json: {areas:[{key,label,keyChallenges[],figures[],pages[]}], source:{title,url}}
+// ---------------------------------------------------------------------------
+
+export type KnowledgeFact = {
+  area: MapaArea;
+  areaLabel: string;
+  text: string;
+  sourceTitle: string;
+  sourceUrl: string | null;
+  /** Page reference in the source document, when given. */
+  page: string | null;
+};
+
+type Rec = Record<string, unknown>;
+const isRec = (v: unknown): v is Rec => typeof v === "object" && v !== null && !Array.isArray(v);
+const str = (v: unknown): string | null => (typeof v === "string" && v.trim() ? v.trim() : typeof v === "number" ? String(v) : null);
+
+function figureText(f: unknown): { text: string; sourceTitle?: string; sourceUrl?: string; page?: string } | null {
+  if (typeof f === "string") return f.trim() ? { text: f.trim() } : null;
+  if (!isRec(f)) return null;
+  const direct = str(f.text) ?? str(f.fact) ?? str(f.description);
+  let text = direct;
+  if (!text) {
+    const label = str(f.label) ?? str(f.name);
+    const value = str(f.value);
+    if (!label || !value) return null;
+    const unit = str(f.unit);
+    const year = str(f.year) ?? str(f.period);
+    const where = str(f.scope) ?? str(f.region);
+    text = `${label}: ${value}${unit ? ` ${unit}` : ""}${where ? ` (${where}${year ? `, ${year}` : ""})` : year ? ` (${year})` : ""}`;
+  }
+  const src = isRec(f.source) ? f.source : null;
+  return {
+    text,
+    ...(str(src?.title) ?? str(f.sourceTitle) ? { sourceTitle: (str(src?.title) ?? str(f.sourceTitle))! } : {}),
+    ...(str(src?.url) ?? str(f.sourceUrl) ? { sourceUrl: (str(src?.url) ?? str(f.sourceUrl))! } : {}),
+    ...(str(f.page) ? { page: str(f.page)! } : {}),
+  };
+}
+
+/** The first readable figure (else key challenge) for each area, with its source. */
+export function parseKnowledge(json: unknown): Map<MapaArea, KnowledgeFact> {
+  const out = new Map<MapaArea, KnowledgeFact>();
+  if (!isRec(json) || !Array.isArray(json.areas)) return out;
+  const source = isRec(json.source) ? json.source : {};
+  const defaultTitle = str(source.title);
+  const defaultUrl = str(source.url);
+  for (const a of json.areas) {
+    if (!isRec(a) || !isMapaArea(a.key)) continue;
+    const label = str(a.label) ?? a.key;
+    const figures = Array.isArray(a.figures) ? a.figures : [];
+    const challenges = Array.isArray(a.keyChallenges) ? a.keyChallenges : [];
+    const pages = Array.isArray(a.pages) ? a.pages.map(str).filter((p): p is string => p !== null) : [];
+    const pick = figures.map(figureText).find((x) => x !== null) ?? challenges.map(figureText).find((x) => x !== null);
+    if (!pick) continue;
+    const sourceTitle = pick.sourceTitle ?? defaultTitle;
+    if (!sourceTitle) continue; // a fact without a named source is not shown
+    out.set(a.key, {
+      area: a.key,
+      areaLabel: label,
+      text: pick.text,
+      sourceTitle,
+      sourceUrl: pick.sourceUrl ?? defaultUrl,
+      page: pick.page ?? pages[0] ?? null,
+    });
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// gminas.json: tolerant of [{teryt,name,powiat}] / {gminas:[…]} and field aliases
+// ---------------------------------------------------------------------------
+
+export type Gmina = { teryt: string; name: string; powiatTeryt: string; powiatName: string | null };
+
+/** A gmina TERYT is WWPPGG(R): województwo, powiat, gmina, type digit. */
+export function powiatOf(teryt: string | null | undefined): string | null {
+  const digits = (teryt ?? "").replace(/[^0-9]/g, "");
+  return digits.length >= 6 ? digits.slice(0, 4) : null;
+}
+
+export function parseGminas(json: unknown): Gmina[] {
+  const list: unknown[] = Array.isArray(json)
+    ? json
+    : isRec(json) && Array.isArray(json.gminas)
+      ? json.gminas
+      : isRec(json) && Array.isArray(json.items)
+        ? json.items
+        : [];
+  const out: Gmina[] = [];
+  const seen = new Set<string>();
+  for (const g of list) {
+    if (!isRec(g)) continue;
+    const teryt = (str(g.teryt) ?? str(g.code) ?? str(g.terc) ?? str(g.id) ?? "").replace(/[^0-9]/g, "");
+    const name = str(g.name) ?? str(g.nazwa);
+    if (!name || teryt.length < 6 || seen.has(teryt)) continue;
+    seen.add(teryt);
+    const powiat = isRec(g.powiat) ? g.powiat : null;
+    out.push({
+      teryt,
+      name,
+      powiatTeryt: powiatOf(teryt)!,
+      powiatName: str(g.powiatName) ?? str(powiat?.name) ?? (typeof g.powiat === "string" ? g.powiat : null),
+    });
+  }
+  return out.sort((a, b) => a.name.localeCompare(b.name, "pl"));
+}
+
+// ---------------------------------------------------------------------------
+// Readers (cached per process; missing file → empty)
+// ---------------------------------------------------------------------------
+
+function readJson(file: string): unknown {
+  const path = join(process.cwd(), "data", file);
+  if (!existsSync(path)) return null;
+  try {
+    return JSON.parse(readFileSync(path, "utf8")) as unknown;
+  } catch (e) {
+    console.error(`[match] could not read data/${file}`, e);
+    return null;
+  }
+}
+
+let knowledgeCache: Map<MapaArea, KnowledgeFact> | null = null;
+export function knowledgeFacts(): Map<MapaArea, KnowledgeFact> {
+  knowledgeCache ??= parseKnowledge(readJson("knowledge.json"));
+  return knowledgeCache;
+}
+
+let gminaCache: Gmina[] | null = null;
+export function gminas(): Gmina[] {
+  gminaCache ??= parseGminas(readJson("gminas.json"));
+  return gminaCache;
+}
+
+export function powiatName(powiatTeryt: string | null): string | null {
+  if (!powiatTeryt) return null;
+  return gminas().find((g) => g.powiatTeryt === powiatTeryt && g.powiatName)?.powiatName ?? null;
+}

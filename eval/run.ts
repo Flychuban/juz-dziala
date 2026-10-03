@@ -87,7 +87,13 @@ async function main(): Promise<void> {
     libraryCards = cards.length;
     matcher = createKeywordMatcher(cards);
   } else if (matcherName === "ai") {
-    const ai = await loadAiMatcher();
+    let ai: Matcher | null;
+    try {
+      ai = await loadAiMatcher();
+    } catch (e) {
+      console.log(`The AI matcher cannot run: ${e instanceof Error ? e.message : String(e)}`);
+      return;
+    }
     if (!ai) {
       console.log("No AI adapter at src/server/ai/match-eval-adapter.ts yet. Nothing to evaluate.");
       return;
@@ -159,7 +165,10 @@ async function main(): Promise<void> {
   console.log(`written: ${outFile}`);
 }
 
-main().catch((e: unknown) => {
-  console.error(e);
-  process.exitCode = 1;
-});
+main()
+  .catch((e: unknown) => {
+    console.error(e);
+    process.exitCode = 1;
+  })
+  // The AI path opens a database pool (for call logging) that would keep Node alive.
+  .finally(() => process.exit());

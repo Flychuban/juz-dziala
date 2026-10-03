@@ -19,7 +19,7 @@ Przypadki napisano 3.10.2026, przed jakimkolwiek strojeniem dopasowania. **Nie e
 
 ```bash
 pnpm eval                          # dopasowanie słownikowe (keywords.ts) na data/library.json
-pnpm eval --matcher=ai             # dopasowanie AI przez src/server/ai/match-eval-adapter.ts
+pnpm eval -- --matcher=ai          # pełny potok (słowa → Claude → weryfikacja), wymaga ANTHROPIC_API_KEY
 pnpm eval --library=inny-plik.json # inna wersja biblioteki
 ```
 
@@ -31,4 +31,8 @@ Adapter AI eksportuje `createMatcher()` (albo `matcher` lub domyślną funkcję)
 
 ## Próg niskiej pewności
 
-`LOW_CONFIDENCE_THRESHOLD` w `src/server/domain/keywords.ts` skalibrowano na tym zestawie, na przybliżeniu biblioteki (opisy z list kategorii), bo pełna biblioteka jeszcze nie istniała. Po każdym przebiegu skrypt podaje sugerowany próg — sprawdźcie go, gdy pojawi się prawdziwe `data/library.json`.
+`LOW_CONFIDENCE_THRESHOLD = 0.6` w `src/server/domain/keywords.ts` skalibrowano 3.10.2026 na tym zestawie i prawdziwej bibliotece (114 kart). Pewność (`normScore`) liczymy w skali logarytmicznej, bo surowy wynik rośnie z długością opisu: dwa przypadki bez odpowiedzi mają 0,37 i 0,40, najsłabsza trafna odpowiedź 0,79. Po każdym przebiegu skrypt podaje sugerowany próg.
+
+## Uwaga o k04
+
+Slug `lekki-wozek-aktywny` (k04) jest prawdziwą kartą z listy kategorii na rops.krakow.pl, ale nie trafił do `data/library.json` (114 z 115 kart). To nie literówka, więc zgodnie z zasadą zamrożenia przypadek zostaje bez zmian; k04 ma inne akceptowalne karty.

@@ -122,8 +122,12 @@ describe("normalizeScore", () => {
     expect(normalizeScore(0)).toBe(0);
     expect(normalizeScore(-3)).toBe(0);
     expect(normalizeScore(Number.NaN)).toBe(0);
-    expect(normalizeScore(SCORE_FOR_FULL_CONFIDENCE / 2)).toBeCloseTo(0.5);
+    expect(normalizeScore(SCORE_FOR_FULL_CONFIDENCE)).toBeCloseTo(1);
     expect(normalizeScore(SCORE_FOR_FULL_CONFIDENCE * 3)).toBe(1);
+    expect(normalizeScore(100)).toBeGreaterThan(normalizeScore(50));
+    // the calibration points: no-answer text (raw ~20) below, a weak real answer (raw ~400) above
+    expect(normalizeScore(20)).toBeLessThan(LOW_CONFIDENCE_THRESHOLD);
+    expect(normalizeScore(400)).toBeGreaterThan(LOW_CONFIDENCE_THRESHOLD);
   });
 });
 
