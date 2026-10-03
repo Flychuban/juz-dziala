@@ -105,9 +105,19 @@ export function MyCases() {
   useEffect(() => setSaved(readMyCases()), []);
   const codes = saved?.map((s) => s.code) ?? [];
   const q = api.cases.byCodes.useQuery(
-    { codes },
-    { enabled: codes.length > 0, refetchInterval: 30_000 },
+    { codes: codes.slice(0, 20) },
+    { enabled: codes.length > 0, refetchInterval: 60_000 },
   );
+  // A code the server no longer knows is dropped from this device, so the
+  // next poll does not count it as a wrong guess again.
+  useEffect(() => {
+    if (!q.data || !saved) return;
+    const known = new Set(q.data.map((c) => c.code));
+    const stale = saved.filter((s) => !known.has(s.code));
+    if (stale.length === 0) return;
+    for (const s of stale) forgetCase(s.code);
+    setSaved(readMyCases());
+  }, [q.data, saved]);
 
   if (saved === null) return null;
   return (

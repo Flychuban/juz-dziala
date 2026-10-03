@@ -6,7 +6,11 @@ import {
   publicProcedure,
   rateLimit,
 } from "~/server/api/trpc";
-import { caseOr404 } from "~/server/cases/access";
+import {
+  caseOr404,
+  limitReplyPerCode,
+  recordMisses,
+} from "~/server/cases/access";
 import { addMessage, createCase, setCaseStatus } from "~/server/cases/engine";
 import { createCaseInputSchema } from "~/server/cases/input";
 import { casePayloads } from "~/server/cases/payloads";
@@ -17,8 +21,10 @@ import { hashToken, normalizeCaseCode } from "~/server/domain/case-code";
 
 /**
  * Module V — the author's side of a Sprawa. Residents have no accounts: the
- * case code is the key (the private link adds a token). Never returns the
- * contact.
+ * case code alone is the key (the private link adds a token but is not
+ * required) — a deliberate trade-off for seniors who read codes over the
+ * phone; guessing is what is limited, see `~/server/cases/access`. Never
+ * returns the contact.
  */
 const codeInput = z.string().trim().min(1).max(40);
 
@@ -96,6 +102,7 @@ export const casesRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await rateLimit(ctx, "cases.reply", { limit: 20, windowSec: 600 });
       const c = await caseOr404(ctx, input.code);
+      await limitReplyPerCode(ctx, c.code);
       const m = await addMessage({
         caseId: c.id,
         authorKind: "author",
@@ -111,8 +118,9 @@ export const casesRouter = createTRPCRouter({
 
   /** „Twoje sprawy na tym urządzeniu" — codes kept in localStorage. */
   byCodes: publicProcedure
-    .input(z.object({ codes: z.array(z.string().max(40)).max(30) }))
+    .input(z.object({ codes: z.array(z.string().max(40)).max(20) }))
     .query(async ({ ctx, input }) => {
+      await rateLimit(ctx, "cases.byCodes", { limit: 30, windowSec: 600 });
       const codes = [
         ...new Set(
           input.codes
@@ -149,6 +157,9 @@ export const casesRouter = createTRPCRouter({
             )
             .groupBy(messages.caseId)
         : [];
+      // Codes this device remembered but that do not exist count as guesses.
+      const misses = codes.length - rows.length;
+      if (misses > 0) await recordMisses(ctx, misses);
       const lastReply = new Map(replies.map((r) => [r.caseId, r.at]));
       const byCode = new Map(rows.map((r) => [r.code, r]));
       return codes.flatMap((code) => {
