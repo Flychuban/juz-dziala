@@ -3,7 +3,11 @@
  * in dependency order. Each seed is idempotent (upsert) and marks sample
  * records isSample = true.
  */
-const steps: { name: string; run: () => Promise<void> }[] = [];
+import { seedLibrary } from "./library";
+
+const steps: { name: string; run: () => Promise<void> }[] = [
+  { name: "library", run: seedLibrary },
+];
 
 async function main() {
   for (const s of steps) {
