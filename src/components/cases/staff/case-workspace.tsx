@@ -12,8 +12,15 @@ import {
   URGENCY_LABEL,
 } from "~/lib/domain";
 import { api } from "~/trpc/react";
+import { FeedbackSummary } from "~/components/tests/feedback-summary";
+import {
+  IdeaSection,
+  InnovationSection,
+  MatchSection,
+  PlanSection,
+} from "../case-modules";
 import { CaseThread } from "../case-thread";
-import { fmtDate, fmtDateTime } from "../format";
+import { fmtDateTime } from "../format";
 import { StatusTimeline } from "../status-timeline";
 import { CaseControls, ContactAndDeliveries } from "./case-controls";
 import { StaffReply } from "./staff-reply";
@@ -138,19 +145,35 @@ export function CaseWorkspace({
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
         <div className="flex min-w-0 flex-col gap-6">
-          <section
-            aria-labelledby="request-heading"
-            className="border-hairline rounded-lg border p-4"
-          >
-            <h2 id="request-heading" className="text-xl font-bold">
-              Zgłoszenie
-            </h2>
-            <p className="mt-2 whitespace-pre-wrap">{c.body}</p>
-            <p className="text-muted-foreground mt-3 text-sm">
-              Tekst po automatycznym usunięciu danych osobowych (telefony,
-              e-maile, PESEL, adresy).
-            </p>
-            <dl className="mt-3 grid gap-x-3 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
+          {d.match && <MatchSection match={d.match} />}
+
+          {d.plan ? (
+            <PlanSection plan={d.plan} code={c.code} />
+          ) : d.idea ? (
+            <IdeaSection
+              idea={d.idea}
+              call={d.call}
+              code={c.code}
+              viewer="staff"
+            />
+          ) : (
+            <section
+              aria-labelledby="request-heading"
+              className="border-hairline rounded-lg border p-4"
+            >
+              <h2 id="request-heading" className="text-xl font-bold">
+                Zgłoszenie
+              </h2>
+              <p className="mt-2 whitespace-pre-wrap">{c.body}</p>
+              <p className="text-muted-foreground mt-3 text-sm">
+                Tekst po automatycznym usunięciu danych osobowych (telefony,
+                e-maile, PESEL, adresy).
+              </p>
+            </section>
+          )}
+
+          {(c.areas.length > 0 || !!c.gminaTeryt || (!!d.call && !d.idea)) && (
+            <dl className="grid gap-x-3 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
               {c.areas.length > 0 && (
                 <>
                   <dt className="text-muted-foreground">Obszar</dt>
@@ -163,84 +186,26 @@ export function CaseWorkspace({
                   <dd className="font-mono">{c.gminaTeryt}</dd>
                 </>
               )}
-              {d.innovation && (
-                <>
-                  <dt className="text-muted-foreground">Dotyczy innowacji</dt>
-                  <dd>
-                    <Link href={`/library/${d.innovation.slug}`}>
-                      {d.innovation.title}
-                    </Link>
-                  </dd>
-                </>
-              )}
-              {d.call && (
+              {d.call && !d.idea && (
                 <>
                   <dt className="text-muted-foreground">Nabór</dt>
                   <dd>{d.call.name}</dd>
                 </>
               )}
-              {c.rating != null && (
-                <>
-                  <dt className="text-muted-foreground">Ocena</dt>
-                  <dd>{c.rating} / 5</dd>
-                </>
-              )}
-              {c.kind === "idea" && c.hasIdea && (
-                <>
-                  <dt className="text-muted-foreground">Pomysł</dt>
-                  <dd>
-                    <Link href={`/ideas/${c.code}/canvas`}>
-                      Otwórz Canvas pomysłu
-                    </Link>
-                  </dd>
-                </>
-              )}
             </dl>
-          </section>
+          )}
 
-          {d.matchRun && (
-            <section
-              aria-labelledby="match-heading"
-              className="border-hairline rounded-lg border p-4"
-            >
-              <h2 id="match-heading" className="text-xl font-bold">
-                Wyniki dopasowania
-              </h2>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Z wyszukiwania z {fmtDateTime(d.matchRun.createdAt)} ·{" "}
-                {d.matchRun.abstained
-                  ? "Nie mamy pewnego dopasowania"
-                  : d.matchRun.source === "ai"
-                    ? "Sprawdzone przez AI"
-                    : "Wstępne wyniki (słowa kluczowe)"}
-              </p>
-              {d.matchRun.crisis && (
-                <p className="text-destructive mt-2 flex items-center gap-1 font-bold">
-                  <AlertTriangleIcon aria-hidden="true" className="size-4" />
-                  Wyszukiwanie wykryło sygnały kryzysu.
-                </p>
-              )}
-              {d.matchRun.cards.length > 0 ? (
-                <ol className="mt-2 list-decimal pl-6">
-                  {d.matchRun.cards.map((k) => (
-                    <li key={k.id}>
-                      <Link href={`/library/${k.slug}`}>{k.title}</Link>
-                      <span className="text-muted-foreground text-sm">
-                        {" "}
-                        — stan na {fmtDate(k.capturedAt)}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <p className="mt-2">Autor nie dostał gotowych rozwiązań.</p>
-              )}
-              <p className="mt-2">
-                <Link href={`/match/${d.matchRun.id}`}>
-                  Zobacz wyniki tak, jak widział je autor
-                </Link>
-              </p>
-            </section>
+          {d.innovation && (
+            <InnovationSection
+              kind={c.kind}
+              innovation={d.innovation}
+              rating={d.rating}
+            />
+          )}
+          {d.innovation && (c.kind === "test" || c.kind === "feedback") && (
+            <div className="border-hairline rounded-lg border p-4">
+              <FeedbackSummary innovationId={d.innovation.id} />
+            </div>
           )}
 
           <section aria-labelledby="thread-heading">

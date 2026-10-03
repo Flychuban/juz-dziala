@@ -66,15 +66,61 @@ export function InboxList({
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   };
   const filtered = Boolean(status ?? kind ?? area ?? (qParam || waiting));
-  const rows = list.data ?? [];
+  const rows = list.data?.items ?? [];
+  const counts = list.data?.kindCounts;
+  const allCount = counts
+    ? CASE_KINDS.reduce((n, k) => n + counts[k], 0)
+    : null;
   const unread = rows.filter((r) => r.unread).length;
+
+  const chip = (
+    value: CaseKind | undefined,
+    text: string,
+    n: number | null,
+  ) => {
+    const active = kind === value;
+    return (
+      <li key={value ?? "all"}>
+        <button
+          type="button"
+          aria-pressed={active}
+          onClick={() => setParam("kind", value)}
+          className={cn(
+            "inline-flex min-h-12 items-center gap-2 rounded-full border px-4 text-base font-medium",
+            active
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-input bg-background hover:bg-accent",
+          )}
+        >
+          {text}
+          {n != null && (
+            <span className="font-bold tabular-nums">
+              <span className="sr-only">: </span>
+              {n}
+            </span>
+          )}
+        </button>
+      </li>
+    );
+  };
 
   return (
     <div className="flex flex-col gap-6">
+      <div role="group" aria-labelledby="kind-chips-label">
+        <p id="kind-chips-label" className="mb-2 font-semibold">
+          Rodzaj sprawy
+        </p>
+        <ul className="flex flex-wrap gap-2">
+          {chip(undefined, "Wszystkie", allCount)}
+          {CASE_KINDS.map((k) =>
+            chip(k, CASE_KIND_LABEL[k], counts ? counts[k] : null),
+          )}
+        </ul>
+      </div>
       <form
         role="search"
         aria-label="Filtry spraw"
-        className="border-hairline grid gap-4 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-4"
+        className="border-hairline grid gap-4 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-3"
         onSubmit={(e) => {
           e.preventDefault();
           setParam("q", q.trim() || undefined);
@@ -94,24 +140,6 @@ export function InboxList({
             {CASE_STATUSES.map((s) => (
               <option key={s} value={s}>
                 {CASE_STATUS_LABEL[s]}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="f-kind" className="font-semibold">
-            Rodzaj
-          </label>
-          <select
-            id="f-kind"
-            value={kind ?? ""}
-            onChange={(e) => setParam("kind", e.target.value || undefined)}
-            className={selectClass}
-          >
-            <option value="">Wszystkie</option>
-            {CASE_KINDS.map((k) => (
-              <option key={k} value={k}>
-                {CASE_KIND_LABEL[k]}
               </option>
             ))}
           </select>
@@ -157,7 +185,7 @@ export function InboxList({
             </Button>
           </div>
         </div>
-        <label className="flex min-h-12 items-center gap-3 sm:col-span-2 lg:col-span-4">
+        <label className="flex min-h-12 items-center gap-3 sm:col-span-2 lg:col-span-3">
           <input
             type="checkbox"
             checked={waiting}
@@ -169,7 +197,7 @@ export function InboxList({
           Tylko sprawy, które czekają ponad 48 h
         </label>
         {filtered && (
-          <div className="sm:col-span-2 lg:col-span-4">
+          <div className="sm:col-span-2 lg:col-span-3">
             <Button
               type="button"
               variant="ghost"
@@ -229,7 +257,9 @@ export function InboxList({
                     )}
                     <span className="font-mono font-semibold">{r.code}</span>
                     <span aria-hidden="true">·</span>
-                    <span>{CASE_KIND_LABEL[r.kind]}</span>
+                    <span className="border-input rounded-sm border px-2 py-0.5 font-semibold">
+                      {CASE_KIND_LABEL[r.kind]}
+                    </span>
                     {r.isSample && (
                       <span className="border-hairline rounded border px-2 py-0.5">
                         przykładowe

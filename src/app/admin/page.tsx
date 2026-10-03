@@ -4,7 +4,10 @@ import { api, HydrateClient } from "~/trpc/server";
 export const metadata = { title: "Pulpit" };
 
 export default async function Page() {
-  await api.admin.inbox.stats.prefetch();
+  await Promise.all([
+    api.admin.inbox.stats.prefetch(),
+    api.admin.trends.whiteSpots.prefetch({ days: 30 }),
+  ]);
   return (
     <HydrateClient>
       <div className="mx-auto max-w-6xl px-4 py-8">

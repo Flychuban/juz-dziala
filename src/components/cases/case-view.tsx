@@ -9,6 +9,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { CASE_KIND_LABEL } from "~/lib/domain";
 import { api } from "~/trpc/react";
 import { CaseCode } from "./case-code";
+import { IdeaSection, InnovationSection, PlanSection } from "./case-modules";
 import { CaseThread } from "./case-thread";
 import { fmtDate } from "./format";
 import { markSeen, rememberCase } from "./my-cases";
@@ -117,16 +118,44 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
         <StatusTimeline steps={c.timeline} className="mt-3" />
       </section>
 
-      <details className="border-hairline mt-8 rounded-md border p-4">
-        <summary className="min-h-12 cursor-pointer py-2 font-semibold">
-          Twoje zgłoszenie
-        </summary>
-        <p className="mt-2 whitespace-pre-wrap">{c.body}</p>
-        <p className="text-muted-foreground mt-3 text-sm">
-          Numery telefonów, adresy e-mail i numery PESEL ukryliśmy, zanim
-          zapisaliśmy zgłoszenie.
-        </p>
-      </details>
+      {c.plan && (
+        <div className="mt-8">
+          <PlanSection plan={c.plan} code={c.code} />
+        </div>
+      )}
+      {c.idea && (
+        <div className="mt-8">
+          <IdeaSection
+            idea={c.idea}
+            call={c.call}
+            code={c.code}
+            viewer="author"
+            token={c.privateLink ? token : undefined}
+          />
+        </div>
+      )}
+      {c.innovation && !c.plan && (
+        <div className="mt-8">
+          <InnovationSection
+            kind={c.kind}
+            innovation={c.innovation}
+            rating={c.rating}
+          />
+        </div>
+      )}
+
+      {!c.plan && !c.idea && (
+        <details className="border-hairline mt-8 rounded-md border p-4">
+          <summary className="min-h-12 cursor-pointer py-2 font-semibold">
+            Twoje zgłoszenie
+          </summary>
+          <p className="mt-2 whitespace-pre-wrap">{c.body}</p>
+          <p className="text-muted-foreground mt-3 text-sm">
+            Numery telefonów, adresy e-mail i numery PESEL ukryliśmy, zanim
+            zapisaliśmy zgłoszenie.
+          </p>
+        </details>
+      )}
 
       <section aria-labelledby="thread-heading" className="mt-8">
         <h2 id="thread-heading" className="text-2xl font-bold">
