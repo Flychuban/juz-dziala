@@ -154,7 +154,9 @@ test("„Użyj szkicu” wypełnia odpowiedź, a autor słyszy ją przez aria-li
   await expect(live).toHaveText(/Nowa odpowiedź od: ROPS Kraków/u, {
     timeout: 15_000,
   });
-  await expect(author.getByText("ROPS Kraków").first()).toBeVisible();
+  await expect(
+    author.getByText("ROPS Kraków").filter({ visible: true }).first(),
+  ).toBeVisible();
 
   await staffContext.close();
   await authorContext.close();
