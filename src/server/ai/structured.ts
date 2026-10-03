@@ -125,11 +125,14 @@ export type AiResult<T> =
  * Note: the SDK strips min/max constraints from the schema it sends, then
  * validates after parsing — so keep schemas permissive and trim on the server.
  */
+export type UserContent = string | Anthropic.Beta.BetaContentBlockParam[];
+
 export async function aiStructured<S extends z.ZodType>(opts: {
   fn: string;
   schema: S;
   system: SystemBlock[];
-  user: string;
+  /** Plain text, or content blocks (e.g. a PDF document block before the instructions). */
+  user: UserContent;
   effort?: Effort;
   maxTokens?: number;
   timeoutMs?: number;
