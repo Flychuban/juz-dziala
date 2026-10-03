@@ -211,7 +211,7 @@ export async function PowiatMap({
     <div
       data-slot="powiat-map"
       className={cn(
-        "grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]",
+        "grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]",
         className,
       )}
     >

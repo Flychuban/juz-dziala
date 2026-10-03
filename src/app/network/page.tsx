@@ -65,7 +65,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
           <ul className="flex flex-wrap gap-3">
             {sections.map((s) => (
               <li key={s.id}>
-                <a href={`#${s.id}`} className="border-input bg-background hover:bg-surface inline-flex min-h-12 items-center rounded-md border-2 px-4 font-semibold">
+                <a href={`#${s.id}`} className="border-input bg-background hover:bg-surface inline-flex min-h-12 max-w-full items-center rounded-md border-2 px-4 font-semibold [overflow-wrap:anywhere]">
                   {s.label}
                 </a>
               </li>
@@ -81,7 +81,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
             Otwarte nabory
           </h2>
           {calls.length ? (
-            <ul className="mt-6 grid gap-5 md:grid-cols-2">
+            <ul className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
               {calls.map((c) => (
                 <li key={c.id} className="border-hairline flex flex-col gap-2 rounded-lg border p-5">
                   <p className="text-muted-foreground text-sm font-semibold">{CALL_STATUS_LABEL[c.status]}</p>
@@ -99,7 +99,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
                   {c.operator ? <p className="text-muted-foreground text-[0.9375rem]">Prowadzi: {c.operator}</p> : null}
                   <div className="mt-auto flex flex-wrap gap-3 pt-2">
                     {c.status === "demo" ? (
-                      <Button asChild size="sm">
+                      <Button asChild>
                         <Link href="/ideas/new">Zgłoś pomysł i przygotuj wniosek</Link>
                       </Button>
                     ) : null}
@@ -135,7 +135,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
               <p className="mt-2 max-w-prose">
                 W prototypie pokazujemy osoby przykładowe — nie są to prawdziwe dane. W wersji docelowej będą tu mentorzy i eksperci współpracujący z ROPS.
               </p>
-              <ul className="mt-6 grid gap-5 md:grid-cols-2">
+              <ul className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
                 {people.map((p) => (
                   <li key={p.id} className="border-hairline flex flex-col gap-2 rounded-lg border p-5">
                     <h3 className="font-display flex flex-wrap items-center gap-2 text-xl font-bold">
@@ -155,7 +155,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
                         ))}
                       </div>
                     ) : null}
-                    <Button asChild size="sm" variant="secondary" className="mt-2 w-fit">
+                    <Button asChild variant="secondary" className="mt-2 w-fit">
                       <Link href={`/network?area=${p.areas[0] ?? ""}#zapytaj`}>Zapytaj w tym obszarze</Link>
                     </Button>
                   </li>
@@ -181,7 +181,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
                 <h3 id={`org-${g.type}`} className="font-display text-xl font-bold">
                   {ORG_TYPE_LABEL[g.type]?.many ?? "Inne"} <span className="text-muted-foreground tabular font-semibold">({g.items.length})</span>
                 </h3>
-                <ul className="mt-3 grid gap-3 md:grid-cols-2">
+                <ul className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
                   {g.items.map((o) => (
                     <li key={o.id} className="border-hairline rounded-md border p-3">
                       <p className="font-semibold">

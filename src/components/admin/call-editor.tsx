@@ -167,14 +167,14 @@ export function CallEditor({
           className="mt-2 min-h-20"
         />
       </div>
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {text("program", "Program", "Np. FERS 2021–2027, działanie 5.1")}
         {text("operator", "Operator naboru")}
       </div>
 
       <fieldset>
         <legend className="text-lg font-bold">Status</legend>
-        <ul className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {CALL_STATUSES.map((s) => (
             <li key={s}>
               <label
@@ -197,14 +197,14 @@ export function CallEditor({
         </ul>
       </fieldset>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {text("windowFrom", "Początek naboru", undefined, "date")}
         {text("windowTo", "Koniec naboru", undefined, "date")}
         {text("amountMax", "Maksymalna kwota (zł)", undefined, "number")}
         {text("amountAvg", "Średnia kwota (zł)", undefined, "number")}
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div>
           <label htmlFor="c-eligibility" className="block font-bold">
             Kto może się zgłosić
@@ -255,7 +255,7 @@ export function CallEditor({
         </fieldset>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {text(
           "sourceUrl",
           "Źródło — strona naboru (adres)",

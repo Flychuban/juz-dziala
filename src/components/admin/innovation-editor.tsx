@@ -296,7 +296,7 @@ export function InnovationEditor({
         ))}
       </fieldset>
 
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <fieldset>
           <legend className="text-lg font-bold">Obszary Mapy Wyzwań</legend>
           <ul className="mt-2 space-y-1">
@@ -337,7 +337,7 @@ export function InnovationEditor({
         </fieldset>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div>
           <label htmlFor="f-keywords" className="block text-lg font-bold">
             Słowa kluczowe
@@ -384,7 +384,7 @@ export function InnovationEditor({
       </div>
 
       {mode === "create" ? (
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           <div>
             <label htmlFor="f-source" className="block text-lg font-bold">
               Źródło (adres strony lub dokumentu)
@@ -430,7 +430,7 @@ export function InnovationEditor({
 
       <fieldset>
         <legend className="text-lg font-bold">Status</legend>
-        <ul className="mt-2 grid gap-2 md:grid-cols-3">
+        <ul className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-3">
           {INNOVATION_STATUS.map((s) => (
             <li key={s}>
               <label

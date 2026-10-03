@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import {
   AreaTag,
+  EasyText,
   formatDatePl,
   Highlight,
   ReadAloud,
@@ -193,6 +194,7 @@ export function ResultCard({ r, index, pending }: { r: ResultCardData; index: nu
         )}
       </div>
       {r.card.videoUrl && showVideo && <VideoEmbed url={r.card.videoUrl} title={r.card.title} className="mt-4" />}
+      <EasyText slug={r.card.slug} title={r.card.title} context="result" className="mt-4" />
     </article>
   );
 }

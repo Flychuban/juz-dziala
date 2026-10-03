@@ -18,7 +18,7 @@ export default function AccessibilityPage() {
         title="Deklaracja dostępności"
         lead="Regionalny Ośrodek Polityki Społecznej w Krakowie zobowiązuje się zapewnić dostępność serwisu „Już Działa” zgodnie z ustawą z dnia 4 kwietnia 2019 r. o dostępności cyfrowej stron internetowych i aplikacji mobilnych podmiotów publicznych."
       />
-      <div className="mx-auto max-w-3xl space-y-10 px-4 py-10 text-lg [&_h2]:text-2xl [&_h2]:font-bold [&_li]:mt-1 [&_ul]:list-disc [&_ul]:pl-6">
+      <div className="mx-auto max-w-3xl space-y-12 px-4 py-10 text-lg [&_a]:underline [&_a]:decoration-1 [&_a]:underline-offset-4 [&_h2]:mb-4 [&_h2]:text-2xl [&_h2]:leading-tight [&_h2]:font-bold [&_h3]:mt-8 [&_h3]:mb-2 [&_h3]:text-xl [&_h3]:font-bold [&_li]:mt-1.5 [&_p+p]:mt-3 [&_p+ul]:mt-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ul+p]:mt-4">
         <p className="border-hairline bg-warning-bg rounded-md border p-4 text-base">
           To deklaracja prototypu przygotowanego na HackYeah 2026. Miejsca
           oznaczone „do uzupełnienia przez ROPS” wymagają danych, których zespół
@@ -87,6 +87,12 @@ export default function AccessibilityPage() {
               Duży tekst domyślnie (18 px) i przyciski A+ / A− w górnym pasku.
             </li>
             <li>Tryb wysokiego kontrastu (przycisk „Kontrast”).</li>
+            <li>
+              Tryb „Tekst łatwy” (przycisk w górnym pasku): przy każdym
+              rozwiązaniu pokazujemy krótką wersję łatwą do czytania — krótkie
+              zdania, proste słowa. Przygotowuje ją automatycznie asystent AI
+              wyłącznie na podstawie karty; pełny opis zostaje pod spodem.
+            </li>
             <li>
               <Link href="/easy-read">Tekst łatwy do czytania</Link>.
             </li>

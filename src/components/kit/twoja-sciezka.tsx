@@ -56,16 +56,16 @@ export function TwojaSciezka({
   return (
     <section
       data-slot="twoja-sciezka"
-      className={cn("border-hairline rounded-lg border p-5 md:p-6", className)}
+      className={cn("border-hairline rounded-lg border p-4 sm:p-5 md:p-6", className)}
     >
       <H className="font-display text-xl font-bold tracking-tight">{heading}</H>
-      <ol className={cn("mt-5 grid gap-0 md:gap-6", cols)}>
+      <ol className={cn("mt-5 grid grid-cols-1 gap-0 md:gap-6", cols)}>
         {steps.map((step, i) => {
           const last = i === steps.length - 1;
           return (
             <li
               key={`${step.label}-${i}`}
-              className="relative flex gap-4 pb-7 last:pb-0 md:flex-col md:gap-3 md:pb-0"
+              className="relative flex gap-3 pb-7 last:pb-0 sm:gap-4 md:flex-col md:gap-3 md:pb-0"
             >
               {/* connector rail: vertical on phones, horizontal on md+ */}
               {!last ? (

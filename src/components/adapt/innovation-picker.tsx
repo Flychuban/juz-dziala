@@ -94,7 +94,7 @@ export function InnovationPicker({
 
       <fieldset className="mt-4">
         <legend className="sr-only">Innowacja do wdrożenia</legend>
-        <ul className="grid gap-3">
+        <ul className="grid grid-cols-1 gap-3">
           {visible.map((o) => (
             <li key={o.id}>
               <label
@@ -132,7 +132,7 @@ export function InnovationPicker({
                         </span>
                       ) : null}
                       {o.badge ? (
-                        <span className="border-hairline text-foreground inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-sm font-semibold">
+                        <span className="border-hairline text-foreground inline-flex max-w-full items-center gap-1.5 rounded-sm border px-2 py-0.5 text-sm font-semibold [overflow-wrap:anywhere]">
                           <AwardIcon aria-hidden="true" className="size-4" />
                           Wybrana do upowszechniania
                         </span>

@@ -86,7 +86,7 @@ export function InnovationCard({
       {item.badge ? (
         <p className="border-hairline text-brand-accent mt-4 flex items-center gap-2 border-t pt-3 text-sm font-bold">
           <AwardIcon aria-hidden="true" className="size-5 shrink-0" />
-          Wybrana do upowszechniania
+          <span className="min-w-0 [overflow-wrap:anywhere]">Wybrana do upowszechniania</span>
         </p>
       ) : null}
     </article>

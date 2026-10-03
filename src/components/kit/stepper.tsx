@@ -182,7 +182,7 @@ export function Stepper({
             {backLabel}
           </Button>
         )}
-        <Button type="submit" disabled={busy} className="min-w-40">
+        <Button type="submit" disabled={busy} className="sm:min-w-40">
           {isLast ? (busy ? busyLabel : finishLabel) : nextLabel}
           {!isLast ? <ArrowRightIcon aria-hidden="true" /> : null}
         </Button>

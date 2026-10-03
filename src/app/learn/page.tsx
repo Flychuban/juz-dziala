@@ -99,7 +99,7 @@ export default async function LearnPage() {
                 >
                   {heading}
                 </h2>
-                <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {groups.get(heading)!.map((item) => (
                     <li key={item.url}>
                       <article className="group border-hairline hover:border-input focus-within:border-input relative flex h-full flex-col rounded-lg border p-5 transition-colors">
@@ -164,7 +164,7 @@ export default async function LearnPage() {
           aria-labelledby="how-heading"
           className="border-hairline mt-16 border-t pt-10"
         >
-          <div className="grid gap-8 lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-14">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-14">
             <div>
               <h2
                 id="how-heading"
@@ -186,7 +186,7 @@ export default async function LearnPage() {
                   >
                     {i + 1}
                   </span>
-                  <div>
+                  <div className="min-w-0">
                     <h3 className="font-display text-lg font-bold">
                       <span className="sr-only">Krok {i + 1}: </span>
                       {s.name}

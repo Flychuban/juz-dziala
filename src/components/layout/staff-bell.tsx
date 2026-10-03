@@ -127,7 +127,7 @@ export function StaffBell() {
               setPermission("denied");
             }
           }}
-          className="border-input hover:bg-accent inline-flex min-h-11 items-center rounded-md border px-3 text-sm font-medium"
+          className="border-input hover:bg-accent inline-flex min-h-11 max-w-full items-center rounded-md border px-3 text-left text-sm font-medium"
         >
           Włącz powiadomienia na pulpicie
         </button>
@@ -137,7 +137,7 @@ export function StaffBell() {
           <button
             type="button"
             className={cn(
-              "border-input hover:bg-accent inline-flex min-h-11 items-center gap-2 rounded-md border px-3 text-sm font-medium",
+              "border-input hover:bg-accent inline-flex min-h-11 max-w-full items-center gap-2 rounded-md border px-3 text-left text-sm font-medium",
               unread > 0 && "border-primary border-2",
             )}
           >

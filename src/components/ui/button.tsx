@@ -7,11 +7,13 @@ import { Slot } from "radix-ui";
  * Button — „premium civic". Primary is solid ROPS blue; secondary is a thin
  * blue outline. Every size is a ≥ 44 px target (default 48 px). Labels may
  * wrap: at 360 px with enlarged text a label must never overflow its button.
+ * Never wider than its container (max-w-full), so long labels wrap at
+ * 320 px instead of scrolling the page (WCAG 1.4.10).
  * Use `asChild` with <Link> for navigation. Focus styling is global
  * (globals.css) and is deliberately not overridden here.
  */
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent text-center leading-tight font-semibold no-underline transition-colors select-none disabled:pointer-events-none disabled:opacity-60 aria-disabled:pointer-events-none aria-disabled:opacity-60 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
+  "group/button inline-flex max-w-full shrink-0 items-center justify-center rounded-md border border-transparent text-center leading-tight font-semibold no-underline transition-colors select-none disabled:pointer-events-none disabled:opacity-60 aria-disabled:pointer-events-none aria-disabled:opacity-60 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
       variant: {

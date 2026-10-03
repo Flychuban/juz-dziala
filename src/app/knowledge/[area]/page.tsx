@@ -90,7 +90,7 @@ export default async function KnowledgeAreaPage({
 
       <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
         {area ? (
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-14">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-14">
             <section aria-labelledby="challenges-heading">
               <h2
                 id="challenges-heading"
@@ -108,7 +108,7 @@ export default async function KnowledgeAreaPage({
                       >
                         {i + 1}.
                       </span>
-                      <span>{c}</span>
+                      <span className="min-w-0">{c}</span>
                     </li>
                   ))}
                 </ol>
@@ -193,7 +193,7 @@ export default async function KnowledgeAreaPage({
               Przy każdej liczbie podajemy, czego dotyczy — dane dla całej
               Polski oznaczamy jako „Polska”, tak jak podaje źródło.
             </p>
-            <ul className="mt-8 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="mt-8 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
               {figures.map((f, i) => (
                 <li key={i}>
                   <Stat
@@ -244,7 +244,7 @@ export default async function KnowledgeAreaPage({
             ) : null}
           </div>
           {innovations.length > 0 ? (
-            <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {innovations.slice(0, SHOWN).map((item) => (
                 <li key={item.id}>
                   <InnovationCard item={item} headingLevel="h3" />
@@ -319,7 +319,7 @@ export default async function KnowledgeAreaPage({
               <li key={a}>
                 <Link
                   href={`/knowledge/${a}`}
-                  className="border-input hover:bg-surface inline-flex min-h-11 items-center rounded-md border px-3 text-[0.9375rem] font-semibold no-underline"
+                  className="border-input hover:bg-surface inline-flex min-h-11 max-w-full items-center rounded-md border px-3 text-[0.9375rem] font-semibold no-underline [overflow-wrap:anywhere]"
                 >
                   {MAPA_AREA_LABEL[a]}
                 </Link>

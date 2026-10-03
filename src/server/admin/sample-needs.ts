@@ -9,12 +9,12 @@ import { innovations, matchRuns } from "~/server/db/schema";
 /*
  * ~60 sample matching runs (isSample = true) so the trends page and „Białe
  * plamy" have something to show on a fresh database. Plain everyday Polish,
- * no personal data. About a third are deliberately unmatched — rural
+ * no personal data. About a quarter are deliberately unmatched — rural
  * transport and respite care for parents of disabled children are the two
- * gaps the Biblioteka does not cover.
+ * gaps the Biblioteka does not cover, and they are the „białe plamy".
  *
- * Idempotent: fixed ids, upserted; re-running refreshes the dates so the
- * sample always spans the last 30 days.
+ * Re-running replaces every earlier sample run (isSample = true) and
+ * refreshes the dates, so the sample always spans the last 30 days.
  */
 
 type Outcome = "match" | "low" | "none";
@@ -54,7 +54,7 @@ export const SAMPLE_NEEDS: SampleNeed[] = [
     "Starsza pani z bloku boi się wychodzić, bo nie ma windy, a schody są strome.",
     ["seniors", "disability"],
     "1212",
-    "low",
+    "match",
   ],
   [
     "Seniorzy w naszej gminie nie umieją korzystać z telefonu ani z e-recepty.",
@@ -192,7 +192,7 @@ export const SAMPLE_NEEDS: SampleNeed[] = [
     "Młodzi rodzice nie radzą sobie z noworodkiem, a do najbliższej poradni jest daleko.",
     ["family"],
     "1205",
-    "low",
+    "match",
   ],
   [
     "Dziecko po leczeniu psychiatrycznym wraca do szkoły, a klasa nie wie, jak się zachować.",
@@ -210,7 +210,7 @@ export const SAMPLE_NEEDS: SampleNeed[] = [
     "Młodzież w naszej gminie nie ma gdzie porozmawiać z psychologiem, kolejki są na pół roku.",
     ["mental_health", "family"],
     "1202",
-    "low",
+    "match",
   ],
   [
     "Po śmierci żony tata przestał wychodzić z domu i ciągle płacze.",
@@ -222,7 +222,7 @@ export const SAMPLE_NEEDS: SampleNeed[] = [
     "Szukam grupy wsparcia dla osób z zaburzeniami lękowymi blisko domu.",
     ["mental_health"],
     "1262",
-    "low",
+    "match",
   ],
   [
     "Pan z naszej wsi śpi w altance na działkach, a zbliża się zima.",
@@ -240,13 +240,13 @@ export const SAMPLE_NEEDS: SampleNeed[] = [
     "Po wyjściu z noclegowni nie ma żadnego wsparcia w znalezieniu mieszkania.",
     ["homelessness"],
     "1262",
-    "none",
+    "match",
   ],
   [
     "Starszego pana nie stać na opał na zimę, mieszka w starym domu.",
     ["poverty", "seniors"],
     "1205",
-    "low",
+    "match",
   ],
   [
     "Długo bezrobotny sąsiad chciałby dorobić, ale nie da rady pracować na etacie.",
@@ -258,7 +258,7 @@ export const SAMPLE_NEEDS: SampleNeed[] = [
     "Rodziny w naszej wsi nie mają dostępu do taniej żywności, najbliższy sklep jest daleko.",
     ["poverty"],
     "1214",
-    "none",
+    "match",
   ],
   [
     "Rodzina z Ukrainy nie zna polskiego, dzieci mają kłopoty w szkole.",
@@ -282,19 +282,19 @@ export const SAMPLE_NEEDS: SampleNeed[] = [
     "Mamy z Ukrainy nie mają z kim zostawić małych dzieci, żeby pójść do pracy.",
     ["migrants", "family"],
     "1219",
-    "low",
+    "match",
   ],
   [
     "Na specjalistę czeka się rok, a dojazd do Krakowa trwa dwie godziny.",
     ["health"],
     "1211",
-    "none",
+    "match",
   ],
   [
     "Po wyjściu ze szpitala nie ma kto pomóc przy opatrunkach w domu.",
     ["health", "seniors"],
     "1209",
-    "low",
+    "match",
   ],
   [
     "W gminie brakuje profilaktyki zdrowotnej dla starszych mieszkańców.",
@@ -312,7 +312,7 @@ export const SAMPLE_NEEDS: SampleNeed[] = [
     "Samotna sąsiadka nie ma do kogo zadzwonić, gdy w nocy źle się czuje.",
     ["seniors"],
     "1217",
-    "low",
+    "match",
   ],
   [
     "Potrzebujemy pomysłu na zajęcia w klubie seniora, coś więcej niż kawa i ciasto.",
@@ -324,7 +324,7 @@ export const SAMPLE_NEEDS: SampleNeed[] = [
     "Osoby z niepełnosprawnością ruchową z naszej wsi nie mają jak dojechać na warsztaty terapii.",
     ["disability"],
     "1216",
-    "none",
+    "match",
   ],
   [
     "Starsi ludzie w bloku nie umieją zamówić zakupów przez internet.",
@@ -342,13 +342,13 @@ export const SAMPLE_NEEDS: SampleNeed[] = [
     "Opiekunka babci rezygnuje, a nie stać nas na prywatną opiekę.",
     ["seniors", "poverty"],
     "1210",
-    "low",
+    "match",
   ],
   [
     "Mieszkańcy górskich przysiółków nie mają zimą dostępu do żadnych zajęć.",
     ["seniors"],
     "1217",
-    "none",
+    "match",
   ],
   [
     "Rodzicom dzieci z niepełnosprawnością brakuje w powiecie grupy wsparcia i chwili oddechu.",
@@ -372,13 +372,13 @@ export const SAMPLE_NEEDS: SampleNeed[] = [
     "Starsze małżeństwo żyje w zimnym domu i wstydzi się poprosić o pomoc.",
     ["poverty", "seniors"],
     "1204",
-    "low",
+    "match",
   ],
   [
     "Chłopak po opuszczeniu domu dziecka nie ma gdzie mieszkać ani kogo poprosić o radę.",
     ["family", "homelessness"],
     "1206",
-    "none",
+    "match",
   ],
   [
     "Kobieta, która słabo widzi, chce pracować, ale nie wie, od czego zacząć.",
@@ -390,7 +390,7 @@ export const SAMPLE_NEEDS: SampleNeed[] = [
     "W wakacje nie ma dowozu dzieci z niepełnosprawnością na zajęcia rehabilitacyjne.",
     ["disability", "family"],
     "1210",
-    "none",
+    "match",
   ],
   [
     "Seniorzy z sąsiednich wsi chcą się spotykać, ale nie mają jak dojechać do klubu.",
@@ -430,6 +430,9 @@ export async function seedSampleNeeds(): Promise<void> {
   const gminas = gminaByPowiat();
   const now = Date.now();
 
+  // Replace, not merge: earlier sample runs (any version of this list) go first.
+  await db.delete(matchRuns).where(eq(matchRuns.isSample, true));
+
   for (const [i, [text, areas, powiat, outcome]] of SAMPLE_NEEDS.entries()) {
     const day = (i * 13) % 30;
     const at = new Date(now - day * 86_400_000);
@@ -451,7 +454,6 @@ export async function seedSampleNeeds(): Promise<void> {
                 normScore: score / 100,
                 matchedUserTerms: userTerms(text),
                 matchedCardTerms: [],
-                areas,
               };
             });
     const row = {
@@ -459,10 +461,13 @@ export async function seedSampleNeeds(): Promise<void> {
       gminaTeryt: gminas.get(powiat) ?? null,
       powiatTeryt: powiat,
       areas,
+      // Same shape the matcher stores (StoredKeyword v1, src/server/match/core.ts).
       keywordResult: {
-        results,
+        v: 1,
+        hits: results,
         detectedAreas: areas,
         isLowConfidence: outcome !== "match",
+        userTerms: results.length ? userTerms(text) : [],
       },
       aiResult: null,
       status:
@@ -472,10 +477,10 @@ export async function seedSampleNeeds(): Promise<void> {
       isSample: true,
       createdAt: at,
     };
-    await db
-      .insert(matchRuns)
-      .values({ id: sampleId(i), ...row })
-      .onConflictDoUpdate({ target: matchRuns.id, set: row });
+    await db.insert(matchRuns).values({ id: sampleId(i), ...row });
   }
-  console.log(`[seed] sample needs: ${SAMPLE_NEEDS.length} runs (isSample)`);
+  const unmet = SAMPLE_NEEDS.filter(([, , , o]) => o !== "match").length;
+  console.log(
+    `[seed] sample needs: ${SAMPLE_NEEDS.length} runs (isSample), ${unmet} without a confident match`,
+  );
 }

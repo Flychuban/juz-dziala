@@ -26,6 +26,9 @@ export type Need = {
 const keywordShape = z
   .object({
     isLowConfidence: z.boolean().optional(),
+    /** StoredKeyword v1 (src/server/match/core.ts). */
+    hits: z.array(z.unknown()).optional(),
+    /** Older shape (KeywordResult). */
     results: z.array(z.unknown()).optional(),
   })
   .loose();
@@ -47,8 +50,10 @@ export function isUnmet(run: {
   const kw = keywordShape.safeParse(run.keywordResult);
   const ai = aiShape.safeParse(run.aiResult);
   const aiMatches = ai.success ? (ai.data.matches?.length ?? 0) : 0;
+  if (ai.success && ai.data.abstained === true && aiMatches === 0) return true;
+  const hits = kw.success ? (kw.data.hits ?? kw.data.results ?? []) : [];
   const lowConfidence = kw.success
-    ? (kw.data.isLowConfidence ?? false) || (kw.data.results?.length ?? 0) === 0
+    ? (kw.data.isLowConfidence ?? false) || hits.length === 0
     : true;
   return lowConfidence && aiMatches === 0;
 }

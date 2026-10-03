@@ -49,7 +49,7 @@ export function GminaPicker({
         {label} <span className="text-muted-foreground font-normal">(nieobowiązkowe)</span>
       </legend>
       <p className="text-muted-foreground mb-3">Dzięki temu ROPS zobaczy, gdzie w Małopolsce jest potrzeba. Nie podajemy adresu.</p>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <label htmlFor={pId} className="font-semibold">
             Powiat

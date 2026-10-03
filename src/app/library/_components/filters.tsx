@@ -48,7 +48,7 @@ function Option({
       href={href}
       scroll={false}
       className={cn(
-        "text-foreground hover:bg-surface flex min-h-11 w-full items-center gap-3 rounded-md px-2 py-1.5 text-left leading-snug no-underline transition-colors",
+        "text-foreground hover:bg-surface flex min-h-11 w-full items-center gap-3 overflow-hidden rounded-md px-2 py-1.5 text-left leading-snug no-underline transition-colors",
         selected && "bg-accent hover:bg-accent",
       )}
     >
@@ -71,7 +71,7 @@ function Option({
           )
         ) : null}
       </span>
-      <span className={cn("flex-1", selected ? "font-bold" : "font-medium")}>
+      <span className={cn("min-w-0 flex-1", selected ? "font-bold" : "font-medium")}>
         {children}
       </span>
       {count !== undefined ? (

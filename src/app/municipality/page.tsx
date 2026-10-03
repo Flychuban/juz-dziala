@@ -83,7 +83,7 @@ export default async function MunicipalityPage({
               Dlaczego ta gmina: wśród gmin wiejskich, w których ubywa
               mieszkańców, ma najwyższy udział osób w wieku 80+ w Małopolsce.
             </p>
-            <dl className="mt-6 grid gap-6 sm:grid-cols-3">
+            <dl className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-3">
               <div className="border-hairline border-t-2 pt-3">
                 <dt className="text-foreground text-base">Mieszkańcy</dt>
                 <dd className="font-display tabular text-3xl font-bold">
@@ -103,7 +103,7 @@ export default async function MunicipalityPage({
                   <dt className="text-foreground text-base">
                     Zmiana liczby mieszkańców w 10 lat
                   </dt>
-                  <dd className="font-display tabular flex items-center gap-2 text-3xl font-bold">
+                  <dd className="font-display tabular flex flex-wrap items-center gap-x-2 text-3xl font-bold">
                     {f.popChange10y < 0 ? (
                       <TrendingDownIcon aria-hidden="true" className="text-brand-accent size-7" />
                     ) : null}
@@ -159,7 +159,7 @@ export default async function MunicipalityPage({
             {formatNumberPl(data.gminas.length)} gmin w {powiatList.length} powiatach.
             Rozwiń powiat, aby wybrać gminę.
           </p>
-          <ul className="mt-6 grid gap-3 lg:grid-cols-2">
+          <ul className="mt-6 grid grid-cols-1 gap-3 lg:grid-cols-2">
             {powiatList.map(([teryt, p]) => (
               <li key={teryt} id={`gminy-${teryt}`} className="scroll-mt-6">
                 <details
@@ -167,24 +167,25 @@ export default async function MunicipalityPage({
                   className="border-hairline group rounded-md border"
                 >
                   <summary className="flex min-h-12 cursor-pointer items-center justify-between gap-3 px-4 py-2 font-semibold">
-                    <span>{powiatDisplay(p.name)}</span>
-                    <span className="text-muted-foreground tabular text-sm font-normal">
+                    <span className="min-w-0">{powiatDisplay(p.name)}</span>
+                    <span className="text-muted-foreground tabular shrink-0 text-sm font-normal">
                       {countPl(p.gminas.length, "gmina", "gminy", "gmin")}
                     </span>
                   </summary>
-                  <table className="tabular border-hairline w-full border-t text-[0.9375rem]">
+                  <div className="border-hairline overflow-x-auto border-t">
+                  <table className="tabular w-full text-[0.9375rem]">
                     <caption className="sr-only">Gminy: {powiatDisplay(p.name)}</caption>
                     <thead className="bg-surface">
                       <tr>
-                        <th scope="col" className="px-4 py-2 text-left font-semibold">Gmina</th>
-                        <th scope="col" className="px-4 py-2 text-right font-semibold">Udział 80+</th>
-                        <th scope="col" className="px-4 py-2 text-right font-semibold">Zmiana w 10 lat</th>
+                        <th scope="col" className="px-3 py-2 text-left font-semibold sm:px-4">Gmina</th>
+                        <th scope="col" className="px-3 py-2 text-right font-semibold sm:px-4">Udział 80+</th>
+                        <th scope="col" className="px-3 py-2 text-right font-semibold sm:px-4">Zmiana w 10 lat</th>
                       </tr>
                     </thead>
                     <tbody>
                       {p.gminas.map((g) => (
                         <tr key={g.teryt} className="border-hairline border-t">
-                          <th scope="row" className="px-4 py-1 text-left font-normal">
+                          <th scope="row" className="px-3 py-1 text-left font-normal sm:px-4">
                             <Link
                               href={`/municipality/${g.teryt}`}
                               className="inline-flex min-h-11 items-center underline decoration-1 underline-offset-4"
@@ -192,8 +193,8 @@ export default async function MunicipalityPage({
                               {g.label}
                             </Link>
                           </th>
-                          <td className="px-4 py-1 text-right">{pct(g.share80)}%</td>
-                          <td className="px-4 py-1 text-right">
+                          <td className="px-3 py-1 text-right sm:px-4">{pct(g.share80)}%</td>
+                          <td className="px-3 py-1 text-right sm:px-4">
                             {g.popChange10y === null ? (
                               <span className="text-muted-foreground">brak porównania</span>
                             ) : (
@@ -204,6 +205,7 @@ export default async function MunicipalityPage({
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </details>
               </li>
             ))}

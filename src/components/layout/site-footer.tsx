@@ -9,7 +9,7 @@ export function SiteFooter() {
       data-site-footer
       className="border-hairline bg-surface mt-16 border-t"
     >
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-3">
+      <div className="mx-auto grid grid-cols-1 max-w-6xl gap-8 px-4 py-10 md:grid-cols-3">
         <div>
           <p className="font-display text-lg font-bold">{SITE.name}</p>
           <p className="text-muted-foreground mt-1">{SITE.hub}</p>

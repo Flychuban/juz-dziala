@@ -18,7 +18,7 @@ export function AreaTag({
 }) {
   const label = MAPA_AREA_LABEL[area] ?? area;
   const base =
-    "border-hairline bg-surface text-foreground inline-flex w-fit items-center gap-1.5 rounded-sm border px-2 py-0.5 text-sm leading-snug font-semibold";
+    "border-hairline bg-surface text-foreground inline-flex w-fit max-w-full items-center gap-1.5 rounded-sm border px-2 py-0.5 text-sm leading-snug font-semibold [overflow-wrap:anywhere]";
   if (href) {
     return (
       <Link

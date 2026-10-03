@@ -23,8 +23,10 @@ export type RouteResult = {
   url: string;
   checkedAt: string;
   violations: Violation[];
-  /** Horizontal scroll at 200% zoom (360 px viewport only), with the outermost elements that stick out. */
+  /** WCAG 1.4.10 reflow: horizontal scroll at 320 CSS px (360 px project only), with the outermost elements that stick out. */
   reflow?: Reflow;
+  /** Informational, stricter than WCAG: 200 % zoom on a 360 px phone, i.e. a 180 px layout. Never fails the run. */
+  reflowStrict?: Reflow;
   error?: string;
 };
 
@@ -62,9 +64,13 @@ export async function runAxe(page: Page): Promise<Violation[]> {
  */
 export type Reflow = { ok: boolean; scrollWidth: number; innerWidth: number; culprits: string[] };
 
-export async function checkReflow(page: Page): Promise<Reflow> {
+/**
+ * Horizontal scrolling at `width` CSS px. WCAG 1.4.10 asks for no
+ * two-dimensional scrolling at 320 CSS px (≈ 1280 px at 400 % zoom).
+ */
+export async function checkReflow(page: Page, width = 320): Promise<Reflow> {
   const original = page.viewportSize();
-  await page.setViewportSize({ width: 180, height: 400 });
+  await page.setViewportSize({ width, height: 640 });
   await page.waitForTimeout(400);
   const m = await page.evaluate(() => {
     const W = window.innerWidth;

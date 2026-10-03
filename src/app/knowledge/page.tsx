@@ -40,7 +40,7 @@ export default async function KnowledgePage() {
         ) : null}
 
         <h2 className="sr-only">Obszary</h2>
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {data.areas.map((a, i) => (
             <li key={a.key}>
               <article className="group border-hairline hover:border-input focus-within:border-input relative flex h-full flex-col rounded-lg border p-5 transition-colors">
@@ -84,7 +84,7 @@ export default async function KnowledgePage() {
           ))}
         </ul>
 
-        <div className="mt-12 grid gap-8 md:grid-cols-2">
+        <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2">
           <div>
             {data.source ? (
               <SourceLine
@@ -108,7 +108,7 @@ export default async function KnowledgePage() {
               aria-hidden="true"
               className="text-primary size-8 shrink-0 stroke-[1.5]"
             />
-            <span>
+            <span className="min-w-0">
               <span className="font-display block text-lg font-bold group-hover:underline">
                 Materiały i raporty
               </span>

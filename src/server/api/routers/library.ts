@@ -1,4 +1,4 @@
-import { and, arrayContains, eq } from "drizzle-orm";
+import { and, arrayContains, eq, isNull } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -8,7 +8,18 @@ import {
   type MapaArea,
   type SectionKey,
 } from "~/lib/domain";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { EASY_TEXT_SYSTEM, easyTextUser } from "~/server/ai/prompts/easy-text";
+import { aiAvailable, aiStructured, userData } from "~/server/ai/structured";
+import {
+  createTRPCRouter,
+  publicProcedure,
+  rateLimit,
+  type Context,
+} from "~/server/api/trpc";
+import {
+  easyTextProblem,
+  tidyEasyText,
+} from "~/server/library/easy-text-check";
 import { type Db } from "~/server/db";
 import {
   innovations,
@@ -279,4 +290,62 @@ export const libraryRouter = createTRPCRouter({
 
   /** Counts per Mapa area and per category, plus total and with-video. */
   facets: publicProcedure.query(({ ctx }) => libraryFacets(ctx.db)),
+
+  /**
+   * „Tekst łatwy do czytania" for a published card: the cached
+   * `innovations.easyText` when present, otherwise an AI rewrite (ETR,
+   * ≤ ~120 words, no facts beyond the card) that is checked, stored and
+   * returned. `null` when AI is unavailable or the rewrite fails a check.
+   */
+  easyText: publicProcedure
+    .input(z.object({ slug: z.string().trim().min(1).max(200) }))
+    .query(({ ctx, input }) => getEasyText(ctx, input.slug)),
 });
+
+export type EasyTextResult = {
+  text: string;
+  /** "cached": stored earlier (or edited by staff); "generated": written now. */
+  origin: "cached" | "generated";
+} | null;
+
+async function getEasyText(ctx: Context, slug: string): Promise<EasyTextResult> {
+  const card = await ctx.db.query.innovations.findFirst({
+    where: and(eq(innovations.slug, slug), eq(innovations.status, "published")),
+    columns: { id: true, title: true, sections: true, easyText: true },
+  });
+  if (!card) return null;
+  if (card.easyText?.trim()) return { text: card.easyText.trim(), origin: "cached" };
+  if (!aiAvailable()) return null;
+  try {
+    await rateLimit(ctx, "library.easyText", { limit: 20, windowSec: 600 });
+  } catch {
+    return null;
+  }
+  const cardText = [
+    `Tytuł: ${card.title}`,
+    ...SECTION_KEYS.filter((k) => k !== "authors").map(
+      (k) => `${k}: ${card.sections[k] ?? ""}`,
+    ),
+  ].join("\n");
+  const res = await aiStructured({
+    fn: "library.easyText",
+    schema: z.object({ text: z.string() }),
+    system: [{ text: EASY_TEXT_SYSTEM, cache: true }],
+    user: easyTextUser(userData("karta", cardText)),
+    effort: "low",
+    maxTokens: 2000,
+  });
+  if (!res.ok) return null;
+  const text = tidyEasyText(res.data.text);
+  const problem = easyTextProblem(text, cardText);
+  if (problem) {
+    console.warn(`[library.easyText] ${slug}: rejected (${problem})`);
+    return null;
+  }
+  // Never overwrite a version staff saved in the meantime.
+  await ctx.db
+    .update(innovations)
+    .set({ easyText: text })
+    .where(and(eq(innovations.id, card.id), isNull(innovations.easyText)));
+  return { text, origin: "generated" };
+}

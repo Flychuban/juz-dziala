@@ -111,7 +111,7 @@ export default async function MunicipalityProfilePage({
               </AlertDescription>
             </Alert>
           ) : null}
-          <div className="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <Stat
               value={p.population}
               label="Liczba mieszkańców (stan na 31 grudnia)"
@@ -243,7 +243,7 @@ export default async function MunicipalityProfilePage({
           </div>
 
           {recommendations.length > 0 ? (
-            <ul className="mt-8 grid gap-4 md:grid-cols-2">
+            <ul className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
               {recommendations.map((r) => (
                 <li key={r.id}>
                   <article className="border-hairline flex h-full flex-col rounded-lg border p-5 md:p-6">

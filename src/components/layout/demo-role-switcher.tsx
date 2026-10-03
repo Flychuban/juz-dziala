@@ -6,12 +6,12 @@ import { STAFF_ROLE_LABEL, type StaffRole } from "~/lib/domain";
 export function DemoRoleSwitcher({ current }: { current: StaffRole | null }) {
   const roles: StaffRole[] = ["rops", "expert", "jst"];
   return (
-    <details className="relative">
-      <summary className="border-input inline-flex min-h-11 cursor-pointer list-none items-center rounded-md border px-3 text-sm font-medium">
+    <details className="relative max-w-full">
+      <summary className="border-input bg-background hover:bg-accent inline-flex min-h-11 max-w-full cursor-pointer list-none items-center rounded-md border px-3 py-1 text-left text-sm leading-tight font-medium [&::-webkit-details-marker]:hidden">
         Tryb demonstracyjny:{" "}
         {current ? STAFF_ROLE_LABEL[current] : "Mieszkaniec"}
       </summary>
-      <div className="border-hairline bg-popover text-popover-foreground absolute right-0 z-40 mt-1 w-72 rounded-md border p-2">
+      <div className="border-input bg-popover text-popover-foreground absolute left-0 z-40 mt-1 w-[min(18rem,calc(100vw-2rem))] rounded-md border p-2 sm:right-0 sm:left-auto">
         <p className="text-muted-foreground px-2 pb-2 text-sm">
           Zobacz platformę oczami różnych użytkowników. Logowanie tylko na
           potrzeby prezentacji.

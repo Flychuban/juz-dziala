@@ -41,6 +41,39 @@ describe("isUnmet", () => {
       }),
     ).toBe(true);
   });
+  it("reads the matcher's stored shape (hits, v1)", () => {
+    const kw = (isLowConfidence: boolean, hits: unknown[]) => ({
+      v: 1,
+      hits,
+      detectedAreas: [],
+      isLowConfidence,
+      userTerms: [],
+    });
+    expect(
+      isUnmet({
+        abstained: false,
+        status: "keyword",
+        keywordResult: kw(false, [{ cardId: "c001" }]),
+        aiResult: null,
+      }),
+    ).toBe(false);
+    expect(
+      isUnmet({
+        abstained: false,
+        status: "keyword",
+        keywordResult: kw(true, [{ cardId: "c001" }]),
+        aiResult: null,
+      }),
+    ).toBe(true);
+    expect(
+      isUnmet({
+        abstained: false,
+        status: "ai",
+        keywordResult: kw(false, [{ cardId: "c001" }]),
+        aiResult: { v: 1, ok: true, matches: [], abstained: true },
+      }),
+    ).toBe(true);
+  });
   it("does not count a confident match, or a low-confidence one the AI answered", () => {
     expect(
       isUnmet({

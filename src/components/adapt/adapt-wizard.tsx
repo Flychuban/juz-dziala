@@ -83,7 +83,7 @@ function Choices<T extends string>(props: {
       </legend>
       <div
         className={cn(
-          "mt-2 grid gap-3",
+          "mt-2 grid grid-cols-1 gap-3",
           props.columns === 2 && "sm:grid-cols-2",
         )}
       >

@@ -20,7 +20,7 @@ export function CrisisBanner() {
         Nie musisz zostawać z tym sam(a). Te telefony są bezpłatne. Rozwiązania z Biblioteki pokazujemy niżej, ale
         najpierw zadbaj o bezpieczeństwo.
       </p>
-      <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+      <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         {CRISIS_RESOURCES.map((r) => (
           <li key={r.phone} className="border-hairline bg-background rounded-lg border p-4">
             <a
