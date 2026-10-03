@@ -2,6 +2,8 @@ import "server-only";
 
 import { revalidatePath } from "next/cache";
 
+import { invalidateLibraryCache } from "~/server/match/library";
+
 /**
  * Everything that must happen after a library card changes, in one place:
  * the public pages are re-rendered on the next request and the matcher's
@@ -18,6 +20,5 @@ export async function afterLibraryChange(slug?: string): Promise<void> {
     // revalidatePath throws outside a request scope (e.g. in scripts); harmless.
     console.warn("[admin] revalidatePath skipped", e);
   }
-  // TODO(match): call `invalidateLibraryCache()` from "~/server/match" once
-  // agent/match is merged into main. This is the only place that needs it.
+  invalidateLibraryCache();
 }

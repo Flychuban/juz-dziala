@@ -1,6 +1,10 @@
 import "server-only";
 
 import { ideasFanout } from "~/server/ideas/fanout";
+import {
+  notifyCallSubscribers,
+  notifyInnovationSubscribers,
+} from "~/server/subscriptions/fanout";
 
 import { eq } from "drizzle-orm";
 
@@ -294,9 +298,15 @@ export async function fanout(ev: NotifyEvent): Promise<void> {
       return onMessageCreated(ev.caseId, ev.messageId);
     case "call.published":
     case "call.changed":
+      // Subscribers of "calls" (delivery report shown in /admin/calls).
+      await notifyCallSubscribers(ev.callId, ev.type);
+      return;
     case "innovation.published":
+      // Subscribers of "area:<MapaArea>".
+      await notifyInnovationSubscribers(ev.innovationId);
+      return;
     case "idea.similarFound":
-      // Subscribers by topic ("calls", "area:<MapaArea>") and the idea's author.
+      // The idea's author gets a note on their case page.
       return ideasFanout(ev);
     default: {
       const unreachable: never = ev;
