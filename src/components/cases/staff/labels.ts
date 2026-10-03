@@ -1,3 +1,5 @@
+import type { CaseKind } from "~/lib/domain";
+
 /** Staff-screen wording for things the shared domain file does not label. */
 export const CHANNEL_LABEL: Record<string, string> = {
   email: "E-mail",
@@ -33,3 +35,13 @@ export const CRISIS_LABEL: Record<string, string> = {
 
 export const caseHref = (basePath: "/admin/cases" | "/expert", code: string) =>
   basePath === "/expert" ? `/expert?code=${code}` : `/admin/cases/${code}`;
+
+/** Plural kind names for counters and headings. */
+export const KIND_PLURAL: Record<CaseKind, string> = {
+  need: "Potrzeby",
+  idea: "Pomysły",
+  question: "Pytania",
+  test: "Testy",
+  feedback: "Opinie",
+  adapt: "Wdrożenia",
+};

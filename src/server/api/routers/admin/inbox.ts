@@ -40,15 +40,15 @@ import {
   timelineFor,
   type CaseRow,
 } from "~/server/cases/queries";
+import { matchContext } from "~/server/cases/match-context";
+import { casePayloads } from "~/server/cases/payloads";
 import { triageCase } from "~/server/cases/triage";
 import { TEAM_NAME, type CaseTriage } from "~/server/cases/types";
 import {
   auditLog,
-  calls,
   cases,
   deliveries,
   innovations,
-  matchRuns,
   messages,
   notifications,
   people,
@@ -107,34 +107,6 @@ async function audit(
 
 const escapeLike = (s: string) => s.replace(/[\\%_]/g, (m) => `\\${m}`);
 
-/**
- * Library card ids ("c042") inside a stored match result. The match module
- * owns that shape; this reads `cardId` / `innovationId` under the usual list
- * keys and ignores everything else.
- */
-function cardIdsIn(result: unknown): string[] {
-  const out: string[] = [];
-  const visit = (v: unknown, depth: number) => {
-    if (depth > 4 || out.length >= 10 || v == null) return;
-    if (Array.isArray(v)) {
-      for (const x of v) visit(x, depth + 1);
-      return;
-    }
-    if (typeof v !== "object") return;
-    const o = v as Record<string, unknown>;
-    const id = o.cardId ?? o.innovationId;
-    if (typeof id === "string" && /^c\d+$/.test(id)) {
-      if (!out.includes(id)) out.push(id);
-      return;
-    }
-    for (const key of ["results", "matches", "items", "cards"]) {
-      if (key in o) visit(o[key], depth + 1);
-    }
-  };
-  visit(result, 0);
-  return out;
-}
-
 export const adminInboxRouter = createTRPCRouter({
   list: staff
     .input(
@@ -152,6 +124,36 @@ export const adminInboxRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const f = input ?? {};
       const q = f.q ? `%${escapeLike(f.q)}%` : null;
+      // Every filter except the kind: the chips show what each kind would add.
+      const base = and(
+        scope(ctx),
+        f.status ? eq(cases.status, f.status) : undefined,
+        f.area ? arrayContains(cases.areas, [f.area]) : undefined,
+        f.waiting
+          ? and(
+              inArray(cases.status, [...OPEN]),
+              lt(cases.lastActivityAt, new Date(Date.now() - 48 * 3600 * 1000)),
+            )
+          : undefined,
+        q
+          ? or(
+              ilike(cases.code, q),
+              ilike(cases.title, q),
+              ilike(cases.bodyRedacted, q),
+            )
+          : undefined,
+      );
+      const kindRows = await ctx.db
+        .select({ kind: cases.kind, n: count() })
+        .from(cases)
+        .where(base)
+        .groupBy(cases.kind);
+      const kindCounts = Object.fromEntries(
+        CASE_KINDS.map((k) => [k, 0]),
+      ) as Record<CaseKind, number>;
+      for (const r of kindRows)
+        if (r.kind in kindCounts) kindCounts[r.kind] = r.n;
+
       const rows = await ctx.db
         .select({
           id: cases.id,
@@ -169,30 +171,7 @@ export const adminInboxRouter = createTRPCRouter({
           lastActivityAt: cases.lastActivityAt,
         })
         .from(cases)
-        .where(
-          and(
-            scope(ctx),
-            f.status ? eq(cases.status, f.status) : undefined,
-            f.kind ? eq(cases.kind, f.kind) : undefined,
-            f.area ? arrayContains(cases.areas, [f.area]) : undefined,
-            f.waiting
-              ? and(
-                  inArray(cases.status, [...OPEN]),
-                  lt(
-                    cases.lastActivityAt,
-                    new Date(Date.now() - 48 * 3600 * 1000),
-                  ),
-                )
-              : undefined,
-            q
-              ? or(
-                  ilike(cases.code, q),
-                  ilike(cases.title, q),
-                  ilike(cases.bodyRedacted, q),
-                )
-              : undefined,
-          ),
-        )
+        .where(and(base, f.kind ? eq(cases.kind, f.kind) : undefined))
         .orderBy(desc(cases.lastActivityAt))
         .limit(200);
 
@@ -216,7 +195,7 @@ export const adminInboxRouter = createTRPCRouter({
       ]);
       const unreadSet = new Set(unread.map((u) => u.caseId));
       const names = new Map(ppl.map((p) => [p.id, p.displayName]));
-      return rows.map(({ triage, id, ...r }) => {
+      const items = rows.map(({ triage, id, ...r }) => {
         const t = triage as CaseTriage | null;
         return {
           ...r,
@@ -231,6 +210,7 @@ export const adminInboxRouter = createTRPCRouter({
                 : null,
         };
       });
+      return { items, kindCounts };
     }),
 
   get: staff
@@ -249,7 +229,7 @@ export const adminInboxRouter = createTRPCRouter({
         );
 
       const triage = c.triage as CaseTriage | null;
-      const [thread, log, ppl, timeline, run, similar, innovation, call] =
+      const [thread, log, ppl, timeline, match, similar, payloads] =
         await Promise.all([
           ctx.db
             .select({
@@ -290,22 +270,7 @@ export const adminInboxRouter = createTRPCRouter({
             .where(inArray(people.role, ["mentor", "expert"]))
             .orderBy(asc(people.displayName)),
           timelineFor(c),
-          c.matchRunId
-            ? ctx.db
-                .select({
-                  id: matchRuns.id,
-                  queryRedacted: matchRuns.queryRedacted,
-                  status: matchRuns.status,
-                  abstained: matchRuns.abstained,
-                  crisis: matchRuns.crisis,
-                  keywordResult: matchRuns.keywordResult,
-                  aiResult: matchRuns.aiResult,
-                  createdAt: matchRuns.createdAt,
-                })
-                .from(matchRuns)
-                .where(eq(matchRuns.id, c.matchRunId))
-                .then((r) => r[0] ?? null)
-            : null,
+          c.matchRunId ? matchContext(c.matchRunId) : null,
           triage?.similarCaseIds.length
             ? ctx.db
                 .select({
@@ -318,24 +283,7 @@ export const adminInboxRouter = createTRPCRouter({
                 .from(cases)
                 .where(inArray(cases.id, triage.similarCaseIds))
             : [],
-          c.innovationId
-            ? ctx.db
-                .select({
-                  id: innovations.id,
-                  title: innovations.title,
-                  slug: innovations.slug,
-                })
-                .from(innovations)
-                .where(eq(innovations.id, c.innovationId))
-                .then((r) => r[0] ?? null)
-            : null,
-          c.callId
-            ? ctx.db
-                .select({ id: calls.id, name: calls.name })
-                .from(calls)
-                .where(eq(calls.id, c.callId))
-                .then((r) => r[0] ?? null)
-            : null,
+          casePayloads(c, { staff: true }),
         ]);
 
       const demoMode = env.DEMO_MODE === "1";
@@ -344,18 +292,8 @@ export const adminInboxRouter = createTRPCRouter({
         : c.contactEnc
           ? (decrypt(c.contactEnc) ?? c.contactMasked)
           : null;
-      // Titles, links and capture dates for every card the panel cites.
-      const matchCardIds = run
-        ? cardIdsIn(run.aiResult).length
-          ? cardIdsIn(run.aiResult)
-          : cardIdsIn(run.keywordResult)
-        : [];
-      const cardIds = [
-        ...new Set([
-          ...(triage?.cards.map((k) => k.id) ?? []),
-          ...matchCardIds,
-        ]),
-      ];
+      // Links and capture dates for every card the triage panel cites.
+      const cardIds = [...new Set(triage?.cards.map((k) => k.id) ?? [])];
       const cardRows = cardIds.length
         ? await ctx.db
             .select({
@@ -390,10 +328,7 @@ export const adminInboxRouter = createTRPCRouter({
           assigneeId: c.assigneeId,
           gminaTeryt: c.gminaTeryt,
           powiatTeryt: c.powiatTeryt,
-          rating: c.rating,
           isSample: c.isSample,
-          hasIdea: c.idea != null,
-          hasPlan: c.plan != null,
           createdAt: c.createdAt,
           lastActivityAt: c.lastActivityAt,
         },
@@ -404,23 +339,9 @@ export const adminInboxRouter = createTRPCRouter({
         messages: thread,
         deliveries: log,
         timeline,
-        matchRun: run
-          ? {
-              id: run.id,
-              query: run.queryRedacted,
-              status: run.status,
-              abstained: run.abstained,
-              crisis: run.crisis,
-              createdAt: run.createdAt,
-              source: cardIdsIn(run.aiResult).length ? "ai" : "keywords",
-              cards: matchCardIds.flatMap((id) =>
-                cardInfo[id] ? [cardInfo[id]] : [],
-              ),
-            }
-          : null,
+        match,
         cardInfo,
-        innovation,
-        call,
+        ...payloads,
         contact: {
           pref: c.contactPref,
           value: contactValue,
@@ -546,53 +467,68 @@ export const adminInboxRouter = createTRPCRouter({
     const now = Date.now();
     const weekAgo = new Date(now - 7 * 24 * 3600 * 1000);
     const twoDaysAgo = new Date(now - 48 * 3600 * 1000);
-    const [fresh, waiting, open, week, latest, unread] = await Promise.all([
-      ctx.db
-        .select({ n: count() })
-        .from(cases)
-        .where(and(s, inArray(cases.status, ["new", "triaged"]))),
-      ctx.db
-        .select({ n: count() })
-        .from(cases)
-        .where(
-          and(
-            s,
-            inArray(cases.status, [...OPEN]),
-            lt(cases.lastActivityAt, twoDaysAgo),
+    const [fresh, waiting, open, week, latest, unread, kinds] =
+      await Promise.all([
+        ctx.db
+          .select({ n: count() })
+          .from(cases)
+          .where(and(s, inArray(cases.status, ["new", "triaged"]))),
+        ctx.db
+          .select({ n: count() })
+          .from(cases)
+          .where(
+            and(
+              s,
+              inArray(cases.status, [...OPEN]),
+              lt(cases.lastActivityAt, twoDaysAgo),
+            ),
           ),
-        ),
-      ctx.db
-        .select({ n: count() })
-        .from(cases)
-        .where(and(s, inArray(cases.status, [...OPEN]))),
-      ctx.db
-        .select({ kind: cases.kind, areas: cases.areas })
-        .from(cases)
-        .where(and(s, gte(cases.createdAt, weekAgo))),
-      ctx.db
-        .select({
-          code: cases.code,
-          kind: cases.kind,
-          title: cases.title,
-          status: cases.status,
-          urgency: cases.urgency,
-          triage: cases.triage,
-          createdAt: cases.createdAt,
-        })
-        .from(cases)
-        .where(s)
-        .orderBy(desc(cases.createdAt))
-        .limit(8),
-      ctx.db
-        .select({ n: count() })
-        .from(notifications)
-        .where(
-          and(
-            eq(notifications.recipient, staffRecipient(ctx.staff)),
-            isNull(notifications.readAt),
+        ctx.db
+          .select({ n: count() })
+          .from(cases)
+          .where(and(s, inArray(cases.status, [...OPEN]))),
+        ctx.db
+          .select({ kind: cases.kind, areas: cases.areas })
+          .from(cases)
+          .where(and(s, gte(cases.createdAt, weekAgo))),
+        ctx.db
+          .select({
+            code: cases.code,
+            kind: cases.kind,
+            title: cases.title,
+            status: cases.status,
+            urgency: cases.urgency,
+            triage: cases.triage,
+            createdAt: cases.createdAt,
+          })
+          .from(cases)
+          .where(s)
+          .orderBy(desc(cases.createdAt))
+          .limit(8),
+        ctx.db
+          .select({ n: count() })
+          .from(notifications)
+          .where(
+            and(
+              eq(notifications.recipient, staffRecipient(ctx.staff)),
+              isNull(notifications.readAt),
+            ),
           ),
-        ),
-    ]);
+        ctx.db
+          .select({ kind: cases.kind, status: cases.status, n: count() })
+          .from(cases)
+          .where(s)
+          .groupBy(cases.kind, cases.status),
+      ]);
+    const perKind = Object.fromEntries(
+      CASE_KINDS.map((k) => [k, { open: 0, total: 0 }]),
+    ) as Record<CaseKind, { open: number; total: number }>;
+    for (const r of kinds) {
+      if (!(r.kind in perKind)) continue;
+      perKind[r.kind].total += r.n;
+      if ((OPEN as readonly string[]).includes(r.status))
+        perKind[r.kind].open += r.n;
+    }
     const byKind = Object.fromEntries(CASE_KINDS.map((k) => [k, 0])) as Record<
       CaseKind,
       number
@@ -610,6 +546,7 @@ export const adminInboxRouter = createTRPCRouter({
       waitingOver48h: waiting[0]?.n ?? 0,
       openCount: open[0]?.n ?? 0,
       unreadNotifications: unread[0]?.n ?? 0,
+      perKind,
       week: { total: week.length, byKind, byArea },
       latest: latest.map(({ triage, ...r }) => ({
         ...r,

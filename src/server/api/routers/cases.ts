@@ -9,6 +9,7 @@ import {
 import { caseOr404 } from "~/server/cases/access";
 import { addMessage, createCase, setCaseStatus } from "~/server/cases/engine";
 import { createCaseInputSchema } from "~/server/cases/input";
+import { casePayloads } from "~/server/cases/payloads";
 import { authorMessages, timelineFor } from "~/server/cases/queries";
 import { AUTHOR_NAME } from "~/server/cases/types";
 import { cases, messages } from "~/server/db/schema";
@@ -43,9 +44,10 @@ export const casesRouter = createTRPCRouter({
     .input(z.object({ code: codeInput, token: z.string().max(200).optional() }))
     .query(async ({ ctx, input }) => {
       const c = await caseOr404(ctx, input.code);
-      const [timeline, thread] = await Promise.all([
+      const [timeline, thread, payloads] = await Promise.all([
         timelineFor(c),
         authorMessages(c.id),
+        casePayloads(c, { staff: false }),
       ]);
       return {
         code: c.code,
@@ -61,6 +63,7 @@ export const casesRouter = createTRPCRouter({
         privateLink: input.token
           ? hashToken(input.token) === c.tokenHash
           : false,
+        ...payloads,
         timeline,
         messages: thread.map((m) => ({
           id: m.id,

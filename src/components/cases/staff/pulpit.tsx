@@ -9,10 +9,13 @@ import {
   CASE_STATUS_LABEL,
   MAPA_AREA_LABEL,
   MAPA_AREAS,
+  type CaseKind,
 } from "~/lib/domain";
+import { SampleBadge, SourceLine } from "~/components/kit";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { ageLabel, plural } from "../format";
+import { KIND_PLURAL } from "./labels";
 
 function Counter({
   label,
@@ -92,6 +95,27 @@ export function Pulpit() {
             hint="Nowe sprawy i wiadomości od autorów."
           />
         </div>
+      </section>
+
+      <section aria-labelledby="kinds-heading">
+        <h2 id="kinds-heading" className="text-2xl font-bold">
+          Sprawy według rodzaju
+        </h2>
+        <p className="text-muted-foreground mt-1">
+          Duża liczba: otwarte (nowe, ocenione, w toku). Pod nią: wszystkie.
+        </p>
+        <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {PULPIT_KINDS.map((k) => (
+            <li key={k}>
+              <Counter
+                label={KIND_PLURAL[k]}
+                value={s.perKind[k].open}
+                href={`/admin/cases?kind=${k}`}
+                hint={`Wszystkich: ${s.perKind[k].total}`}
+              />
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section aria-labelledby="week-heading">
@@ -190,21 +214,97 @@ export function Pulpit() {
         )}
       </section>
 
-      <section
-        aria-labelledby="gaps-heading"
-        className="border-hairline bg-surface rounded-lg border p-4"
-      >
+      <WhiteSpotsTeaser />
+    </div>
+  );
+}
+
+const PULPIT_KINDS = [
+  "need",
+  "idea",
+  "question",
+  "test",
+  "feedback",
+  "adapt",
+] as const satisfies readonly CaseKind[];
+
+/** Top 3 unmet needs (area × powiat) of the last 30 days, from Trendy. */
+function WhiteSpotsTeaser() {
+  const q = api.admin.trends.whiteSpots.useQuery(
+    { days: 30 },
+    { refetchInterval: 60_000 },
+  );
+  const top = q.data?.slice(0, 3) ?? [];
+  return (
+    <section
+      aria-labelledby="gaps-heading"
+      className="border-hairline bg-surface rounded-lg border p-4"
+    >
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="gaps-heading" className="text-2xl font-bold">
           Białe plamy
         </h2>
-        <p className="mt-2">
-          Potrzeby, na które Biblioteka nie ma jeszcze odpowiedzi, zebrane z
-          wyszukiwań i spraw — w podziale na 22 powiaty Małopolski.
+        <Link
+          href="/admin/trends"
+          className="inline-flex min-h-12 items-center gap-1 font-semibold"
+        >
+          Trendy i białe plamy
+          <ArrowRightIcon aria-hidden="true" className="size-4" />
+        </Link>
+      </div>
+      <p className="mt-1">
+        Potrzeby z ostatnich 30 dni, na które Biblioteka nie miała pewnej
+        odpowiedzi — największe skupiska według obszaru i powiatu.
+      </p>
+      {q.isPending ? (
+        <p role="status" className="mt-3">
+          Wczytuję białe plamy…
         </p>
-        <p className="mt-2">
-          <Link href="/admin/trends">Zobacz trendy i białe plamy</Link>
+      ) : q.error ? (
+        <p role="alert" className="mt-3">
+          Nie udało się wczytać białych plam.
         </p>
-      </section>
-    </div>
+      ) : top.length === 0 ? (
+        <p className="text-muted-foreground mt-3">
+          Brak niezaspokojonych potrzeb w ostatnich 30 dniach.
+        </p>
+      ) : (
+        <ol className="mt-3 flex flex-col gap-3">
+          {top.map((w) => (
+            <li
+              key={`${w.area}-${w.powiat ?? ""}`}
+              className="border-hairline bg-background rounded-md border p-3"
+            >
+              <p className="flex flex-wrap items-center gap-2">
+                <Link
+                  href={
+                    w.area === "none"
+                      ? "/admin/trends"
+                      : `/admin/trends?area=${w.area}`
+                  }
+                  className="font-semibold"
+                >
+                  {w.areaLabel} · {w.powiatName}
+                </Link>
+                <span className="tabular-nums">
+                  {w.count}{" "}
+                  {plural(w.count, ["potrzeba", "potrzeby", "potrzeb"])}
+                </span>
+                {w.sample && <SampleBadge />}
+              </p>
+              {w.examples[0] && (
+                <p className="text-muted-foreground mt-1">„{w.examples[0]}”</p>
+              )}
+            </li>
+          ))}
+        </ol>
+      )}
+      <SourceLine
+        className="mt-3"
+        source="Opisy potrzeb w serwisie Już Działa (zanonimizowane)"
+        detail="ostatnie 30 dni"
+        date={new Date()}
+      />
+    </section>
   );
 }

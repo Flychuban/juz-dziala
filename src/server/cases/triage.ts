@@ -8,7 +8,9 @@ import {
   MAPA_AREA_LABEL,
   MAPA_AREAS,
   URGENCIES,
+  type CaseKind,
   type MapaArea,
+  type Urgency,
 } from "~/lib/domain";
 import { aiStructured, userData } from "~/server/ai/structured";
 import {
@@ -20,6 +22,7 @@ import { db } from "~/server/db";
 import { cases, notifications, people } from "~/server/db/schema";
 import { siteUrl } from "~/server/mail/templates";
 import { notify } from "~/server/notify";
+import { matchContext } from "./match-context";
 import {
   libraryCandidates,
   similarCaseCandidates,
@@ -148,6 +151,18 @@ ${crisisLines(categories)}
 ${TEAM_NAME}`;
 }
 
+/**
+ * Without AI, kinds that put nobody at risk by their nature (an idea, a test
+ * sign-up, an opinion, an implementation plan) start as low urgency; needs
+ * and questions stay unassessed until a person or the AI reads them.
+ */
+const CALM_KINDS: Partial<Record<CaseKind, Urgency>> = {
+  idea: "low",
+  test: "low",
+  feedback: "low",
+  adapt: "low",
+};
+
 /** Areas a crisis category points to, before any keyword guess. */
 const CRISIS_AREA: Record<CrisisCategory, MapaArea> = {
   suicide: "mental_health",
@@ -174,6 +189,35 @@ function areasFromCards(
     .map(([a]) => a);
 }
 
+/**
+ * The cards a draft may quote: what the resident was already shown on the
+ * match page (AI-verified evidence first) when the case came from a search,
+ * otherwise the keyword matcher's confident hits.
+ */
+async function candidatesFor(
+  matchRunId: string | null,
+  text: string,
+): Promise<{ cards: LibraryCandidate[]; detectedAreas: MapaArea[] }> {
+  if (matchRunId) {
+    const m = await matchContext(matchRunId).catch(() => null);
+    if (m?.results.length) {
+      return {
+        detectedAreas: m.areas,
+        cards: m.results.map((r) => ({
+          id: r.cardId,
+          slug: r.slug,
+          title: r.title,
+          mapaAreas: r.mapaAreas,
+          score: r.verified ? 1 : 0.5,
+          matchedTerms: r.userTerms,
+          sentences: r.evidence.map((e) => ({ id: e.id, text: e.text })),
+        })),
+      };
+    }
+  }
+  return libraryCandidates(text, 3);
+}
+
 export async function triageCase(caseId: string): Promise<CaseTriage | null> {
   const [c] = await db.select().from(cases).where(eq(cases.id, caseId));
   if (!c) return null;
@@ -189,7 +233,7 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
   const authorAreas = c.areas.length > 0 && !previous?.appliedAreas;
   const [{ cards: candidates, detectedAreas }, similar, experts] =
     await Promise.all([
-      libraryCandidates(text, 3),
+      candidatesFor(c.matchRunId, text),
       similarCaseCandidates(c.id, text, 8),
       db
         .select({
@@ -294,7 +338,7 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
       aiStatus: res.reason,
       summary: null,
       areas,
-      urgency: crisis ? "high" : null,
+      urgency: crisis ? "high" : (CALM_KINDS[c.kind] ?? null),
       crisis,
       powiatGuess: null,
       suggestedExpertId: expert?.id ?? null,
