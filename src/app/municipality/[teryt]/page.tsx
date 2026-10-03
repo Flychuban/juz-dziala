@@ -11,6 +11,7 @@ import {
 
 import {
   AreaTag,
+  countPl,
   formatDatePl,
   PageHeader,
   SampleBadge,
@@ -59,9 +60,14 @@ export default async function MunicipalityProfilePage({
   const { profile: p, gus, needs, signals, recommendations } = data;
 
   const gusSource = `GUS BDL, ${p.year}`;
+  // The first fitting innovation on this page is the one to plan first.
+  const top = recommendations[0];
+  const planHref = top
+    ? `/adapt?innovation=${encodeURIComponent(top.slug)}&gmina=${p.teryt}`
+    : `/adapt?gmina=${p.teryt}`;
   const where = `${KIND_LABEL[p.kind]}, ${powiatDisplay(p.powiatName)}`;
   const lead = [
-    `Mieszka tu ${int(p.population)} osób; ${pct(p.share65)}% ma 65 lat lub więcej, a ${pct(p.share80)}% — 80 lat lub więcej.`,
+    `Mieszka tu ${countPl(p.population, "osoba", "osoby", "osób")}; ${pct(p.share65)}% ma 65 lat lub więcej, a ${pct(p.share80)}% — 80 lat lub więcej.`,
     p.popChange10y === null
       ? null
       : p.popChange10y < 0
@@ -81,7 +87,7 @@ export default async function MunicipalityProfilePage({
       >
         <div className="flex flex-wrap gap-3">
           <Button asChild>
-            <Link href={`/adapt?gmina=${p.teryt}`}>
+            <Link href={planHref}>
               Zaplanuj usługę w tej gminie
               <ArrowRightIcon aria-hidden="true" />
             </Link>
@@ -92,6 +98,12 @@ export default async function MunicipalityProfilePage({
             </Link>
           </Button>
         </div>
+        {top ? (
+          <p className="text-foreground/85 mt-3 text-[0.9375rem]">
+            Plan zacznie się od rozwiązania „{top.title}” — pierwszego z
+            dopasowanych do profilu gminy. Możesz je zmienić w pierwszym kroku.
+          </p>
+        ) : null}
       </PageHeader>
 
       <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
@@ -170,48 +182,63 @@ export default async function MunicipalityProfilePage({
             Liczby mniejsze niż {K_ANONYMITY} ukrywamy, żeby nikogo nie dało się
             rozpoznać.
           </p>
-          <div className="border-hairline mt-6 max-w-2xl overflow-x-auto rounded-md border">
-            <table className="tabular w-full border-collapse text-[0.9375rem]">
-              <caption className="border-hairline border-b px-4 py-3 text-left text-base font-bold">
-                Zgłoszone potrzeby według obszarów Mapy Wyzwań — {powiatDisplay(p.powiatName)}, od {formatDatePl(needs.since)}
-              </caption>
-              <thead className="bg-surface">
-                <tr className="border-hairline border-b">
-                  <th scope="col" className="px-4 py-2 text-left font-semibold">Obszar</th>
-                  <th scope="col" className="px-4 py-2 text-right font-semibold">Zgłoszenia</th>
-                </tr>
-              </thead>
-              <tbody>
-                {needs.areas.map((a) => (
-                  <tr key={a.area} className="border-hairline border-b last:border-0">
-                    <th scope="row" className="px-4 py-2 text-left font-normal">
-                      {MAPA_AREA_LABEL[a.area]}
-                    </th>
-                    <td className="px-4 py-2 text-right">
-                      {a.count === null ? (
-                        <span className="text-muted-foreground">mniej niż {K_ANONYMITY}</span>
-                      ) : (
-                        int(a.count)
-                      )}
+          {needs.total === null ? (
+            <p className="border-hairline bg-surface mt-6 max-w-2xl rounded-md border px-4 py-3 text-base">
+              W ostatnich {needs.windowDays} dniach w powiecie było mniej niż{" "}
+              {K_ANONYMITY} zgłoszeń — za mało, by pokazać szczegóły bez ryzyka
+              rozpoznania osób.
+            </p>
+          ) : (
+            <>
+            <div
+                role="region"
+                aria-labelledby="needs-caption"
+                tabIndex={0}
+                className="border-hairline mt-6 max-w-2xl overflow-x-auto rounded-md border"
+              >
+              <table className="tabular w-full border-collapse text-[0.9375rem]">
+                <caption id="needs-caption" className="border-hairline border-b px-4 py-3 text-left text-base font-bold">
+                  Zgłoszone potrzeby według obszarów Mapy Wyzwań — {powiatDisplay(p.powiatName)}, od {formatDatePl(needs.since)}
+                </caption>
+                <thead className="bg-surface">
+                  <tr className="border-hairline border-b">
+                    <th scope="col" className="px-4 py-2 text-left font-semibold">Obszar</th>
+                    <th scope="col" className="px-4 py-2 text-right font-semibold">Zgłoszenia</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {needs.areas.map((a) => (
+                    <tr key={a.area} className="border-hairline border-b last:border-0">
+                      <th scope="row" className="px-4 py-2 text-left font-normal">
+                        {MAPA_AREA_LABEL[a.area]}
+                      </th>
+                      <td className="px-4 py-2 text-right">
+                        {a.count === null ? (
+                          <span className="text-muted-foreground">mniej niż {K_ANONYMITY}</span>
+                        ) : (
+                          int(a.count)
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="border-hairline bg-surface border-t">
+                    <th scope="row" className="px-4 py-2 text-left font-semibold">Razem</th>
+                    <td className="px-4 py-2 text-right font-semibold">
+                      {needs.total === null ? `mniej niż ${K_ANONYMITY}` : int(needs.total)}
                     </td>
                   </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="border-hairline bg-surface border-t">
-                  <th scope="row" className="px-4 py-2 text-left font-semibold">Razem</th>
-                  <td className="px-4 py-2 text-right font-semibold">
-                    {needs.total === null ? `mniej niż ${K_ANONYMITY}` : int(needs.total)}
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-          {needs.includesSample ? (
-            <p className="mt-3 flex items-center gap-2">
-              <SampleBadge /> W zestawieniu są też zgłoszenia przykładowe.
-            </p>
-          ) : null}
+                </tfoot>
+              </table>
+            </div>
+            {needs.includesSample ? (
+              <p className="mt-3 flex items-center gap-2">
+                <SampleBadge /> W zestawieniu są też zgłoszenia przykładowe.
+              </p>
+            ) : null}
+            </>
+          )}
           <SourceLine
             className="mt-4"
             source="Już Działa — anonimowe zgłoszenia mieszkańców"

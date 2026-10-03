@@ -57,7 +57,7 @@ export default async function MunicipalityPage({
   return (
     <>
       <PageHeader
-        eyebrow="Middleman Innowacji · dla gmin i powiatów"
+        eyebrow="Middleman Innowacji — asystent wdrożenia · dla gmin i powiatów"
         title="Dla gminy"
         lead={
           <p>
@@ -116,6 +116,28 @@ export default async function MunicipalityPage({
               ) : null}
             </dl>
             <div className="mt-6">{gusLine}</div>
+            {f.top.length > 0 ? (
+              <div className="mt-6">
+                <h3 className="text-lg font-bold">
+                  Pasujące rozwiązania (pierwsze z listy w profilu gminy)
+                </h3>
+                <ol className="mt-2 space-y-1">
+                  {f.top.map((r) => (
+                    <li key={r.slug}>
+                      <Link
+                        href={`/library/${r.slug}`}
+                        className="inline-flex min-h-11 items-center font-semibold underline decoration-1 underline-offset-4"
+                      >
+                        {r.title}
+                      </Link>
+                      {r.matches.length ? (
+                        <span className="text-foreground/85"> — {r.matches.join(", ")}</span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ) : null}
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild>
                 <Link href={`/municipality/${f.teryt}`}>
@@ -124,7 +146,15 @@ export default async function MunicipalityPage({
                 </Link>
               </Button>
               <Button asChild variant="secondary">
-                <Link href={`/adapt?gmina=${f.teryt}`}>Zaplanuj usługę dla tej gminy</Link>
+                <Link
+                  href={
+                    f.top[0]
+                      ? `/adapt?innovation=${encodeURIComponent(f.top[0].slug)}&gmina=${f.teryt}`
+                      : `/adapt?gmina=${f.teryt}`
+                  }
+                >
+                  Zaplanuj usługę dla tej gminy
+                </Link>
               </Button>
             </div>
           </section>
@@ -156,7 +186,8 @@ export default async function MunicipalityPage({
             Gminy w powiatach
           </h2>
           <p className="text-foreground/85 mt-2">
-            {formatNumberPl(data.gminas.length)} gmin w {powiatList.length} powiatach.
+            {countPl(data.gminas.length, "gmina", "gminy", "gmin")} w{" "}
+            {countPl(powiatList.length, "powiecie", "powiatach", "powiatach")}.
             Rozwiń powiat, aby wybrać gminę.
           </p>
           <ul className="mt-6 grid grid-cols-1 gap-3 lg:grid-cols-2">

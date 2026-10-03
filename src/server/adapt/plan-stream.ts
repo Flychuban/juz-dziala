@@ -9,13 +9,15 @@
  *  - fills any AI section the model skipped or never reached (an error, a
  *    refusal, max tokens) with the template's version, in order — so the plan
  *    is always complete;
- *  - replaces each `[[c005.s3]]` with OUR text of that card sentence, and
- *    deletes ids that are not on the card. The model never prints a quote.
+ *  - replaces each `[[c005.s3]]` with OUR text of that card sentence, cited
+ *    by its card section (the id itself is never printed), and deletes ids
+ *    that are not on the card. The model never prints a quote.
  *
  * Pure: `createPlanAssembler` works on strings, `assemblePlanStream` wraps it
  * for a byte stream.
  */
 import { quoteSentence, SECTION_NUMBERS, type SectionNumber } from "./plan-template";
+import type { CardSentence } from "./types";
 
 /** Messages `aiStream` writes into the text when it fails. */
 const AI_FAILURE_LINES = new Set([
@@ -26,6 +28,8 @@ const AI_FAILURE_LINES = new Set([
 
 const SECTION_HEADING = /^##\s+(\d{1,2})\.\s/;
 const CITATION = /\[\[\s*([A-Za-z0-9._-]{1,40})\s*\]\]/g;
+/** A sentence id the model wrote outside [[…]] — internal, never printed. */
+const BARE_ID = /\s*\(?(?:zdani[ea]\s+)?\bc\d{3,4}\.s\d{1,3}\b\)?/g;
 
 export type AssemblerOptions = {
   header: string;
@@ -33,8 +37,8 @@ export type AssemblerOptions = {
   sections: Record<SectionNumber, string>;
   /** Sections always printed from `sections`, never from the model. */
   fixed: readonly SectionNumber[];
-  /** Sentence id → our text, for this card only. */
-  sentences: ReadonlyMap<string, string>;
+  /** Sentence id → our sentence (text + section), for this card only. */
+  sentences: ReadonlyMap<string, Pick<CardSentence, "text" | "section">>;
   footer: (o: { fallbackUsed: boolean }) => string;
 };
 
@@ -70,10 +74,15 @@ export function createPlanAssembler(opts: AssemblerOptions): PlanAssembler {
   };
 
   const resolveCitations = (line: string): string =>
-    line.replace(CITATION, (_m, id: string) => {
-      const text = opts.sentences.get(id);
-      return text ? quoteSentence({ id, text }) : "";
-    });
+    line
+      .replace(CITATION, (_m, id: string) => {
+        const sentence = opts.sentences.get(id);
+        // A NUL marks our own quote so the id scrub below cannot touch it.
+        return sentence ? `\u0000${quoteSentence(sentence)}\u0000` : "";
+      })
+      .split("\u0000")
+      .map((part, i) => (i % 2 === 1 ? part : part.replace(BARE_ID, "")))
+      .join("");
 
   const processLine = (line: string): string => {
     const trimmed = line.trim();
