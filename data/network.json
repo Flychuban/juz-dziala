@@ -1,0 +1,564 @@
+{
+  "orgs": [
+    {
+      "id": "o001",
+      "name": "\"Rzecz Piękna\" Fundacja Rozwoju Wydziału Form Przemysłowych ASP w Krakowie",
+      "type": "fundacja",
+      "innovationIds": [
+        "c099"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci,uniodziez"
+    },
+    {
+      "id": "o002",
+      "name": "Akademia Sztuk Pięknych w Krakowie im. Jana Matejki - Wydział Form Przemysłowych",
+      "type": "uczelnia",
+      "innovationIds": [
+        "c036"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci,innotextil"
+    },
+    {
+      "id": "o003",
+      "name": "Centrum Opieki Domowej S.C.",
+      "type": "firma",
+      "innovationIds": [
+        "c066"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,organizator-kompleksowej-opieki-w-miejscu-zamieszkania"
+    },
+    {
+      "id": "o004",
+      "name": "Centrum Rozwoju Społeczno-Gospodarczego Przedsiębiorstwo Społeczne sp. z o.o.",
+      "type": "firma",
+      "innovationIds": [
+        "c047"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci,marina-pai"
+    },
+    {
+      "id": "o005",
+      "name": "Chrześcijańskie Stowarzyszenie Osób Niepełnosprawnych, ich Rodzin i Przyjaciół „Ognisko”",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c034",
+        "c093"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-zdrowia-i-medycyny,himalaje-autyzmu"
+    },
+    {
+      "id": "o006",
+      "name": "Fudacja \"Aprobata\"",
+      "type": "fundacja",
+      "innovationIds": [
+        "c110"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci,zakupy-na-jednym-wozku-z-dzieckiem-z-niepelnosprawnoscia-ruchowa"
+    },
+    {
+      "id": "o007",
+      "name": "Fundacja „Mam dom”",
+      "type": "fundacja",
+      "innovationIds": [
+        "c041"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,komix-zyciowy"
+    },
+    {
+      "id": "o008",
+      "name": "Fundacja Ajkum im. Anny i Józefa Kumorek",
+      "type": "fundacja",
+      "innovationIds": [
+        "c023"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-zdrowia-i-medycyny,drogowskazy-ajkum"
+    },
+    {
+      "id": "o009",
+      "name": "Fundacja Aktywnej Rehabilitacji Emerytowanych Osób Niepełnosprawnych",
+      "type": "fundacja",
+      "innovationIds": [
+        "c085"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-sensoryczna,spotkania-kulturlove"
+    },
+    {
+      "id": "o010",
+      "name": "Fundacja Arete Centrum Edukacji Twórczej",
+      "type": "fundacja",
+      "innovationIds": [
+        "c015"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-sensoryczna,czytamoda"
+    },
+    {
+      "id": "o011",
+      "name": "Fundacja ASDreamer",
+      "type": "fundacja",
+      "innovationIds": [
+        "c053",
+        "c077"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,mobilny-pomocnik-dydaktyczno-sensoryczny-dla-uczniowstudentow-ze-spektrum-autyzmu"
+    },
+    {
+      "id": "o012",
+      "name": "Fundacja Centrum Inicjatyw Sportowych",
+      "type": "fundacja",
+      "innovationIds": [
+        "c019",
+        "c107"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci,dostepna-szermierka"
+    },
+    {
+      "id": "o013",
+      "name": "Fundacja Centrum Rehabilitacji Znowu w Biegu",
+      "type": "fundacja",
+      "innovationIds": [
+        "c042"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci,kompleksowa-pomoc-dla-osob-po-amputacji-konczyny-dolnej"
+    },
+    {
+      "id": "o014",
+      "name": "Fundacja Ekologia i Żagle",
+      "type": "fundacja",
+      "innovationIds": [
+        "c113"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,zeglowanie-w-wyobrazni-czyli-sposob-na-strachy-na-wodzie"
+    },
+    {
+      "id": "o015",
+      "name": "Fundacja Human Doc",
+      "type": "fundacja",
+      "innovationIds": [
+        "c017",
+        "c106"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-cudzoziemcow,dialog-ponad-kulturami-1"
+    },
+    {
+      "id": "o016",
+      "name": "Fundacja Internationaler Bund Polska",
+      "type": "fundacja",
+      "innovationIds": [
+        "c040"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,kody-qr-na-pomoc-seniorom"
+    },
+    {
+      "id": "o017",
+      "name": "Fundacja Jesień na Letniej",
+      "type": "fundacja",
+      "innovationIds": [
+        "c044"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,korytarz-wspomnien"
+    },
+    {
+      "id": "o018",
+      "name": "Fundacja Linka",
+      "type": "fundacja",
+      "innovationIds": [
+        "c097"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,to-nie-koniec-swiata-to-poczatek-swiata"
+    },
+    {
+      "id": "o019",
+      "name": "Fundacja Mars",
+      "type": "fundacja",
+      "innovationIds": [
+        "c013"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-zdrowia-i-medycyny,cold-box"
+    },
+    {
+      "id": "o020",
+      "name": "Fundacja Pestka",
+      "type": "fundacja",
+      "innovationIds": [
+        "c001"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-rynku-pracy,agencja-pracy-incydentalnej"
+    },
+    {
+      "id": "o021",
+      "name": "Fundacja Początek Świata",
+      "type": "fundacja",
+      "innovationIds": [
+        "c101"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,uwaznione-rodzienstwo"
+    },
+    {
+      "id": "o022",
+      "name": "Fundacja Polska Bez Barier",
+      "type": "fundacja",
+      "innovationIds": [
+        "c054"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci,moduly-niezaleznosci"
+    },
+    {
+      "id": "o023",
+      "name": "Fundacja pomocy osobom z zaburzeniami za spektrum autyzmu oraz ich rodzin Silentio",
+      "type": "fundacja",
+      "innovationIds": [
+        "c067"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-intelektualna,osa-i-eco-puzzle"
+    },
+    {
+      "id": "o024",
+      "name": "Fundacja Wspierająca Wychowanie ARCHEZJA",
+      "type": "fundacja",
+      "innovationIds": [
+        "c084"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,senior-cuder"
+    },
+    {
+      "id": "o025",
+      "name": "Fundacja Zobaczyć Morze",
+      "type": "fundacja",
+      "innovationIds": [
+        "c008"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-sensoryczna,blue-sea-eye"
+    },
+    {
+      "id": "o026",
+      "name": "Gmina Charsznica - Gminny Ośrodek Pomocy Społecznej w Charsznicy",
+      "type": "ops",
+      "innovationIds": [
+        "c050"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-rynku-pracy,mobilna-gielda-pracy"
+    },
+    {
+      "id": "o027",
+      "name": "Gmina Kęty/ OPS w Kętach",
+      "type": "ops",
+      "innovationIds": [
+        "c109"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci,zakupy-bez-barier"
+    },
+    {
+      "id": "o028",
+      "name": "Gmina Miasta Dębica",
+      "type": "jst",
+      "innovationIds": [
+        "c020"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci,dostepny-stol-targowy"
+    },
+    {
+      "id": "o029",
+      "name": "Gmina Miechów",
+      "type": "jst",
+      "innovationIds": [
+        "c010"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,centrum-antydepresyjne"
+    },
+    {
+      "id": "o030",
+      "name": "Gmina Proszowice - Gminny Ośrodek Pomocy Społecznej w Proszowicach",
+      "type": "ops",
+      "innovationIds": [
+        "c051"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,mobilna-pomoc-terapeutyczna"
+    },
+    {
+      "id": "o031",
+      "name": "Instytut HR",
+      "type": "inna",
+      "innovationIds": [
+        "c005"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,bez-presji-z-depresji"
+    },
+    {
+      "id": "o032",
+      "name": "Instytut Spraw Głuchych",
+      "type": "inna",
+      "innovationIds": [
+        "c028"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-sensoryczna,glucha-ankieta"
+    },
+    {
+      "id": "o033",
+      "name": "Jobian Poland Sp. z o.o.",
+      "type": "firma",
+      "innovationIds": [
+        "c068"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-sensoryczna,osoby-niewidome-i-niedowidzace-jako-nauczyciele-jezyka-polskiego"
+    },
+    {
+      "id": "o034",
+      "name": "Karpatia Sp. z o. o",
+      "type": "firma",
+      "innovationIds": [
+        "c007"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci,biustspinka"
+    },
+    {
+      "id": "o035",
+      "name": "Katolickie Stowarzyszenie Osób Niepełnosprawnych i Ich przyjaciół „KLIKA”",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c058"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci,nakreceni-na-aktywnosc"
+    },
+    {
+      "id": "o036",
+      "name": "Knowledge sp. z o.o.",
+      "type": "firma",
+      "innovationIds": [
+        "c079"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-o-ograniczonej-mobilnosci,puzzles-ramp"
+    },
+    {
+      "id": "o037",
+      "name": "Miejski Ośrodek Pomocy Społecznej w Stalowej Woli",
+      "type": "ops",
+      "innovationIds": [
+        "c090"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-w-kryzysie-bezdomnosci,szlakiem-ludzi-bezdomnych"
+    },
+    {
+      "id": "o038",
+      "name": "OK NON-PROFIT Sp. z o.o.",
+      "type": "firma",
+      "innovationIds": [
+        "c076"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,przenosne-modularne-lazienki"
+    },
+    {
+      "id": "o039",
+      "name": "Politechnika Krakowska",
+      "type": "uczelnia",
+      "innovationIds": [
+        "c082"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,sciezka-motosensoryczna"
+    },
+    {
+      "id": "o040",
+      "name": "Politechnika Krakowska im. Tadeusza Kościuszki",
+      "type": "uczelnia",
+      "innovationIds": [
+        "c083"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,sciezka-treningu-umyslu"
+    },
+    {
+      "id": "o041",
+      "name": "Powiat Wielicki",
+      "type": "jst",
+      "innovationIds": [
+        "c086"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-intelektualna,stop-otylosci-innowacyjna-metoda-pracy-z-osobami-niepelnosprawnymi-intelektualnie"
+    },
+    {
+      "id": "o042",
+      "name": "Społeczna 21 Sp. z o.o.",
+      "type": "firma",
+      "innovationIds": [
+        "c078"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,puzzle-3d"
+    },
+    {
+      "id": "o043",
+      "name": "SPZOZ Państwowy Szpital dla Nerwowo i Psychicznie Chorych w Rybniku",
+      "type": "inna",
+      "innovationIds": [
+        "c069"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-zdrowia-i-medycyny,pacjent-pro"
+    },
+    {
+      "id": "o044",
+      "name": "Stowarzyszenie „Radość” w Dębicy",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c030"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-intelektualna,go-ahead-mow-smialo"
+    },
+    {
+      "id": "o045",
+      "name": "Stowarzyszenie „Razem przy Specjalnym Ośrodku Szkolno-Wychowawczym w Siedlcach”",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c061"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-intelektualna,niepelnosprawnosc-szansa-na-pelnosprawnosc-w-pracy-i-zyciu"
+    },
+    {
+      "id": "o046",
+      "name": "Stowarzyszenie Czas Przestrzeń Tożsamość",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c105",
+        "c115"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,wirtualne-izby-pamieci"
+    },
+    {
+      "id": "o047",
+      "name": "Stowarzyszenie Edukacja Praktyczna TKK",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c038",
+        "c049",
+        "c055",
+        "c075"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,jezykolamacz"
+    },
+    {
+      "id": "o048",
+      "name": "Stowarzyszenie Edukacji Pozaformalnej „Meritum”",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c033",
+        "c048"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-sensoryczna,hear-it"
+    },
+    {
+      "id": "o049",
+      "name": "Stowarzyszenie Ku Dobrej Nadziei",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c103"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-w-kryzysie-bezdomnosci,wiejski-program-pomocy-osobom-w-kryzysie-bezdomnosci-sciezka-feniksa"
+    },
+    {
+      "id": "o050",
+      "name": "Stowarzyszenie na Rzecz Zrównoważonego Rozwoju Społeczno-Gospodarczego „Klucz” oddział w Pałecznicy",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c052"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,mobilne-centrum-pomocy-dla-osob-starszych"
+    },
+    {
+      "id": "o051",
+      "name": "Stowarzyszenie Ochrony Konsumentów Aquila",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c024"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,e-rzecznik-konsumenta-seniora"
+    },
+    {
+      "id": "o052",
+      "name": "Stowarzyszenie Pro Psyche Na Rzecz Zdrowia Psychicznego",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c059"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,nasz-wspolny-rodzinny-swiat-poznaje-ucze-reaguje"
+    },
+    {
+      "id": "o053",
+      "name": "Stowarzyszenie Rodziców i Przyjaciół Dzieci z Zespołem Downa TĘCZA w Krakowie",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c014"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,czas-na-aktywnosc"
+    },
+    {
+      "id": "o054",
+      "name": "Stowarzyszenie Rodziców i Przyjaciół Osób z Zespołem Downa – Tęcza – w Krakowie",
+      "type": "stowarzyszenie",
+      "innovationIds": [
+        "c043"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-rynku-pracy,konsultant-etr"
+    },
+    {
+      "id": "o055",
+      "name": "Uniwersytet Medyczny im. K. Marcinkowskiego w Poznaniu",
+      "type": "uczelnia",
+      "innovationIds": [
+        "c002"
+      ],
+      "isSample": false,
+      "sourceUrl": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-intelektualna,autyzm-i-ja"
+    }
+  ],
+  "sites": []
+}

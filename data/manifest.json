@@ -648,6 +648,42 @@
     "contentType": "application/json; charset=utf-8"
   },
   {
+    "url": "https://bdl.stat.gov.pl/bdl/start",
+    "capturedAt": "2026-10-03T15:56:13.595Z",
+    "sha256": "238636b432f74559c3bb0748e304786b380a5be10b141e8bf2390fe7179b4c94",
+    "bytes": 75125,
+    "file": "data/raw/bdl.stat.gov.pl/bdl_start.238636b432f7.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://european-social-fund-plus.ec.europa.eu/en/social-innovation-match",
+    "capturedAt": "2026-10-03T15:56:23.138Z",
+    "sha256": "741b05371ef7610fcd5f47237fca41a8337c2bf866e803628bfc374ed2047e93",
+    "bytes": 58398,
+    "file": "data/raw/european-social-fund-plus.ec.europa.eu/en_social-innovation-match.741b05371ef7.html",
+    "status": 200,
+    "contentType": "text/html; charset=UTF-8"
+  },
+  {
+    "url": "https://innowacjespoleczne.pl/innowacje-spoleczne/lista-innowacji/",
+    "capturedAt": "2026-10-03T15:56:20.369Z",
+    "sha256": "9d8bfb57f82d79eb8ced470e8249f1e6917b549c4a27ad854fc3051cd27c60c3",
+    "bytes": 116985,
+    "file": "data/raw/innowacjespoleczne.pl/innowacje-spoleczne_lista-innowacji.9d8bfb57f82d.html",
+    "status": 200,
+    "contentType": "text/html; charset=UTF-8"
+  },
+  {
+    "url": "https://obserwator.rops.krakow.pl/",
+    "capturedAt": "2026-10-03T15:56:12.020Z",
+    "sha256": "9b89a0ce6895dae96eab1642ef70be8d71cf7a3f28155f6639da9f2fdbdde29e",
+    "bytes": 105607,
+    "file": "data/raw/obserwator.rops.krakow.pl/index.9b89a0ce6895.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
     "url": "https://raw.githubusercontent.com/waszkiewiczja/GeoJSON-Polska-Wojewodztwa-Powiaty-Gminy/main/gminy.json",
     "capturedAt": "2026-10-03T15:50:58.624Z",
     "sha256": "c0f9a605ed3f8091e7da406874782557734f888b85f29f08e1986fb62f820195",
@@ -664,6 +700,24 @@
     "file": "data/raw/raw.githubusercontent.com/waszkiewiczja_GeoJSON-Polska-Wojewodztwa-Powiaty-Gminy_main_powiaty.13c50c5f8ff6.json",
     "status": 200,
     "contentType": "text/plain; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/deklaracja-dostepnosci",
+    "capturedAt": "2026-10-03T15:56:17.837Z",
+    "sha256": "27c8c5e1ac57cb12e3aa27af5d4be6bb25a106af503a0bd86c4f7ac457ae985a",
+    "bytes": 102448,
+    "file": "data/raw/rops.krakow.pl/deklaracja-dostepnosci.27c8c5e1ac57.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/dzial-publikacje/standardy-tworzenia-dostepnych-dokumentow-tresci-multimediow-i-wydarzen-on-line-w-rops-w-krakowie-2022-2",
+    "capturedAt": "2026-10-03T15:56:18.938Z",
+    "sha256": "f81094a98e66690103858deff11fb2e0f34048992e907c34c142def0141d16ee",
+    "bytes": 78537,
+    "file": "data/raw/rops.krakow.pl/dzial-publikacje_standardy-tworzenia-dostepnych-dokumentow-tresci-multimediow-i-wydarzen-on-line-w-rops-w-krakowie-2022-2.f81094a98e66.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
   },
   {
     "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych",
@@ -1976,6 +2030,15 @@
     "sha256": "af6939317f63e4ed6f7bae41cc2197a3e7910417f252f12aec012810d1fd70f0",
     "bytes": 96665,
     "file": "data/raw/rops.krakow.pl/realizowane-projekty-i-zadania_usluga-wrazliwa-upowszechnianie-innowacji-spolecznych-w-srodowiskach-lokalnych.af6939317f63.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://www.youtube.com/channel/UC4KEW7FaoODgDKLxbUwhnVw",
+    "capturedAt": "2026-10-03T15:56:15.212Z",
+    "sha256": "bdfcea7db8652f024807176921e5ba84c3f0bb6d890e2c1bea3713018ac08aaa",
+    "bytes": 996893,
+    "file": "data/raw/www.youtube.com/channel_UC4KEW7FaoODgDKLxbUwhnVw.bdfcea7db865.html",
     "status": 200,
     "contentType": "text/html; charset=utf-8"
   }

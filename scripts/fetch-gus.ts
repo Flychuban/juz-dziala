@@ -18,6 +18,7 @@
  * (e.g. 011212161011 → 1261011, Kraków) and checked against the PRG gmina layer of the same
  * GeoJSON repository used for the powiat map (name must match).
  */
+import { pathToFileURL } from "node:url";
 import { politeFetch, writeJson } from "./lib/http";
 import { bdlAll, bdlGet } from "./lib/bdl";
 import { Gminas, type Gmina } from "./schemas";
@@ -230,4 +231,6 @@ async function main() {
   for (const n of notes) console.log(`  ${n}`);
 }
 
-await main();
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await main();
+}
