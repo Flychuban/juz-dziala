@@ -186,7 +186,7 @@ async function main() {
   const gminas = Gminas.parse(out);
   writeJson("data/gminas.json", gminas);
 
-  const capturedAt = new Date().toISOString();
+  const capturedAt = subject.capturedAt; // time of the BDL responses used, not of this run (replays reproduce it)
   writeJson("data/gus.meta.json", {
     source: "GUS, Bank Danych Lokalnych (API v1)",
     api: "https://bdl.stat.gov.pl/api/v1",
