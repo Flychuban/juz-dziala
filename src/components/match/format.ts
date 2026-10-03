@@ -55,8 +55,14 @@ export function caseTitle(query: string): string {
 }
 
 /** The case body: the redacted description plus what the matcher showed, for the staff member. */
-export function caseBody(query: string, resultTitles: readonly string[], abstained: boolean): string {
+export function caseBody(
+  query: string,
+  resultTitles: readonly string[],
+  abstained: boolean,
+  askedAbout: string | null = null,
+): string {
   const lines = [`Opis (bez danych osobowych): ${query.trim()}`];
+  if (askedAbout) lines.push(`Prośba dotyczy rozwiązania: „${askedAbout}”.`);
   if (abstained) lines.push("Wynik dopasowania: brak pewnego dopasowania w Bibliotece ROPS.");
   else if (resultTitles.length > 0) lines.push(`Pokazane rozwiązania: ${resultTitles.map((t) => `„${t}”`).join(", ")}.`);
   return lines.join("\n");

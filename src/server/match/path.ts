@@ -59,18 +59,24 @@ function authorsLine(card: LibraryCard): string | null {
   return a.length > 160 ? `${a.slice(0, 159)}…` : a;
 }
 
-/** Usługa Wrażliwa when its call lists this card (newest first), else the best IWS/demo call. */
+/**
+ * Usługa Wrażliwa when its call lists this card (even a closed one: the page
+ * then says the call has ended and to ask ROPS about the next). Otherwise only
+ * an open or demo call for social innovations; never another closed call.
+ */
 export function pickFunding(
   card: LibraryCard,
   callRows: readonly CallRow[],
   listedIn: ReadonlyMap<string, ReadonlySet<string>>,
 ): PathFunding | null {
+  const byStatusThenNewest = (a: CallRow, b: CallRow) =>
+    STATUS_ORDER[a.status] - STATUS_ORDER[b.status] || (b.windowTo ?? "").localeCompare(a.windowTo ?? "");
   const listed = callRows
     .filter((c) => isUslugaWrazliwa(c.id) && listedIn.get(c.id)?.has(card.id))
-    .sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status] || (b.windowTo ?? "").localeCompare(a.windowTo ?? ""));
+    .sort(byStatusThenNewest);
   const general = callRows
-    .filter((c) => isIws(c.id))
-    .sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status] || (b.windowTo ?? "").localeCompare(a.windowTo ?? ""));
+    .filter((c) => isIws(c.id) && (c.status === "open" || c.status === "demo"))
+    .sort(byStatusThenNewest);
   const pick = listed[0] ?? general[0];
   if (!pick) return null;
   return {
@@ -85,15 +91,21 @@ export function pickFunding(
   };
 }
 
-/** The organisation behind the card, else a mentor for its area, else the card's own authors line. */
+/**
+ * The organisation behind the card; else a mentor or expert whose areas
+ * include the card's FIRST Mapa area (a seniors card gets a seniors mentor);
+ * else the card's own authors line.
+ */
 export function pickHelpers(card: LibraryCard, orgRows: readonly OrgRow[], peopleRows: readonly PersonRow[]): PathHelper[] {
   const orgsForCard = orgRows
     .filter((o) => o.innovationIds.includes(card.id))
     .slice(0, 2)
     .map((o) => ({ name: o.name, kind: "org" as const, detail: o.type, isSample: o.isSample, sourceUrl: o.sourceUrl }));
   if (orgsForCard.length > 0) return orgsForCard;
-  const areas = new Set<MapaArea>(card.mapaAreas);
-  const mentor = peopleRows.find((p) => (p.role === "mentor" || p.role === "expert") && p.areas.some((a) => areas.has(a)));
+  const firstArea: MapaArea | undefined = card.mapaAreas[0];
+  const mentor = firstArea
+    ? peopleRows.find((p) => (p.role === "mentor" || p.role === "expert") && p.areas.includes(firstArea))
+    : undefined;
   if (mentor) {
     return [
       {

@@ -23,10 +23,18 @@ describe("pickFunding", () => {
     expect(pickFunding(seniors, CALLS, LISTED)).toMatchObject({ id: "usluga-wrazliwa-2", reason: "listed" });
   });
 
-  it("otherwise offers the IWS/demo call, preferring demo over a closed one, and never mentorES", () => {
+  it("otherwise offers only an open or demo IWS call — never a closed one, never mentorES", () => {
     expect(pickFunding(migrants, CALLS, LISTED)).toMatchObject({ id: "demo-iws", reason: "general", status: "demo" });
-    expect(pickFunding(migrants, CALLS.filter((c) => c.id !== "demo-iws"), LISTED)).toMatchObject({ id: "iws-2-0" });
+    expect(pickFunding(migrants, CALLS.filter((c) => c.id !== "demo-iws"), LISTED)).toBeNull();
     expect(pickFunding(migrants, CALLS.filter((c) => c.id.startsWith("mentores")), LISTED)).toBeNull();
+  });
+
+  it("keeps a closed Usługa Wrażliwa call when it lists the card", () => {
+    expect(pickFunding(seniors, CALLS.filter((c) => c.id !== "demo-iws"), LISTED)).toMatchObject({
+      id: "usluga-wrazliwa-2",
+      status: "closed",
+      reason: "listed",
+    });
   });
 });
 
@@ -45,10 +53,16 @@ describe("pickHelpers", () => {
     ]);
   });
 
-  it("else a mentor or expert for the card's area, flagged as sample", () => {
+  it("else a mentor or expert for the card's first area, flagged as sample", () => {
     expect(pickHelpers(migrants, ORGS, PEOPLE)).toEqual([
       { name: "Piotr Wróbel", kind: "mentor", detail: "Ekspert — cudzoziemcy", isSample: true, sourceUrl: null },
     ]);
+  });
+
+  it("does not pick a mentor who only shares a later area of the card", () => {
+    const healthThenSeniors = { ...migrants, mapaAreas: ["health" as const, "seniors" as const] };
+    const seniorsMentor: PersonRow = { id: "p3", displayName: "Anna", role: "mentor", title: null, orgName: null, areas: ["seniors"], isSample: true };
+    expect(pickHelpers(healthThenSeniors, [], [seniorsMentor])).toEqual([]);
   });
 
   it("else nothing invented: the card's own authors line, or an empty list", () => {

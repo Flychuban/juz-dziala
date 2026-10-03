@@ -10,7 +10,7 @@ import { CrisisBanner } from "./crisis-banner";
 import { knowledgeDetail } from "./format";
 import { RequestHelp } from "./request-help";
 import { ResultCard, type MatchViewData } from "./result-card";
-import { btnSecondary } from "./styles";
+import { btnPrimary, btnSecondary } from "./styles";
 
 const PROGRESS = [
   { after: 0, text: (n: number) => `Sprawdzamy ${n} kart innowacji ROPS…` },
@@ -18,6 +18,31 @@ const PROGRESS = [
   { after: 7000, text: () => "Sprawdzamy cytaty w kartach…" },
   { after: 16000, text: () => "To trwa dłużej niż zwykle. Wstępne wyniki już widzisz." },
 ];
+
+/**
+ * True while the inline help section or the site footer is on screen: the
+ * sticky bar then steps aside, so it never covers the form or the footer.
+ */
+function useHelpTargetsVisible(): boolean {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const targets = [document.getElementById("help"), document.querySelector("footer[data-site-footer]")].filter(
+      (el): el is Element => el !== null,
+    );
+    if (targets.length === 0 || typeof IntersectionObserver === "undefined") return;
+    const shown = new Set<Element>();
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) shown.add(e.target);
+        else shown.delete(e.target);
+      }
+      setVisible(shown.size > 0);
+    });
+    targets.forEach((t) => io.observe(t));
+    return () => io.disconnect();
+  }, []);
+  return visible;
+}
 
 function useElapsed(active: boolean): number {
   const [elapsed, setElapsed] = useState(0);
@@ -45,6 +70,13 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
     onSuccess: (v) => utils.match.get.setData({ runId }, v),
   });
   const asked = useRef(false);
+  const [help, setHelp] = useState<{ open: boolean; innovation: { id: string; title: string } | null }>({
+    open: false,
+    innovation: null,
+  });
+  const [helpSent, setHelpSent] = useState(false);
+  const openHelp = (innovation: { id: string; title: string } | null) => setHelp({ open: true, innovation });
+  const helpTargetsVisible = useHelpTargetsVisible();
   const h1 = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -75,7 +107,7 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
   const topArea = view.areas[0];
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-md:pb-24">
       {view.crisis.urgent && <CrisisBanner />}
 
       <header className="flex flex-col gap-3">
@@ -136,7 +168,13 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
             <p className="border-hairline bg-surface rounded-lg border p-3">{NOTE_TEXT[view.note ?? "ai_error"]}</p>
           )}
           {view.results.map((r, i) => (
-            <ResultCard key={r.card.id} r={r} index={i} pending={pending} />
+            <ResultCard
+              key={r.card.id}
+              r={r}
+              index={i}
+              pending={pending}
+              onRequestHelp={() => openHelp({ id: r.card.id, title: r.card.title })}
+            />
           ))}
         </section>
       )}
@@ -186,6 +224,10 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
         powiatTeryt={view.place?.powiatTeryt ?? null}
         resultTitles={abstained ? [] : view.results.map((r) => r.card.title)}
         abstained={abstained}
+        open={help.open}
+        onOpenChange={(open) => setHelp((h) => ({ open, innovation: open ? h.innovation : null }))}
+        innovation={help.innovation}
+        onCreated={() => setHelpSent(true)}
       />
 
       <div data-no-print>
@@ -193,6 +235,17 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
           Drukuj
         </button>
       </div>
+
+      {!help.open && !helpSent && !helpTargetsVisible && (
+        <div
+          data-no-print
+          className="border-hairline bg-background fixed inset-x-0 bottom-0 z-30 border-t px-4 py-3 md:hidden"
+        >
+          <button type="button" className={`${btnPrimary} w-full`} onClick={() => openHelp(null)}>
+            Poproś ROPS o pomoc
+          </button>
+        </div>
+      )}
     </div>
   );
 }

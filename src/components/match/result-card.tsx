@@ -18,7 +18,7 @@ import {
 import { CALL_STATUS_LABEL, SECTION_LABEL } from "~/lib/domain";
 import type { RouterOutputs } from "~/trpc/react";
 import { shortCallName } from "./format";
-import { btnSecondary } from "./styles";
+import { btnPrimary, btnSecondary } from "./styles";
 
 export type MatchViewData = RouterOutputs["match"]["get"];
 export type ResultCardData = MatchViewData["results"][number];
@@ -35,17 +35,26 @@ function fundingStep(f: Funding | null): PathStep {
   if (!f) {
     return {
       label: "Skąd pieniądze",
-      title: "Brak naboru w naszych danych",
-      detail: "Zapytaj ROPS o możliwości finansowania.",
+      title: "Zapytaj w ośrodku pomocy społecznej w swojej gminie",
+      detail: "W naszych danych nie ma teraz otwartego naboru na to rozwiązanie.",
     };
   }
   const status = CALL_STATUS_LABEL[f.status].toLowerCase();
   const when = windowText(f);
   if (f.reason === "listed") {
+    if (f.status === "closed") {
+      return {
+        label: "Skąd pieniądze",
+        title: "Program ROPS «Usługa Wrażliwa» (nabór zakończony — kolejne nabory: zapytaj ROPS)",
+        detail: "To rozwiązanie jest na liście innowacji do wdrożenia w tym programie.",
+        href: f.sourceUrl,
+        linkLabel: "Zobacz ostatni nabór",
+      };
+    }
     return {
       label: "Skąd pieniądze",
-      title: "Usługa Wrażliwa",
-      detail: `To rozwiązanie jest na liście innowacji do wdrożenia w tym naborze. Nabór: ${status}${when ? `, ${when}` : ""}.`,
+      title: "Program ROPS «Usługa Wrażliwa»",
+      detail: `To rozwiązanie jest na liście innowacji do wdrożenia. Nabór: ${status}${when ? `, ${when}` : ""}.`,
       href: f.sourceUrl,
       linkLabel: "Zobacz nabór",
     };
@@ -110,7 +119,25 @@ function readAloudText(r: ResultCardData): string {
     .join(". ");
 }
 
-export function ResultCard({ r, index, pending }: { r: ResultCardData; index: number; pending: boolean }) {
+function Quote({ e }: { e: ResultCardData["evidence"][number] }) {
+  return (
+    <p className="mt-2 first:mt-0">
+      <span className="text-muted-foreground block text-sm font-semibold">{SECTION_LABEL[e.section]}</span>„{e.text}”
+    </p>
+  );
+}
+
+export function ResultCard({
+  r,
+  index,
+  pending,
+  onRequestHelp,
+}: {
+  r: ResultCardData;
+  index: number;
+  pending: boolean;
+  onRequestHelp: () => void;
+}) {
   const headingId = `result-${r.card.id}`;
   const [showVideo, setShowVideo] = useState(false);
   return (
@@ -147,12 +174,7 @@ export function ResultCard({ r, index, pending }: { r: ResultCardData; index: nu
       {r.evidence.length > 0 && (
         <figure className="mt-5">
           <blockquote className="border-primary border-l-4 pl-4">
-            {r.evidence.map((e) => (
-              <p key={e.id} className="mt-2 first:mt-0">
-                <span className="text-muted-foreground block text-sm font-semibold">{SECTION_LABEL[e.section]}</span>„
-                {e.text}”
-              </p>
-            ))}
+            <Quote e={r.evidence[0]!} />
           </blockquote>
           <figcaption className="mt-2 pl-5">
             <SourceLine
@@ -161,6 +183,18 @@ export function ResultCard({ r, index, pending }: { r: ResultCardData; index: nu
               date={r.card.capturedAt}
             />
           </figcaption>
+          {r.evidence.length > 1 && (
+            <details className="group mt-3 pl-5">
+              <summary className="text-foreground inline-flex min-h-12 cursor-pointer items-center font-semibold underline underline-offset-4">
+                Pokaż więcej cytatów z karty ({r.evidence.length - 1})
+              </summary>
+              <blockquote className="border-primary mt-2 border-l-4 pl-4">
+                {r.evidence.slice(1).map((e) => (
+                  <Quote key={e.id} e={e} />
+                ))}
+              </blockquote>
+            </details>
+          )}
         </figure>
       )}
 
@@ -177,6 +211,9 @@ export function ResultCard({ r, index, pending }: { r: ResultCardData; index: nu
       ) : null}
 
       <div className="mt-5 flex flex-wrap gap-2" data-no-print>
+        <button type="button" className={btnPrimary} onClick={onRequestHelp}>
+          Poproś ROPS o pomoc<span className="sr-only"> w sprawie: {r.card.title}</span>
+        </button>
         <Link href={`/library/${r.card.slug}`} className={btnSecondary}>
           Szczegóły<span className="sr-only">: {r.card.title}</span>
         </Link>

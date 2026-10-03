@@ -71,6 +71,7 @@ describe("caseBody", () => {
     expect(caseBody("wózek", ["Uniodzież"], false)).toBe("Opis (bez danych osobowych): wózek\nPokazane rozwiązania: „Uniodzież”.");
     expect(caseBody("dziura w drodze", [], true)).toContain("brak pewnego dopasowania");
     expect(caseBody("abc", [], false).length).toBeGreaterThanOrEqual(10);
+    expect(caseBody("wózek", ["Uniodzież"], false, "Uniodzież")).toContain("Prośba dotyczy rozwiązania: „Uniodzież”.");
   });
 });
 

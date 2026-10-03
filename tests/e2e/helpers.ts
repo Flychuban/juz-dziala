@@ -144,5 +144,9 @@ export async function createMatch(page: Page, text = MATCH_QUERY): Promise<strin
   // Results (or the abstain view) are on screen once the page has settled.
   await expect(page.getByRole("heading", { level: 1, name: "Gotowe rozwiązania dla Ciebie" })).toBeVisible();
   await expect(page.locator("article, #abstain-heading").first()).toBeVisible();
+  // Let the AI step finish (or report that it could not run) so the cards stop changing under the test.
+  await expect(
+    page.getByText(/Sprawdzone przez AI|Nie mamy pewnego dopasowania|Pokazujemy wyniki wyszukiwania/u).first(),
+  ).toBeVisible({ timeout: 60_000 });
   return id;
 }
