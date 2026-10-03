@@ -1152,6 +1152,42 @@
     "contentType": "application/pdf"
   },
   {
+    "url": "https://rops.krakow.pl/mpliki/IS/IWS_20/1._Zacznik_nr_1_Ogoszenie_o_naborze_IS.pdf",
+    "capturedAt": "2026-10-03T15:41:41.542Z",
+    "sha256": "19f09432fd1d37d9f8b000a41fd15b092bcb1e04230315712db9fd0565352d2a",
+    "bytes": 223564,
+    "file": "data/raw/rops.krakow.pl/mpliki_IS_IWS_20_1._Zacznik_nr_1_Ogoszenie_o_naborze_IS.19f09432fd1d.pdf",
+    "status": 200,
+    "contentType": "application/pdf"
+  },
+  {
+    "url": "https://rops.krakow.pl/mpliki/IS/IWS_20/za._1._PROCEDURY_REALIZACJI_PROJEKTU_GRANTOWEGO_IWS_2.0.pdf",
+    "capturedAt": "2026-10-03T15:41:42.643Z",
+    "sha256": "d71b83abe944e0cbf00548cc2953896010a8fce85d5096a18392517b70efc22d",
+    "bytes": 839484,
+    "file": "data/raw/rops.krakow.pl/mpliki_IS_IWS_20_za._1._PROCEDURY_REALIZACJI_PROJEKTU_GRANTOWEGO_IWS_2.0.d71b83abe944.pdf",
+    "status": 200,
+    "contentType": "application/pdf"
+  },
+  {
+    "url": "https://rops.krakow.pl/mpliki/IS/IWS_20/za._3._Formularz_aplikacyjny_wzor.pdf",
+    "capturedAt": "2026-10-03T15:41:01.291Z",
+    "sha256": "a0817ce8f7e8af9105c931ee63a8c4f12c5f52ec8bbc2191612721ca5dee5a38",
+    "bytes": 260304,
+    "file": "data/raw/rops.krakow.pl/mpliki_IS_IWS_20_za._3._Formularz_aplikacyjny_wzor.a0817ce8f7e8.pdf",
+    "status": 200,
+    "contentType": "application/pdf"
+  },
+  {
+    "url": "https://rops.krakow.pl/mpliki/IS/IWS_20/za._5._Karta_Oceny_merytorycznej_wzor.pdf",
+    "capturedAt": "2026-10-03T15:41:43.743Z",
+    "sha256": "a4ff546aeaaa598ffa4eb10be2b34942040929d466efbe78ae3ed66871331cda",
+    "bytes": 229308,
+    "file": "data/raw/rops.krakow.pl/mpliki_IS_IWS_20_za._5._Karta_Oceny_merytorycznej_wzor.a4ff546aeaaa.pdf",
+    "status": 200,
+    "contentType": "application/pdf"
+  },
+  {
     "url": "https://rops.krakow.pl/mpliki/IS/IWS_20/za._nr_2._Mapa_Wyzwa_Spoecznych.pdf",
     "capturedAt": "2026-10-03T15:36:04.394Z",
     "sha256": "bc99f6e99656176bd87b1aa976f39691128d4b554bfc98ff5f2a157e217513e5",
@@ -1159,5 +1195,122 @@
     "file": "data/raw/rops.krakow.pl/mpliki_IS_IWS_20_za._nr_2._Mapa_Wyzwa_Spoecznych.bc99f6e99656.pdf",
     "status": 200,
     "contentType": "application/pdf"
+  },
+  {
+    "url": "https://rops.krakow.pl/mpliki/IS/Moj_folder/INNO_AGH_-_SOCIAL_CANVAS.pdf",
+    "capturedAt": "2026-10-03T15:41:03.492Z",
+    "sha256": "ae38f539b484a4c40ed91aced94847bbf09673634f1a382b7c177ad27a0dc8c0",
+    "bytes": 7694251,
+    "file": "data/raw/rops.krakow.pl/mpliki_IS_Moj_folder_INNO_AGH_-_SOCIAL_CANVAS.ae38f539b484.pdf",
+    "status": 200,
+    "contentType": "application/pdf"
+  },
+  {
+    "url": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne",
+    "capturedAt": "2026-10-03T15:41:02.392Z",
+    "sha256": "8ac69e2310f764367efa3b0d077b5456f65c6dacb867488c159939b7a5ac3cab",
+    "bytes": 96952,
+    "file": "data/raw/rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje_granty-na-innowacje-spoleczne.8ac69e2310f7.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,ii-nabor-wnioskow-na-pilotazowe-wdrozenie-uslug-spolecznych-bazujacych-na-innowacyjnych-rozwiazaniach-w-ramach-projektu-usluga-wrazliwa-upowszechnianie-innowacji-spolecznych-w-srodowiskach-lokalnych",
+    "capturedAt": "2026-10-03T15:41:19.598Z",
+    "sha256": "45560df13f5531300696d688c1ec49094302cf8e5c28c30c603497e40917a826",
+    "bytes": 108522,
+    "file": "data/raw/rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje_granty-na-innowacje-spoleczne,ii-nabor-wnioskow-na-pilotazowe-wdrozeni.45560df13f55.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,nabor-aplikacji-wnioskow-na-innowacje-spoleczne-w-ramach-projektu-pn-inkubator-wlaczenia-spolecznego-20",
+    "capturedAt": "2026-10-03T15:41:18.497Z",
+    "sha256": "c76a860774c04cf7a3de8369fdb194fc489e4bbd4c28fe45a2fe3f8748828b15",
+    "bytes": 98106,
+    "file": "data/raw/rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje_granty-na-innowacje-spoleczne,nabor-aplikacji-wnioskow-na-innowacje-sp.c76a860774c0.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,nabor-wnioskow-na-pilotazowe-wdrozenie-uslug-spolecznych-bazujacych-na-innowacyjnych-rozwiazaniach-w-ramach-projektu-usluga-wrazliwa-upowszechnianie-innowacji-spolecznych-w-srodowiskach-lokalnych",
+    "capturedAt": "2026-10-03T15:41:20.699Z",
+    "sha256": "58fdae42e377397492f550faea6ebd62563319feb85a66c0df6c7b6c0007030f",
+    "bytes": 100925,
+    "file": "data/raw/rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje_granty-na-innowacje-spoleczne,nabor-wnioskow-na-pilotazowe-wdrozenie-u.58fdae42e377.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/mentoring",
+    "capturedAt": "2026-10-03T15:42:26.740Z",
+    "sha256": "9f2e27391098beae15d6f677807a2d64b840f1bc5b7b9af5d8ea09c14f203816",
+    "bytes": 94059,
+    "file": "data/raw/rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje_mentoring.9f2e27391098.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/mentoring,nabor-na-mentorow",
+    "capturedAt": "2026-10-03T15:43:01.253Z",
+    "sha256": "fc4ae6d9900701be80982f39a9371909326fcf019abf60da010753deee49166e",
+    "bytes": 93459,
+    "file": "data/raw/rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje_mentoring,nabor-na-mentorow.fc4ae6d99007.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/mentoring,nabor-na-mentorowanych",
+    "capturedAt": "2026-10-03T15:43:00.152Z",
+    "sha256": "4ab1733c396daae5be3462d1f9cf53a90dbdfc14607b27cd2127b11787f7f0bf",
+    "bytes": 93789,
+    "file": "data/raw/rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje_mentoring,nabor-na-mentorowanych.4ab1733c396d.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/realizowane-projekty-i-zadania/inkubator-wlaczenia-spolecznego-20",
+    "capturedAt": "2026-10-03T15:42:24.538Z",
+    "sha256": "fb6c7337010a766fcb8b201ef4b0a86e359699078d635b4a23c526409efa7970",
+    "bytes": 96162,
+    "file": "data/raw/rops.krakow.pl/realizowane-projekty-i-zadania_inkubator-wlaczenia-spolecznego-20.fb6c7337010a.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/realizowane-projekty-i-zadania/inkubator-wlaczenia-spolecznego-20,o-projekcie",
+    "capturedAt": "2026-10-03T15:42:34.826Z",
+    "sha256": "076ab95d3ef8eb9c7744a26f9cf955913f986ee78f7526feafbabf37d51432d8",
+    "bytes": 100961,
+    "file": "data/raw/rops.krakow.pl/realizowane-projekty-i-zadania_inkubator-wlaczenia-spolecznego-20,o-projekcie.076ab95d3ef8.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/realizowane-projekty-i-zadania/inkubator-wlaczenia-spolecznego-20,udzielone-granty-1",
+    "capturedAt": "2026-10-03T15:42:37.028Z",
+    "sha256": "566946715148e9dca4c96d3546474a03482e03171c567aa88cf717876ce7e2ed",
+    "bytes": 97887,
+    "file": "data/raw/rops.krakow.pl/realizowane-projekty-i-zadania_inkubator-wlaczenia-spolecznego-20,udzielone-granty-1.566946715148.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/realizowane-projekty-i-zadania/inkubator-wlaczenia-spolecznego-20,ulotka",
+    "capturedAt": "2026-10-03T15:42:35.927Z",
+    "sha256": "6d03961eeec8af1f22fbd20c5e6904eb173a06873818ce02ed8b6ec967dfe172",
+    "bytes": 90973,
+    "file": "data/raw/rops.krakow.pl/realizowane-projekty-i-zadania_inkubator-wlaczenia-spolecznego-20,ulotka.6d03961eeec8.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  {
+    "url": "https://rops.krakow.pl/realizowane-projekty-i-zadania/usluga-wrazliwa-upowszechnianie-innowacji-spolecznych-w-srodowiskach-lokalnych",
+    "capturedAt": "2026-10-03T15:42:25.639Z",
+    "sha256": "af6939317f63e4ed6f7bae41cc2197a3e7910417f252f12aec012810d1fd70f0",
+    "bytes": 96665,
+    "file": "data/raw/rops.krakow.pl/realizowane-projekty-i-zadania_usluga-wrazliwa-upowszechnianie-innowacji-spolecznych-w-srodowiskach-lokalnych.af6939317f63.html",
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
   }
 ]

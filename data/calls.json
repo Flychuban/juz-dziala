@@ -1,0 +1,457 @@
+[
+  {
+    "id": "iws-2-0",
+    "name": "Nabór aplikacji (wniosków) na innowacje społeczne w ramach projektu pn. „Inkubator Włączenia Społecznego 2.0”",
+    "program": "Fundusze Europejskie dla Rozwoju Społecznego 2021-2027 (FERS), V Oś Priorytetowa, Działanie 5.1: Innowacje społeczne (EFS+)",
+    "operator": "Regionalny Ośrodek Polityki Społecznej w Krakowie, w partnerstwie z Krakowskim Centrum Innowacyjnych Technologii INNOAGH sp. z o.o.",
+    "amountMax": 120000,
+    "amountAvg": 70000,
+    "currency": "PLN",
+    "window": {
+      "from": "2024-11-13",
+      "to": "2024-12-13"
+    },
+    "status": "closed",
+    "eligibility": [
+      "osoby fizyczne mające miejsce zamieszkania (w rozumieniu Kodeksu cywilnego) na terenie Polski i pełną zdolność do czynności prawnych",
+      "osoby prawne (w szczególności fundacje, stowarzyszenia, spółki kapitałowe, spółdzielnie, w tym spółdzielnie socjalne)",
+      "jednostki organizacyjne, niebędące osobami prawnymi, którym ustawa przyznaje zdolność prawną (w szczególności spółki jawne, spółki komandytowe, spółki komandytowo-akcyjne)",
+      "jednostki sektora finansów publicznych",
+      "grupy nieformalne osób lub podmiotów wymienionych wyżej, reprezentowane przez jednego z członków grupy nieformalnej"
+    ],
+    "formFields": [
+      {
+        "key": "title",
+        "label": "Tytuł innowacji",
+        "hint": "Zastanów się nad tytułem, by był on krótki i kojarzący się z przedmiotem innowacji"
+      },
+      {
+        "key": "applicant",
+        "label": "Dane pomysłodawcy",
+        "hint": "Na formularzu elektronicznym do wyboru z listy: osoba fizyczna, podmiot albo grupa nieformalna (do 5 partnerów i reprezentant/ka wskazany/a do kontaktów roboczych)."
+      },
+      {
+        "key": "description",
+        "label": "Opis innowacji",
+        "hint": "Na czym polega innowacja? Jaki jest jej charakter np. produkt, aplikacja, model pracy, rozwiązanie technologiczne? Jak można krótko ją określić, opisać? Jak rozwiązanie realizuje cel projektu: wsparcie procesu włączenia społecznego/przeciwdziałanie wykluczeniu społecznemu? Jak rozwiązanie wpisuje się w ideę deinstytucjonalizacji?"
+      },
+      {
+        "key": "innovativeness",
+        "label": "Innowacyjność rozwiązania",
+        "hint": "Pomóż nam lepiej zrozumieć wyjątkowość pomysłu. Czy podobne rozwiązania są stosowane w Polsce albo na świecie? W jaki sposób proponowany projekt wnosi nową wartość w rozwiązanie zdefiniowanego problemu? Czym projekt wyróżnia się na tle innych, realizowanych w tym zakresie?"
+      },
+      {
+        "key": "problemDiagnosis",
+        "label": "Diagnoza problemu, na który odpowiada Twoja innowacja",
+        "hint": "Na jaki problem odpowiada innowacja – wskaż dane statystyczne obrazujące skalę problemu? Jakie są podstawy tej diagnozy np. raporty, badania? Czy problem, który zamierzasz rozwiązań jest zgodny z tematem wskazanym w Mapie Wyzwań Społecznych – jeśli tak to jakim?"
+      },
+      {
+        "key": "recipients",
+        "label": "Opis odbiorców innowacji",
+        "hint": "Do kogo jest skierowana Twoja innowacja? Co tą grupę wyróżnia? Jakie ma potrzeby? Z jakiego powodu są to osoby wykluczone lub zagrożone wykluczeniem?"
+      },
+      {
+        "key": "change",
+        "label": "Zmiana jaką wprowadza innowacja",
+        "hint": "Jak proponowane rozwiązanie wpłynie na opisany wyżej problem? Co zmieni w życiu grupy odbiorców? Jak wpłynie na włączenie społeczne adresatów? Dzięki czemu zapobiegnie procesowi wykluczenia społecznego?"
+      },
+      {
+        "key": "futureVision",
+        "label": "Wizja przyszłości innowacji",
+        "hint": "Czy innowacja ma potencjał do bycia zastosowaną w przyszłości na dużą skalę, dla szerokiej grupy odbiorców? Czy wypracowane rozwiązanie może zostać rozszerzone na inne grupy docelowe, być stosowane w innym kontekście lub miejscu? W jaki sposób? Jakie jej cechy pozwalają na takie rozszerzenie? Opisz łatwość stosowania i wdrażalność rozwiązania"
+      },
+      {
+        "key": "actionPlan",
+        "label": "Plan działania i koszty",
+        "hint": "Opisz w kilku, kluczowych krokach co, kiedy, jakim kosztem należy zrobić, aby przygotować i przetestować innowację. Dla każdego działania: Działanie, Termin realizacji, Koszt działania. Okres przygotowawczy (nie może przekroczyć 3 miesięcy) oraz okres testowania — Faza I i Faza II testu (nie może przekroczyć 9 miesięcy)."
+      },
+      {
+        "key": "grantAmount",
+        "label": "Wnioskowana kwota grantu",
+        "hint": "Jaka jest wnioskowana, całościowa kwota grantu? Zweryfikuj ją z kosztami częściowymi przedstawionymi w planie działania"
+      },
+      {
+        "key": "team",
+        "label": "Zespół projektowy i jego doświadczenie",
+        "hint": "Kto będzie odpowiedzialny za realizację zadań w projekcie? Jakie doświadczenie w pracy z odbiorcami innowacji, planowaniu i wdrażaniu innowacji społecznych mają te osoby, instytucje, organizacje?"
+      },
+      {
+        "key": "declarations",
+        "label": "Oświadczenia",
+        "hint": "Oświadczenia dla osoby fizycznej albo dla reprezentanta podmiotu, składane pod rygorem odpowiedzialności karnej (art. 297 § 1 kodeksu karnego)."
+      }
+    ],
+    "criteria": [
+      {
+        "key": "innovativeness",
+        "label": "Innowacyjność",
+        "description": "Ocena rozwiązania pod kątem potencjału by w nowy lub znacząco zmieniony względem istniejących rozwiązań sposób rozwiązać wskazane problemy społeczne. Innowacyjność rozwiązania oceniana jest na poziomie krajowym dla danej grupy docelowej. Zadaniem wnioskodawcy jest opisanie proponowanego sposobu na tle istniejących, stosunkowo najbardziej podobnych rozwiązań istniejących w kraju.",
+        "cardDescription": "Ocena rozwiązania pod kątem potencjału by w nowy lub znacząco zmieniony względem istniejących rozwiązań sposób rozwiązać wskazane problemy społeczne. Innowacyjność rozwiązania oceniana jest na poziomie krajowym dla danej grupy docelowej.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 5
+      },
+      {
+        "key": "adequacy",
+        "label": "Adekwatność do potrzeb odbiorców i użytkowników",
+        "description": "Czy cele/produkty innowacji społecznej są adekwatne do obecnej diagnozy potrzeb i problemów grupy docelowej w skali kraju? W jakim stopniu innowacja społeczna odpowiada na potrzeby grupy docelowej? W jakim stopniu innowacja społeczna ma szansę na kontrybucję do zmiany społecznej tzn. zmianę sytuacji grupy docelowej w skali kraju?",
+        "cardDescription": "Analiza celów/produktów innowacji społecznej pod kątem adekwatności do obecnej diagnozy potrzeb i problemów grupy docelowej w skali kraju. Stopień responsywności na potrzeby odbiorców i potencjał kontrybucji do zmiany społecznej tzn. zmianę sytuacji grupy docelowej w skali kraju? Czy pomysł odpowiada na wyzwanie zgodne z Mapą Wyzwań Społecznych?",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      },
+      {
+        "key": "costEffectiveness",
+        "label": "Efektywność kosztowa",
+        "description": "Ocena stopnia optymalizacji, stosunku nakładów do planowanych efektów, bilansu potencjalnych efektów pozytywnych i negatywnych innowacji społecznej.",
+        "cardDescription": "Ocena stopnia optymalizacji, stosunku nakładów do planowanych efektów, bilansu potencjalnych efektów pozytywnych i negatywnych innowacji społecznej; analiza racjonalności wskazanych kosztów (czasowych, finansowych i zasobów) w stosunku do planowanych efektów.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      },
+      {
+        "key": "universality",
+        "label": "Uniwersalność",
+        "description": "Ocena możliwości zastosowania rozwiązania w różnym miejscu, łatwość stosowania, wdrażalność rozwiązania, możliwości upowszechnienia i wyskalowania.",
+        "cardDescription": "Ocena możliwości zastosowania rozwiązania w różnym miejscu, łatwość stosowania, wdrażalność rozwiązania, możliwości upowszechnienia i wyskalowania.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      },
+      {
+        "key": "developmentVision",
+        "label": "Wizja rozwoju pomysłu w przyszłości",
+        "description": "Ocena pomysłów na wykorzystanie innowacji w przyszłości.",
+        "cardDescription": "Ocena pomysłów na wykorzystanie innowacji po zakończonym etapie inkubacji i przetestowaniu.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      }
+    ],
+    "minScore": 21,
+    "innovations": [],
+    "resultsPlanned": "kwiecień/maj 2025",
+    "applyUrl": "https://www.webankieta.pl/ankieta/1375387/formularz-aplikacyjny-inkubator-wlaczenia-spolecznego-20.html",
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,nabor-aplikacji-wnioskow-na-innowacje-spoleczne-w-ramach-projektu-pn-inkubator-wlaczenia-spolecznego-20",
+    "capturedAt": "2026-10-03T15:41:18.497Z",
+    "notes": "Grant na opracowanie i przetestowanie innowacji społecznej skierowanej do osób wykluczonych lub zagrożonych wykluczeniem społecznym; nie może mieć charakteru wdrożeniowego. Zasięg ogólnopolski. Kwota maksymalna 120 000 zł (strona naboru i Ogłoszenie o naborze); średnia wartość grantu 70 000 zł według strony projektu (https://rops.krakow.pl/realizowane-projekty-i-zadania/inkubator-wlaczenia-spolecznego-20,o-projekcie). Wkład własny nie jest wymagany; grant pokrywa 100% kosztów. Realizacja do 12 miesięcy: okres przygotowawczy do 3 miesięcy, dwie fazy testowania i dopracowanie łącznie do 9 miesięcy; testerów min. 4 osoby. Wnioskodawca może złożyć maksymalnie 2 aplikacje. Ocena: formalna → merytoryczna → strategiczna. Część A oceny merytorycznej (5 kryteriów, 0–10 pkt każde, maks. 50): minimum 21 pkt, w tym min. 5 pkt za innowacyjność i 4 pkt za każde pozostałe kryterium (Karta oceny merytorycznej; Procedury rozdz. IX). Część B (pitching, 3 kryteria po 0–5 pkt: koncepcja testowania, potencjał wnioskodawcy, zgodność z ideą deinstytucjonalizacji; min. 3 pkt w każdym). Do oceny strategicznej przechodzą aplikacje z min. 32,5 z 65 pkt. Planowane rozstrzygnięcie: strona naboru podaje „kwiecień/maj 2025”, Ogłoszenie o naborze — „marzec 2025”."
+  },
+  {
+    "id": "usluga-wrazliwa-1",
+    "name": "Nabór wniosków na pilotażowe wdrożenie usług społecznych bazujących na innowacyjnych rozwiązaniach w ramach projektu „Usługa Wrażliwa – upowszechnianie innowacji społecznych w środowiskach lokalnych”",
+    "program": "Fundusze Europejskie dla Małopolski 2021-2027 (FEM), Działanie 6.23 (EFS+)",
+    "operator": "Regionalny Ośrodek Polityki Społecznej w Krakowie",
+    "amountMax": 600000,
+    "amountAvg": null,
+    "currency": "PLN",
+    "window": {
+      "from": "2025-12-22",
+      "to": "2026-02-20"
+    },
+    "status": "closed",
+    "eligibility": [
+      "podmioty mające siedzibę lub oddział na terenie Małopolski, w szczególności samorządy terytorialne i ich jednostki organizacyjne typu OPS, PCPR, CUS oraz NGO i podmioty ekonomii społecznej,",
+      "podmioty posiadające min. 3-letnie doświadczenie w co najmniej jednym obszarze zbieżnym z przedmiotem rozwiązania: pracy z grupą docelową, do której kierowana jest innowacja lub udzielaniu podobnej formy wsparcia lub działalności w obszarze innowacji,",
+      "podmioty, które nie są wykluczone z możliwości otrzymania wsparcia, zgodnie z Regulaminem udzielania grantów, znajdującym się w plikach do pobrania."
+    ],
+    "formFields": [],
+    "criteria": [],
+    "minScore": null,
+    "innovations": [
+      {
+        "category": "Kategoria I",
+        "title": "Bez Presji z Depresji",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,bez-presji-z-depresji",
+        "slug": "bez-presji-z-depresji",
+        "cardId": "c005"
+      },
+      {
+        "category": "Kategoria II",
+        "title": "Strażnik (Alarm Ally)",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-sensoryczna,straznik",
+        "slug": "straznik",
+        "cardId": "c087"
+      },
+      {
+        "category": "Kategoria III",
+        "title": "Himalaje Autyzmu",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-zdrowia-i-medycyny,himalaje-autyzmu",
+        "slug": "himalaje-autyzmu",
+        "cardId": "c034"
+      },
+      {
+        "category": "Kategoria IV",
+        "title": "Rodzina Adopcyjna Dorasta",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,rodzina-adopcyjna-dorasta",
+        "slug": "rodzina-adopcyjna-dorasta",
+        "cardId": "c080"
+      },
+      {
+        "category": "Kategoria V",
+        "title": "Głuchy czytelnik w bibliotece",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-sensoryczna,gluchy-czytelnik-w-bibliotece",
+        "slug": "gluchy-czytelnik-w-bibliotece",
+        "cardId": "c029"
+      }
+    ],
+    "resultsPlanned": "kwiecień 2026",
+    "applyUrl": "https://uw-wniosek.webankieta.pl/",
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,nabor-wnioskow-na-pilotazowe-wdrozenie-uslug-spolecznych-bazujacych-na-innowacyjnych-rozwiazaniach-w-ramach-projektu-usluga-wrazliwa-upowszechnianie-innowacji-spolecznych-w-srodowiskach-lokalnych",
+    "capturedAt": "2026-10-03T15:41:20.699Z",
+    "notes": "Grant na pilotażowe wdrożenie innowacyjnej usługi społecznej w społeczności lokalnej, bazującej na jednej z innowacji wskazanych przez ROPS (Ramowe Plany Wdrożenia). Wkład własny nie jest wymagany; grant pokrywa 100% kosztów. Odbiorcy wsparcia zależnie od innowacji: rodziny z dziećmi, dzieci i młodzież, osoby wymagające wsparcia w codziennym funkcjonowaniu i ich opiekunowie, osoby z niepełnosprawnościami lub o ograniczonej mobilności, osoby mieszkające, uczące się lub pracujące w województwie małopolskim; także kadra usług społecznych. Strona nie podaje średniej wartości grantu (amountAvg = null). Pola wniosku i kryteria oceny są w PDF-ach „Wniosek o grant” i „Wzór karty oceny merytorycznej” w plikach do pobrania — nie zostały tu przepisane (formFields i criteria puste, minScore = null). Planowane rozstrzygnięcie według listy naborów (https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne)."
+  },
+  {
+    "id": "usluga-wrazliwa-2",
+    "name": "II nabór wniosków na pilotażowe wdrożenie usług społecznych bazujących na innowacyjnych rozwiązaniach w ramach projektu „Usługa Wrażliwa – upowszechnianie innowacji społecznych w środowiskach lokalnych”",
+    "program": "Fundusze Europejskie dla Małopolski 2021-2027 (FEM), Działanie 6.23 (EFS+)",
+    "operator": "Regionalny Ośrodek Polityki Społecznej w Krakowie",
+    "amountMax": 600000,
+    "amountAvg": null,
+    "currency": "PLN",
+    "window": {
+      "from": "2026-05-27",
+      "to": "2026-06-30"
+    },
+    "status": "closed",
+    "eligibility": [
+      "podmioty mające siedzibę lub oddział na terenie Małopolski, w szczególności samorządy terytorialne i ich jednostki organizacyjne typu OPS, PCPR, CUS oraz NGO i podmioty ekonomii społecznej,",
+      "podmioty posiadające min. 3-letnie doświadczenie w co najmniej jednym obszarze zbieżnym z przedmiotem rozwiązania: pracy z grupą docelową, do której kierowana jest innowacja lub udzielaniu podobnej formy wsparcia lub działalności w obszarze innowacji,",
+      "podmioty, które nie są wykluczone z możliwości otrzymania wsparcia, zgodnie z Regulaminem udzielania grantów, znajdującym się w plikach do pobrania."
+    ],
+    "formFields": [],
+    "criteria": [],
+    "minScore": null,
+    "innovations": [
+      {
+        "category": "Kategoria I",
+        "title": "Przenośne modularne łazienki",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,przenosne-modularne-lazienki",
+        "slug": "przenosne-modularne-lazienki",
+        "cardId": "c076"
+      },
+      {
+        "category": "Kategoria II",
+        "title": "koMIX życiowy",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,komix-zyciowy",
+        "slug": "komix-zyciowy",
+        "cardId": "c041"
+      },
+      {
+        "category": "Kategoria III",
+        "title": "Organizator kompleksowej opieki w miejscu zamieszkania",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,organizator-kompleksowej-opieki-w-miejscu-zamieszkania",
+        "slug": "organizator-kompleksowej-opieki-w-miejscu-zamieszkania",
+        "cardId": "c066"
+      },
+      {
+        "category": "Kategoria IV",
+        "title": "Szlakiem ludzi bezdomnych",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-w-kryzysie-bezdomnosci,szlakiem-ludzi-bezdomnych",
+        "slug": "szlakiem-ludzi-bezdomnych",
+        "cardId": "c090"
+      },
+      {
+        "category": "Kategoria V",
+        "title": "Terapeuta przestrzeni",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,terapeuta-przestrzeni",
+        "slug": "terapeuta-przestrzeni",
+        "cardId": "c095"
+      }
+    ],
+    "resultsPlanned": "wrzesień 2026",
+    "applyUrl": "https://uw-nabor2.webankieta.pl/",
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,ii-nabor-wnioskow-na-pilotazowe-wdrozenie-uslug-spolecznych-bazujacych-na-innowacyjnych-rozwiazaniach-w-ramach-projektu-usluga-wrazliwa-upowszechnianie-innowacji-spolecznych-w-srodowiskach-lokalnych",
+    "capturedAt": "2026-10-03T15:41:19.598Z",
+    "notes": "Grant na pilotażowe wdrożenie innowacyjnej usługi społecznej w społeczności lokalnej, bazującej na jednej z innowacji wskazanych przez ROPS (Ramowe Plany Wdrożenia). Wkład własny nie jest wymagany; grant pokrywa 100% kosztów. Odbiorcy wsparcia zależnie od innowacji: rodziny z dziećmi, dzieci i młodzież, osoby wymagające wsparcia w codziennym funkcjonowaniu i ich opiekunowie, osoby z niepełnosprawnościami lub o ograniczonej mobilności, osoby mieszkające, uczące się lub pracujące w województwie małopolskim; także kadra usług społecznych. Strona nie podaje średniej wartości grantu (amountAvg = null). Pola wniosku i kryteria oceny są w PDF-ach „Wniosek o grant” i „Wzór karty oceny merytorycznej” w plikach do pobrania — nie zostały tu przepisane (formFields i criteria puste, minScore = null). Planowane rozstrzygnięcie według listy naborów (https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne)."
+  },
+  {
+    "id": "demo-iws",
+    "name": "Nabór przykładowy (demo) — granty na innowacje społeczne",
+    "program": "Fundusze Europejskie dla Rozwoju Społecznego 2021-2027 (FERS), V Oś Priorytetowa, Działanie 5.1: Innowacje społeczne (EFS+)",
+    "operator": "Regionalny Ośrodek Polityki Społecznej w Krakowie, w partnerstwie z Krakowskim Centrum Innowacyjnych Technologii INNOAGH sp. z o.o.",
+    "amountMax": 120000,
+    "amountAvg": 70000,
+    "currency": "PLN",
+    "window": {
+      "from": "2026-10-03",
+      "to": "2026-10-31"
+    },
+    "status": "demo",
+    "eligibility": [
+      "osoby fizyczne mające miejsce zamieszkania (w rozumieniu Kodeksu cywilnego) na terenie Polski i pełną zdolność do czynności prawnych",
+      "osoby prawne (w szczególności fundacje, stowarzyszenia, spółki kapitałowe, spółdzielnie, w tym spółdzielnie socjalne)",
+      "jednostki organizacyjne, niebędące osobami prawnymi, którym ustawa przyznaje zdolność prawną (w szczególności spółki jawne, spółki komandytowe, spółki komandytowo-akcyjne)",
+      "jednostki sektora finansów publicznych",
+      "grupy nieformalne osób lub podmiotów wymienionych wyżej, reprezentowane przez jednego z członków grupy nieformalnej"
+    ],
+    "formFields": [
+      {
+        "key": "title",
+        "label": "Tytuł innowacji",
+        "hint": "Zastanów się nad tytułem, by był on krótki i kojarzący się z przedmiotem innowacji"
+      },
+      {
+        "key": "applicant",
+        "label": "Dane pomysłodawcy",
+        "hint": "Na formularzu elektronicznym do wyboru z listy: osoba fizyczna, podmiot albo grupa nieformalna (do 5 partnerów i reprezentant/ka wskazany/a do kontaktów roboczych)."
+      },
+      {
+        "key": "description",
+        "label": "Opis innowacji",
+        "hint": "Na czym polega innowacja? Jaki jest jej charakter np. produkt, aplikacja, model pracy, rozwiązanie technologiczne? Jak można krótko ją określić, opisać? Jak rozwiązanie realizuje cel projektu: wsparcie procesu włączenia społecznego/przeciwdziałanie wykluczeniu społecznemu? Jak rozwiązanie wpisuje się w ideę deinstytucjonalizacji?"
+      },
+      {
+        "key": "innovativeness",
+        "label": "Innowacyjność rozwiązania",
+        "hint": "Pomóż nam lepiej zrozumieć wyjątkowość pomysłu. Czy podobne rozwiązania są stosowane w Polsce albo na świecie? W jaki sposób proponowany projekt wnosi nową wartość w rozwiązanie zdefiniowanego problemu? Czym projekt wyróżnia się na tle innych, realizowanych w tym zakresie?"
+      },
+      {
+        "key": "problemDiagnosis",
+        "label": "Diagnoza problemu, na który odpowiada Twoja innowacja",
+        "hint": "Na jaki problem odpowiada innowacja – wskaż dane statystyczne obrazujące skalę problemu? Jakie są podstawy tej diagnozy np. raporty, badania? Czy problem, który zamierzasz rozwiązań jest zgodny z tematem wskazanym w Mapie Wyzwań Społecznych – jeśli tak to jakim?"
+      },
+      {
+        "key": "recipients",
+        "label": "Opis odbiorców innowacji",
+        "hint": "Do kogo jest skierowana Twoja innowacja? Co tą grupę wyróżnia? Jakie ma potrzeby? Z jakiego powodu są to osoby wykluczone lub zagrożone wykluczeniem?"
+      },
+      {
+        "key": "change",
+        "label": "Zmiana jaką wprowadza innowacja",
+        "hint": "Jak proponowane rozwiązanie wpłynie na opisany wyżej problem? Co zmieni w życiu grupy odbiorców? Jak wpłynie na włączenie społeczne adresatów? Dzięki czemu zapobiegnie procesowi wykluczenia społecznego?"
+      },
+      {
+        "key": "futureVision",
+        "label": "Wizja przyszłości innowacji",
+        "hint": "Czy innowacja ma potencjał do bycia zastosowaną w przyszłości na dużą skalę, dla szerokiej grupy odbiorców? Czy wypracowane rozwiązanie może zostać rozszerzone na inne grupy docelowe, być stosowane w innym kontekście lub miejscu? W jaki sposób? Jakie jej cechy pozwalają na takie rozszerzenie? Opisz łatwość stosowania i wdrażalność rozwiązania"
+      },
+      {
+        "key": "actionPlan",
+        "label": "Plan działania i koszty",
+        "hint": "Opisz w kilku, kluczowych krokach co, kiedy, jakim kosztem należy zrobić, aby przygotować i przetestować innowację. Dla każdego działania: Działanie, Termin realizacji, Koszt działania. Okres przygotowawczy (nie może przekroczyć 3 miesięcy) oraz okres testowania — Faza I i Faza II testu (nie może przekroczyć 9 miesięcy)."
+      },
+      {
+        "key": "grantAmount",
+        "label": "Wnioskowana kwota grantu",
+        "hint": "Jaka jest wnioskowana, całościowa kwota grantu? Zweryfikuj ją z kosztami częściowymi przedstawionymi w planie działania"
+      },
+      {
+        "key": "team",
+        "label": "Zespół projektowy i jego doświadczenie",
+        "hint": "Kto będzie odpowiedzialny za realizację zadań w projekcie? Jakie doświadczenie w pracy z odbiorcami innowacji, planowaniu i wdrażaniu innowacji społecznych mają te osoby, instytucje, organizacje?"
+      },
+      {
+        "key": "declarations",
+        "label": "Oświadczenia",
+        "hint": "Oświadczenia dla osoby fizycznej albo dla reprezentanta podmiotu, składane pod rygorem odpowiedzialności karnej (art. 297 § 1 kodeksu karnego)."
+      }
+    ],
+    "criteria": [
+      {
+        "key": "innovativeness",
+        "label": "Innowacyjność",
+        "description": "Ocena rozwiązania pod kątem potencjału by w nowy lub znacząco zmieniony względem istniejących rozwiązań sposób rozwiązać wskazane problemy społeczne. Innowacyjność rozwiązania oceniana jest na poziomie krajowym dla danej grupy docelowej. Zadaniem wnioskodawcy jest opisanie proponowanego sposobu na tle istniejących, stosunkowo najbardziej podobnych rozwiązań istniejących w kraju.",
+        "cardDescription": "Ocena rozwiązania pod kątem potencjału by w nowy lub znacząco zmieniony względem istniejących rozwiązań sposób rozwiązać wskazane problemy społeczne. Innowacyjność rozwiązania oceniana jest na poziomie krajowym dla danej grupy docelowej.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 5
+      },
+      {
+        "key": "adequacy",
+        "label": "Adekwatność do potrzeb odbiorców i użytkowników",
+        "description": "Czy cele/produkty innowacji społecznej są adekwatne do obecnej diagnozy potrzeb i problemów grupy docelowej w skali kraju? W jakim stopniu innowacja społeczna odpowiada na potrzeby grupy docelowej? W jakim stopniu innowacja społeczna ma szansę na kontrybucję do zmiany społecznej tzn. zmianę sytuacji grupy docelowej w skali kraju?",
+        "cardDescription": "Analiza celów/produktów innowacji społecznej pod kątem adekwatności do obecnej diagnozy potrzeb i problemów grupy docelowej w skali kraju. Stopień responsywności na potrzeby odbiorców i potencjał kontrybucji do zmiany społecznej tzn. zmianę sytuacji grupy docelowej w skali kraju? Czy pomysł odpowiada na wyzwanie zgodne z Mapą Wyzwań Społecznych?",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      },
+      {
+        "key": "costEffectiveness",
+        "label": "Efektywność kosztowa",
+        "description": "Ocena stopnia optymalizacji, stosunku nakładów do planowanych efektów, bilansu potencjalnych efektów pozytywnych i negatywnych innowacji społecznej.",
+        "cardDescription": "Ocena stopnia optymalizacji, stosunku nakładów do planowanych efektów, bilansu potencjalnych efektów pozytywnych i negatywnych innowacji społecznej; analiza racjonalności wskazanych kosztów (czasowych, finansowych i zasobów) w stosunku do planowanych efektów.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      },
+      {
+        "key": "universality",
+        "label": "Uniwersalność",
+        "description": "Ocena możliwości zastosowania rozwiązania w różnym miejscu, łatwość stosowania, wdrażalność rozwiązania, możliwości upowszechnienia i wyskalowania.",
+        "cardDescription": "Ocena możliwości zastosowania rozwiązania w różnym miejscu, łatwość stosowania, wdrażalność rozwiązania, możliwości upowszechnienia i wyskalowania.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      },
+      {
+        "key": "developmentVision",
+        "label": "Wizja rozwoju pomysłu w przyszłości",
+        "description": "Ocena pomysłów na wykorzystanie innowacji w przyszłości.",
+        "cardDescription": "Ocena pomysłów na wykorzystanie innowacji po zakończonym etapie inkubacji i przetestowaniu.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      }
+    ],
+    "minScore": 21,
+    "innovations": [],
+    "resultsPlanned": null,
+    "applyUrl": null,
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,nabor-aplikacji-wnioskow-na-innowacje-spoleczne-w-ramach-projektu-pn-inkubator-wlaczenia-spolecznego-20",
+    "capturedAt": "2026-10-03T15:41:18.497Z",
+    "notes": "Nabór demonstracyjny na potrzeby prototypu. Pola formularza, kryteria oceny, minimum punktowe i kwoty skopiowano z naboru „Inkubator Włączenia Społecznego 2.0” (id iws-2-0); nie jest to nabór ogłoszony przez ROPS."
+  },
+  {
+    "id": "mentores-mentorowani",
+    "name": "mentorES — nabór na Mentorowanych",
+    "program": "mentorES - biznesowe wsparcie przedsiębiorstw społecznych (FERS 2021-2027, Priorytet IV, Działanie 4.13)",
+    "operator": "Regionalny Ośrodek Polityki Społecznej w Krakowie",
+    "amountMax": null,
+    "amountAvg": null,
+    "currency": "PLN",
+    "window": {
+      "from": null,
+      "to": null
+    },
+    "status": "open",
+    "eligibility": [
+      "przedsiębiorstwa społeczne",
+      "zakłady aktywności zawodowej"
+    ],
+    "formFields": [],
+    "criteria": [],
+    "minScore": null,
+    "innovations": [],
+    "resultsPlanned": null,
+    "applyUrl": null,
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/mentoring,nabor-na-mentorowanych",
+    "capturedAt": "2026-10-03T15:43:00.152Z",
+    "notes": "Wolontaryjny mentoring dla małopolskich przedsiębiorstw społecznych i zakładów aktywności zawodowej, prowadzony przez pracowników firm; udział bezpłatny, to nie jest grant (kwoty = null). Rekrutacja: „nabór do połowy listopada 2026 r.”, spotkania do końca listopada 2026 r., stacjonarnie/online — strona nie podaje dokładnych dat, więc window = null. Zgłoszenie: podpisany formularz zgłoszeniowy przesłany e-mailem (szczegóły na stronie naboru i https://es.malopolska.pl/mentoring/o-programie)."
+  },
+  {
+    "id": "mentores-mentorzy",
+    "name": "mentorES — nabór na Mentorów",
+    "program": "mentorES - biznesowe wsparcie przedsiębiorstw społecznych (FERS 2021-2027, Priorytet IV, Działanie 4.13)",
+    "operator": "Regionalny Ośrodek Polityki Społecznej w Krakowie",
+    "amountMax": null,
+    "amountAvg": null,
+    "currency": "PLN",
+    "window": {
+      "from": null,
+      "to": null
+    },
+    "status": "open",
+    "eligibility": [
+      "przedsiębiorstwa"
+    ],
+    "formFields": [],
+    "criteria": [],
+    "minScore": null,
+    "innovations": [],
+    "resultsPlanned": null,
+    "applyUrl": null,
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/mentoring,nabor-na-mentorow",
+    "capturedAt": "2026-10-03T15:43:01.253Z",
+    "notes": "Wolontaryjny mentoring dla małopolskich przedsiębiorstw społecznych i zakładów aktywności zawodowej, prowadzony przez pracowników firm; udział bezpłatny, to nie jest grant (kwoty = null). Rekrutacja: „nabór do połowy listopada 2026 r.”, spotkania do końca listopada 2026 r., stacjonarnie/online — strona nie podaje dokładnych dat, więc window = null. Zgłoszenie: podpisany formularz zgłoszeniowy przesłany e-mailem (szczegóły na stronie naboru i https://es.malopolska.pl/mentoring/o-programie)."
+  }
+]

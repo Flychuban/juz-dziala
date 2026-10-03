@@ -129,9 +129,22 @@ export const FormField = z.object({ key: z.string(), label: z.string(), hint: z.
 export const Criterion = z.object({
   key: z.string(),
   label: z.string(),
+  /** As defined in the call's procedures/regulations. */
   description: z.string(),
+  /** As printed on the scoring card, when the call publishes one. */
+  cardDescription: z.string().nullable(),
   min: z.number(),
   max: z.number(),
+  /** Minimum points in this criterion for a positive assessment, when the call sets one. */
+  minToPass: z.number().nullable(),
+});
+
+export const CallInnovation = z.object({
+  category: z.string(), // e.g. „Kategoria I"
+  title: z.string(),
+  url: z.string().url(),
+  slug: z.string(),
+  cardId: z.string().nullable(), // library.json id, null if the card is not in the library
 });
 
 export const Call = z.object({
@@ -148,6 +161,10 @@ export const Call = z.object({
   formFields: z.array(FormField),
   criteria: z.array(Criterion),
   minScore: z.number().nullable(),
+  /** Innovations a call is restricted to (Usługa Wrażliwa: one Ramowy Plan Wdrożenia each). */
+  innovations: z.array(CallInnovation),
+  resultsPlanned: z.string().nullable(),
+  applyUrl: z.string().url().nullable(),
   sourceUrl: z.string().url(),
   capturedAt: isoDateTime,
   notes: z.string(),
@@ -156,18 +173,31 @@ export const Calls = z.array(Call);
 
 // ------------------------------------------------------------------ canvas.json
 
+export const CanvasOption = z.object({ label: z.string(), description: z.string().nullable() });
+export const CanvasField = z.object({
+  key: z.string(),
+  label: z.string(),
+  prompt: z.string().nullable(),
+  /** single = tick one box; multi = tick several; text = write; matrix = mark cells. */
+  kind: z.enum(["single", "multi", "text", "matrix"]),
+  options: z.array(CanvasOption),
+  questions: z.array(z.string()), // „Pytania pomocnicze" and similar
+});
 export const CanvasSection = z.object({
   key: z.string(),
   label: z.string(),
-  prompt: z.string(),
-  subfields: z.array(z.string()),
+  prompt: z.string().nullable(), // null when the sheet prints no prompt at section level
+  subfields: z.array(z.string()), // labels of the section's parts, in order
+  fields: z.array(CanvasField),
 });
 export const Canvas = z.object({
   source: z.object({
     title: z.string(),
     url: z.string().url(),
     publisher: z.string(),
+    basedOn: z.string(),
     version: z.string().nullable(),
+    versionDate: z.string().nullable(),
     capturedAt: isoDateTime,
     sha256,
   }),
@@ -227,3 +257,16 @@ export const Network = z.object({
     }),
   ),
 });
+
+// ------------------------------------------------------------------ inferred types
+
+export type FormField = z.infer<typeof FormField>;
+export type Criterion = z.infer<typeof Criterion>;
+export type Call = z.infer<typeof Call>;
+export type KnowledgeArea = z.infer<typeof KnowledgeArea>;
+export type Knowledge = z.infer<typeof Knowledge>;
+export type Canvas = z.infer<typeof Canvas>;
+export type Powiat = z.infer<typeof Powiat>;
+export type Gmina = z.infer<typeof Gmina>;
+export type LearnItem = z.infer<typeof LearnItem>;
+export type Network = z.infer<typeof Network>;
