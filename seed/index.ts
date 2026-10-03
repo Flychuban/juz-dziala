@@ -4,9 +4,12 @@
  * records isSample = true.
  */
 import { seedLibrary } from "./library";
+import { seedCalls, seedNetwork } from "./network";
 
 const steps: { name: string; run: () => Promise<void> }[] = [
   { name: "library", run: seedLibrary },
+  { name: "calls", run: seedCalls },
+  { name: "network", run: seedNetwork },
 ];
 
 async function main() {

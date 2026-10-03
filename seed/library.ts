@@ -57,10 +57,14 @@ export async function seedLibrary() {
       capturedAt: new Date(c.capturedAt),
       sha256: c.sha256,
     };
-    await db
-      .insert(innovations)
-      .values({ ...row, status: "published" })
-      .onConflictDoUpdate({ target: innovations.id, set: { ...row, updatedAt: sql`now()` } });
+    const q = db.insert(innovations).values({ ...row, status: "published" });
+    // Production deploys re-run the seed: never overwrite staff edits unless asked.
+    await (process.env.SEED_OVERWRITE === "1"
+      ? q.onConflictDoUpdate({
+          target: innovations.id,
+          set: { ...row, updatedAt: sql`now()` },
+        })
+      : q.onConflictDoNothing());
   }
   console.log(`[seed] library: ${cards.length} cards`);
 }
