@@ -9,6 +9,654 @@
     "contentType": "application/json; charset=utf-8"
   },
   {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/72239?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&page-size=100&page=0",
+    "capturedAt": "2026-10-03T15:50:39.624Z",
+    "sha256": "c559eb86d120d0167a5be7fc3b23e413eb5c78488dd86228df5c2bd34fd9f44a",
+    "bytes": 10186,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_72239_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_page-size_100_page_0.c559eb86d120.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/72239?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&page-size=100&page=1",
+    "capturedAt": "2026-10-03T15:50:41.224Z",
+    "sha256": "5ba4c103311e58092a2bdbbafe28326814f4ab204bae72127838b2fbafd75a59",
+    "bytes": 10315,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_72239_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_page-size_100_page_1.5ba4c103311e.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/72239?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&page-size=100&page=2",
+    "capturedAt": "2026-10-03T15:50:42.824Z",
+    "sha256": "97d1ec05bcf911baf4dfde5c9260dbf25aae0818ab21f4f02e9141560e0ce797",
+    "bytes": 8612,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_72239_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_page-size_100_page_2.97d1ec05bcf9.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/72240?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&page-size=100&page=0",
+    "capturedAt": "2026-10-03T15:50:44.424Z",
+    "sha256": "56b58067b97b1c7873515dac6fbe3595191adc15b32bacf3167f05a18a9505f1",
+    "bytes": 10219,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_72240_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_page-size_100_page_0.56b58067b97b.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/72240?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&page-size=100&page=1",
+    "capturedAt": "2026-10-03T15:50:46.025Z",
+    "sha256": "6fcc85b6cf80099a8142af9c94842519c005fdf1d350340df4fbc2d0fa325a13",
+    "bytes": 10352,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_72240_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_page-size_100_page_1.6fcc85b6cf80.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/72240?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&page-size=100&page=2",
+    "capturedAt": "2026-10-03T15:50:47.627Z",
+    "sha256": "d2990ca041ee9f88045d590c9ed6492b7c7d4ee6a328c5aed2e07f0c64be8533",
+    "bytes": 8651,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_72240_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_page-size_100_page_2.d2990ca041ee.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/72305?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&year=2015&page-size=100&page=0",
+    "capturedAt": "2026-10-03T15:50:34.821Z",
+    "sha256": "d2fef5f61893d37d7dcfee51a97553b2454ed06f411f43f5de68c38acb92459b",
+    "bytes": 13888,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_72305_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_year_2015_page-size_100_page_0.d2fef5f61893.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/72305?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&year=2015&page-size=100&page=1",
+    "capturedAt": "2026-10-03T15:50:36.422Z",
+    "sha256": "f9aac50bf148701cd27ded1d615dd5af2d3fbc9fe5e159b21f4ecae8c07ec42e",
+    "bytes": 14305,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_72305_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_year_2015_page-size_100_page_1.f9aac50bf148.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/72305?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&year=2015&page-size=100&page=2",
+    "capturedAt": "2026-10-03T15:50:38.023Z",
+    "sha256": "2ed69670334a450e78b5ef65c7df097d98f4677d75addbd004a77d8f5e896f48",
+    "bytes": 12195,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_72305_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_year_2015_page-size_100_page_2.2ed69670334a.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/72305?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&year=2015&page-size=5",
+    "capturedAt": "2026-10-03T15:49:43.942Z",
+    "sha256": "716e5fe283c0a386bfeb5d1818f0ef0eda85d49cc41d70789f0d44dcde58a9a9",
+    "bytes": 1413,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_72305_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_year_2015_page-size_5.716e5fe283c0.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/76024?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&page-size=100&page=0",
+    "capturedAt": "2026-10-03T15:50:49.229Z",
+    "sha256": "407b1db7ecc7feb7be457e35a997973cdf515dbf666da734bcc193223f5a283a",
+    "bytes": 10144,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_76024_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_page-size_100_page_0.407b1db7ecc7.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/76024?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&page-size=100&page=1",
+    "capturedAt": "2026-10-03T15:50:50.829Z",
+    "sha256": "0eada28ed247e65bd40858b3647475e548d4d34ca62dc132449aabf73b59d232",
+    "bytes": 10272,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_76024_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_page-size_100_page_1.0eada28ed247.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/76024?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&page-size=100&page=2",
+    "capturedAt": "2026-10-03T15:50:52.429Z",
+    "sha256": "2c218182c6821676df0a1333dd2797b79423e99d6c876dd32ac4c35302b1a78d",
+    "bytes": 8588,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_76024_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_page-size_100_page_2.2c218182c682.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/76025?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&page-size=100&page=0",
+    "capturedAt": "2026-10-03T15:50:54.029Z",
+    "sha256": "7afeaf54ffd5520434b04a82571f5c5b6242263bd8947ab26d4b76263d22d9cd",
+    "bytes": 10150,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_76025_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_page-size_100_page_0.7afeaf54ffd5.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/76025?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&page-size=100&page=1",
+    "capturedAt": "2026-10-03T15:50:55.630Z",
+    "sha256": "bdcaf0abce1554bc5754018910dcc476fb4c6995ab70e41940b3028d1c9c4416",
+    "bytes": 10280,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_76025_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_page-size_100_page_1.bdcaf0abce15.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/data/by-variable/76025?format=json&lang=pl&unit-parent-id=011200000000&unit-level=6&year=2025&page-size=100&page=2",
+    "capturedAt": "2026-10-03T15:50:57.231Z",
+    "sha256": "b78c847f61b6a9c5ab0e26df1460862f666f1696e38704594265596316708895",
+    "bytes": 8594,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_data_by-variable_76025_format_json_lang_pl_unit-parent-id_011200000000_unit-level_6_year_2025_page-size_100_page_2.b78c847f61b6.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/subjects/P2137?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:49:08.685Z",
+    "sha256": "5fba284799e6897de2f36b1c25d2d22768dd0e536fa490163afbaf578083a444",
+    "bytes": 1826,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_subjects_P2137_format_json_lang_pl.5fba284799e6.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units?format=json&lang=pl&parent-id=011200000000&level=5&page-size=100&page=0",
+    "capturedAt": "2026-10-03T15:49:07.084Z",
+    "sha256": "455e363b45bb79fb8a4d0fd0575fb3999f10bf68a942e07eb7eb78103cb27c93",
+    "bytes": 3030,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_format_json_lang_pl_parent-id_011200000000_level_5_page-size_100_page_0.455e363b45bb.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units?format=json&lang=pl&parent-id=011200000000&level=6&page-size=100&page=0",
+    "capturedAt": "2026-10-03T15:49:02.281Z",
+    "sha256": "ca366e52770a17ec3d4724771493706cb53d034f5c8ed0e864ddea7caacd54ce",
+    "bytes": 12159,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_format_json_lang_pl_parent-id_011200000000_level_6_page-size_100_page_0.ca366e52770a.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units?format=json&lang=pl&parent-id=011200000000&level=6&page-size=100&page=1",
+    "capturedAt": "2026-10-03T15:49:03.882Z",
+    "sha256": "193e8031a7d2b11a63abe2862ee8a2241a998733b5f6caa5d547024b45456fd5",
+    "bytes": 12242,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_format_json_lang_pl_parent-id_011200000000_level_6_page-size_100_page_1.193e8031a7d2.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units?format=json&lang=pl&parent-id=011200000000&level=6&page-size=100&page=2",
+    "capturedAt": "2026-10-03T15:49:05.483Z",
+    "sha256": "f9ecce37c320b08641d3a08d96ad1fe9a3c516a1f337ee3a29e09ed826240e7a",
+    "bytes": 11992,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_format_json_lang_pl_parent-id_011200000000_level_6_page-size_100_page_2.f9ecce37c320.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units?format=json&lang=pl&parent-id=011200000000&level=6&year=2015&page-size=100&page=0",
+    "capturedAt": "2026-10-03T15:49:37.590Z",
+    "sha256": "63d8acfe08921d61867e50d19bc3ad595dfdf6fcf2be0718fc8803dd02d64ec4",
+    "bytes": 12199,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_format_json_lang_pl_parent-id_011200000000_level_6_year_2015_page-size_100_page_0.63d8acfe0892.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units?format=json&lang=pl&parent-id=011200000000&level=6&year=2015&page-size=100&page=1",
+    "capturedAt": "2026-10-03T15:49:40.740Z",
+    "sha256": "f7ffb67e0b9b5c988f7858add31b35602833a3cfad074fecf3c5b6ae92418584",
+    "bytes": 12292,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_format_json_lang_pl_parent-id_011200000000_level_6_year_2015_page-size_100_page_1.f7ffb67e0b9b.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units?format=json&lang=pl&parent-id=011200000000&level=6&year=2015&page-size=100&page=2",
+    "capturedAt": "2026-10-03T15:49:42.342Z",
+    "sha256": "29f968b9e6782b81bbb2358b9fc9ddc30b5c13a7bfabe7acbb84595b3ba60030",
+    "bytes": 12032,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_format_json_lang_pl_parent-id_011200000000_level_6_year_2015_page-size_100_page_2.29f968b9e678.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units?format=json&lang=pl&parent-id=011200000000&level=6&year=2025&page-size=100&page=0",
+    "capturedAt": "2026-10-03T15:49:28.455Z",
+    "sha256": "4a8a5574da32e5e6ebfa2778e3c5e905c9df0fdf15751080fd7b7a83e61d6a44",
+    "bytes": 12199,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_format_json_lang_pl_parent-id_011200000000_level_6_year_2025_page-size_100_page_0.4a8a5574da32.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units?format=json&lang=pl&parent-id=011200000000&level=6&year=2025&page-size=100&page=1",
+    "capturedAt": "2026-10-03T15:49:31.605Z",
+    "sha256": "cf294ce9bb23173438ab2e72f77bc3e24cf2068de1fa4ca71009285abda86a76",
+    "bytes": 12292,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_format_json_lang_pl_parent-id_011200000000_level_6_year_2025_page-size_100_page_1.cf294ce9bb23.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units?format=json&lang=pl&parent-id=011200000000&level=6&year=2025&page-size=100&page=2",
+    "capturedAt": "2026-10-03T15:49:34.658Z",
+    "sha256": "d960ac371788e49c74e89b5e126bb4374f3c3a0b4eea13662d3e494dfc1a33fe",
+    "bytes": 12032,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_format_json_lang_pl_parent-id_011200000000_level_6_year_2025_page-size_100_page_2.d960ac371788.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011200000000?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:48:45.362Z",
+    "sha256": "cdfef64973371b274022cb1bef7a939720d29515bef19635ef1c18c1fe6dac49",
+    "bytes": 431,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011200000000_format_json_lang_pl.cdfef6497337.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212006142?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:51:58.197Z",
+    "sha256": "6e98aad7891161e8741990e6133a817f72f9563f22cac0e173ad6b0767c9ac19",
+    "bytes": 264,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212006142_format_json_lang_pl.6e98aad78911.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212006143?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:51:59.798Z",
+    "sha256": "030f1fe84d5f7e30a87ad570ffd113aaf715d16bf5fd67b83bf844c35179d3ec",
+    "bytes": 404,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212006143_format_json_lang_pl.030f1fe84d5f.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212008042?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:01.400Z",
+    "sha256": "f2b95b38b65084a5f02afca034fede08e5f55598d473e430fd4fc867ce5f455c",
+    "bytes": 382,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212008042_format_json_lang_pl.f2b95b38b650.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212008043?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:03.000Z",
+    "sha256": "f07c5332c804da4dc45eae07ccd17cee0ff28686117eec5ad61f69bcae8ba9e8",
+    "bytes": 262,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212008043_format_json_lang_pl.f07c5332c804.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212014022?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:04.601Z",
+    "sha256": "7aeb8d6af21e0a0ecd6571742687fc58f2eb5eb76c49a4de59d3bd64ebbdc5fe",
+    "bytes": 355,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212014022_format_json_lang_pl.7aeb8d6af21e.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212014023?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:06.202Z",
+    "sha256": "cd56394ea7036844934023bd5cb6816adffd38e32fd91bc129c4880654255ddd",
+    "bytes": 275,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212014023_format_json_lang_pl.cd56394ea703.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212014032?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:07.803Z",
+    "sha256": "e406bcb00534be8f3f0ce857ff2864b4bb5e60e88628542bd6d9aba2c9d1a5e5",
+    "bytes": 329,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212014032_format_json_lang_pl.e406bcb00534.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212014033?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:09.404Z",
+    "sha256": "38fbbfbb0af06210574e0eca4c4b32e6ac705ddf169807a699c4cfb673370f47",
+    "bytes": 329,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212014033_format_json_lang_pl.38fbbfbb0af0.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212205032?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:11.006Z",
+    "sha256": "8dfef49520e969127e67e16074441cf0fdeea3834de02b08a64cde2861cc62aa",
+    "bytes": 313,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212205032_format_json_lang_pl.8dfef49520e9.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212205033?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:12.608Z",
+    "sha256": "44bb9b7085f1378bde96a179a65e7a7cfea3a0c84dd517cbbc5564d8f1c4cb7c",
+    "bytes": 333,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212205033_format_json_lang_pl.44bb9b7085f1.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212207052?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:51:36.635Z",
+    "sha256": "0d419f4bbcd2f3fc2ace9e62dcfbbd4f15dc005a174358fa8fd1c5e8a55d4b7e",
+    "bytes": 324,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212207052_format_json_lang_pl.0d419f4bbcd2.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212207112?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:14.208Z",
+    "sha256": "71d7526b28afa6c410b1eda6424fdeac7a9744b496e8b3c07889f294b522405a",
+    "bytes": 369,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212207112_format_json_lang_pl.71d7526b28af.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212207132?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:51:35.034Z",
+    "sha256": "ba4c17e2c0454576ac5dbf6c484bd72c97f27c6841c6381dc2fc501976f084f5",
+    "bytes": 220,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212207132_format_json_lang_pl.ba4c17e2c045.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212210022?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:15.809Z",
+    "sha256": "db18123d3dc65c7f75870b69748bef828b80bf61c90f2413e793567c46f8ae55",
+    "bytes": 500,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212210022_format_json_lang_pl.db18123d3dc6.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212210073?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:17.410Z",
+    "sha256": "901f52d8579bd2bda9c874adcd6fa6e7fc68ad795606f619c3887c33872ed4d6",
+    "bytes": 407,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212210073_format_json_lang_pl.901f52d8579b.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212210133?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:19.011Z",
+    "sha256": "c49e01bdc36be30457dd68b9638e684ea1555186aaafa47f555e8682cbddffb8",
+    "bytes": 411,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212210133_format_json_lang_pl.c49e01bdc36b.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212312021?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:20.612Z",
+    "sha256": "66ac63d29ec53760e59b2318fb4a805e9a26920a8f508dfc9f13dd444b1c216b",
+    "bytes": 330,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212312021_format_json_lang_pl.66ac63d29ec5.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212402032?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:22.213Z",
+    "sha256": "b169650080f12dc225b9337411d845f90f9662bff1c1b81df4514be24a188ec3",
+    "bytes": 269,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212402032_format_json_lang_pl.b169650080f1.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212402033?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:23.815Z",
+    "sha256": "a227ced2ef7b9d818df8833a48d4cf63a646eafc907c4f300311a33f1ec7f8cd",
+    "bytes": 379,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212402033_format_json_lang_pl.a227ced2ef7b.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212404072?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:25.416Z",
+    "sha256": "7ff96709c69463b145f2ce6b4db8740a2ac9b76d92bdb4ac749a7b835bcdca10",
+    "bytes": 315,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212404072_format_json_lang_pl.7ff96709c694.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212404073?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:27.017Z",
+    "sha256": "01d6d4c79236b95315c0ba22149145a375483a3893d9a82834f221efe075281e",
+    "bytes": 335,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212404073_format_json_lang_pl.01d6d4c79236.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212416012?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:28.618Z",
+    "sha256": "1b404940fefe38d12fb2dea1c2274e273944840b7ac7dccbe63ca9eaa85715de",
+    "bytes": 263,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212416012_format_json_lang_pl.1b404940fefe.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212416013?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:30.219Z",
+    "sha256": "650fd7f10d6ca9b9ea5efa5c684c75321da941c71e902a0ddb1a3924e105c6b3",
+    "bytes": 393,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212416013_format_json_lang_pl.650fd7f10d6c.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212416052?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:31.820Z",
+    "sha256": "30ee569d4417d9c4a83c72205c2cfbce5022db7bad20cad1b3d2156007191e10",
+    "bytes": 320,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212416052_format_json_lang_pl.30ee569d4417.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212416053?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:33.422Z",
+    "sha256": "75affdfb50a573e5f83bfda7c581abae5eb914a33a46d6184b4158b8b6a98959",
+    "bytes": 330,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212416053_format_json_lang_pl.75affdfb50a5.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212416062?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:35.024Z",
+    "sha256": "045c4ed8aa8ad3b5f4b4a4b8294444986dc107abe487964639b63dc5eec755a1",
+    "bytes": 272,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212416062_format_json_lang_pl.045c4ed8aa8a.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212416063?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:36.625Z",
+    "sha256": "e5f378e7bd42084258a3adbe14580fa21e1dfc074de50e51141bb50ca7e0365e",
+    "bytes": 372,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212416063_format_json_lang_pl.e5f378e7bd42.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212416132?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:38.225Z",
+    "sha256": "0a5caecfcb740dede3aa4f0846e5f0c5bf853cd97f9449290a5eecf28e3f34d0",
+    "bytes": 304,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212416132_format_json_lang_pl.0a5caecfcb74.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212416133?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:39.826Z",
+    "sha256": "c0df09de3f84334bb1fab1a66c856164944d4ad5606cd10cc65be7604d0f6766",
+    "bytes": 344,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212416133_format_json_lang_pl.c0df09de3f84.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212416142?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:41.427Z",
+    "sha256": "6d806acd71971de471d48990cd2751940ef7c545643ab7ed25e64f365af41e03",
+    "bytes": 301,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212416142_format_json_lang_pl.6d806acd7197.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212416143?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:43.028Z",
+    "sha256": "b919c33a7186cfb5414e95e697e74ff08b41b3e4f74dd2dd44daeaf04a2e62cb",
+    "bytes": 351,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212416143_format_json_lang_pl.b919c33a7186.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011212416162?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:44.629Z",
+    "sha256": "15655d94e3f8f1287d0c7c8a0217fb9642608b5bd7272b772d220da8ecb8c2a7",
+    "bytes": 419,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011212416162_format_json_lang_pl.15655d94e3f8.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011216911021?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:46.230Z",
+    "sha256": "1107d0a160097cf683b5a0064517a3b09faffc2435b336639cd0dcf3be70842b",
+    "bytes": 331,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011216911021_format_json_lang_pl.1107d0a16009.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011216911023?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:47.831Z",
+    "sha256": "8d988c2477868f9bbb9f8a3ae7511430c02fc92ca7444467b0b5252ac5348ed7",
+    "bytes": 361,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011216911023_format_json_lang_pl.8d988c247786.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011216911032?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:49.431Z",
+    "sha256": "13224638bb61ac2793e6847ca59921173db57f1fa0168bc1d46db02d78c397d5",
+    "bytes": 382,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011216911032_format_json_lang_pl.13224638bb61.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011216911033?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:51.033Z",
+    "sha256": "32674094fc3771f969401f702a432735b620c75cc5f1b187da9dec5aa19479da",
+    "bytes": 262,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011216911033_format_json_lang_pl.32674094fc37.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011216911123?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:52.635Z",
+    "sha256": "d3a95ad259323c696b11b4ecdb943ab331d79895114a1a729c0477af45bd6652",
+    "bytes": 403,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011216911123_format_json_lang_pl.d3a95ad25932.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/units/011216911132?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:52:54.236Z",
+    "sha256": "62b6846764dd064fa7aa3ae853e4707f4b4ab926632d4237c0fab76000878018",
+    "bytes": 365,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_units_011216911132_format_json_lang_pl.62b6846764dd.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/variables/72239?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:48:38.957Z",
+    "sha256": "1a6aa378088f6825e35ee9a97a1d210c9a628d77d7d4837407857112e97f959a",
+    "bytes": 281,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_variables_72239_format_json_lang_pl.1a6aa378088f.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/variables/72240?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:48:40.559Z",
+    "sha256": "c63b1ad71243be8063635847873d7679b279a2761de41e5383d3cc0ef910c35e",
+    "bytes": 288,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_variables_72240_format_json_lang_pl.c63b1ad71243.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/variables/72305?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:48:37.355Z",
+    "sha256": "aba5e08ab76634971e85cff1b556d9828a463bfb0293b8dab63fdaa2d0a73a25",
+    "bytes": 284,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_variables_72305_format_json_lang_pl.aba5e08ab766.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/variables/76024?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:48:42.159Z",
+    "sha256": "26c1b010210c0ce70b3d05fbd6abe6d142e042dcffaca5477b437ba558eaf7e0",
+    "bytes": 246,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_variables_76024_format_json_lang_pl.26c1b010210c.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://bdl.stat.gov.pl/api/v1/variables/76025?format=json&lang=pl",
+    "capturedAt": "2026-10-03T15:48:43.760Z",
+    "sha256": "b11c83d2538c1cb5ff5de916e4efb3ffc2d8b57d83a65e5e9649944eec5abed1",
+    "bytes": 253,
+    "file": "data/raw/bdl.stat.gov.pl/api_v1_variables_76025_format_json_lang_pl.b11c83d2538c.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/waszkiewiczja/GeoJSON-Polska-Wojewodztwa-Powiaty-Gminy/main/gminy.json",
+    "capturedAt": "2026-10-03T15:50:58.624Z",
+    "sha256": "c0f9a605ed3f8091e7da406874782557734f888b85f29f08e1986fb62f820195",
+    "bytes": 11774136,
+    "file": "data/raw/raw.githubusercontent.com/waszkiewiczja_GeoJSON-Polska-Wojewodztwa-Powiaty-Gminy_main_gminy.c0f9a605ed3f.json",
+    "status": 200,
+    "contentType": "text/plain; charset=utf-8"
+  },
+  {
     "url": "https://raw.githubusercontent.com/waszkiewiczja/GeoJSON-Polska-Wojewodztwa-Powiaty-Gminy/main/powiaty.json",
     "capturedAt": "2026-10-03T15:47:24.186Z",
     "sha256": "13c50c5f8ff68e087c076ab3c3cdedf730a0950d44a6fed1cda4be65f058b529",
