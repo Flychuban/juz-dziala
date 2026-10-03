@@ -222,7 +222,11 @@ function AuthorReply({
           className="min-h-32 text-base"
         />
         {error && (
-          <p id="author-reply-error" role="alert" className="text-destructive font-semibold">
+          <p
+            id="author-reply-error"
+            role="alert"
+            className="text-destructive font-semibold"
+          >
             {error}
           </p>
         )}

@@ -27,7 +27,11 @@ import {
   type MapaArea,
 } from "~/lib/domain";
 import { aiAvailable } from "~/server/ai/structured";
-import { createTRPCRouter, roleProcedure, type Context } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  roleProcedure,
+  type Context,
+} from "~/server/api/trpc";
 import type { StaffSession } from "~/server/auth/session";
 import { addMessage, setCaseStatus } from "~/server/cases/engine";
 import {
@@ -103,6 +107,34 @@ async function audit(
 
 const escapeLike = (s: string) => s.replace(/[\\%_]/g, (m) => `\\${m}`);
 
+/**
+ * Library card ids ("c042") inside a stored match result. The match module
+ * owns that shape; this reads `cardId` / `innovationId` under the usual list
+ * keys and ignores everything else.
+ */
+function cardIdsIn(result: unknown): string[] {
+  const out: string[] = [];
+  const visit = (v: unknown, depth: number) => {
+    if (depth > 4 || out.length >= 10 || v == null) return;
+    if (Array.isArray(v)) {
+      for (const x of v) visit(x, depth + 1);
+      return;
+    }
+    if (typeof v !== "object") return;
+    const o = v as Record<string, unknown>;
+    const id = o.cardId ?? o.innovationId;
+    if (typeof id === "string" && /^c\d+$/.test(id)) {
+      if (!out.includes(id)) out.push(id);
+      return;
+    }
+    for (const key of ["results", "matches", "items", "cards"]) {
+      if (key in o) visit(o[key], depth + 1);
+    }
+  };
+  visit(result, 0);
+  return out;
+}
+
 export const adminInboxRouter = createTRPCRouter({
   list: staff
     .input(
@@ -112,6 +144,8 @@ export const adminInboxRouter = createTRPCRouter({
           kind: caseKindSchema.optional(),
           area: mapaAreaSchema.optional(),
           q: z.string().trim().max(100).optional(),
+          /** Open and without activity for 48 h. */
+          waiting: z.boolean().optional(),
         })
         .optional(),
     )
@@ -141,6 +175,15 @@ export const adminInboxRouter = createTRPCRouter({
             f.status ? eq(cases.status, f.status) : undefined,
             f.kind ? eq(cases.kind, f.kind) : undefined,
             f.area ? arrayContains(cases.areas, [f.area]) : undefined,
+            f.waiting
+              ? and(
+                  inArray(cases.status, [...OPEN]),
+                  lt(
+                    cases.lastActivityAt,
+                    new Date(Date.now() - 48 * 3600 * 1000),
+                  ),
+                )
+              : undefined,
             q
               ? or(
                   ilike(cases.code, q),
@@ -301,6 +344,32 @@ export const adminInboxRouter = createTRPCRouter({
         : c.contactEnc
           ? (decrypt(c.contactEnc) ?? c.contactMasked)
           : null;
+      // Titles, links and capture dates for every card the panel cites.
+      const matchCardIds = run
+        ? cardIdsIn(run.aiResult).length
+          ? cardIdsIn(run.aiResult)
+          : cardIdsIn(run.keywordResult)
+        : [];
+      const cardIds = [
+        ...new Set([
+          ...(triage?.cards.map((k) => k.id) ?? []),
+          ...matchCardIds,
+        ]),
+      ];
+      const cardRows = cardIds.length
+        ? await ctx.db
+            .select({
+              id: innovations.id,
+              slug: innovations.slug,
+              title: innovations.title,
+              sourceUrl: innovations.sourceUrl,
+              capturedAt: innovations.capturedAt,
+            })
+            .from(innovations)
+            .where(inArray(innovations.id, cardIds))
+        : [];
+      const cardInfo = Object.fromEntries(cardRows.map((r) => [r.id, r]));
+
       const suggested = triage?.suggestedExpertId
         ? (ppl.find((p) => p.id === triage.suggestedExpertId) ?? null)
         : null;
@@ -335,7 +404,21 @@ export const adminInboxRouter = createTRPCRouter({
         messages: thread,
         deliveries: log,
         timeline,
-        matchRun: run,
+        matchRun: run
+          ? {
+              id: run.id,
+              query: run.queryRedacted,
+              status: run.status,
+              abstained: run.abstained,
+              crisis: run.crisis,
+              createdAt: run.createdAt,
+              source: cardIdsIn(run.aiResult).length ? "ai" : "keywords",
+              cards: matchCardIds.flatMap((id) =>
+                cardInfo[id] ? [cardInfo[id]] : [],
+              ),
+            }
+          : null,
+        cardInfo,
         innovation,
         call,
         contact: {
@@ -370,7 +453,10 @@ export const adminInboxRouter = createTRPCRouter({
       let authorName = TEAM_NAME;
       if (ctx.staff.role === "expert") {
         const [p] = await ctx.db
-          .select({ displayName: people.displayName, isSample: people.isSample })
+          .select({
+            displayName: people.displayName,
+            isSample: people.isSample,
+          })
           .from(people)
           .where(eq(people.id, ctx.staff.personId));
         authorName = p

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { CaseLookup } from "~/components/cases/case-lookup";
 import { CaseView } from "~/components/cases/case-view";
 import { normalizeCaseCode } from "~/server/domain/case-code";
+import { api, HydrateClient } from "~/trpc/server";
 
 export const metadata = { title: "Moja sprawa" };
 
@@ -34,5 +35,11 @@ export default async function Page({
   if (code !== typed) {
     redirect(`/case/${code}${token ? `?t=${encodeURIComponent(token)}` : ""}`);
   }
-  return <CaseView code={code} token={token} />;
+  // Server-render the case so it shows at once (and without JavaScript).
+  await api.cases.get.prefetch({ code, token });
+  return (
+    <HydrateClient>
+      <CaseView code={code} token={token} />
+    </HydrateClient>
+  );
 }

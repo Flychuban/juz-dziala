@@ -63,7 +63,7 @@ export function CaseThread({
                 : mine
                   ? "border-hairline bg-background border-l-primary border-l-4 sm:ml-10"
                   : "border-hairline bg-surface sm:mr-10",
-              internal && "border-dashed bg-warning-bg",
+              internal && "bg-warning-bg border-dashed",
             )}
           >
             <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">

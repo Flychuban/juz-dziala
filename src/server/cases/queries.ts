@@ -43,7 +43,11 @@ const ORDER: CaseStatus[] = [
  */
 export async function timelineFor(c: CaseRow): Promise<TimelineStep[]> {
   const rows = await db
-    .select({ type: events.type, payload: events.payload, at: events.createdAt })
+    .select({
+      type: events.type,
+      payload: events.payload,
+      at: events.createdAt,
+    })
     .from(events)
     .where(
       and(

@@ -87,7 +87,11 @@ export function CaseLookup({
         </Button>
       </div>
       {error && (
-        <p id="case-code-error" role="alert" className="text-destructive font-semibold">
+        <p
+          id="case-code-error"
+          role="alert"
+          className="text-destructive font-semibold"
+        >
           {error}
         </p>
       )}

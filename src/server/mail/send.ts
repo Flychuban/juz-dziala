@@ -58,7 +58,8 @@ export async function sendMail(opts: {
   if (!transport) {
     result = {
       status: "skipped",
-      error: "Brak skonfigurowanej poczty (RESEND_API_KEY + MAIL_FROM lub SMTP_URL).",
+      error:
+        "Brak skonfigurowanej poczty (RESEND_API_KEY + MAIL_FROM lub SMTP_URL).",
     };
   } else {
     try {

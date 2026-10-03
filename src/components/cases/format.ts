@@ -27,7 +27,7 @@ export function plural(
 }
 
 export function ageLabel(d: Date | string, now = Date.now()): string {
-  const min = Math.max(0, Math.round((now - new Date(d).getTime()) / 60000));
+  const min = Math.max(0, Math.floor((now - new Date(d).getTime()) / 60000));
   if (min < 1) return "przed chwilą";
   if (min < 60) return `${min} min temu`;
   const h = Math.floor(min / 60);

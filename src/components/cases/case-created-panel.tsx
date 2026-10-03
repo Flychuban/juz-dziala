@@ -57,12 +57,10 @@ export function CaseCreatedPanel({
 
       <CaseCode code={code} className="mt-6" />
 
-      <p className="mt-6 text-lg font-semibold">
-        Zapisz lub wydrukuj ten kod.
-      </p>
+      <p className="mt-6 text-lg font-semibold">Zapisz lub wydrukuj ten kod.</p>
       <p className="mt-1">
-        Dzięki niemu sprawdzisz odpowiedź i dopiszesz wiadomość — bez
-        zakładania konta.
+        Dzięki niemu sprawdzisz odpowiedź i dopiszesz wiadomość — bez zakładania
+        konta.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-3">
@@ -81,13 +79,13 @@ export function CaseCreatedPanel({
       </div>
 
       <div className="mt-6">
-        <label
-          htmlFor="case-private-link"
-          className="block font-semibold"
-        >
+        <label htmlFor="case-private-link" className="block font-semibold">
           Twój prywatny link do sprawy
         </label>
-        <p id="case-private-link-hint" className="text-muted-foreground text-sm">
+        <p
+          id="case-private-link-hint"
+          className="text-muted-foreground text-sm"
+        >
           Otwiera sprawę bez wpisywania kodu. Nie udostępniaj go innym osobom.
         </p>
         <div className="mt-2 flex flex-col gap-2 sm:flex-row">

@@ -27,7 +27,14 @@ export const casesRouter = createTRPCRouter({
     .input(createCaseInputSchema)
     .mutation(async ({ ctx, input }) => {
       await rateLimit(ctx, "cases.create", { limit: 8, windowSec: 600 });
-      const r = await createCase({ ...input, isSample: false });
+      // Module payloads (idea, canvas, plan) come only from server-side callers.
+      const r = await createCase({
+        ...input,
+        idea: undefined,
+        canvas: undefined,
+        plan: undefined,
+        isSample: false,
+      });
       return { code: r.code, accessToken: r.accessToken };
     }),
 
@@ -51,7 +58,9 @@ export const casesRouter = createTRPCRouter({
         isSample: c.isSample,
         createdAt: c.createdAt,
         updatedAt: c.updatedAt,
-        privateLink: input.token ? hashToken(input.token) === c.tokenHash : false,
+        privateLink: input.token
+          ? hashToken(input.token) === c.tokenHash
+          : false,
         timeline,
         messages: thread.map((m) => ({
           id: m.id,

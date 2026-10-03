@@ -35,6 +35,8 @@ export type CaseTriage = {
   /** Never sent automatically. Drafted only from `cards`. */
   replyDraft: string;
   cards: TriageCard[];
+  /** True when this triage wrote the case's areas (so a re-run may replace them). */
+  appliedAreas?: boolean;
   createdAt: string;
 };
 

@@ -187,7 +187,10 @@ export function StaffBell() {
           ) : (
             <ul className="max-h-[60vh] overflow-y-auto">
               {q.data.items.map((i) => (
-                <li key={i.id} className="border-hairline border-b last:border-0">
+                <li
+                  key={i.id}
+                  className="border-hairline border-b last:border-0"
+                >
                   <Link
                     href={i.href ?? allHref}
                     onClick={() => {

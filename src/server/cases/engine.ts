@@ -54,13 +54,12 @@ export function runInBackground(name: string, fn: () => Promise<unknown>) {
 
 function isUniqueViolation(e: unknown): boolean {
   const code = (x: unknown) =>
-    typeof x === "object" && x !== null && "code" in x
-      ? (x as { code: unknown }).code
-      : undefined;
+    typeof x === "object" && x !== null && "code" in x ? x.code : undefined;
+  // postgres-js raises it directly; newer drizzle wraps it in `cause`.
   return (
     code(e) === "23505" ||
     (typeof e === "object" && e !== null && "cause" in e
-      ? code((e as { cause: unknown }).cause) === "23505"
+      ? code(e.cause) === "23505"
       : false)
   );
 }

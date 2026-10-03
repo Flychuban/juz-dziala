@@ -52,10 +52,7 @@ export default async function Page({
   return (
     <div className="mx-auto max-w-[210mm] px-4 py-8 print:max-w-none print:p-0">
       <style>{"@page { size: A4; margin: 16mm; }"}</style>
-      <div
-        className="mb-6 flex flex-wrap items-center gap-3"
-        data-no-print
-      >
+      <div className="mb-6 flex flex-wrap items-center gap-3" data-no-print>
         <PrintButton label="Drukuj kartkę" />
         <Link
           href={`/case/${c.code}`}
@@ -107,13 +104,10 @@ export default async function Page({
           <li>Zeskanuj kod QR aparatem w telefonie.</li>
           <li>
             Albo wejdź na stronę{" "}
-            <span className="font-semibold break-all">{base}/case</span> i
-            wpisz kod sprawy: <span className="font-mono font-bold">{c.code}</span>
-            .
+            <span className="font-semibold break-all">{base}/case</span> i wpisz
+            kod sprawy: <span className="font-mono font-bold">{c.code}</span>.
           </li>
-          <li>
-            Przeczytaj odpowiedź Zespołu Hubu. Możesz od razu odpisać.
-          </li>
+          <li>Przeczytaj odpowiedź Zespołu Hubu. Możesz od razu odpisać.</li>
         </ol>
         <p className="mt-6 text-lg">
           Odpowiadamy zwykle w ciągu 2 dni roboczych.

@@ -11,7 +11,11 @@ import {
   type MapaArea,
 } from "~/lib/domain";
 import { aiStructured, userData } from "~/server/ai/structured";
-import { detectCrisis } from "~/server/domain/crisis";
+import {
+  CRISIS_RESOURCES,
+  detectCrisis,
+  type CrisisCategory,
+} from "~/server/domain/crisis";
 import { db } from "~/server/db";
 import { cases, notifications, people } from "~/server/db/schema";
 import { siteUrl } from "~/server/mail/templates";
@@ -55,6 +59,7 @@ Zwróć:
 
 Zasady szkicu odpowiedzi:
 - Korzystaj WYŁĄCZNIE ze zdań z kart Biblioteki podanych w wiadomości. Nie dodawaj faktów, kwot, terminów, nazw instytucji ani obietnic, których tam nie ma.
+- Jedyny wyjątek: gdy wiadomość podaje zweryfikowane telefony wsparcia kryzysowego, przepisz je dosłownie — bez zmian w numerach i godzinach.
 - Przywołuj rozwiązania po tytule karty w cudzysłowie „…”.
 - Jeśli żadna karta nie pasuje, napisz, że zespół przygotuje odpowiedź, i nie wymieniaj żadnych rozwiązań.
 - Pisz krótkimi zdaniami, zwracaj się bezpośrednio („Ty"), unikaj form zależnych od płci i żargonu.
@@ -99,8 +104,7 @@ ${TEAM_NAME}`;
   }
   const list = cards
     .map(
-      (c) =>
-        `– „${c.title}”: ${c.sentence}\n  ${siteUrl()}/library/${c.slug}`,
+      (c) => `– „${c.title}”: ${c.sentence}\n  ${siteUrl()}/library/${c.slug}`,
     )
     .join("\n\n");
   return `Dzień dobry,
@@ -114,10 +118,52 @@ ${list}
 ${TEAM_NAME}`;
 }
 
+/** Verified helplines (A0, checked on the operators' own pages). 116 111 only when a child is at risk. */
+function crisisLines(categories: CrisisCategory[]): string {
+  return CRISIS_RESOURCES.filter(
+    // 112 is already the first sentence of the draft.
+    (r) =>
+      r.phone !== "112" &&
+      (r.phone !== "116 111" || categories.includes("child")),
+  )
+    .map(
+      (r) =>
+        `– ${r.name}: ${r.phone}${r.hours ? `, ${r.hours}` : ""}. ${r.who}`,
+    )
+    .join("\n");
+}
+
+/** A crisis is answered by people and helplines first, never by a library card. */
+function crisisDraft(categories: CrisisCategory[]): string {
+  return `Dzień dobry,
+
+dziękujemy, że napisałeś/napisałaś. To, co opisujesz, brzmi poważnie i nie chcemy, żeby to czekało.
+
+Jeśli komuś grozi niebezpieczeństwo teraz, zadzwoń pod 112.
+Możesz też porozmawiać z kimś od razu:
+${crisisLines(categories)}
+
+[DO UZUPEŁNIENIA: jak i kiedy skontaktuje się z Tobą nasz zespół]
+
+${TEAM_NAME}`;
+}
+
+/** Areas a crisis category points to, before any keyword guess. */
+const CRISIS_AREA: Record<CrisisCategory, MapaArea> = {
+  suicide: "mental_health",
+  self_harm: "mental_health",
+  violence: "family",
+  danger: "mental_health",
+  child: "family",
+};
+
 function areasFromCards(
   candidates: LibraryCandidate[],
   detected: MapaArea[],
+  crisis: CrisisCategory[],
 ): MapaArea[] {
+  const fromCrisis = [...new Set(crisis.map((c) => CRISIS_AREA[c]))];
+  if (fromCrisis.length) return fromCrisis.slice(0, 2);
   if (detected.length) return detected.slice(0, 2);
   const count = new Map<MapaArea, number>();
   for (const c of candidates)
@@ -137,24 +183,28 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
   const crisis = crisisCheck.urgent
     ? { categories: crisisCheck.categories, matched: crisisCheck.matched }
     : null;
+  const crisisCats = crisisCheck.urgent ? crisisCheck.categories : [];
+  // Areas the author picked stay; areas an earlier triage set may be replaced.
+  const previous = c.triage as CaseTriage | null;
+  const authorAreas = c.areas.length > 0 && !previous?.appliedAreas;
   const [{ cards: candidates, detectedAreas }, similar, experts] =
     await Promise.all([
-    libraryCandidates(text, 3),
-    similarCaseCandidates(c.id, text, 8),
-    db
-      .select({
-        id: people.id,
-        displayName: people.displayName,
-        title: people.title,
-        areas: people.areas,
-      })
-      .from(people)
-      .where(inArray(people.role, ["mentor", "expert"])),
-  ]);
+      libraryCandidates(text, 3),
+      similarCaseCandidates(c.id, text, 8),
+      db
+        .select({
+          id: people.id,
+          displayName: people.displayName,
+          title: people.title,
+          areas: people.areas,
+        })
+        .from(people)
+        .where(inArray(people.role, ["mentor", "expert"])),
+    ]);
 
   const user = [
     `Rodzaj sprawy: ${CASE_KIND_LABEL[c.kind]}`,
-    c.areas.length
+    authorAreas
       ? `Obszary wskazane przez autora: ${c.areas.map((a) => MAPA_AREA_LABEL[a]).join(", ")}`
       : "",
     userData("zgloszenie", `Tytuł: ${c.title}\n\n${c.bodyRedacted}`),
@@ -182,13 +232,11 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
     "Wcześniejsze zgłoszenia, które mogą być podobne:",
     similar.length
       ? similar
-          .map((s) =>
-            userData(`sprawa ${s.id}`, `${s.title}\n${s.excerpt}`),
-          )
+          .map((s) => userData(`sprawa ${s.id}`, `${s.title}\n${s.excerpt}`))
           .join("\n")
       : "(brak)",
     crisis
-      ? "\nUWAGA: automatyczny filtr wykrył w zgłoszeniu sygnały kryzysu (zagrożenie życia, zdrowia lub bezpieczeństwa). Ustaw urgency na \"high\"."
+      ? `\nUWAGA: automatyczny filtr wykrył w zgłoszeniu sygnały kryzysu (zagrożenie życia, zdrowia lub bezpieczeństwa). Ustaw urgency na "high". W szkicu odpowiedzi nie proponuj kart z Biblioteki; zacznij od numeru 112 i podaj wyłącznie te zweryfikowane telefony wsparcia, dosłownie:\n${crisisLines(crisisCats)}`
       : "",
   ]
     .filter((l) => l !== "")
@@ -232,13 +280,14 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
         ...cardsFrom(candidates, cited),
         ...cardsFrom(candidates).filter((k) => !cited.has(k.id)),
       ],
+      appliedAreas: !authorAreas,
       createdAt: new Date().toISOString(),
     };
   } else {
     const cards = cardsFrom(candidates);
-    const areas = areasFromCards(candidates, detectedAreas);
+    const areas = areasFromCards(candidates, detectedAreas, crisisCats);
     const expert = experts.find((e) =>
-      e.areas.some((a) => (c.areas.length ? c.areas : areas).includes(a)),
+      e.areas.some((a) => (authorAreas ? c.areas : areas).includes(a)),
     );
     triage = {
       source: "keywords",
@@ -253,8 +302,9 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
         .filter((s) => s.overlap >= 3)
         .slice(0, 3)
         .map((s) => s.id),
-      replyDraft: keywordDraft(cards),
+      replyDraft: crisis ? crisisDraft(crisisCats) : keywordDraft(cards),
       cards,
+      appliedAreas: !authorAreas,
       createdAt: new Date().toISOString(),
     };
   }
@@ -264,7 +314,7 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
     .update(cases)
     .set({
       triage,
-      areas: c.areas.length ? c.areas : triage.areas,
+      areas: authorAreas ? c.areas : triage.areas,
       urgency: triage.urgency ?? c.urgency,
       updatedAt: new Date(),
     })
