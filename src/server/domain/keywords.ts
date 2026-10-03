@@ -27,21 +27,22 @@ const FIELDS = Object.keys(FIELD_BOOSTS) as Field[];
 export const EXPANSION_WEIGHT = 0.6;
 
 /**
- * A raw MiniSearch score at or above this maps to normScore 1.
+ * normScore = log(1 + score) / log(1 + SCORE_FOR_FULL_CONFIDENCE), capped at 1.
  *
- * Calibrated on 2026-10-03 on the frozen eval set (eval/cases.json), against an
- * approximation of the library (listing blurbs for all 115 cards, full sections
- * for three), because data/library.json did not exist yet. On that run the two
- * no-answer cases topped out at raw 8.6 (normScore 0.09) and the weakest top
- * answer of any other case scored raw 115 (two-word "niewidomy telefon"). The
- * threshold 0.25 (raw 25) sits roughly geometrically between them, leaving
- * room for the full card texts to raise both sides.
- * Re-check with `pnpm eval` once the real library lands: the runner prints a
- * suggested threshold.
+ * Raw MiniSearch scores grow with the number of matched query terms, so a long
+ * story scores in the thousands and a two-word query in the hundreds. A linear
+ * scale saturated at 1.00 for every answerable case; the log scale keeps them
+ * apart and keeps the gap to unanswerable text visible.
+ *
+ * Calibrated on 2026-10-03 on the frozen eval set over the real library
+ * (data/library.json, 114 cards): the two no-answer cases top out at raw 15.6
+ * and 20.1 (normScore 0.36 and 0.40); the weakest top answer of any other case
+ * is raw 412 ("samotny senior", 0.79), and stories reach 600–2,800 (0.84–1.00).
+ * The threshold sits at raw ≈ 91, the geometric middle of 20 and 412.
  */
-export const SCORE_FOR_FULL_CONFIDENCE = 100;
+export const SCORE_FOR_FULL_CONFIDENCE = 2000;
 /** Best normScore below this means the keyword match is not to be trusted. */
-export const LOW_CONFIDENCE_THRESHOLD = 0.25;
+export const LOW_CONFIDENCE_THRESHOLD = 0.6;
 
 type IndexedDoc = { id: string } & Record<Field, string>;
 
@@ -272,7 +273,7 @@ export function analyzeQuery(query: string): QueryAnalysis {
 export type KeywordHit = {
   cardId: string;
   score: number;
-  /** 0..1: score relative to SCORE_FOR_FULL_CONFIDENCE, capped at 1. */
+  /** 0..1 on a log scale relative to SCORE_FOR_FULL_CONFIDENCE (see there). */
   normScore: number;
   /** The resident's own words (as typed) that led to this card, for highlighting. */
   matchedUserTerms: string[];
@@ -289,7 +290,7 @@ export type KeywordResult = {
 
 export function normalizeScore(score: number): number {
   if (!(score > 0)) return 0;
-  return Math.min(1, score / SCORE_FOR_FULL_CONFIDENCE);
+  return Math.min(1, Math.log1p(score) / Math.log1p(SCORE_FOR_FULL_CONFIDENCE));
 }
 
 export function keywordSearch(
