@@ -1,0 +1,812 @@
+{
+  "capturedAt": "2026-10-03",
+  "source": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/<kategoria> (9 stron kategorii)",
+  "note": "Migawka slugów i tytułów kart z list kategorii, do sprawdzania, że acceptableSlugs w cases.json istnieją. Nie edytować ręcznie.",
+  "cards": [
+    {
+      "slug": "bawita",
+      "title": "BaWita",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "senior-cuder",
+      "title": "Senior CUDER",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "merkury",
+      "title": "Merkury",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "organizator-kompleksowej-opieki-w-miejscu-zamieszkania",
+      "title": "Organizator kompleksowej opieki w miejscu zamieszkania",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "przenosne-modularne-lazienki",
+      "title": "Przenośne, modularne łazienki",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "terapeuta-przestrzeni",
+      "title": "Terapeuta przestrzeni",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "talerze-zdrowia",
+      "title": "Talerze zdrowia",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "therapy-set",
+      "title": "Therapy Set",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "sciezka-treningu-umyslu",
+      "title": "Ścieżka treningu umysłu",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "edu-gra-hahaha",
+      "title": "Edu gra HaHaHa",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "obu-obuwie-po-domu",
+      "title": "Obu – obuwie po domu",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "centrum-antydepresyjne",
+      "title": "Centrum antydepresyjne",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "zeglowanie-w-wyobrazni-czyli-sposob-na-strachy-na-wodzie",
+      "title": "Żeglowanie w wyobraźni - czyli sposób na strachy na wodzie",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "stworzenie-narzedzia-ulatwiajacego-seniorom-prawidlowe-regulowanie-spraw-spadkowych",
+      "title": "Stworzenie narzędzia ułatwiającego seniorom prawidłowe regulowanie spraw spadkowych",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "mobilne-centrum-pomocy-dla-osob-starszych",
+      "title": "Mobilne centrum pomocy dla osób starszych",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "kody-qr-na-pomoc-seniorom",
+      "title": "Kody QR na pomoc seniorom",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "e-rzecznik-konsumenta-seniora",
+      "title": "E-rzecznik konsumenta seniora",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "sciezka-motosensoryczna",
+      "title": "Ścieżka motosensoryczna",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "korytarz-wspomnien",
+      "title": "Korytarz wspomnień",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "wirtualne-izby-pamieci",
+      "title": "Wirtualne izby pamięci",
+      "categories": [
+        "dla-seniorow"
+      ]
+    },
+    {
+      "slug": "komix-zyciowy",
+      "title": "koMIX życiowy",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "patryk-i-kropka",
+      "title": "Patryk i Kropka",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "edki-kredki-terapeutyczne",
+      "title": "Edki - kredki terapeutyczne",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "rodzina-adopcyjna-dorasta",
+      "title": "Rodzina adopcyjna dorasta",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "puzzle-3d",
+      "title": "Puzzle 3D",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "hop-hop-mobilny-plac-zabaw",
+      "title": "Hop hop - mobilny plac zabaw",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "mobilny-pomocnik-dydaktyczno-sensoryczny-dla-uczniowstudentow-ze-spektrum-autyzmu",
+      "title": "Mobilny pomocnik dydaktyczno-sensoryczny dla uczniów/studentów ze spektrum autyzmu",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "przewodnik-dla-osob-z-asd-moje-potrzeby-gdzie-i-jak-je-realizowac",
+      "title": "Przewodnik dla osób z ASD \"Moje potrzeby - gdzie i jak je realizować?\"",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "bez-presji-z-depresji",
+      "title": "Bez presji z depresji",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "bez-stresu-do-sukcesu-terapia-neurologiczna-przyjazna-dziecku",
+      "title": "Bez stresu do sukcesu - terapia neurologiczna przyjazna dziecku",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "uwaznione-rodzienstwo",
+      "title": "Uważnione rodzieństwo",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "brzuszkole-brzuszek-zostaje-w-przedszkolu",
+      "title": "Brzuszkole - brzuszek zostaje w przedszkolu",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "to-nie-koniec-swiata-to-poczatek-swiata",
+      "title": "To nie koniec świata - to początek świata",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "jezykolamacz",
+      "title": "Językołamacz",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "piosenki-uczestniczace",
+      "title": "Piosenki uczestniczące",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "moj-pomocny-virtual-world",
+      "title": "Mój pomocny Virtual World",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "mobilna-pomoc-terapeutyczna",
+      "title": "Mobilna pomoc terapeutyczna",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "marimbaza",
+      "title": "MarimBaza!",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "nasz-wspolny-rodzinny-swiat-poznaje-ucze-reaguje",
+      "title": "Nasz wspólny, rodzinny świat - poznaję, uczę, reaguję",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "mpatyk",
+      "title": "mPatyk",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "czas-na-aktywnosc",
+      "title": "Czas na aktywność!",
+      "categories": [
+        "dla-dzieci-mlodziezy-i-rodziny"
+      ]
+    },
+    {
+      "slug": "uniodziez",
+      "title": "Uniodzież",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "zakupy-na-jednym-wozku-z-dzieckiem-z-niepelnosprawnoscia-ruchowa",
+      "title": "Zakupy na jednym wózku z dzieckiem z niepełnosprawnością ruchową",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "kompleksowa-pomoc-dla-osob-po-amputacji-konczyny-dolnej",
+      "title": "Kompleksowa pomoc dla osób po amputacji kończyny dolnej",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "puzzles-ramp",
+      "title": "Puzzle's Ramp",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "chlap-pro",
+      "title": "Chlap Pro",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "marina-pai",
+      "title": "Marina Pai",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "zakupy-bez-barier",
+      "title": "Zakupy bez barier",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "nakreceni-na-aktywnosc",
+      "title": "Nakręceni na aktywność",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "moduly-niezaleznosci",
+      "title": "Moduły niezależności",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "biustspinka",
+      "title": "BiustSPINKA",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "szablony-piekna",
+      "title": "Szablony piękna",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "ev-modul-do-wozkow-inwalidzkich",
+      "title": "EV moduł do wózków inwalidzkich",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "dostepny-stol-targowy",
+      "title": "Dostępny stół targowy",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "cloudleg",
+      "title": "Cloudleg",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "lekki-wozek-aktywny",
+      "title": "Lekki wózek aktywny",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "wozek-szermierczy",
+      "title": "Wózek szermierczy",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "dostepna-szermierka",
+      "title": "Dostępna szermierka",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "innotextil",
+      "title": "Innotextil",
+      "categories": [
+        "dla-osob-o-ograniczonej-mobilnosci"
+      ]
+    },
+    {
+      "slug": "straznik",
+      "title": "Strażnik",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "wsparcie-imprez-masowych-dla-osob-z-niepelnosprawnoscia-wzroku",
+      "title": "Wsparcie imprez masowych dla osób z niepełnosprawnością wzroku",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "teleasystent",
+      "title": "Teleasystent",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "hear-it",
+      "title": "Hear IT",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "gluchy-czytelnik-w-bibliotece",
+      "title": "Głuchy czytelnik w bibliotece",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "blue-sea-eye",
+      "title": "Blue Sea Eye",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "osoby-niewidome-i-niedowidzace-jako-nauczyciele-jezyka-polskiego",
+      "title": "Osoby niewidome i niedowidzące jako nauczyciele języka polskiego",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "ngoz-nawigacja-glosowa-osob-zaleznych",
+      "title": "NGOZ - nawigacja głosowa osób zależnych",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "wibraap",
+      "title": "Wibraap",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "my-way-to-culture",
+      "title": "My way to culture",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "glucha-ankieta",
+      "title": "Głucha ankieta",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "dostepny-wniosek-dla-ggluchych",
+      "title": "Dostępny wniosek dla g/Głuchych",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "czytamoda",
+      "title": "Czytamoda",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "dostepny-transport-publiczny",
+      "title": "Dostępny transport publiczny",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "turystyka-gorskawspinaczka-dostepna-dla-wszystkich",
+      "title": "Turystyka górska/wspinaczka dostępna dla wszystkich",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "zdobadz-swoje-szczyty",
+      "title": "Zdobądź swoje szczyty",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "spotkania-kulturlove",
+      "title": "Spotkania KulturLove",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "zmysly-w-ruchu-model-choreografii-dla-osob-niewidomych",
+      "title": "Zmysły w ruchu. Model choreografii dla osób niewidomych.",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "kaski-binauralne",
+      "title": "Kaski binauralne",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "wielodziedzinowy-slownik-terminow-specjalistycznych-pl-pjm",
+      "title": "Wielodziedzinowy słownik terminów specjalistycznych PL-PJM",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-sensoryczna"
+      ]
+    },
+    {
+      "slug": "paszport-pacjenta-z-choroba-rzadka",
+      "title": "Paszport pacjenta z chorobą rzadką",
+      "categories": [
+        "dla-zdrowia-i-medycyny"
+      ]
+    },
+    {
+      "slug": "himalaje-autyzmu",
+      "title": "Himalaje autyzmu",
+      "categories": [
+        "dla-zdrowia-i-medycyny"
+      ]
+    },
+    {
+      "slug": "gra-o-zdrowie",
+      "title": "Gra o zdrowie",
+      "categories": [
+        "dla-zdrowia-i-medycyny"
+      ]
+    },
+    {
+      "slug": "telerehabilitacja-oddechowa",
+      "title": "Telerehabilitacja oddechowa",
+      "categories": [
+        "dla-zdrowia-i-medycyny"
+      ]
+    },
+    {
+      "slug": "inteligentny-organizer-do-lekow",
+      "title": "Inteligentny organizer do leków",
+      "categories": [
+        "dla-zdrowia-i-medycyny"
+      ]
+    },
+    {
+      "slug": "drogowskazy-ajkum",
+      "title": "Drogowskazy AJKUM",
+      "categories": [
+        "dla-zdrowia-i-medycyny"
+      ]
+    },
+    {
+      "slug": "cold-box",
+      "title": "Cold Box",
+      "categories": [
+        "dla-zdrowia-i-medycyny"
+      ]
+    },
+    {
+      "slug": "pacjent-pro",
+      "title": "Pacjent Pro",
+      "categories": [
+        "dla-zdrowia-i-medycyny"
+      ]
+    },
+    {
+      "slug": "oncotriada",
+      "title": "Oncotriada",
+      "categories": [
+        "dla-zdrowia-i-medycyny"
+      ]
+    },
+    {
+      "slug": "agencja-pracy-incydentalnej",
+      "title": "Agencja pracy incydentalnej",
+      "categories": [
+        "dla-rynku-pracy"
+      ]
+    },
+    {
+      "slug": "niewypaleni",
+      "title": "NIEwypaleni",
+      "categories": [
+        "dla-rynku-pracy"
+      ]
+    },
+    {
+      "slug": "konsultant-etr",
+      "title": "Konsultant ETR",
+      "categories": [
+        "dla-rynku-pracy"
+      ]
+    },
+    {
+      "slug": "mobilna-gielda-pracy",
+      "title": "Mobilna giełda pracy",
+      "categories": [
+        "dla-rynku-pracy"
+      ]
+    },
+    {
+      "slug": "oddawacze",
+      "title": "Oddawacze",
+      "categories": [
+        "dla-rynku-pracy"
+      ]
+    },
+    {
+      "slug": "bajkala",
+      "title": "Bajkala",
+      "categories": [
+        "dla-cudzoziemcow"
+      ]
+    },
+    {
+      "slug": "dialog-ponad-kulturami",
+      "title": "Dialog ponad kulturami",
+      "categories": [
+        "dla-cudzoziemcow"
+      ]
+    },
+    {
+      "slug": "wortal-informacyjny",
+      "title": "Wortal informacyjny",
+      "categories": [
+        "dla-cudzoziemcow"
+      ]
+    },
+    {
+      "slug": "dialog-ponad-kulturami-1",
+      "title": "Dialog ponad kulturami",
+      "categories": [
+        "dla-cudzoziemcow"
+      ]
+    },
+    {
+      "slug": "health-guide-pl",
+      "title": "Health Guide PL",
+      "categories": [
+        "dla-cudzoziemcow"
+      ]
+    },
+    {
+      "slug": "zrozum-moja-kulture-zrozum-mnie",
+      "title": "Zrozum moją kulturę, zrozum mnie",
+      "categories": [
+        "dla-cudzoziemcow"
+      ]
+    },
+    {
+      "slug": "szlakiem-ludzi-bezdomnych",
+      "title": "Szlakiem ludzi bezdomnych",
+      "categories": [
+        "dla-osob-w-kryzysie-bezdomnosci"
+      ]
+    },
+    {
+      "slug": "wiejski-program-pomocy-osobom-w-kryzysie-bezdomnosci-sciezka-feniksa",
+      "title": "Wiejski program pomocy osobom w kryzysie bezdomności - Ścieżka Feniksa",
+      "categories": [
+        "dla-osob-w-kryzysie-bezdomnosci"
+      ]
+    },
+    {
+      "slug": "urzedowy-ambaras",
+      "title": "Urzędowy ambaras",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "stop-otylosci-innowacyjna-metoda-pracy-z-osobami-niepelnosprawnymi-intelektualnie",
+      "title": "Stop otyłości  - innowacyjna metoda pracy z osobami niepełnosprawnymi intelektualnie",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "pelna-wokanda",
+      "title": "Pełna wokanda",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "pelnia-zdrowia",
+      "title": "Pełnia zdrowia",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "niepelnosprawnosc-szansa-na-pelnosprawnosc-w-pracy-i-zyciu",
+      "title": "Niepełnosprawność szansą na pełnosprawność w pracy i życiu",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "dostepna-polska",
+      "title": "Dostępna Polska",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "zalatw-to-sam",
+      "title": "Załatw to sam",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "go-ahead-mow-smialo",
+      "title": "Go ahead - mów śmiało!",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "autyzm-i-ja",
+      "title": "AuTyzm i ja",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "podroz-poza-domem-w-wirtualnej-rzeczywistosci",
+      "title": "Podróż poza domem w wirtualnej rzeczywistości",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "ta-sciezka-terapeutyczna-sciezka-kulturowa-dla-dzieci-i-doroslych-z-autyzmem",
+      "title": "TA ścieżka. Terapeutyczna ścieżka kulturowa dla dzieci i dorosłych z autyzmem.",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "osa-i-eco-puzzle",
+      "title": "OSA i eco puzzle",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "rodzinny-system-wzajemnej-pomocy",
+      "title": "Rodzinny system wzajemnej pomocy",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    },
+    {
+      "slug": "mix-ar-i-vr-dla-koordynacji-ruchowej",
+      "title": "Mix AR i VR dla koordynacji ruchowej",
+      "categories": [
+        "dla-osob-z-niepelnosprawnoscia-intelektualna"
+      ]
+    }
+  ]
+}
