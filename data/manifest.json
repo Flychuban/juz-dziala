@@ -1,5 +1,23 @@
 [
   {
+    "url": "https://api.github.com/repos/waszkiewiczja/GeoJSON-Polska-Wojewodztwa-Powiaty-Gminy/git/trees/main?recursive=1",
+    "capturedAt": "2026-10-03T15:47:13.886Z",
+    "sha256": "68ab274846beb4416a5c4b2b06d5279da892241946b5a581a5e969f7bd2119ce",
+    "bytes": 2592,
+    "file": "data/raw/api.github.com/repos_waszkiewiczja_GeoJSON-Polska-Wojewodztwa-Powiaty-Gminy_git_trees_main_recursive_1.68ab274846be.json",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/waszkiewiczja/GeoJSON-Polska-Wojewodztwa-Powiaty-Gminy/main/powiaty.json",
+    "capturedAt": "2026-10-03T15:47:24.186Z",
+    "sha256": "13c50c5f8ff68e087c076ab3c3cdedf730a0950d44a6fed1cda4be65f058b529",
+    "bytes": 4576839,
+    "file": "data/raw/raw.githubusercontent.com/waszkiewiczja_GeoJSON-Polska-Wojewodztwa-Powiaty-Gminy_main_powiaty.13c50c5f8ff6.json",
+    "status": 200,
+    "contentType": "text/plain; charset=utf-8"
+  },
+  {
     "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych",
     "capturedAt": "2026-10-03T15:22:51.097Z",
     "sha256": "65c85ce5ada68c015e215b0ed65b1fe074456121b7e1b7b80a9ae100e1ba2ced",
