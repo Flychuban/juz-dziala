@@ -9,6 +9,7 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { calls } from "~/server/db/schema";
 import type { CanvasDef } from "./canvas-def";
+import { canvasForReader } from "./canvas-copy";
 
 /**
  * Reference data for the Kreator / Tester / Sieć modules: gminas (GUS + PRG,
@@ -97,7 +98,8 @@ export async function loadCanvasDef(): Promise<CanvasDef | null> {
   if (canvasCache) return canvasCache;
   const r = canvasSchema.safeParse(await readJson("canvas.json"));
   if (!r.success) return null;
-  canvasCache = r.data;
+  // Worded for one reader („Ty"); see canvas-copy.ts.
+  canvasCache = canvasForReader(r.data);
   return canvasCache;
 }
 

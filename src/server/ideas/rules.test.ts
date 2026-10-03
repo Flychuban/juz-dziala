@@ -2,7 +2,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { APPLICANT_TEXT, DECLARATIONS_TEXT, draftToFields, templateDraft, templateValue, unverifiedNumbers, type DraftSource } from "./application-rules";
+import { APPLICANT_TEXT, DECLARATIONS_TEXT, draftToFields, gapsLine, templateDraft, templateValue, unverifiedNumbers, type DraftSource } from "./application-rules";
+import { canvasForReader } from "./canvas-copy";
 import { finalizeAssist } from "./assist-rules";
 import { canvasFromIdea, canvasToText, sanitizeCanvas, type CanvasDef } from "./canvas-def";
 import { normalizeSubscriptionContact, questionTitle } from "./network-rules";
@@ -140,5 +141,38 @@ describe("contacts and topics", () => {
   it("titles a question by its first sentence", () => {
     expect(questionTitle("Jak to zrobić? Bo nie wiem.")).toBe("Jak to zrobić?");
     expect(questionTitle("a".repeat(200)).length).toBeLessThanOrEqual(90);
+  });
+});
+
+describe("canvas worded for one reader („Ty”)", () => {
+  const reader = canvasForReader(canvasDef);
+  const texts = reader.sheets.flatMap((sh) =>
+    sh.sections.flatMap((se) => [se.prompt ?? "", ...se.fields.flatMap((f) => [f.prompt ?? "", ...f.questions, ...f.options.map((o) => `${o.label} ${o.description ?? ""}`)])]),
+  );
+  it("has no plural address left", () => {
+    const plural = /(Zaznaczcie|Pokolorujcie|Wypiszcie|Zastanówcie|Pamiętajcie|Oznaczcie|Wasz|wasz|\bWas\b|\bWam\b|możecie|macie|ponosicie|realizujecie|pomagacie|organizujecie|rozmawiacie|powinniście)/;
+    expect(texts.filter((t) => plural.test(t))).toEqual([]);
+  });
+  it("titles the sheets in Polish and ends every option description with a full stop", () => {
+    expect(reader.sheets.map((s) => s.title)).toEqual([
+      "Arkusz 1 · Canvas innowacji społecznej",
+      "Arkusz 2 · Canvas innowacji społecznej",
+      "Arkusz 3 · Canvas innowacji społecznej",
+    ]);
+    const readiness = reader.sheets[0]!.sections.flatMap((s) => s.fields).find((f) => f.key === "readiness")!;
+    expect(readiness.options.find((o) => o.label === "Przetestowane rozwiązanie")?.description).toMatch(/poprawić\.$/);
+  });
+  it("keeps every pickable option label, so saved canvases stay valid", () => {
+    const v = { notes: {}, picks: { intensity: ["Bardzo poważny problem"], readiness: ["Prototyp"], mainUser: ["seniorzy"] } };
+    expect(sanitizeCanvas(reader, v)).toEqual(v);
+  });
+});
+
+describe("gapsLine", () => {
+  it("uses the right Polish form", () => {
+    expect(gapsLine(1)).toBe("Szkic gotowy. Luki „[DO UZUPEŁNIENIA]” zostały w 1 polu — uzupełnij je przed wysłaniem.");
+    expect(gapsLine(3)).toContain("w 3 polach");
+    expect(gapsLine(12)).toContain("w 12 polach");
+    expect(gapsLine(0)).toMatch(/Wszystkie pola są wypełnione/);
   });
 });

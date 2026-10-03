@@ -144,7 +144,8 @@ export function ContactFieldset({
     <div className="flex flex-col gap-4">
       <ChoiceCards
         legend={legend}
-        hint="Kontakt jest nieobowiązkowy. Zaszyfrujemy go i pokażemy tylko w skróconej formie."
+        hint="Zaszyfrujemy go i pokażemy tylko w skróconej formie. Odpowiedź zobaczysz też po kodzie sprawy."
+        optional
         name="contactPref"
         options={CONTACT_PREFS.map((p) => ({ value: p, label: CONTACT_PREF_LABEL[p] }))}
         value={value.contactPref}

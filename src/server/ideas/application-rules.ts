@@ -144,6 +144,12 @@ export function draftToFields(markdown: string, fields: readonly FormFieldDef[])
   });
 }
 
+/** „Szkic gotowy. Luki „[DO UZUPEŁNIENIA]" zostały w N polach — …" (locative: 1 polu, N polach). */
+export function gapsLine(n: number): string {
+  if (n === 0) return "Szkic gotowy. Wszystkie pola są wypełnione — przeczytaj je jeszcze raz przed wysłaniem.";
+  return `Szkic gotowy. Luki „${GAP}” zostały w ${n === 1 ? "1 polu" : `${n} polach`} — uzupełnij je przed wysłaniem.`;
+}
+
 export function fieldsToMarkdown(fields: readonly ApplicationField[]): string {
   return fields.map((f) => `## ${f.label}\n\n${f.value.trim()}`).join("\n\n");
 }

@@ -63,7 +63,7 @@ function FieldEditor({
       <div>
         <p className="text-lg font-semibold">{field.label}</p>
         <p className="text-muted-foreground">
-          Przy każdym partnerze dopisz jego status: {field.options.map((o) => o.label.toLocaleLowerCase("pl-PL")).join(", ")}.
+          {field.prompt ?? "Przy każdym partnerze dopisz, jaki ma status:"} {field.options.map((o) => o.label.toLocaleLowerCase("pl-PL")).join(", ")}.
         </p>
       </div>
     );
@@ -178,10 +178,10 @@ function CanvasPrint({ def, values, code, title }: { def: CanvasDef; values: Can
   const credit = `Canvas: ${def.source.publisher.split(" (")[0]}, wersja ${def.source.version ?? "—"}, ${formatDatePl(def.source.versionDate) || ""}. ${def.source.basedOn}`;
   return (
     <div className="hidden print:block">
-      {def.sheets.map((sheet, i) => (
+      {def.sheets.map((sheet) => (
         <section key={sheet.key} className="canvas-print-sheet">
           <p className="text-sm">
-            {sheetHeading(def, i)} · Sprawa {code} · {title}
+            Sprawa {code} · {title}
           </p>
           <h2 className="mb-2 text-xl font-bold">{sheet.title}</h2>
           <div className="grid grid-cols-3 gap-2">
@@ -316,10 +316,10 @@ export function CanvasEditor({
             ))}
           </ol>
         </nav>
-        {def.sheets.map((sheet, i) => (
+        {def.sheets.map((sheet) => (
           <section key={sheet.key} id={sheet.key} aria-labelledby={`${sheet.key}-h`} className="scroll-mt-6">
             <h2 id={`${sheet.key}-h`} className="font-display text-3xl font-bold">
-              {sheetHeading(def, i)} <span className="text-muted-foreground text-xl font-semibold">· {sheet.title}</span>
+              {sheet.title}
             </h2>
             <div className="mt-6 flex flex-col gap-6">
               {sheet.sections.map((section) => (
