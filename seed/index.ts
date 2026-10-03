@@ -10,7 +10,7 @@ import { seedCalls, seedNetwork } from "./network";
 import { seedSampleNeeds } from "~/server/admin/sample-needs";
 import { seedSamplePeople } from "~/server/cases/sample-people";
 
-const steps: { name: string; run: () => Promise<void> }[] = [
+const steps: { name: string; run: () => Promise<unknown> }[] = [
   { name: "library", run: seedLibrary },
   { name: "calls", run: seedCalls },
   { name: "network", run: seedNetwork },
