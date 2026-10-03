@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { CaseLookup } from "~/components/cases/case-lookup";
 import { CaseView } from "~/components/cases/case-view";
-import { normalizeCaseCode } from "~/server/cases/_pending-domain";
+import { normalizeCaseCode } from "~/server/domain/case-code";
 
 export const metadata = { title: "Moja sprawa" };
 

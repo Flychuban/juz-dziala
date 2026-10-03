@@ -8,6 +8,8 @@ export type TriageCard = {
   /** The quoted card sentence (resolved on the server by id). */
   sentenceId: string;
   sentence: string;
+  /** The resident's words that led the keyword matcher to this card. */
+  matchedTerms?: string[];
 };
 
 export type CaseTriage = {
@@ -24,6 +26,8 @@ export type CaseTriage = {
   summary: string | null;
   areas: MapaArea[];
   urgency: Urgency | null;
+  /** Crisis signals found by the deterministic filter (forces urgency "high"). */
+  crisis?: { categories: string[]; matched: string[] } | null;
   /** Free-text guess, e.g. „powiat nowotarski" — to verify. */
   powiatGuess: string | null;
   suggestedExpertId: string | null;

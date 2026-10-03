@@ -6,13 +6,13 @@ import {
   publicProcedure,
   rateLimit,
 } from "~/server/api/trpc";
-import { hashToken, normalizeCaseCode } from "~/server/cases/_pending-domain";
 import { caseOr404 } from "~/server/cases/access";
 import { addMessage, createCase, setCaseStatus } from "~/server/cases/engine";
 import { createCaseInputSchema } from "~/server/cases/input";
 import { authorMessages, timelineFor } from "~/server/cases/queries";
 import { AUTHOR_NAME } from "~/server/cases/types";
 import { cases, messages } from "~/server/db/schema";
+import { hashToken, normalizeCaseCode } from "~/server/domain/case-code";
 
 /**
  * Module V — the author's side of a Sprawa. Residents have no accounts: the

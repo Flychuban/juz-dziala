@@ -3,7 +3,7 @@ import "server-only";
 import { TRPCError } from "@trpc/server";
 
 import { rateLimit, type Context } from "~/server/api/trpc";
-import { normalizeCaseCode } from "./_pending-domain";
+import { normalizeCaseCode } from "~/server/domain/case-code";
 import { findCaseByCode, type CaseRow } from "./queries";
 
 /**

@@ -7,7 +7,7 @@ import QRCode from "qrcode";
 import { fmtDate } from "~/components/cases/format";
 import { PrintButton } from "~/components/cases/print-button";
 import { CASE_KIND_LABEL, SITE } from "~/lib/domain";
-import { normalizeCaseCode } from "~/server/cases/_pending-domain";
+import { normalizeCaseCode } from "~/server/domain/case-code";
 import { findCaseByCode } from "~/server/cases/queries";
 
 export const metadata = { title: "Kod sprawy do druku" };

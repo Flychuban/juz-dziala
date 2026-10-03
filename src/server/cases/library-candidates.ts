@@ -1,42 +1,58 @@
 import "server-only";
 
-import { and, eq, gte, ne } from "drizzle-orm";
+import { and, count, eq, gte, max, ne } from "drizzle-orm";
 
 import type { MapaArea } from "~/lib/domain";
 import { db } from "~/server/db";
 import { cases, innovations } from "~/server/db/schema";
+import {
+  buildKeywordIndex,
+  keywordSearch,
+  LOW_CONFIDENCE_THRESHOLD,
+  type KeywordIndex,
+} from "~/server/domain/keywords";
+import { isStopword, stem, tokenize } from "~/server/domain/polish";
+import type { LibraryCard } from "~/server/domain/types";
 
 /**
- * Cheap, deterministic keyword matching used by triage: the library cards the
- * reply draft may quote, and earlier cases that look alike. Polish inflects
- * heavily, so single words compare on a short prefix („senior", „seniorów",
- * „seniorami" → „senio").
+ * Deterministic retrieval for triage: the library cards a reply draft may
+ * quote (A0's calibrated keyword matcher — the same one the instant match
+ * uses) and earlier cases that share the most word stems.
  */
-const STOP = new Set([
-  "jest", "są", "był", "była", "było", "będzie", "mam", "mamy", "nie", "tak",
-  "się", "oraz", "albo", "lub", "ale", "dla", "przez", "który", "która",
-  "które", "którzy", "jak", "jaki", "jaka", "jakie", "gdzie", "kiedy", "tego",
-  "tej", "tym", "ten", "ta", "to", "te", "ich", "jego", "jej", "nas", "nam",
-  "was", "wam", "mój", "moja", "moje", "mnie", "bardzo", "także", "również",
-  "może", "można", "czy", "żeby", "aby", "bez", "pod", "nad", "przy", "od",
-  "do", "na", "po", "za", "we", "ze", "co", "ktoś", "coś", "chcę", "chce",
-  "chcemy", "potrzebuję", "potrzeba", "pomoc", "pomocy", "proszę", "dzień",
-  "dobry", "osoba", "osoby", "osób", "ludzi", "ludzie", "gmina", "gminie",
-  "gminy", "jako", "tylko", "już", "jeszcze", "wiele", "dużo", "mało",
-]);
+let cached: { key: string; index: KeywordIndex; cards: LibraryCard[] } | null =
+  null;
 
-export function stem(word: string): string {
-  return word.length >= 6 ? word.slice(0, 5) : word;
-}
-
-export function tokens(text: string): string[] {
-  return (text.toLowerCase().match(/\p{L}+/gu) ?? []).filter(
-    (w) => w.length >= 4 && !STOP.has(w),
-  );
-}
-
-export function stems(text: string): Set<string> {
-  return new Set(tokens(text).map(stem));
+async function libraryIndex() {
+  const published = eq(innovations.status, "published");
+  const [stamp] = await db
+    .select({ n: count(), at: max(innovations.updatedAt) })
+    .from(innovations)
+    .where(published);
+  const key = `${stamp?.n ?? 0}:${stamp?.at?.toISOString() ?? ""}`;
+  if (cached?.key === key) return cached;
+  const rows = await db.select().from(innovations).where(published);
+  const cards: LibraryCard[] = rows.map((r) => ({
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    categories: r.categories,
+    categoryLabels: r.categoryLabels,
+    sections: r.sections,
+    sentences: r.sentences,
+    badge: r.badge,
+    videoUrl: r.videoUrl,
+    folderUrl: r.folderUrl,
+    materialsUrl: r.materialsUrl,
+    licence: r.licence,
+    licenceUrl: r.licenceUrl,
+    mapaAreas: r.mapaAreas,
+    keywords: r.keywords,
+    sourceUrl: r.sourceUrl,
+    capturedAt: r.capturedAt.toISOString(),
+    sha256: r.sha256 ?? "",
+  }));
+  cached = { key, index: buildKeywordIndex(cards), cards };
+  return cached;
 }
 
 export type LibraryCandidate = {
@@ -45,6 +61,8 @@ export type LibraryCandidate = {
   title: string;
   mapaAreas: MapaArea[];
   score: number;
+  /** The resident's words that led to the card. */
+  matchedTerms: string[];
   /** First sentences of „Na czym polega rozwiązanie?" — the only text a draft may use. */
   sentences: { id: string; text: string }[];
 };
@@ -52,58 +70,38 @@ export type LibraryCandidate = {
 export async function libraryCandidates(
   text: string,
   limit = 3,
-): Promise<LibraryCandidate[]> {
-  const lower = text.toLowerCase();
-  const textStems = stems(text);
-  const cards = await db
-    .select({
-      id: innovations.id,
-      slug: innovations.slug,
-      title: innovations.title,
-      keywords: innovations.keywords,
-      mapaAreas: innovations.mapaAreas,
-      sentences: innovations.sentences,
-    })
-    .from(innovations)
-    .where(eq(innovations.status, "published"));
-
-  const scored = cards.map((c) => {
-    let score = 0;
-    const seen = new Set<string>();
-    for (const raw of c.keywords) {
-      const kw = raw.toLowerCase().trim();
-      if (!kw || seen.has(kw)) continue;
-      seen.add(kw);
-      if (kw.includes(" ")) {
-        if (lower.includes(kw)) score += 2;
-        else if (kw.split(/\s+/).every((w) => textStems.has(stem(w))))
-          score += 1.5;
-      } else if (kw.length >= 4 && textStems.has(stem(kw))) {
-        score += 1;
-      }
-    }
-    for (const t of new Set(tokens(c.title).map(stem))) {
-      if (textStems.has(t)) score += 1.5;
-    }
-    return { c, score };
-  });
-
-  return scored
-    .filter((s) => s.score >= 2)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit)
-    .map(({ c, score }) => {
-      const solution = c.sentences.filter((s) => s.section === "solution");
-      const pool = solution.length ? solution : c.sentences;
-      return {
-        id: c.id,
-        slug: c.slug,
-        title: c.title,
-        mapaAreas: c.mapaAreas,
-        score,
-        sentences: pool.slice(0, 2).map((s) => ({ id: s.id, text: s.text })),
-      };
+): Promise<{ cards: LibraryCandidate[]; detectedAreas: MapaArea[] }> {
+  const { index, cards } = await libraryIndex();
+  if (!cards.length) return { cards: [], detectedAreas: [] };
+  const res = keywordSearch(index, cards, text, { limit });
+  const byId = new Map(cards.map((c) => [c.id, c]));
+  const out: LibraryCandidate[] = [];
+  for (const hit of res.results) {
+    // Below the calibrated threshold a keyword hit is noise, not a lead.
+    if (hit.normScore < LOW_CONFIDENCE_THRESHOLD) continue;
+    const c = byId.get(hit.cardId);
+    if (!c) continue;
+    const solution = c.sentences.filter((s) => s.section === "solution");
+    const pool = solution.length ? solution : c.sentences;
+    out.push({
+      id: c.id,
+      slug: c.slug,
+      title: c.title,
+      mapaAreas: c.mapaAreas,
+      score: hit.normScore,
+      matchedTerms: hit.matchedUserTerms,
+      sentences: pool.slice(0, 2).map((s) => ({ id: s.id, text: s.text })),
     });
+  }
+  return { cards: out, detectedAreas: res.detectedAreas };
+}
+
+function stems(text: string): Set<string> {
+  return new Set(
+    tokenize(text)
+      .filter((w) => w.length >= 4 && !isStopword(w))
+      .map(stem),
+  );
 }
 
 export type SimilarCaseCandidate = {
@@ -134,9 +132,8 @@ export async function similarCaseCandidates(
   const mine = stems(text);
   return rows
     .map((r) => {
-      const theirs = stems(`${r.title} ${r.body}`);
       let overlap = 0;
-      for (const s of theirs) if (mine.has(s)) overlap++;
+      for (const s of stems(`${r.title} ${r.body}`)) if (mine.has(s)) overlap++;
       return {
         id: r.id,
         code: r.code,

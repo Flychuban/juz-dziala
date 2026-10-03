@@ -6,7 +6,7 @@ import type { CaseStatus } from "~/lib/domain";
 import type { StaffSession } from "~/server/auth/session";
 import { db } from "~/server/db";
 import { cases, events, messages } from "~/server/db/schema";
-import { normalizeCaseCode } from "./_pending-domain";
+import { normalizeCaseCode } from "~/server/domain/case-code";
 
 export type CaseRow = typeof cases.$inferSelect;
 

@@ -1,9 +1,9 @@
 import "server-only";
 
 import { env } from "~/env";
-import { maskContact } from "~/server/cases/_pending-domain";
 import { db } from "~/server/db";
 import { deliveries } from "~/server/db/schema";
+import { maskContact } from "~/server/domain/case-code";
 
 /**
  * Outbound delivery. E-mail is real when a transport is configured

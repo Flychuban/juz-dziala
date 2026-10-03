@@ -6,15 +6,15 @@ import { after } from "next/server";
 import type { CaseStatus, MessageAuthorKind } from "~/lib/domain";
 import { db } from "~/server/db";
 import { cases, matchRuns } from "~/server/db/schema";
-import { encrypt } from "~/server/lib/crypto";
-import { notify } from "~/server/notify";
 import {
   generateAccessToken,
   generateCaseCode,
   hashToken,
   maskContact,
-  redactPII,
-} from "./_pending-domain";
+} from "~/server/domain/case-code";
+import { redactPII } from "~/server/domain/redact";
+import { encrypt } from "~/server/lib/crypto";
+import { notify } from "~/server/notify";
 import {
   requestDelivery,
   takeDelivery,

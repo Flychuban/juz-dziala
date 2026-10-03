@@ -11,6 +11,7 @@ import {
   type MapaArea,
 } from "~/lib/domain";
 import { aiStructured, userData } from "~/server/ai/structured";
+import { detectCrisis } from "~/server/domain/crisis";
 import { db } from "~/server/db";
 import { cases, notifications, people } from "~/server/db/schema";
 import { siteUrl } from "~/server/mail/templates";
@@ -78,6 +79,7 @@ function cardsFrom(
               title: c.title,
               sentenceId: s.id,
               sentence: s.text,
+              matchedTerms: c.matchedTerms,
             },
           ]
         : [];
@@ -112,7 +114,11 @@ ${list}
 ${TEAM_NAME}`;
 }
 
-function areasFromCards(candidates: LibraryCandidate[]): MapaArea[] {
+function areasFromCards(
+  candidates: LibraryCandidate[],
+  detected: MapaArea[],
+): MapaArea[] {
+  if (detected.length) return detected.slice(0, 2);
   const count = new Map<MapaArea, number>();
   for (const c of candidates)
     for (const a of c.mapaAreas) count.set(a, (count.get(a) ?? 0) + 1);
@@ -127,7 +133,12 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
   if (!c) return null;
 
   const text = `${c.title}\n${c.bodyRedacted}`;
-  const [candidates, similar, experts] = await Promise.all([
+  const crisisCheck = detectCrisis(text);
+  const crisis = crisisCheck.urgent
+    ? { categories: crisisCheck.categories, matched: crisisCheck.matched }
+    : null;
+  const [{ cards: candidates, detectedAreas }, similar, experts] =
+    await Promise.all([
     libraryCandidates(text, 3),
     similarCaseCandidates(c.id, text, 8),
     db
@@ -176,6 +187,9 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
           )
           .join("\n")
       : "(brak)",
+    crisis
+      ? "\nUWAGA: automatyczny filtr wykrył w zgłoszeniu sygnały kryzysu (zagrożenie życia, zdrowia lub bezpieczeństwa). Ustaw urgency na \"high\"."
+      : "",
   ]
     .filter((l) => l !== "")
     .join("\n");
@@ -202,7 +216,8 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
       aiStatus: "ok",
       summary: d.summary.trim().slice(0, 400) || null,
       areas: [...new Set(d.areas)].slice(0, 3),
-      urgency: d.urgency,
+      urgency: crisis ? "high" : d.urgency,
+      crisis,
       powiatGuess: d.powiatGuess?.trim().slice(0, 80) ?? null,
       suggestedExpertId:
         d.suggestedExpertId && expertIds.has(d.suggestedExpertId)
@@ -221,7 +236,7 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
     };
   } else {
     const cards = cardsFrom(candidates);
-    const areas = areasFromCards(candidates);
+    const areas = areasFromCards(candidates, detectedAreas);
     const expert = experts.find((e) =>
       e.areas.some((a) => (c.areas.length ? c.areas : areas).includes(a)),
     );
@@ -230,7 +245,8 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
       aiStatus: res.reason,
       summary: null,
       areas,
-      urgency: null,
+      urgency: crisis ? "high" : null,
+      crisis,
       powiatGuess: null,
       suggestedExpertId: expert?.id ?? null,
       similarCaseIds: similar
