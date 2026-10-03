@@ -15,13 +15,28 @@ Ceny sprawdzone 3 października 2026 r. na stronach dostawców (USD, netto). Kos
 
 Koszt jednego dopasowania, jednej wstępnej oceny sprawy i jednego Ramowego Planu Wdrożenia jest zapisywany przy każdym wywołaniu. Opis instrukcji i indeks 114 kart są w pamięci podręcznej modelu, więc kolejne zapytania płacą za nie ok. 20 razy mniej.
 
-| Funkcja | Średni koszt jednego wywołania | Źródło |
-|---|---|---|
-| Dopasowanie (matchmaking) | *do uzupełnienia po pomiarze* | `/admin/ai`, `eval/results/ai-*.json` |
-| Wstępna ocena sprawy | *do uzupełnienia po pomiarze* | `/admin/ai` |
-| Ramowy Plan Wdrożenia | *do uzupełnienia po pomiarze* | `/admin/ai` |
+Pomiar z 3 października 2026 r. (model Claude Opus 5.5):
 
-**Scenariusz:** 2 000 dopasowań, 300 spraw i 50 planów miesięcznie. Koszt = liczba wywołań × zmierzony średni koszt.
+| Funkcja | Średni koszt jednego wywołania | Czas | Źródło |
+|---|---|---|---|
+| Dopasowanie (weryfikacja AI z cytatami) | 0,069 $ (z pamięcią podręczną), 0,085 $ (bez niej) | p50 6,4 s | `eval/results/ai-*.json`, 20 przypadków |
+| Wstępna ocena sprawy + szkic odpowiedzi | 0,019 $ | 7,6 s | `jd_ai_call` |
+| Ramowy Plan Wdrożenia (strumieniowo) | 0,108 $ | 43 s, tekst pojawia się od razu | `jd_ai_call` |
+
+**Scenariusz miesięczny:** 2 000 dopasowań, 300 spraw i 50 planów.
+
+| Pozycja | Wyliczenie | Koszt |
+|---|---|---|
+| Dopasowania | 2 000 × 0,069 $ | ok. 138 $ |
+| Wstępne oceny spraw | 300 × 0,019 $ | ok. 6 $ |
+| Ramowe Plany | 50 × 0,108 $ | ok. 5 $ |
+| **Razem AI** | | **ok. 150 $ / mies.** |
+
+**Jak obniżyć koszt bez utraty jakości:**
+- Wyniki ze słów kluczowych są zawsze darmowe i natychmiastowe; AI tylko je weryfikuje.
+- Instrukcje i indeks 114 kart są w pamięci podręcznej modelu, więc większość tokenów wejściowych kosztuje ok. 20 razy mniej.
+- Do rozważenia przez ROPS: weryfikacja AI tylko na życzenie użytkownika albo tańszy model dla dopasowań, po ponownym pomiarze trafności na tym samym zestawie testów.
+- Twardy limit: `AI_HOURLY_LIMIT` (domyślnie 400 wywołań na godzinę) oraz limit wydatków w konsoli dostawcy.
 
 Bez klucza AI platforma nadal działa: wyszukiwanie słów kluczowych, ręczna ocena spraw i szablon planu.
 
