@@ -36,6 +36,7 @@ export default async function Page({
   return (
     <>
       <PageHeader
+        className="print:hidden"
         eyebrow="Kreator pomysłów · Canvas"
         title="Canvas innowacji społecznej"
         lead={

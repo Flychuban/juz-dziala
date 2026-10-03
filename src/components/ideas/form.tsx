@@ -43,9 +43,9 @@ export function ChoiceCards<T extends string>({
     <fieldset aria-describedby={hint ? hintId : undefined} className="min-w-0">
       <legend className={cn("mb-2 text-lg font-semibold", legendClassName)}>{legend}</legend>
       {hint ? (
-        <p id={hintId} className="text-muted-foreground mb-3">
+        <div id={hintId} className="text-muted-foreground mb-3">
           {hint}
-        </p>
+        </div>
       ) : null}
       <div className={cn("grid gap-3", columns === 2 && "sm:grid-cols-2")}>
         {options.map((o) => (
@@ -93,9 +93,9 @@ export function CheckCards<T extends string>({
     <fieldset aria-describedby={hint ? hintId : undefined} className="min-w-0">
       <legend className={cn("mb-2 text-lg font-semibold", legendClassName)}>{legend}</legend>
       {hint ? (
-        <p id={hintId} className="text-muted-foreground mb-3">
+        <div id={hintId} className="text-muted-foreground mb-3">
           {hint}
-        </p>
+        </div>
       ) : null}
       <div className={cn("grid gap-3", columns === 2 && "sm:grid-cols-2")}>
         {options.map((o) => (
@@ -173,9 +173,9 @@ export function TextField({
         {required ? null : <span className="text-muted-foreground font-normal"> (nieobowiązkowe)</span>}
       </label>
       {hint ? (
-        <p id={`${id}-hint`} className="text-muted-foreground">
+        <div id={`${id}-hint`} className="text-muted-foreground">
           {hint}
-        </p>
+        </div>
       ) : null}
       <Input
         id={id}

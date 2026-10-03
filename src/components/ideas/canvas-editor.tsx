@@ -200,7 +200,7 @@ function CanvasPrint({ def, values, code, title }: { def: CanvasDef; values: Can
               }
               if (note) lines.push(note);
               return (
-                <div key={section.key} className="rounded border border-black p-2 text-[10pt] leading-snug">
+                <div key={section.key} className="min-h-[55mm] rounded border border-black p-2 text-[10pt] leading-snug">
                   <h3 className="font-bold uppercase">{section.label}</h3>
                   {lines.length ? (
                     <ul className="mt-1 list-disc pl-4">
