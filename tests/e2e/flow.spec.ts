@@ -14,12 +14,23 @@ test("pętla jury: opis → wyniki z cytatem → prośba → odpowiedź ROPS wid
   const quote = page.locator("article blockquote").first();
   await expect(quote).toBeVisible();
   await expect(quote).toContainText("„");
+  // One quote per card is shown; further ones sit behind „Pokaż więcej cytatów z karty".
+  await expect(page.locator("article").first().locator("blockquote:visible")).toHaveCount(1);
   await expect(page.getByText(/^Źródło:/u).first()).toBeVisible();
 
-  // 3. Ask ROPS for help, no contact → the case code is shown.
-  await page.getByRole("button", { name: "Poproś ROPS o pomoc" }).click();
-  await page.getByLabel("Sprawdzę sam(a) kodem sprawy").check();
-  await page.getByRole("button", { name: "Wyślij prośbę" }).click();
+  // 3. Ask ROPS for help from the first card; a contact choice is required → then the case code is shown.
+  const firstCard = page.locator("article").first();
+  const cardTitle = (await firstCard.getByRole("heading", { level: 2 }).innerText()).replace(/^Rozwiązanie \d+:\s*/u, "");
+  await firstCard.getByRole("button", { name: /^Poproś ROPS o pomoc/u }).click();
+  const help = page.locator("#help");
+  await expect(help.getByRole("heading", { name: "Jak mamy się z Tobą skontaktować?" })).toBeFocused();
+  await expect(help.getByText(`Prośba o pomoc w sprawie: „${cardTitle.trim()}”.`)).toBeVisible();
+  const send = help.locator("form").getByRole("button", { name: "Poproś ROPS o pomoc" });
+  await send.click();
+  await expect(help.getByText("Wybierz, jak mamy odpowiedzieć.")).toBeVisible();
+  await help.getByLabel("Sprawdzę sam(a) kodem sprawy").check();
+  await send.click();
+  await expect(page.getByRole("heading", { name: "Prośba wysłana do ROPS" })).toBeVisible();
   const link = page.locator("#case-private-link");
   await expect(link).toHaveValue(/\/case\/JD-[2-9A-Z]{4}-[2-9A-Z]{4}\?t=/u);
   const code = /JD-[2-9A-Z]{4}-[2-9A-Z]{4}/u.exec(await link.inputValue())![0];

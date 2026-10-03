@@ -5,7 +5,7 @@ import { useId, useMemo, useState } from "react";
 import { filterGminas, gminaOptionLabel, type GminaOption } from "./format";
 
 /**
- * „Twoja gmina (opcjonalnie)": an ARIA 1.2 combobox — type to filter the
+ * „Twoja gmina (nieobowiązkowe)": an ARIA 1.2 combobox — type to filter the
  * 183 gminas of Małopolska, arrows to move, Enter to pick, Escape to close.
  * Calls `onSelect` with the picked gmina, or null when cleared.
  */
@@ -51,7 +51,7 @@ export function GminaCombobox({
   return (
     <div className="flex max-w-xl flex-col gap-2">
       <label htmlFor={ids.input} className="text-lg font-semibold">
-        Twoja gmina (opcjonalnie)
+        Twoja gmina (nieobowiązkowe)
       </label>
       <p id={ids.hint} className="text-muted-foreground">
         Zacznij pisać nazwę i wybierz z listy. Pokażemy, ile podobnych spraw jest w Twoim powiecie.
