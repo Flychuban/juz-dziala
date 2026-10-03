@@ -80,7 +80,7 @@ export function CaseLookup({
         <Button
           type="submit"
           disabled={busy}
-          className="min-h-14 px-6 text-lg font-semibold"
+          className="h-auto min-h-14 max-w-full px-6 text-lg font-semibold whitespace-normal"
         >
           <SearchIcon aria-hidden="true" />
           {busy ? "Sprawdzam…" : "Sprawdź"}
@@ -167,7 +167,7 @@ export function MyCases() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="min-h-12 px-4 text-base"
+                  className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
                   onClick={() => {
                     forgetCase(c.code);
                     setSaved(readMyCases());

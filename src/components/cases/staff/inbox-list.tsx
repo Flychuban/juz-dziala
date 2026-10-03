@@ -105,7 +105,7 @@ export function InboxList({
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex min-w-0 flex-col gap-6 [overflow-wrap:anywhere]">
       <div role="group" aria-labelledby="kind-chips-label">
         <p id="kind-chips-label" className="mb-2 font-semibold">
           Rodzaj sprawy
@@ -178,7 +178,7 @@ export function InboxList({
             <Button
               type="submit"
               variant="outline"
-              className="min-h-12 px-3"
+              className="h-auto min-h-12 max-w-full px-3 whitespace-normal"
               aria-label="Szukaj"
             >
               <SearchIcon aria-hidden="true" />
@@ -201,7 +201,7 @@ export function InboxList({
             <Button
               type="button"
               variant="ghost"
-              className="min-h-12 px-3 text-base underline"
+              className="h-auto min-h-12 max-w-full px-3 text-base whitespace-normal underline"
               onClick={() =>
                 router.replace(
                   basePath === "/expert" ? "/expert" : "/admin/cases",
@@ -292,7 +292,7 @@ export function InboxList({
                     </p>
                   )}
                 </div>
-                <dl className="grid grid-cols-[auto_1fr] content-start gap-x-2 text-sm sm:min-w-52">
+                <dl className="grid grid-cols-1 content-start gap-x-2 text-sm sm:min-w-52 sm:grid-cols-[auto_1fr]">
                   <dt className="text-muted-foreground">Status:</dt>
                   <dd className="font-semibold">
                     {CASE_STATUS_LABEL[r.status]}

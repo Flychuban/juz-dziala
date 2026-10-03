@@ -40,7 +40,7 @@ export function CaseCreatedPanel({
   return (
     <section
       aria-labelledby="case-created-heading"
-      className="border-hairline bg-background rounded-lg border-2 p-5 sm:p-8"
+      className="border-hairline bg-background rounded-lg border-2 p-5 [overflow-wrap:anywhere] sm:p-8"
     >
       <h2
         id="case-created-heading"
@@ -64,13 +64,20 @@ export function CaseCreatedPanel({
       </p>
 
       <div className="mt-4 flex flex-wrap gap-3">
-        <Button asChild className="min-h-12 px-5 text-base">
+        <Button
+          asChild
+          className="h-auto min-h-12 max-w-full px-5 text-base whitespace-normal"
+        >
           <Link href={privatePath}>
             Przejdź do sprawy
             <ArrowRightIcon aria-hidden="true" />
           </Link>
         </Button>
-        <Button asChild variant="outline" className="min-h-12 px-5 text-base">
+        <Button
+          asChild
+          variant="outline"
+          className="h-auto min-h-12 max-w-full px-5 text-base whitespace-normal"
+        >
           <Link href={`/case/${code}/print`}>
             <PrinterIcon aria-hidden="true" />
             Drukuj kod z kodem QR
@@ -100,7 +107,7 @@ export function CaseCreatedPanel({
           <Button
             type="button"
             variant="outline"
-            className="min-h-12 px-4 text-base"
+            className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
             onClick={async () => {
               const ok = await copyText(`${origin}${privatePath}`);
               setLinkStatus(

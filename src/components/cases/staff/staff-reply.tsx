@@ -190,7 +190,7 @@ export function StaffReply({
           <Button
             type="submit"
             disabled={reply.isPending}
-            className="min-h-12 px-5 text-base"
+            className="h-auto min-h-12 max-w-full px-5 text-base whitespace-normal"
           >
             <SendIcon aria-hidden="true" />
             {reply.isPending
@@ -221,14 +221,14 @@ export function StaffReply({
             <Button
               type="button"
               variant="outline"
-              className="min-h-12 px-4 text-base"
+              className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
               onClick={() => setConfirming(false)}
             >
               Anuluj
             </Button>
             <Button
               type="button"
-              className="min-h-12 px-4 text-base"
+              className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
               onClick={() => void send()}
             >
               Tak, wyślij e-mail

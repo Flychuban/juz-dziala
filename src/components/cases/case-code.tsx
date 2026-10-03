@@ -31,7 +31,7 @@ export function CaseCode({
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <p className="text-muted-foreground text-sm font-semibold">Kod sprawy</p>
-      <p className="font-mono text-4xl font-bold tracking-wider break-all sm:text-5xl">
+      <p className="font-mono text-[clamp(1.75rem,9vw,3rem)] leading-tight font-bold tracking-wider">
         <span aria-hidden="true">{code}</span>
         <span className="sr-only">{spelled}</span>
       </p>
@@ -40,7 +40,7 @@ export function CaseCode({
           <Button
             type="button"
             variant="outline"
-            className="min-h-12 px-4 text-base"
+            className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
             onClick={async () => {
               const ok = await copyText(code);
               setStatus(

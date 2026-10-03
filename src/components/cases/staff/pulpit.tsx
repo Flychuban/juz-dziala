@@ -34,7 +34,7 @@ function Counter({
     <Link
       href={href}
       className={cn(
-        "border-hairline hover:bg-accent flex flex-col gap-1 rounded-lg border p-4 no-underline",
+        "border-hairline hover:bg-accent flex min-w-0 flex-col gap-1 rounded-lg border p-4 no-underline",
         alert && value > 0 && "border-destructive border-2",
       )}
     >
@@ -63,7 +63,7 @@ export function Pulpit() {
   );
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-10 [overflow-wrap:anywhere]">
       <section aria-labelledby="counters-heading">
         <h2 id="counters-heading" className="sr-only">
           Liczniki

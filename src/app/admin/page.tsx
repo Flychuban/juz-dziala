@@ -10,7 +10,7 @@ export default async function Page() {
   ]);
   return (
     <HydrateClient>
-      <div className="mx-auto max-w-6xl px-4 py-8">
+      <div className="mx-auto max-w-6xl px-4 py-8 [overflow-wrap:anywhere]">
         <p className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
           Panel Hubu
         </p>

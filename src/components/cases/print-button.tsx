@@ -8,7 +8,7 @@ export function PrintButton({ label = "Drukuj" }: { label?: string }) {
   return (
     <Button
       type="button"
-      className="min-h-12 px-5 text-base"
+      className="h-auto min-h-12 max-w-full px-5 text-base whitespace-normal"
       onClick={() => window.print()}
     >
       <PrinterIcon aria-hidden="true" />

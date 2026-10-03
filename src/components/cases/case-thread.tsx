@@ -15,6 +15,28 @@ export type ThreadMessage = {
 
 const TEAM = "Zespół Hubu ROPS";
 
+/**
+ * Plain text with its line breaks. Modules sometimes post a Markdown summary
+ * (e.g. a submitted application); its „## Heading" lines are shown as bold
+ * lines rather than raw hashes. Nothing else is interpreted.
+ */
+function MessageBody({ text }: { text: string }) {
+  const lines = text.split("\n");
+  return (
+    <p className="whitespace-pre-wrap">
+      {lines.map((line, i) => {
+        const h = /^#{1,6}\s+(.+)$/u.exec(line);
+        return (
+          <span key={i}>
+            {h ? <strong className="font-bold">{h[1]}</strong> : line}
+            {i < lines.length - 1 ? "\n" : null}
+          </span>
+        );
+      })}
+    </p>
+  );
+}
+
 function who(m: ThreadMessage, viewer: "author" | "staff"): string {
   switch (m.authorKind) {
     case "author":
@@ -89,7 +111,7 @@ export function CaseThread({
                 Notatka wewnętrzna — autor jej nie widzi
               </p>
             )}
-            <p className="whitespace-pre-wrap">{m.body}</p>
+            <MessageBody text={m.body} />
           </li>
         );
       })}

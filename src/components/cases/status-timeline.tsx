@@ -61,7 +61,7 @@ export function StatusTimeline({
               <CircleIcon className="size-3" />
             )}
           </span>
-          <span className="flex flex-col">
+          <span className="flex min-w-0 flex-col">
             <span className="font-semibold">
               <span className="sr-only">Krok {i + 1}: </span>
               {STEP_LABEL[s.status]}
