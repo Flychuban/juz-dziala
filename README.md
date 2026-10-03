@@ -54,7 +54,22 @@ W serwisie są też [deklaracja dostępności](https://juz-dziala.vercel.app/acc
 - **Źródło przy każdej informacji.** Bez źródła nie ma twierdzenia.
 - **Nic nie wymyślamy.** Kwoty, daty i nazwy pochodzą ze źródeł albo są oznaczone „[DO UZUPEŁNIENIA]".
 - **Bez danych osobowych.** Opis jest anonimizowany (PESEL, telefon, e-mail, adres) przed zapisem i przed wysłaniem do AI. Kontakt jest szyfrowany i widoczny tylko dla pracownika ROPS. Dane przykładowe są oznaczone.
-- **Mierzona trafność.** Zamrożony zestaw 20 przypadków testowych (`eval/`) — wynik na stronie [Jak działa dopasowanie](https://juz-dziala.vercel.app/methodology).
+- **Mierzona trafność.** Zamrożony zestaw 20 przypadków testowych (`eval/`), spisany przed strojeniem:
+
+  | Miara | Słowa kluczowe | + weryfikacja AI |
+  |---|---|---|
+  | Właściwa innowacja w top 3 | 83% | **94%** |
+  | Najlepsza na pierwszym miejscu | 38% | **85%** |
+  | Odmowa, gdy biblioteka nie ma odpowiedzi | 2/2 | 2/2 |
+  | Wycieki danych osobowych / wykonane wstrzyknięcia | 0 / 0 | 0 / 0 |
+  | Czas (mediana) | 2 ms | 6,4 s |
+
+  Wyniki są też na stronie [Jak działa dopasowanie](https://juz-dziala.vercel.app/methodology).
+- **Dostępność sprawdzona testami.** axe-core: 0 naruszeń WCAG 2.1 A/AA na 19 ekranach × telefon i komputer; brak przewijania w poziomie przy 320 px (`tests/e2e`).
+
+## Makiety UX/UI
+
+[docs/makiety](docs/makiety) — 14 ekranów na telefonie i komputerze oraz [PDF](docs/makiety/Makiety-UX-UI-Juz-Dziala.pdf).
 
 ## Technologia
 
