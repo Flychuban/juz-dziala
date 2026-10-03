@@ -55,7 +55,21 @@ export async function sendMail(opts: {
 }): Promise<DeliveryResult> {
   const transport = mailTransport();
   let result: DeliveryResult;
-  if (!transport) {
+  const allow = (env.MAIL_ALLOWLIST ?? "")
+    .split(",")
+    .map((a) => a.trim().toLowerCase())
+    .filter(Boolean);
+  if (
+    transport &&
+    env.DEMO_MODE === "1" &&
+    !allow.includes(opts.to.trim().toLowerCase())
+  ) {
+    // Public demo: anyone can act as staff, so never relay real mail to arbitrary addresses.
+    result = {
+      status: "simulated",
+      error: "Tryb demonstracyjny: wiadomość zapisana, nie wysłana.",
+    };
+  } else if (!transport) {
     result = {
       status: "skipped",
       error:

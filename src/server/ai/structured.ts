@@ -7,6 +7,7 @@ import type { z } from "zod";
 import { env } from "~/env";
 import { db } from "~/server/db";
 import { aiCalls } from "~/server/db/schema";
+import { count, gte } from "drizzle-orm";
 
 /**
  * The single door to Claude. Every AI feature calls `aiStructured` (JSON,
@@ -34,6 +35,23 @@ let client: Anthropic | null = null;
 export function aiAvailable(): boolean {
   return Boolean(env.ANTHROPIC_API_KEY);
 }
+
+/**
+ * Cost guard: refuse new Claude calls once AI_HOURLY_LIMIT calls were made in
+ * the last hour, app-wide. Covers every path (public and staff). Fails open on
+ * a DB error so a hiccup never takes features down.
+ */
+async function overHourlyBudget(): Promise<boolean> {
+  try {
+    const [row] = await db
+      .select({ n: count() })
+      .from(aiCalls)
+      .where(gte(aiCalls.createdAt, new Date(Date.now() - 3_600_000)));
+    return (row?.n ?? 0) >= env.AI_HOURLY_LIMIT;
+  } catch {
+    return false;
+  }
+}
 function getClient(): Anthropic {
   client ??= new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 1 });
   return client;
@@ -51,7 +69,7 @@ function systemParam(blocks: SystemBlock[]) {
 
 /** Wrap untrusted user text so instructions inside it are treated as data. */
 export function userData(label: string, text: string): string {
-  const safe = text.replaceAll("</dane>", "< /dane>");
+  const safe = text.replace(/<\s*\/\s*dane\s*>/gi, "< /dane>");
   return `<dane etykieta="${label}">\n${safe}\n</dane>`;
 }
 
@@ -139,7 +157,8 @@ export async function aiStructured<S extends z.ZodType>(opts: {
 }): Promise<AiResult<z.infer<S>>> {
   const effort = opts.effort ?? "low";
   const started = Date.now();
-  if (!aiAvailable()) return { ok: false, reason: "unavailable", latencyMs: 0 };
+  if (!aiAvailable() || (await overHourlyBudget()))
+    return { ok: false, reason: "unavailable", latencyMs: 0 };
   try {
     const res = await getClient().beta.messages.parse(
       {
@@ -226,7 +245,7 @@ export function aiStream(opts: {
   const enc = new TextEncoder();
   return new ReadableStream<Uint8Array>({
     async start(controller) {
-      if (!aiAvailable()) {
+      if (!aiAvailable() || (await overHourlyBudget())) {
         controller.enqueue(
           enc.encode("_Asystent AI jest chwilowo niedostępny._"),
         );

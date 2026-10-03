@@ -11,7 +11,10 @@ export const env = createEnv({
     /** Claude API. Without it, matching falls back to keywords only. */
     ANTHROPIC_API_KEY: z.string().optional(),
     /** Signs staff session cookies (≥32 chars). */
-    SESSION_SECRET: z.string().min(32).default("dev-only-secret-change-me-0123456789abcdef"),
+    SESSION_SECRET: z
+      .string()
+      .min(32)
+      .default("dev-only-secret-change-me-0123456789abcdef"),
     /** 32-byte base64 key for AES-GCM contact encryption. */
     CONTACT_ENC_KEY: z.string().optional(),
     /** E-mail: Resend (verified domain) or SMTP fallback. */
@@ -22,6 +25,10 @@ export const env = createEnv({
     ROPS_INBOX_EMAIL: z.string().optional(),
     /** "1" = public demo: one-click staff login, contacts masked, e-mail needs confirmation. */
     DEMO_MODE: z.enum(["0", "1"]).default("1"),
+    /** Demo mode: real e-mail only to these addresses (comma-separated); others are simulated. */
+    MAIL_ALLOWLIST: z.string().optional(),
+    /** Hard ceiling on Claude calls per hour across the whole app (cost protection). */
+    AI_HOURLY_LIMIT: z.coerce.number().int().positive().default(400),
   },
   client: {
     NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
@@ -38,6 +45,8 @@ export const env = createEnv({
     SMTP_URL: process.env.SMTP_URL,
     ROPS_INBOX_EMAIL: process.env.ROPS_INBOX_EMAIL,
     DEMO_MODE: process.env.DEMO_MODE,
+    MAIL_ALLOWLIST: process.env.MAIL_ALLOWLIST,
+    AI_HOURLY_LIMIT: process.env.AI_HOURLY_LIMIT,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,

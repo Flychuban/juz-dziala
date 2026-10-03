@@ -20,6 +20,8 @@ const handler = (req: NextRequest) =>
     endpoint: "/api/trpc",
     req,
     router: appRouter,
+    // Caps batched calls (e.g. code lookups) per request; client link uses the same limit.
+    maxBatchSize: 20,
     createContext: () => createContext(req),
     onError:
       env.NODE_ENV === "development"

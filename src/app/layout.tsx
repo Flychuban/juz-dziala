@@ -7,6 +7,7 @@ import { SiteFooter } from "~/components/layout/site-footer";
 import { SiteHeader } from "~/components/layout/site-header";
 import { Toaster } from "~/components/ui/sonner";
 import { TooltipProvider } from "~/components/ui/tooltip";
+import { env } from "~/env";
 import { SITE } from "~/lib/domain";
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -56,6 +57,12 @@ export default function RootLayout({
         </a>
         <TRPCReactProvider>
           <TooltipProvider>
+            {env.DEMO_MODE === "1" && (
+              <p className="bg-warning-bg text-foreground border-hairline border-b px-4 py-2 text-center text-sm [overflow-wrap:anywhere]">
+                Wersja demonstracyjna: zgłoszenia mogą zobaczyć inne osoby
+                testujące serwis. Nie wpisuj prawdziwych danych osobowych.
+              </p>
+            )}
             <SiteHeader />
             <main id="main" tabIndex={-1} className="flex-1 outline-none">
               {children}

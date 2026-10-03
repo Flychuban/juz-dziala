@@ -71,21 +71,25 @@ export const roleProcedure = (...roles: StaffRole[]) =>
     return next({ ctx: { ...ctx, staff: ctx.staff } });
   });
 
-/**
- * Fixed-window rate limit keyed by the anonymous session cookie (falls back
- * to a shared bucket). Use before every AI call from a public procedure.
- */
-export async function rateLimit(
-  ctx: Context,
-  bucket: string,
-  { limit, windowSec }: { limit: number; windowSec: number },
-): Promise<void> {
-  const key = `${bucket}:${ctx.sessionId ?? "anon"}`;
-  const now = new Date();
-  const windowStart = new Date(
-    Math.floor(now.getTime() / (windowSec * 1000)) * windowSec * 1000,
+/** Client IP as seen by Vercel (x-real-ip), else the first x-forwarded-for hop. */
+export function clientIp(headers: Headers): string {
+  return (
+    headers.get("x-real-ip") ??
+    headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "unknown"
   );
-  const rows = await ctx.db
+}
+
+async function hit(
+  db: Context["db"],
+  key: string,
+  windowSec: number,
+): Promise<number> {
+  const now = Date.now();
+  const windowStart = new Date(
+    Math.floor(now / (windowSec * 1000)) * windowSec * 1000,
+  );
+  const rows = await db
     .insert(rateLimits)
     .values({ key, windowStart, count: 1 })
     .onConflictDoUpdate({
@@ -96,10 +100,31 @@ export async function rateLimit(
       },
     })
     .returning({ count: rateLimits.count });
-  if ((rows[0]?.count ?? 0) > limit) {
-    throw new TRPCError({
-      code: "TOO_MANY_REQUESTS",
-      message: "Za dużo zapytań w krótkim czasie. Spróbuj za chwilę.",
-    });
+  return rows[0]?.count ?? 0;
+}
+
+/**
+ * Fixed-window rate limit with three buckets: the anonymous session cookie
+ * (`limit`), the client IP (`limit × 10` — judges at the venue share one IP),
+ * and a global ceiling (`limit × 60`) so a script rotating cookies and IPs still
+ * cannot run up the AI bill. Use before every AI call from a public procedure.
+ */
+export async function rateLimit(
+  ctx: Context,
+  bucket: string,
+  { limit, windowSec }: { limit: number; windowSec: number },
+): Promise<void> {
+  const checks: [string, number][] = [
+    [`${bucket}:s:${ctx.sessionId ?? "anon"}`, limit],
+    [`${bucket}:ip:${clientIp(ctx.headers)}`, limit * 10],
+    [`${bucket}:all`, limit * 60],
+  ];
+  for (const [key, max] of checks) {
+    if ((await hit(ctx.db, key, windowSec)) > max) {
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Za dużo zapytań w krótkim czasie. Spróbuj za chwilę.",
+      });
+    }
   }
 }

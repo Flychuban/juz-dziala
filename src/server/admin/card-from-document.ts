@@ -1,5 +1,7 @@
 import "server-only";
 
+import { env } from "~/env";
+
 import { z } from "zod";
 
 import { MAPA_AREAS, SECTION_KEYS, type SectionKey } from "~/lib/domain";
@@ -138,6 +140,14 @@ export async function cardFromDocument(
   let source: CardDraft["source"];
 
   if (input.kind === "url") {
+    if (env.DEMO_MODE === "1") {
+      return {
+        ok: false,
+        reason: "input",
+        message:
+          "W wersji demonstracyjnej pobieranie stron jest wyłączone. Wklej tekst albo dodaj plik PDF.",
+      };
+    }
     const got = await fetchUrl(input.url);
     if ("error" in got)
       return { ok: false, reason: "input", message: got.error };
