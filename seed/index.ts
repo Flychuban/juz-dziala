@@ -4,6 +4,7 @@
  * records isSample = true.
  */
 import { seedLibrary } from "./library";
+import { seedDemoFlags } from "./demo";
 import { seedCalls, seedNetwork } from "./network";
 import { seedSampleNeeds } from "~/server/admin/sample-needs";
 import { seedSamplePeople } from "~/server/cases/sample-people";
@@ -14,6 +15,7 @@ const steps: { name: string; run: () => Promise<void> }[] = [
   { name: "network", run: seedNetwork },
   { name: "people (przykładowi mentorzy)", run: seedSamplePeople },
   { name: "needs (przykładowe potrzeby do trendów)", run: seedSampleNeeds },
+  { name: "demo flags", run: seedDemoFlags },
 ];
 
 async function main() {
