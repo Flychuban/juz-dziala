@@ -1,5 +1,7 @@
 import "server-only";
 
+import { ideasFanout } from "~/server/ideas/fanout";
+
 import { eq } from "drizzle-orm";
 
 import { env } from "~/env";
@@ -294,9 +296,8 @@ export async function fanout(ev: NotifyEvent): Promise<void> {
     case "call.changed":
     case "innovation.published":
     case "idea.similarFound":
-      // TODO(network / admin-calls / ideas agents): notify subscribers by
-      // topic ("calls", "area:<MapaArea>") and the idea's author. No-op now.
-      return;
+      // Subscribers by topic ("calls", "area:<MapaArea>") and the idea's author.
+      return ideasFanout(ev);
     default: {
       const unreachable: never = ev;
       return unreachable;
