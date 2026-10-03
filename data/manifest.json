@@ -1150,5 +1150,14 @@
     "file": "data/raw/rops.krakow.pl/mpliki_IS_BIBLIOTEKA_INNOWACJI_SPOECZNYCH_Zasady_wykorzystania_innowacji_MIIS.70c9197b7cfd.pdf",
     "status": 200,
     "contentType": "application/pdf"
+  },
+  {
+    "url": "https://rops.krakow.pl/mpliki/IS/IWS_20/za._nr_2._Mapa_Wyzwa_Spoecznych.pdf",
+    "capturedAt": "2026-10-03T15:36:04.394Z",
+    "sha256": "bc99f6e99656176bd87b1aa976f39691128d4b554bfc98ff5f2a157e217513e5",
+    "bytes": 7787592,
+    "file": "data/raw/rops.krakow.pl/mpliki_IS_IWS_20_za._nr_2._Mapa_Wyzwa_Spoecznych.bc99f6e99656.pdf",
+    "status": 200,
+    "contentType": "application/pdf"
   }
 ]

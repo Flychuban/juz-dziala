@@ -97,10 +97,16 @@ export const KnowledgeArea = z.object({
   key: MapaArea,
   label: z.string(),
   definition: z.string(),
+  /** „Analiza danych zastanych" bullets, verbatim (absent for some areas in the source). */
+  analysis: z.array(z.string()),
+  /** The sentence that introduces the challenge list on some slides, e.g. „Realizacja działań na rzecz różnych grup:". */
+  keyChallengesIntro: z.string().nullable(),
   keyChallenges: z.array(z.string()),
+  /** The first persona of the area (Zdrowie psychiczne has two; both are in `personas`). */
   persona: Persona.nullable(),
+  personas: z.array(Persona),
   figures: z.array(Figure),
-  reports: z.array(z.object({ title: z.string(), url: z.string().url().nullable() })),
+  reports: z.array(z.object({ title: z.string(), url: z.string().url().nullable(), page: z.number().int().positive() })),
   pages: z.array(z.number().int().positive()),
 });
 
