@@ -63,6 +63,11 @@ export default async function LearnPage() {
         lead={
           <>
             <p>{t("lead")}</p>
+            <p className="mt-3 text-base">
+              <Link href="/ideas/canvas" className="font-semibold underline underline-offset-4">
+                {t("blankCanvas")}
+              </Link>
+            </p>
             {locale === "en" && items.length > 0 ? (
               <p className="text-foreground/85 mt-2 text-base">
                 {t("materialsLang")}

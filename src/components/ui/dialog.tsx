@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import * as React from "react";
 import { cn } from "cn";
 import { Dialog as DialogPrimitive } from "radix-ui";
@@ -12,6 +13,11 @@ import { XIcon } from "lucide-react";
  * scrim (no blur, no shadow). The close control has a visible word,
  * „Zamknij", not just a cross. Prefer a page over a dialog for resident flows.
  */
+
+/** „Zamknij" / "Close" in the page language. */
+function CloseLabel() {
+  return <>{useTranslations("common")("close")}</>;
+}
 
 function Dialog({
   ...props
@@ -81,7 +87,7 @@ function DialogContent({
               className="absolute top-2 right-2"
             >
               <XIcon aria-hidden="true" />
-              Zamknij
+              <CloseLabel />
             </Button>
           </DialogPrimitive.Close>
         )}
@@ -120,7 +126,9 @@ function DialogFooter({
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close asChild>
-          <Button variant="outline">Zamknij</Button>
+          <Button variant="outline">
+            <CloseLabel />
+          </Button>
         </DialogPrimitive.Close>
       )}
     </div>
