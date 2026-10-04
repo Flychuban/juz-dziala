@@ -1,23 +1,28 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-import { pluralPl as plural, SourceLine, UserTerms } from "~/components/kit";
-import { MAPA_AREA_LABEL } from "~/lib/domain";
+import { SourceLine, UserTerms } from "~/components/kit";
+import { useLabels } from "~/i18n/use-labels";
 import { api } from "~/trpc/react";
 import { CrisisBanner } from "./crisis-banner";
-import { knowledgeDetail } from "./format";
+import { gminaKindKey, knowledgeDetail, shortCallName } from "./format";
 import { RequestHelp } from "./request-help";
-import { ResultCard, type MatchViewData } from "./result-card";
+import { FUNDING_ID, ResultCard, useCallWindow, type MatchViewData } from "./result-card";
 import { btnPrimary, btnSecondary } from "./styles";
 
+/** When each progress line appears while the AI check runs (ms). */
 const PROGRESS = [
-  { after: 0, text: (n: number) => `Sprawdzamy ${n} kart innowacji ROPS…` },
-  { after: 2500, text: () => "Porównujemy z Twoim opisem…" },
-  { after: 7000, text: () => "Sprawdzamy cytaty w kartach…" },
-  { after: 16000, text: () => "To trwa dłużej niż zwykle. Wstępne wyniki już widzisz." },
-];
+  { after: 0, key: "start" },
+  { after: 2500, key: "compare" },
+  { after: 7000, key: "quotes" },
+  { after: 16000, key: "slow" },
+] as const;
+
+/** Height kept free at the bottom of the viewport while the sticky help bar is shown (phones). */
+const STICKY_BAR_SPACE = "6rem";
 
 /**
  * True while the inline help section or the site footer is on screen: the
@@ -44,6 +49,28 @@ function useHelpTargetsVisible(): boolean {
   return visible;
 }
 
+/**
+ * While the fixed bar covers the bottom of a phone screen, keep that much
+ * scroll padding so a focused element is never scrolled underneath it
+ * (WCAG 2.4.11).
+ */
+function useStickyBarScrollPadding(shown: boolean) {
+  useEffect(() => {
+    if (!shown || typeof window === "undefined") return;
+    const phone = window.matchMedia("(max-width: 767.98px)");
+    const root = document.documentElement;
+    const apply = () => {
+      root.style.scrollPaddingBottom = phone.matches ? STICKY_BAR_SPACE : "";
+    };
+    apply();
+    phone.addEventListener("change", apply);
+    return () => {
+      phone.removeEventListener("change", apply);
+      root.style.scrollPaddingBottom = "";
+    };
+  }, [shown]);
+}
+
 function useElapsed(active: boolean): number {
   const [elapsed, setElapsed] = useState(0);
   useEffect(() => {
@@ -56,13 +83,55 @@ function useElapsed(active: boolean): number {
   return elapsed;
 }
 
-const NOTE_TEXT: Record<NonNullable<MatchViewData["note"]>, string> = {
-  ai_unavailable: "Sprawdzanie przez AI jest teraz wyłączone. Pokazujemy wyniki wyszukiwania słów z Twojego opisu.",
-  ai_error: "Nie udało się sprawdzić wyników przez AI. Pokazujemy wyniki wyszukiwania słów z Twojego opisu.",
-  ai_no_better: "AI nie znalazło pewniejszych dopasowań. Pokazujemy wyniki wyszukiwania słów z Twojego opisu.",
-};
+/** „Skąd wziąć pieniądze na wdrożenie" — once, under all results. */
+function FundingBlock({ funding, anyListed }: { funding: MatchViewData["funding"]; anyListed: boolean }) {
+  const t = useTranslations("match.funding");
+  const labels = useLabels();
+  const locale = useLocale();
+  const callWindow = useCallWindow();
+  const name = funding ? shortCallName(locale === "en" && funding.nameEn ? funding.nameEn : funding.name) : null;
+  return (
+    <section id={FUNDING_ID} aria-labelledby="funding-heading" className="border-hairline scroll-mt-6 rounded-lg border p-5">
+      <h2 id="funding-heading" className="text-xl font-bold">
+        {t("heading")}
+      </h2>
+      {funding ? (
+        <>
+          <p className="mt-2 text-lg font-semibold" lang={locale === "en" && !funding.nameEn ? "pl" : undefined}>
+            {name}
+          </p>
+          <p className="mt-1">
+            {t("general", { status: labels.callStatus[funding.status].toLowerCase(), window: callWindow(funding) })}
+            {funding.status === "demo" ? ` ${t("demo")}` : ""}
+          </p>
+          {funding.sourceUrl && (
+            <p className="mt-2">
+              <a href={funding.sourceUrl} className="text-foreground inline-flex min-h-12 items-center font-semibold underline underline-offset-4">
+                {t("link")}
+              </a>
+            </p>
+          )}
+        </>
+      ) : (
+        <>
+          <p className="mt-2 max-w-prose">{t("none")}</p>
+          <p className="mt-2">
+            <Link href="/network#nabory" className="text-foreground inline-flex min-h-12 items-center font-semibold underline underline-offset-4">
+              {t("noneLink")}
+            </Link>
+          </p>
+        </>
+      )}
+      {anyListed && <p className="text-muted-foreground mt-2 max-w-prose text-sm">{t("listedNote")}</p>}
+    </section>
+  );
+}
 
 export function MatchResults({ runId, initial }: { runId: string; initial: MatchViewData }) {
+  const t = useTranslations("match");
+  const tk = useTranslations("home.gmina.kind");
+  const labels = useLabels();
+  const locale = useLocale();
   const utils = api.useUtils();
   const query = api.match.get.useQuery({ runId }, { initialData: initial, staleTime: Infinity });
   const view = query.data;
@@ -78,9 +147,15 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
   const openHelp = (innovation: { id: string; title: string } | null) => setHelp({ open: true, innovation });
   const helpTargetsVisible = useHelpTargetsVisible();
   const h1 = useRef<HTMLHeadingElement>(null);
+  const crisisHeading = useRef<HTMLHeadingElement>(null);
+  const urgent = view.crisis.urgent;
 
+  // Focus the first thing to read: the emergency numbers when the text suggests danger, else the heading.
   useEffect(() => {
-    h1.current?.focus();
+    if (urgent) crisisHeading.current?.focus();
+    else h1.current?.focus({ preventScroll: true });
+    // Only on arrival: later updates (AI result) must not move focus.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -90,47 +165,76 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
     }
   }, [view.stage, runId, refine]);
 
-  const pending = view.stage === "preliminary" && !refine.isError;
+  const pending = (view.stage === "preliminary" && !refine.isError) || refine.isPending;
   const elapsed = useElapsed(pending);
-  const progress = [...PROGRESS].reverse().find((p) => elapsed >= p.after) ?? PROGRESS[0]!;
+  const progress = [...PROGRESS].reverse().find((p) => elapsed >= p.after) ?? PROGRESS[0];
 
-  const failed = view.stage === "preliminary" && refine.isError;
-  const abstained = view.stage === "abstained" || (failed && view.results.length === 0);
+  // The AI check failed: on the server (stored as an error) or on the way (network).
+  const failed = view.note === "ai_error" || (view.stage === "preliminary" && refine.isError);
+  const abstained = view.stage === "abstained";
+  const failedNone = failed && view.results.length === 0;
+  const canRetry = failed && view.aiAvailable && !refine.isPending;
+  const retry = () => refine.mutate({ runId, retry: view.note === "ai_error" });
 
   let liveText = "";
-  if (pending) liveText = progress.text(view.libraryCount);
-  else if (view.stage === "verified")
-    liveText = `Gotowe. ${view.results.length} ${plural(view.results.length, "rozwiązanie sprawdzone", "rozwiązania sprawdzone", "rozwiązań sprawdzonych")} przez AI.`;
-  else if (abstained) liveText = "Nie mamy pewnego dopasowania.";
-  else if (failed) liveText = "Nie udało się sprawdzić wyników przez AI. Pokazujemy wyniki wyszukiwania.";
+  if (pending)
+    liveText = refine.isPending && view.note === "ai_error"
+      ? t("live.retrying")
+      : t(`progress.${progress.key}`, { count: view.libraryCount, seconds: view.aiDeadlineSec });
+  else if (view.stage === "verified") liveText = t("live.verified", { count: view.results.length });
+  else if (abstained) liveText = t("live.abstained");
+  else if (failedNone) liveText = t("live.failedNone");
+  else if (failed) liveText = t("live.failed");
 
   const topArea = view.areas[0];
+  const note = failed ? (failedNone ? "ai_error_none" : "ai_error") : view.note;
+  const stickyShown = !help.open && !helpSent && !helpTargetsVisible;
+  useStickyBarScrollPadding(stickyShown);
+
+  const placeKind = view.place?.gminaKind ? gminaKindKey(view.place.gminaKind) : null;
+  const helpSection = (
+    <RequestHelp
+      runId={runId}
+      query={view.query}
+      areas={view.areas}
+      gminaTeryt={view.place?.gminaTeryt ?? null}
+      powiatTeryt={view.place?.powiatTeryt ?? null}
+      resultTitles={abstained ? [] : view.results.map((r) => r.card.title)}
+      abstained={abstained}
+      open={help.open}
+      onOpenChange={(open) => setHelp((h) => ({ open, innovation: open ? h.innovation : null }))}
+      innovation={help.innovation}
+      onCreated={() => setHelpSent(true)}
+    />
+  );
 
   return (
     <div className="flex flex-col gap-8 max-md:pb-24">
-      {view.crisis.urgent && <CrisisBanner />}
+      {urgent && <CrisisBanner headingRef={crisisHeading} />}
 
       <header className="flex flex-col gap-3">
         <h1 ref={h1} tabIndex={-1} className="text-4xl font-bold outline-none">
-          Gotowe rozwiązania dla Ciebie
+          {t("heading")}
         </h1>
         {view.userTerms.length > 0 && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <span className="text-lg font-semibold">Twoje słowa:</span>
+            <span className="text-lg font-semibold">{t("yourWords")}</span>
             <UserTerms terms={view.userTerms} />
           </div>
         )}
         {view.place && (
           <p className="text-muted-foreground">
-            Gmina: {view.place.gminaName ?? view.place.gminaTeryt}
-            {view.place.gminaKind ? ` (gmina ${view.place.gminaKind})` : ""}
+            {t("placeLabel")} {view.place.gminaName ?? view.place.gminaTeryt}
+            {view.place.gminaKind
+              ? ` (${placeKind ? tk(placeKind) : tk("other", { kind: view.place.gminaKind })})`
+              : ""}
             {view.place.powiatName ? `, ${view.place.powiatName}` : ""}
           </p>
         )}
         <p className="text-muted-foreground">
-          Szukaliśmy w {view.libraryCount} kartach Biblioteki Innowacji Społecznych ROPS.{" "}
+          {t("searchedIn", { count: view.libraryCount })}{" "}
           <Link href="/" className="text-foreground underline" data-no-print>
-            Zmień opis
+            {t("changeQuery")}
           </Link>
         </p>
       </header>
@@ -143,29 +247,41 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
       </p>
 
       {abstained ? (
-        <section aria-labelledby="abstain-heading" className="border-foreground rounded-lg border-2 p-5">
-          <h2 id="abstain-heading" className="text-2xl font-bold">
-            Nie mamy pewnego dopasowania
-          </h2>
-          <p className="mt-2 max-w-prose text-lg">
-            Nie mamy pewnego dopasowania w Bibliotece ROPS. Przekażemy Twoje zgłoszenie ekspertowi.
-          </p>
-          <p className="text-muted-foreground mt-2 max-w-prose">
-            Wolimy to niż podsunąć rozwiązanie, które do Ciebie nie pasuje. Możesz też{" "}
-            <Link href="/" className="text-foreground underline">
-              opisać sprawę inaczej
-            </Link>{" "}
-            albo{" "}
-            <Link href="/library" className="text-foreground underline">
-              przejrzeć Bibliotekę
-            </Link>
-            .
-          </p>
-        </section>
+        <>
+          <section aria-labelledby="abstain-heading" className="border-foreground rounded-lg border-2 p-5">
+            <h2 id="abstain-heading" className="text-2xl font-bold">
+              {t("abstain.heading")}
+            </h2>
+            <p className="mt-2 max-w-prose text-lg">{t("abstain.body")}</p>
+            <p className="text-muted-foreground mt-2 max-w-prose">
+              {t.rich("abstain.alternatives", {
+                rephrase: (chunks) => (
+                  <Link href="/" className="text-foreground underline">
+                    {chunks}
+                  </Link>
+                ),
+                browse: (chunks) => (
+                  <Link href="/library" className="text-foreground underline">
+                    {chunks}
+                  </Link>
+                ),
+              })}
+            </p>
+          </section>
+          {/* The one-click hand-over sits right under the promise that it exists. */}
+          {helpSection}
+        </>
       ) : (
-        <section aria-label="Wyniki" className="flex flex-col gap-5">
-          {(view.note ?? (failed ? "ai_error" : null)) && (
-            <p className="border-hairline bg-surface rounded-lg border p-3">{NOTE_TEXT[view.note ?? "ai_error"]}</p>
+        <section aria-label={t("resultsLabel")} className="flex flex-col gap-5">
+          {note && !pending && (
+            <div className="border-hairline bg-surface flex flex-col items-start gap-3 rounded-lg border p-4">
+              <p>{t(`notes.${note}`)}</p>
+              {canRetry && (
+                <button type="button" className={failedNone ? btnPrimary : btnSecondary} onClick={retry}>
+                  {t("notes.retry")}
+                </button>
+              )}
+            </div>
           )}
           {view.results.map((r, i) => (
             <ResultCard
@@ -176,6 +292,9 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
               onRequestHelp={() => openHelp({ id: r.card.id, title: r.card.title })}
             />
           ))}
+          {view.results.length > 0 && (
+            <FundingBlock funding={view.funding} anyListed={view.results.some((r) => r.path.funding?.reason === "listed")} />
+          )}
         </section>
       )}
 
@@ -184,15 +303,21 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
           {view.knowledge && (
             <section aria-labelledby="fact-heading" className="border-hairline rounded-lg border p-5">
               <h2 id="fact-heading" className="text-xl font-bold">
-                Warto wiedzieć
+                {t("fact.heading")}
               </h2>
-              <p className="text-muted-foreground mt-1 text-sm">{view.knowledge.areaLabel}</p>
-              <p className="mt-2 text-lg">{view.knowledge.text}</p>
+              <div lang={view.knowledge.lang !== locale ? view.knowledge.lang : undefined}>
+                <p className="text-muted-foreground mt-1 text-sm">{view.knowledge.areaLabel}</p>
+                <p className="mt-2 text-lg">{view.knowledge.text}</p>
+              </div>
               <div className="mt-2">
                 <SourceLine
                   source={view.knowledge.sourceTitle}
                   href={view.knowledge.sourceUrl}
-                  detail={knowledgeDetail(view.knowledge.page, view.knowledge.sourceDate)}
+                  detail={knowledgeDetail(view.knowledge.page, view.knowledge.sourceDate, {
+                    locale: locale === "en" ? "en" : "pl",
+                    page: (page) => t("fact.page", { page }),
+                    edition: (month) => t("fact.edition", { month }),
+                  })}
                 />
               </div>
             </section>
@@ -200,49 +325,38 @@ export function MatchResults({ runId, initial }: { runId: string; initial: Match
           {view.similar && topArea && (
             <section aria-labelledby="similar-heading" className="border-hairline rounded-lg border p-5">
               <h2 id="similar-heading" className="text-xl font-bold">
-                Podobne zgłoszenia
+                {t("similar.heading")}
               </h2>
               <p className="mt-2 text-lg">
                 {view.similar.count === 0
-                  ? `W ostatnich ${view.similar.days} dniach nikt inny nie pytał o obszar „${MAPA_AREA_LABEL[topArea]}”. Twoje zgłoszenie pomoże ROPS zobaczyć tę potrzebę.`
-                  : `W ostatnich ${view.similar.days} dniach ${view.similar.count} ${plural(view.similar.count, "osoba pytała", "osoby pytały", "osób pytało")} o obszar „${MAPA_AREA_LABEL[topArea]}”.`}
+                  ? t("similar.none", { days: view.similar.days, area: labels.area[topArea] })
+                  : t("similar.some", { days: view.similar.days, count: view.similar.count, area: labels.area[topArea] })}
                 {view.similar.powiatCount !== null && view.similar.count > 0
-                  ? ` Z tego ${view.similar.powiatCount} z Twojego powiatu${view.similar.powiatName ? ` (${view.similar.powiatName})` : ""}.`
+                  ? ` ${
+                      view.similar.powiatName
+                        ? t("similar.powiatNamed", { count: view.similar.powiatCount, name: view.similar.powiatName })
+                        : t("similar.powiat", { count: view.similar.powiatCount })
+                    }`
                   : ""}
               </p>
-              <p className="text-muted-foreground mt-2 text-sm">Liczymy anonimowe wyszukiwania w serwisie, bez treści opisów.</p>
+              <p className="text-muted-foreground mt-2 text-sm">{t("similar.privacy")}</p>
             </section>
           )}
         </div>
       )}
 
-      <RequestHelp
-        runId={runId}
-        query={view.query}
-        areas={view.areas}
-        gminaTeryt={view.place?.gminaTeryt ?? null}
-        powiatTeryt={view.place?.powiatTeryt ?? null}
-        resultTitles={abstained ? [] : view.results.map((r) => r.card.title)}
-        abstained={abstained}
-        open={help.open}
-        onOpenChange={(open) => setHelp((h) => ({ open, innovation: open ? h.innovation : null }))}
-        innovation={help.innovation}
-        onCreated={() => setHelpSent(true)}
-      />
+      {!abstained && helpSection}
 
       <div data-no-print>
         <button type="button" className={btnSecondary} onClick={() => window.print()}>
-          Drukuj
+          {t("print")}
         </button>
       </div>
 
-      {!help.open && !helpSent && !helpTargetsVisible && (
-        <div
-          data-no-print
-          className="border-hairline bg-background fixed inset-x-0 bottom-0 z-30 border-t px-4 py-3 md:hidden"
-        >
+      {stickyShown && (
+        <div data-no-print className="border-hairline bg-background fixed inset-x-0 bottom-0 z-30 border-t px-4 py-3 md:hidden">
           <button type="button" className={`${btnPrimary} w-full`} onClick={() => openHelp(null)}>
-            Poproś ROPS o pomoc
+            {t("stickyHelp")}
           </button>
         </div>
       )}

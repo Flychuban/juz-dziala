@@ -1,1 +1,75 @@
-{}
+{
+  "title": "Z czym przychodzisz?",
+  "figures": {
+    "region": "Małopolska: ",
+    "cards": "{count, plural, one {# innowacja} few {# innowacje} many {# innowacji} other {# innowacji}}",
+    "powiaty": "{count, plural, one {# powiat} few {# powiaty} many {# powiatów} other {# powiatu}}",
+    "gminas": "{count, plural, one {# gmina} few {# gminy} many {# gmin} other {# gminy}}"
+  },
+  "trust": {
+    "cards": "{count, plural, one {# sprawdzona innowacja} few {# sprawdzone innowacje} many {# sprawdzonych innowacji} other {# sprawdzonej innowacji}} z Biblioteki ROPS",
+    "noCount": "Sprawdzone innowacje z Biblioteki ROPS",
+    "quote": "każda odpowiedź z cytatem ze źródła",
+    "how": "jak działa dopasowanie"
+  },
+  "doors": {
+    "heading": "Przychodzisz z czymś innym?",
+    "idea": { "label": "Mam pomysł", "hint": "Zgłoś pomysł na innowację społeczną" },
+    "municipality": { "label": "Szukam rozwiązań dla gminy", "hint": "Dla urzędów, OPS i organizacji" },
+    "adapt": { "label": "Zaplanuj usługę (dla instytucji)", "hint": "Ramowy Plan Wdrożenia gotowej innowacji" },
+    "expert": { "label": "Zadaj pytanie ekspertowi", "hint": "Odpowie ekspert Hubu ROPS" },
+    "network": { "label": "Sieć i partnerzy", "hint": "Organizacje, mentorzy i nabory" },
+    "test": { "label": "Chcę testować", "hint": "Wypróbuj nowe rozwiązania i oceń je" },
+    "case": { "label": "Mam kod sprawy", "hint": "Sprawdź odpowiedź ROPS" }
+  },
+  "form": {
+    "label": "Twój opis",
+    "hint": "Opisz własnymi słowami. Nie podawaj nazwisk ani numerów.",
+    "submit": "Szukaj rozwiązań",
+    "pending": "Szukamy…",
+    "examplesLabel": "Albo kliknij przykład — od razu wyszukamy:",
+    "examples": {
+      "e1": "Mama ma 73 lata, mieszka sama na wsi i prawie nie wychodzi z domu",
+      "e2": "Nastolatek w kryzysie psychicznym",
+      "e3": "Osoba niewidoma ma problem z bankomatem",
+      "e4": "Bezdomny sąsiad potrzebuje pomocy zimą"
+    },
+    "errors": {
+      "short": "Opisz problem w kilku słowach.",
+      "long": "Opis jest za długi — skróć go do 3000 znaków.",
+      "rate": "Za dużo wyszukiwań w krótkim czasie. Spróbuj za kilka minut.",
+      "failed": "Nie udało się wyszukać. Sprawdź połączenie i spróbuj ponownie."
+    }
+  },
+  "gmina": {
+    "label": "Twoja gmina (nieobowiązkowe)",
+    "hint": "Zacznij pisać nazwę i wybierz z listy. Pokażemy, ile podobnych spraw jest w Twoim powiecie.",
+    "listLabel": "Pasujące gminy",
+    "none": "Brak pasujących gmin.",
+    "count": "Pasujące gminy: {count}. Użyj strzałek, by wybrać.",
+    "picked": "Wybrano: {label}.",
+    "clear": "Wyczyść gminę",
+    "kind": {
+      "urban": "gmina miejska",
+      "rural": "gmina wiejska",
+      "mixed": "gmina miejsko-wiejska",
+      "other": "gmina {kind}"
+    }
+  },
+  "voice": {
+    "start": "Powiedz",
+    "stop": "Zakończ",
+    "listening": "Słucham… Mów spokojnie. Naciśnij „Zakończ”, gdy skończysz.",
+    "ended": "Zakończono nagrywanie. Sprawdź tekst w polu opisu.",
+    "failedStart": "Nie udało się włączyć mikrofonu. Wpisz opis w polu powyżej.",
+    "interrupted": "Rozpoznawanie mowy przerwało się. Spróbuj ponownie albo wpisz opis.",
+    "google": "Rozpoznawanie mowy w Chrome korzysta z usług Google.",
+    "errors": {
+      "notAllowed": "Przeglądarka nie dała dostępu do mikrofonu. Możesz wpisać opis w polu powyżej.",
+      "serviceNotAllowed": "Rozpoznawanie mowy jest wyłączone w tej przeglądarce. Wpisz opis w polu powyżej.",
+      "noSpeech": "Nie usłyszeliśmy nic. Spróbuj jeszcze raz, mów blisko mikrofonu.",
+      "audioCapture": "Nie znaleźliśmy mikrofonu. Wpisz opis w polu powyżej.",
+      "network": "Rozpoznawanie mowy wymaga internetu. Spróbuj ponownie albo wpisz opis."
+    }
+  }
+}

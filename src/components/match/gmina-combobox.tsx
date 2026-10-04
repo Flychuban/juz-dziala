@@ -1,8 +1,9 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
+import { useCallback, useId, useMemo, useState } from "react";
 
-import { filterGminas, gminaOptionLabel, type GminaOption } from "./format";
+import { filterGminas, gminaKindKey, gminaOptionLabel, type GminaOption } from "./format";
 
 /**
  * „Twoja gmina (nieobowiązkowe)": an ARIA 1.2 combobox — type to filter the
@@ -18,7 +19,16 @@ export function GminaCombobox({
   value: GminaOption | null;
   onSelect: (g: GminaOption | null) => void;
 }) {
-  const [text, setText] = useState(value ? gminaOptionLabel(value) : "");
+  const t = useTranslations("home.gmina");
+  const kindLabel = useCallback(
+    (kind: string) => {
+      const key = gminaKindKey(kind);
+      return key ? t(`kind.${key}`) : t("kind.other", { kind });
+    },
+    [t],
+  );
+  const label = useCallback((g: GminaOption) => gminaOptionLabel(g, kindLabel), [kindLabel]);
+  const [text, setText] = useState(value ? label(value) : "");
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const ids = { input: useId(), hint: useId(), list: useId(), status: useId() };
@@ -27,7 +37,7 @@ export function GminaCombobox({
 
   const pick = (g: GminaOption) => {
     onSelect(g);
-    setText(gminaOptionLabel(g));
+    setText(label(g));
     setOpen(false);
   };
 
@@ -51,10 +61,10 @@ export function GminaCombobox({
   return (
     <div className="flex max-w-xl flex-col gap-2">
       <label htmlFor={ids.input} className="text-lg font-semibold">
-        Twoja gmina (nieobowiązkowe)
+        {t("label")}
       </label>
       <p id={ids.hint} className="text-muted-foreground">
-        Zacznij pisać nazwę i wybierz z listy. Pokażemy, ile podobnych spraw jest w Twoim powiecie.
+        {t("hint")}
       </p>
       <div className="relative">
         <input
@@ -82,7 +92,7 @@ export function GminaCombobox({
         <ul
           id={ids.list}
           role="listbox"
-          aria-label="Pasujące gminy"
+          aria-label={t("listLabel")}
           hidden={!expanded}
           className="border-input bg-background absolute z-20 mt-1 max-h-80 w-full overflow-auto rounded-lg border-2"
         >
@@ -99,7 +109,7 @@ export function GminaCombobox({
               onMouseEnter={() => setActive(i)}
               className={`flex min-h-12 cursor-pointer items-center px-3 py-2 ${i === active ? "bg-accent font-semibold" : ""}`}
             >
-              {gminaOptionLabel(g)}
+              {label(g)}
             </li>
           ))}
         </ul>
@@ -107,10 +117,10 @@ export function GminaCombobox({
       <p id={ids.status} role="status" className="sr-only">
         {open && text.trim() && !value
           ? matches.length === 0
-            ? "Brak pasujących gmin."
-            : `Pasujące gminy: ${matches.length}. Użyj strzałek, by wybrać.`
+            ? t("none")
+            : t("count", { count: matches.length })
           : value
-            ? `Wybrano: ${gminaOptionLabel(value)}.`
+            ? t("picked", { label: label(value) })
             : ""}
       </p>
       {value && (
@@ -122,7 +132,7 @@ export function GminaCombobox({
           }}
           className="text-foreground inline-flex min-h-12 w-fit items-center underline underline-offset-4"
         >
-          Wyczyść gminę
+          {t("clear")}
         </button>
       )}
     </div>

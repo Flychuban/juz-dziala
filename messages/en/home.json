@@ -1,1 +1,75 @@
-{}
+{
+  "title": "What brings you here?",
+  "figures": {
+    "region": "Małopolska: ",
+    "cards": "{count, plural, one {# innovation} other {# innovations}}",
+    "powiaty": "{count, plural, one {# county} other {# counties}}",
+    "gminas": "{count, plural, one {# municipality} other {# municipalities}}"
+  },
+  "trust": {
+    "cards": "{count, plural, one {# checked innovation} other {# checked innovations}} from the ROPS Library",
+    "noCount": "Checked innovations from the ROPS Library",
+    "quote": "every answer quotes its source",
+    "how": "how matching works"
+  },
+  "doors": {
+    "heading": "Here for something else?",
+    "idea": { "label": "I have an idea", "hint": "Submit an idea for a social innovation" },
+    "municipality": { "label": "Solutions for my municipality", "hint": "For councils, social welfare centres and organisations" },
+    "adapt": { "label": "Plan a service (for institutions)", "hint": "An implementation plan for a ready innovation" },
+    "expert": { "label": "Ask an expert", "hint": "An expert from the ROPS Hub will answer" },
+    "network": { "label": "Network and partners", "hint": "Organisations, mentors and grant calls" },
+    "test": { "label": "I want to test", "hint": "Try new solutions and rate them" },
+    "case": { "label": "I have a case code", "hint": "Check the reply from ROPS" }
+  },
+  "form": {
+    "label": "Your description",
+    "hint": "Describe it in your own words. Please don't give names or numbers.",
+    "submit": "Find solutions",
+    "pending": "Searching…",
+    "examplesLabel": "Or click an example — we'll search straight away:",
+    "examples": {
+      "e1": "My mum is 73, lives alone in the countryside and hardly ever leaves the house",
+      "e2": "A teenager in a mental health crisis",
+      "e3": "A blind person can't use the cash machine",
+      "e4": "A homeless neighbour needs help this winter"
+    },
+    "errors": {
+      "short": "Please describe the problem in a few words.",
+      "long": "The description is too long — please cut it to 3,000 characters.",
+      "rate": "Too many searches in a short time. Please try again in a few minutes.",
+      "failed": "The search didn't work. Check your connection and try again."
+    }
+  },
+  "gmina": {
+    "label": "Your municipality (optional)",
+    "hint": "Start typing the name and pick it from the list. We'll show how many similar requests there are in your county.",
+    "listLabel": "Matching municipalities",
+    "none": "No matching municipalities.",
+    "count": "Matching municipalities: {count}. Use the arrow keys to choose.",
+    "picked": "Selected: {label}.",
+    "clear": "Clear municipality",
+    "kind": {
+      "urban": "urban municipality",
+      "rural": "rural municipality",
+      "mixed": "urban-rural municipality",
+      "other": "municipality ({kind})"
+    }
+  },
+  "voice": {
+    "start": "Speak",
+    "stop": "Stop",
+    "listening": "Listening… Speak calmly. Press “Stop” when you've finished.",
+    "ended": "Recording stopped. Check the text in the description box.",
+    "failedStart": "The microphone couldn't be turned on. Please type your description in the box above.",
+    "interrupted": "Speech recognition stopped. Try again or type your description.",
+    "google": "Speech recognition in Chrome uses Google services.",
+    "errors": {
+      "notAllowed": "The browser didn't allow access to the microphone. You can type your description in the box above.",
+      "serviceNotAllowed": "Speech recognition is turned off in this browser. Please type your description in the box above.",
+      "noSpeech": "We didn't hear anything. Try again and speak close to the microphone.",
+      "audioCapture": "We couldn't find a microphone. Please type your description in the box above.",
+      "network": "Speech recognition needs an internet connection. Try again or type your description."
+    }
+  }
+}

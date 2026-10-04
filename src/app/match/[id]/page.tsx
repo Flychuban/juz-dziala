@@ -1,10 +1,14 @@
 import { TRPCError } from "@trpc/server";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { MatchResults } from "~/components/match/match-results";
 import { api } from "~/trpc/server";
 
-export const metadata = { title: "Gotowe rozwiązania dla Ciebie" };
+export async function generateMetadata() {
+  const t = await getTranslations("match.meta");
+  return { title: t("title") };
+}
 export const dynamic = "force-dynamic";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu;
