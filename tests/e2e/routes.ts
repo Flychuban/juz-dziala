@@ -20,6 +20,7 @@ export const PUBLIC_ROUTES: Route[] = [
   { path: "/network", name: "Sieć" },
   { path: "/test", name: "Tester" },
   { path: "/ideas/new", name: "Mam pomysł" },
+  { path: "/ideas/canvas", name: "Pusty Canvas" },
   { path: "/adapt", name: "Zaplanuj usługę" },
   { path: "/municipality", name: "Dla gminy" },
 ];

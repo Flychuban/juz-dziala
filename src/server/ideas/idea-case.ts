@@ -4,7 +4,7 @@ import { TRPCError } from "@trpc/server";
 
 import { translatorFor } from "~/i18n/server";
 import type { Context } from "~/server/api/trpc";
-import { caseOr404 } from "~/server/cases/access";
+import { caseOr404, requireToken } from "~/server/cases/access";
 import type { CaseRow } from "~/server/cases/queries";
 import { hashToken } from "~/server/domain/case-code";
 import { canvasValuesSchema, storedIdeaSchema, type CanvasValues, type StoredIdea } from "./schema";
@@ -37,9 +37,9 @@ export async function loadIdeaCase(
   const t = translatorFor(ctx.locale, "ideas");
   const row = await caseOr404(ctx, code);
   if (row.kind !== "idea") throw new TRPCError({ code: "NOT_FOUND", message: t("access.notIdea") });
-  if (token && hashToken(token) !== row.tokenHash) throw new TRPCError({ code: "FORBIDDEN", message: t("access.wrongToken") });
-  // TODO(requireToken): same check as `requireToken` in ~/server/cases/access (agent C); switch to it at merge.
-  if (opts.write && !token) throw new TRPCError({ code: "FORBIDDEN", message: t("access.needsToken") });
+  // Writes need the private-link token (shared check: a wrong token also counts as a guess).
+  if (opts.write) await requireToken(ctx, row, token);
+  else if (token && hashToken(token) !== row.tokenHash) throw new TRPCError({ code: "FORBIDDEN", message: t("access.wrongToken") });
   const idea = storedIdeaSchema.safeParse(row.idea);
   const canvas = canvasValuesSchema.safeParse(row.canvas);
   return {

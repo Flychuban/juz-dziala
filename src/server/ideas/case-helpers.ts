@@ -1,12 +1,8 @@
 import "server-only";
 
-import { eq } from "drizzle-orm";
-
 import type { Locale } from "~/i18n/config";
 import { translatorFor } from "~/i18n/server";
 import { createCase, type CreateCaseInput } from "~/server/cases";
-import { db } from "~/server/db";
-import { cases } from "~/server/db/schema";
 import { isKnownGmina } from "./data";
 import { contactProblemKey } from "./schema";
 
@@ -22,16 +18,7 @@ export async function contactOrGminaProblem(
   return null;
 }
 
-/**
- * Opens a case in the author's language. `locale` goes to `createCase` (the
- * case engine reads it once its input accepts it — until then zod drops the
- * key) and is also written right after, so replies and mail reach the author
- * in the language they used either way.
- */
+/** Opens a case in the author's language (replies and mail reach them in it). */
 export async function createCaseInLocale(input: CreateCaseInput, locale: Locale) {
-  // TODO(locale): once createCase's input has `locale`, pass `{ ...input, locale }` directly and drop the update below.
-  const withLocale: CreateCaseInput & { locale: Locale } = { ...input, locale };
-  const created = await createCase(withLocale);
-  if (locale !== "pl") await db.update(cases).set({ locale }).where(eq(cases.id, created.id));
-  return created;
+  return createCase({ ...input, locale });
 }
