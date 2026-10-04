@@ -72,7 +72,7 @@ W serwisie są też [deklaracja dostępności](https://juz-dziala.vercel.app/acc
 
 ## Makiety UX/UI
 
-[docs/makiety](docs/makiety) — 14 ekranów na telefonie i komputerze oraz [PDF](docs/makiety/Makiety-UX-UI-Juz-Dziala.pdf).
+[docs/makiety](docs/makiety) — 18 ekranów (w tym 3 po angielsku) na telefonie i komputerze oraz [PDF](docs/makiety/Makiety-UX-UI-Juz-Dziala.pdf).
 
 ## Technologia
 

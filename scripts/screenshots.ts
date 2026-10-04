@@ -14,29 +14,48 @@ const VIEWPORTS = [
   { name: "komputer", width: 1280, height: 860 },
 ] as const;
 
-type Shot = { id: string; title: string; path: string | ((p: Page) => Promise<string>); staff?: boolean; full?: boolean };
+type Shot = {
+  id: string;
+  title: string;
+  path: string | ((p: Page) => Promise<string>);
+  staff?: boolean;
+  full?: boolean;
+  /** "en" = the English version (jd_lang cookie). */
+  lang?: "en";
+};
 
 const QUERY = "Mama ma 73 lata, owdowiała, mieszka sama pod Limanową, prawie nie wychodzi z domu i myli leki.";
 
-async function createMatch(page: Page): Promise<string> {
+const QUERY_EN = "My mum is 80, lives alone in a village, hardly leaves the house and mixes up her pills.";
+
+/** One AI-verified match per language, reused for both widths (one AI call each). */
+const matchCache = new Map<string, string>();
+async function createMatch(page: Page, lang: "pl" | "en" = "pl"): Promise<string> {
+  const cached = matchCache.get(lang);
+  if (cached) {
+    await page.goto(`${BASE}${cached}`, { waitUntil: "networkidle" });
+    return cached;
+  }
   await page.goto(`${BASE}/`);
-  await page.getByLabel(/Twój opis|Opisz/i).first().fill(QUERY);
-  await page.getByRole("button", { name: /Szukaj rozwiązań/ }).click();
+  await page.locator("main textarea").first().fill(lang === "en" ? QUERY_EN : QUERY);
+  await page.locator("main form button[type=submit]").first().click();
   await page.waitForURL(/\/match\//, { timeout: 30_000 });
   // Wait for the AI upgrade so the mockup shows verified results.
   await page
-    .getByText("Sprawdzone przez AI")
+    .getByText(lang === "en" ? "Checked by AI" : "Sprawdzone przez AI")
     .first()
     .waitFor({ timeout: 60_000 })
     .catch(() => undefined);
   await page.waitForTimeout(800);
-  return new URL(page.url()).pathname;
+  const path = new URL(page.url()).pathname;
+  matchCache.set(lang, path);
+  return path;
 }
 
 const ONLY = process.env.SHOT_ONLY?.split(",");
 const ALL_SHOTS: Shot[] = [
   { id: "01-start", title: "Opisz problem", path: "/" },
-  { id: "02-wyniki", title: "Gotowe rozwiązania dla Ciebie", path: createMatch, full: true },
+  { id: "02-wyniki", title: "Gotowe rozwiązania dla Ciebie", path: (p) => createMatch(p, "pl"), full: true },
   { id: "03-biblioteka", title: "Biblioteka Innowacji Społecznych", path: "/library" },
   { id: "04-karta", title: "Karta innowacji", path: "/library/mobilne-centrum-pomocy-dla-osob-starszych" },
   { id: "05-kondycja", title: "Kondycja Małopolski — Seniorzy", path: "/knowledge/seniors" },
@@ -49,6 +68,10 @@ const ALL_SHOTS: Shot[] = [
   { id: "12-sprawy", title: "Panel ROPS — sprawy", path: "/admin/cases", staff: true },
   { id: "13-trendy", title: "Trendy i białe plamy", path: "/admin/trends", staff: true, full: true },
   { id: "14-dostepnosc", title: "Deklaracja dostępności", path: "/accessibility" },
+  { id: "15-partnerzy", title: "Szukam partnera — partnerstwa przez ROPS", path: "/network#partnerzy" },
+  { id: "16-english-start", title: "English version — home", path: "/", lang: "en" },
+  { id: "17-english-wyniki", title: "English version — verified results with translated quotes", path: (p) => createMatch(p, "en"), lang: "en", full: true },
+  { id: "18-english-pulpit", title: "English version — ROPS dashboard", path: "/admin", staff: true, lang: "en" },
 ];
 const SHOTS = ONLY ? ALL_SHOTS.filter((s) => ONLY.includes(s.id)) : ALL_SHOTS;
 
@@ -60,9 +83,14 @@ async function main() {
     const page = await ctx.newPage();
     let staff = false;
     for (const s of SHOTS) {
+      await ctx.addCookies([{ name: "jd_lang", value: s.lang ?? "pl", url: BASE }]);
       if (s.staff && !staff) {
         await page.goto(`${BASE}/api/demo-login?role=rops&next=/admin`);
         staff = true;
+      } else if (!s.staff && staff) {
+        // Resident screens are shot as a resident (no staff bar).
+        await page.goto(`${BASE}/api/demo-login?role=none&next=/`);
+        staff = false;
       }
       const path = typeof s.path === "string" ? s.path : await s.path(page);
       if (typeof s.path === "string") await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });

@@ -167,6 +167,13 @@
     box-shadow: 0 0 0 6px var(--focus) !important;
     border-radius: 4px;
   }
+  /* Headings and <main> that receive focus from script (tabindex="-1", after
+     results load or a step changes) are not controls: the screen reader still
+     lands there, but no box is drawn around a title. */
+  :is(h1, h2, h3, main)[tabindex="-1"]:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;
   }
