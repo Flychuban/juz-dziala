@@ -32,6 +32,8 @@ Dopasowanie zmierzone 4 października 2026 r. na modelu Claude Sonnet 5.5. Wstę
 | Ramowe Plany | 50 × 0,108 $ | ok. 5 $ |
 | **Razem AI** | | **ok. 100 $ / mies.** |
 
+**Wersja angielska:** tłumaczenie 114 kart, Mapy Wyzwań, naborów, Canvy i materiałów kosztowało jednorazowo ok. 3,3 $ (zmierzone, `scripts/translate-data.ts`). Po zmianie karty skrypt tłumaczy tylko zmienione karty (kilka centów), a do tego czasu serwis pokazuje polski oryginał. Opisy po angielsku kosztują tyle samo co po polsku.
+
 **Jak obniżyć koszt bez utraty jakości:**
 - Wyniki ze słów kluczowych są zawsze darmowe i natychmiastowe; AI tylko je weryfikuje.
 - Instrukcje i indeks 114 kart są w pamięci podręcznej modelu, więc większość tokenów wejściowych kosztuje ok. 20 razy mniej.
