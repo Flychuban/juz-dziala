@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { CheckIcon } from "lucide-react";
 
 import { fold } from "~/components/kit/format";
@@ -10,8 +11,9 @@ import { cn } from "~/lib/utils";
 export type GminaChoice = {
   teryt: string;
   name: string;
-  /** „Bochnia (gmina miejska)". */
+  /** „Bochnia (gmina miejska)" / "Bochnia (urban municipality)". */
   label: string;
+  /** The powiat as the reader names it („powiat bocheński" / "Bochnia County"). */
   powiatName: string;
 };
 
@@ -38,7 +40,7 @@ export function GminaCombobox({
   options,
   value,
   onChange,
-  label = "Gmina",
+  label,
   description,
   error,
   className,
@@ -51,6 +53,9 @@ export function GminaCombobox({
   error?: string | null;
   className?: string;
 }) {
+  const t = useTranslations("municipality.combobox");
+  const locale = useLocale();
+  label ??= t("label");
   const id = useId();
   const inputId = `${id}-input`;
   const listId = `${id}-list`;
@@ -75,9 +80,9 @@ export function GminaCombobox({
     return options
       .map((o) => ({ o, r: rank(o, q) }))
       .filter((x) => x.r >= 0)
-      .sort((a, b) => a.r - b.r || a.o.name.localeCompare(b.o.name, "pl"))
+      .sort((a, b) => a.r - b.r || a.o.name.localeCompare(b.o.name, locale))
       .map((x) => x.o);
-  }, [options, query, showingSelected]);
+  }, [options, query, showingSelected, locale]);
   const shown = matches.slice(0, MAX_SHOWN);
 
   function choose(o: GminaChoice) {
@@ -123,7 +128,7 @@ export function GminaCombobox({
         autoComplete="off"
         spellCheck={false}
         className="mt-2"
-        placeholder="Wpisz nazwę gminy, np. Gręboszów"
+        placeholder={t("placeholder")}
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
@@ -161,7 +166,7 @@ export function GminaCombobox({
         id={listId}
         ref={listRef}
         role="listbox"
-        aria-label={`${label}: podpowiedzi`}
+        aria-label={t("listLabel", { label })}
         hidden={!open || shown.length === 0}
         className="border-input bg-popover text-popover-foreground absolute z-30 mt-1 max-h-80 w-full overflow-y-auto rounded-md border-2"
       >
@@ -200,25 +205,25 @@ export function GminaCombobox({
       <p role="status" className="sr-only">
         {open && query.trim() && !showingSelected
           ? matches.length === 0
-            ? "Nie znaleziono gminy o tej nazwie."
-            : `Znaleziono: ${matches.length}. Użyj strzałek, aby wybrać.`
+            ? t("noneLive")
+            : t("foundLive", { count: matches.length })
           : ""}
       </p>
       {open && query.trim() && matches.length === 0 ? (
-        <p className="mt-2 text-base">
-          Nie znaleźliśmy gminy „{query.trim()}”. Sprawdź pisownię — wystarczy
-          początek nazwy.
-        </p>
+        <p className="mt-2 text-base">{t("none", { query: query.trim() })}</p>
       ) : null}
       {matches.length > MAX_SHOWN && open ? (
         <p className="text-muted-foreground mt-2 text-sm">
-          Pokazujemy {MAX_SHOWN} z {matches.length}. Wpisz więcej liter.
+          {t("showing", { shown: MAX_SHOWN, count: matches.length })}
         </p>
       ) : null}
       {selected && !open ? (
         <p className="mt-2 text-base">
-          Wybrano: <span className="font-semibold">{selected.label}</span>,{" "}
-          {selected.powiatName}
+          {t.rich("selected", {
+            label: selected.label,
+            powiat: selected.powiatName,
+            b: (chunks) => <span className="font-semibold">{chunks}</span>,
+          })}
         </p>
       ) : null}
       {error ? (
@@ -226,7 +231,7 @@ export function GminaCombobox({
           id={errId}
           className="border-destructive mt-2 border-l-4 pl-3 font-semibold"
         >
-          <span className="text-destructive">Uwaga: </span>
+          <span className="text-destructive">{t("errorPrefix")} </span>
           {error}
         </p>
       ) : null}

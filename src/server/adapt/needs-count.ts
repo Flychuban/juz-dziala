@@ -3,7 +3,7 @@
  * when at least K people are behind it; otherwise it becomes null and the
  * page says „mniej niż 5". Pure, so the rule is unit-tested.
  */
-import { MAPA_AREAS, type MapaArea } from "~/lib/domain";
+import { MAPA_AREAS, type MapaArea, type StaffRole } from "~/lib/domain";
 import { K_ANONYMITY } from "./profile";
 
 export type PowiatNeeds = {
@@ -30,4 +30,15 @@ export function kAnonymize(raw: {
     includesSample: raw.includesSample,
     since: raw.since,
   };
+}
+
+/**
+ * Needs reported by residents (and their trends) are for the administrator
+ * (ROPS) and the logged-in gmina only — never on a public page, not even as
+ * a count. Experts do not see them either.
+ */
+export function canSeeNeeds(
+  staff: { role: StaffRole } | null | undefined,
+): boolean {
+  return staff?.role === "rops" || staff?.role === "jst";
 }

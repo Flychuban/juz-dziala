@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { FileCheckIcon } from "lucide-react";
 
 import { ExternalLink } from "~/components/kit/external-link";
@@ -13,16 +14,11 @@ import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { cn } from "~/lib/utils";
 import {
-  BUDGET_LABEL,
   BUDGET_RANGES,
-  INSTITUTION_HINT,
-  INSTITUTION_LABEL,
   INSTITUTIONS,
   MAX_NEEDS_CHARS,
-  RAMOWY_PLAN_BADGE,
-  STAFF_LABEL,
+  optionLabels,
   STAFF_RANGES,
-  TIMEFRAME_LABEL,
   TIMEFRAMES,
   type BudgetRange,
   type Institution,
@@ -132,6 +128,10 @@ export function AdaptWizard({
   initialGminaTeryt: string | null;
 }) {
   const id = useId();
+  const t = useTranslations("adapt.wizard");
+  const tv = useTranslations("adapt.validation");
+  const tb = useTranslations("adapt");
+  const o = optionLabels(useLocale());
   const [answers, setAnswers] = useState<Answers>({
     innovationId: initialInnovationId,
     institution: null,
@@ -180,31 +180,30 @@ export function AdaptWizard({
   const groupSizeError = (() => {
     const v = answers.groupSize.trim().replace(/\s/g, "");
     if (!v) return null;
-    if (!/^\d+$/.test(v)) return "Liczbę osób wpisz cyframi, np. 40 — albo zostaw pole puste.";
+    if (!/^\d+$/.test(v)) return tv("groupSizeDigits");
     const n = Number(v);
-    if (n < 1) return "Liczba osób musi być większa od zera.";
-    if (n > 1_000_000) return "Ta liczba jest za duża.";
+    if (n < 1) return tv("groupSizeMin");
+    if (n > 1_000_000) return tv("groupSizeMax");
     return null;
   })();
 
   const steps: StepperStep[] = [
     {
       id: "innovation",
-      title: "Którą innowację chcesz wdrożyć?",
-      description:
-        "Wybierz rozwiązanie z Biblioteki Innowacji Społecznych ROPS w Krakowie.",
+      title: t("innovation.title"),
+      description: t("innovation.description"),
       content: (
         <div>
           {innovation?.ramowyPlan ? (
-            <p className="border-brand-accent mb-5 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border-2 px-4 py-3">
+            <p className="border-brand-accent mb-5 flex flex-wrap items-center gap-x-3 gap-y-1 border-l-4 py-1 pl-4">
               <FileCheckIcon aria-hidden="true" className="text-brand-accent size-5" />
-              <span className="font-semibold">{RAMOWY_PLAN_BADGE}.</span>
+              <span className="font-semibold">{tb("ramowyBadge")}.</span>
               {innovation.ramowyPlan.sourceUrl ? (
                 <ExternalLink
                   href={innovation.ramowyPlan.sourceUrl}
                   className="inline-flex min-h-11 items-center"
                 >
-                  Ogłoszenie naboru
+                  {t("innovation.callLink")}
                 </ExternalLink>
               ) : null}
             </p>
@@ -216,83 +215,80 @@ export function AdaptWizard({
           />
         </div>
       ),
-      validate: () =>
-        innovation ? null : "Wybierz innowację z listy — zaznacz jedną pozycję.",
+      validate: () => (innovation ? null : tv("innovation")),
     },
     {
       id: "institution",
-      title: "Jaka instytucja?",
-      description: "Kto poprowadzi usługę? Od tego zależą role i partnerzy w planie.",
+      title: t("institution.title"),
+      description: t("institution.description"),
       content: (
         <Choices
-          legend="Rodzaj instytucji"
+          legend={t("institution.legend")}
           legendClassName="sr-only"
           name={`${id}-institution`}
           options={INSTITUTIONS}
-          labels={INSTITUTION_LABEL}
-          hints={INSTITUTION_HINT}
+          labels={o.institution}
+          hints={o.institutionHint}
           value={answers.institution}
           onChange={(v) => set("institution", v)}
           columns={2}
         />
       ),
-      validate: () => (answers.institution ? null : "Wybierz rodzaj instytucji."),
+      validate: () => (answers.institution ? null : tv("institution")),
     },
     {
       id: "gmina",
-      title: "Gdzie?",
-      description:
-        "W której gminie ruszy usługa? Do planu wstawimy dane GUS o jej mieszkańcach.",
+      title: t("gmina.title"),
+      description: t("gmina.description"),
       content: (
         <GminaCombobox
           options={gminas}
           value={answers.gminaTeryt}
-          onChange={(t) => set("gminaTeryt", t)}
-          label="Gmina"
-          description="Wpisz początek nazwy i wybierz gminę z listy."
+          onChange={(teryt) => set("gminaTeryt", teryt)}
+          label={t("gmina.label")}
+          description={t("gmina.hint")}
         />
       ),
-      validate: () => (gmina ? null : "Wybierz gminę z listy podpowiedzi."),
+      validate: () => (gmina ? null : tv("gminaPick")),
     },
     {
       id: "resources",
-      title: "Zasoby i potrzeby",
-      description:
-        "Odpowiedz orientacyjnie — plan pokaże, co trzeba będzie doprecyzować.",
+      title: t("resources.title"),
+      description: t("resources.description"),
       content: (
         <div className="space-y-8">
           <Choices
-            legend="Ile osób może pracować przy usłudze?"
+            legend={t("resources.staff")}
             name={`${id}-staff`}
             options={STAFF_RANGES}
-            labels={STAFF_LABEL}
+            labels={o.staff}
             value={answers.staff}
             onChange={(v) => set("staff", v)}
             columns={2}
           />
           <Choices
-            legend="Orientacyjny budżet usługi"
+            legend={t("resources.budget")}
             name={`${id}-budget`}
             options={BUDGET_RANGES}
-            labels={BUDGET_LABEL}
+            labels={o.budget}
             value={answers.budget}
             onChange={(v) => set("budget", v)}
             columns={2}
           />
           <Choices
-            legend="Czas realizacji"
+            legend={t("resources.timeframe")}
             name={`${id}-timeframe`}
             options={TIMEFRAMES}
-            labels={TIMEFRAME_LABEL}
+            labels={o.timeframe}
             value={answers.timeframe}
             onChange={(v) => set("timeframe", v)}
           />
           <div>
             <label htmlFor={`${id}-size`} className="block font-semibold">
-              Ilu osobom chcesz pomóc? (jeśli wiesz)
+              {t("resources.groupSize")}
             </label>
             <p id={`${id}-size-h`} className="text-muted-foreground text-[0.9375rem]">
-              Liczba odbiorców w pierwszym roku. Możesz zostawić puste.
+              {t("resources.groupSizeHint")}
             </p>
             <Input
               id={`${id}-size`}
@@ -307,11 +303,10 @@ export function AdaptWizard({
           </div>
           <div>
             <label htmlFor={`${id}-needs`} className="block font-semibold">
-              Co jeszcze powinniśmy wiedzieć? (nieobowiązkowo)
+              {t("resources.needs")}
             </label>
             <p id={`${id}-needs-h`} className="text-muted-foreground text-[0.9375rem]">
-              Na przykład: dla kogo przede wszystkim, jakie macie doświadczenie,
-              czego się obawiacie. Nie wpisuj danych osobowych.
+              {t("resources.needsHint")}
             </p>
             <Textarea
               id={`${id}-needs`}
@@ -322,15 +317,18 @@ export function AdaptWizard({
               onChange={(e) => set("needs", e.target.value)}
             />
             <p id={`${id}-needs-c`} className="text-muted-foreground mt-1 text-sm tabular">
-              {answers.needs.length} / {MAX_NEEDS_CHARS} znaków
+              {t("resources.needsCount", {
+                count: answers.needs.length,
+                max: MAX_NEEDS_CHARS,
+              })}
             </p>
           </div>
         </div>
       ),
       validate: () => {
-        if (!answers.staff) return "Wybierz, ile osób może pracować przy usłudze.";
-        if (!answers.budget) return "Wybierz orientacyjny budżet.";
-        if (!answers.timeframe) return "Wybierz czas realizacji.";
+        if (!answers.staff) return tv("staff");
+        if (!answers.budget) return tv("budget");
+        if (!answers.timeframe) return tv("timeframe");
         return groupSizeError;
       },
     },
@@ -355,9 +353,8 @@ export function AdaptWizard({
       steps={steps}
       step={step}
       onStepChange={setStep}
-      finishLabel="Przygotuj plan"
+      finishLabel={t("finish")}
       backHref="/library"
-      backLabel="Wstecz"
       onFinish={() => {
         if (
           !innovation ||

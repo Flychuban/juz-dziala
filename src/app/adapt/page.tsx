@@ -1,14 +1,14 @@
 import { type Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { AdaptWizard } from "~/components/adapt/adapt-wizard";
 import { PageHeader, SourceLine } from "~/components/kit";
 import { api } from "~/trpc/server";
 
-export const metadata: Metadata = {
-  title: "Zaplanuj usługę",
-  description:
-    "Middleman Innowacji: projekt Ramowego Planu Wdrożenia innowacji z Biblioteki ROPS dla Twojej instytucji i gminy — z danymi GUS i aktualnymi naborami.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("adapt.page");
+  return { title: t("title"), description: t("description") };
+}
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -20,6 +20,7 @@ export default async function AdaptPage({
 }: {
   searchParams: SearchParams;
 }) {
+  const t = await getTranslations("adapt.page");
   const sp = await searchParams;
   const { innovations, gminas } = await api.adapt.options();
   const wanted = first(sp.innovation)?.trim();
@@ -31,18 +32,10 @@ export default async function AdaptPage({
   return (
     <>
       <PageHeader
-        breadcrumbs={[
-          { label: "Biblioteka Innowacji Społecznych", href: "/library" },
-        ]}
-        eyebrow="Middleman Innowacji — asystent wdrożenia · dla OPS, CUS, PCPR i organizacji"
-        title="Zaplanuj usługę"
-        lead={
-          <p>
-            Wybierz innowację z Biblioteki ROPS i odpowiedz na cztery pytania o
-            swoją instytucję. Przygotujemy projekt Ramowego Planu Wdrożenia — z
-            danymi GUS o Twojej gminie i z naborami, które mogą go sfinansować.
-          </p>
-        }
+        breadcrumbs={[{ label: t("breadcrumb"), href: "/library" }]}
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        lead={<p>{t("lead")}</p>}
       />
       <div className="mx-auto max-w-4xl px-4 py-10 md:py-12">
         <AdaptWizard
@@ -53,11 +46,11 @@ export default async function AdaptPage({
         />
         <div className="border-hairline mt-12 space-y-1 border-t pt-6" data-no-print>
           <SourceLine
-            source="Biblioteka Innowacji Społecznych, ROPS w Krakowie"
+            source={t("sourceLibrary")}
             href="https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych"
           />
           <SourceLine
-            source="GUS, Bank Danych Lokalnych — ludność gmin"
+            source={t("sourceGus")}
             href="https://bdl.stat.gov.pl/bdl/start"
           />
         </div>

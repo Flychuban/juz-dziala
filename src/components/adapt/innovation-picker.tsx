@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { AwardIcon, FileCheckIcon } from "lucide-react";
 
 import { fold } from "~/components/kit/format";
@@ -14,7 +15,8 @@ const PAGE = 12;
 /**
  * Step 1 — „Którą innowację chcesz wdrożyć?": a search box over the 114
  * library cards and a list of native radio buttons (one tab stop, arrows
- * move between options). The chosen card stays on top of the list.
+ * move between options). The chosen card stays on top of the list. Cards are
+ * shown in the visitor's language; an untranslated card keeps lang="pl".
  */
 export function InnovationPicker({
   options,
@@ -26,6 +28,8 @@ export function InnovationPicker({
   onChange: (id: string) => void;
 }) {
   const id = useId();
+  const t = useTranslations("adapt.picker");
+  const locale = useLocale();
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(PAGE);
   const selected = options.find((o) => o.id === value) ?? null;
@@ -49,9 +53,9 @@ export function InnovationPicker({
           (a, b) =>
             Number(!!b.ramowyPlan) - Number(!!a.ramowyPlan) ||
             Number(b.badge) - Number(a.badge) ||
-            a.title.localeCompare(b.title, "pl"),
+            a.title.localeCompare(b.title, locale),
         );
-  }, [options, query]);
+  }, [options, query, locale]);
 
   const visible = useMemo(() => {
     const list = matches.slice(0, limit);
@@ -64,10 +68,10 @@ export function InnovationPicker({
   return (
     <div>
       <label htmlFor={`${id}-q`} className="block font-semibold">
-        Szukaj w Bibliotece Innowacji Społecznych
+        {t("search")}
       </label>
       <p id={`${id}-qh`} className="text-muted-foreground text-[0.9375rem]">
-        Wpisz słowo z tytułu lub tematu, np. „senior”, „autyzm”, „rodzina”.
+        {t("searchHint")}
       </p>
       <Input
         id={`${id}-q`}
@@ -87,13 +91,13 @@ export function InnovationPicker({
       <p role="status" className="text-muted-foreground mt-2 text-[0.9375rem]">
         {query.trim()
           ? matches.length
-            ? `Znaleziono: ${matches.length}.`
-            : "Nic nie znaleźliśmy. Spróbuj innego słowa."
-          : `W Bibliotece: ${options.length}. Najpierw te z Ramowym Planem ROPS.`}
+            ? t("found", { count: matches.length })
+            : t("none")
+          : t("total", { count: options.length })}
       </p>
 
       <fieldset className="mt-4">
-        <legend className="sr-only">Innowacja do wdrożenia</legend>
+        <legend className="sr-only">{t("legend")}</legend>
         <ul className="grid grid-cols-1 gap-3">
           {visible.map((o) => (
             <li key={o.id}>
@@ -112,29 +116,38 @@ export function InnovationPicker({
                   className="accent-primary mt-1 size-5 shrink-0"
                 />
                 <span className="min-w-0">
-                  <span className="block text-lg leading-snug font-bold">
+                  <span
+                    lang={o.lang === locale ? undefined : o.lang}
+                    className="block text-lg leading-snug font-bold"
+                  >
                     {o.title}
                   </span>
                   {o.categoryLabels.length ? (
-                    <span className="text-muted-foreground block text-sm font-semibold">
+                    <span
+                      lang={o.lang === locale ? undefined : o.lang}
+                      className="text-muted-foreground block text-sm font-semibold"
+                    >
                       {o.categoryLabels.join(" · ")}
                     </span>
                   ) : null}
-                  <span className="text-foreground/85 mt-1 line-clamp-2 block text-[0.9375rem] leading-snug">
+                  <span
+                    lang={o.lang === locale ? undefined : o.lang}
+                    className="text-foreground/85 mt-1 line-clamp-2 block text-[0.9375rem] leading-snug"
+                  >
                     {o.summary}
                   </span>
                   {o.ramowyPlan || o.badge ? (
-                    <span className="mt-2 flex flex-wrap gap-2">
+                    <span className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold">
                       {o.ramowyPlan ? (
-                        <span className="border-brand-accent text-foreground inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-sm font-semibold">
-                          <FileCheckIcon aria-hidden="true" className="size-4" />
-                          Ramowy Plan ROPS
+                        <span className="inline-flex items-center gap-1.5">
+                          <FileCheckIcon aria-hidden="true" className="text-brand-accent size-4" />
+                          {t("ramowy")}
                         </span>
                       ) : null}
                       {o.badge ? (
-                        <span className="border-hairline text-foreground inline-flex max-w-full items-center gap-1.5 rounded-sm border px-2 py-0.5 text-sm font-semibold [overflow-wrap:anywhere]">
-                          <AwardIcon aria-hidden="true" className="size-4" />
-                          Wybrana do upowszechniania
+                        <span className="inline-flex max-w-full items-center gap-1.5 [overflow-wrap:anywhere]">
+                          <AwardIcon aria-hidden="true" className="text-brand-accent size-4" />
+                          {t("badge")}
                         </span>
                       ) : null}
                     </span>
@@ -152,7 +165,7 @@ export function InnovationPicker({
           className="mt-4"
           onClick={() => setLimit((l) => l + PAGE * 2)}
         >
-          Pokaż więcej ({matches.length - limit})
+          {t("more", { count: matches.length - limit })}
         </Button>
       ) : null}
     </div>

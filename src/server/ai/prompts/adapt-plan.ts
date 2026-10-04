@@ -1,22 +1,20 @@
 import "server-only";
 
-import { MAPA_AREA_LABEL, SECTION_LABEL } from "~/lib/domain";
+import { labelsFor } from "~/lib/domain";
 import { userData, type SystemBlock } from "~/server/ai/structured";
-import {
-  BUDGET_LABEL,
-  INSTITUTION_LABEL,
-  STAFF_LABEL,
-  TIMEFRAME_LABEL,
-} from "~/server/adapt/options";
+import { optionLabels } from "~/server/adapt/options";
 import {
   AI_SECTIONS,
+  cardTitle,
   FIXED_SECTIONS,
+  planSentences,
   sectionHeading,
-  TODO,
+  todoMarker,
+  TODO_EN,
 } from "~/server/adapt/plan-template";
 import {
   int,
-  KIND_LABEL,
+  kindLabel,
   pct,
   powiatDisplay,
   signedPct,
@@ -25,9 +23,12 @@ import type { PlanContext } from "~/server/adapt/types";
 
 /**
  * Middleman Innowacji — the Ramowy Plan Wdrożenia prompt. The system block is
- * stable (cacheable): no dates, no per-request data. Everything the
- * institution typed goes in `userData()`; the card and the GUS figures are
- * given as data the model may only quote by id or repeat verbatim.
+ * stable (cacheable): no dates, no per-request data, the same in both
+ * languages. Everything the institution typed goes in `userData()`; the card
+ * and the GUS figures are given as data the model may only quote by id or
+ * repeat verbatim. For an English plan the data blocks are in English (so the
+ * figures it may repeat are already in English format) and `aiStream`'s
+ * `locale` appends the language directive at the end of the user turn.
  */
 export const ADAPT_PLAN_SYSTEM: SystemBlock[] = [
   {
@@ -58,50 +59,63 @@ FORMA
 ];
 
 function cardBlock(ctx: PlanContext): string {
-  const { card } = ctx;
+  const { card, locale } = ctx;
+  const L = labelsFor(locale);
+  const en = locale === "en" ? card.en : null;
+  const sentences = planSentences(card, locale);
   const lines = [
-    `Tytuł: ${card.title}`,
-    `Obszary Mapy Wyzwań: ${card.mapaAreas.map((a) => MAPA_AREA_LABEL[a]).join(", ") || "brak"}`,
+    `Tytuł: ${cardTitle(card, locale)}`,
+    `Obszary Mapy Wyzwań: ${card.mapaAreas.map((a) => L.area[a]).join(", ") || "brak"}`,
     `Kategorie: ${card.categoryLabels.join(", ") || "brak"}`,
-    `Autorzy (z karty): ${card.sections.authors?.trim() || "nie podano"}`,
+    `Autorzy (z karty): ${(en?.sections.authors ?? card.sections.authors)?.trim() || "nie podano"}`,
     card.orgNames.length
       ? `Organizacje autorów: ${card.orgNames.join("; ")}`
       : null,
     `Licencja: ${card.licence ?? "nie podano"}`,
     "",
     "Zdania karty (ID | sekcja | treść):",
-    ...card.sentences.map(
-      (s) => `${s.id} | ${SECTION_LABEL[s.section]} | ${s.text.replace(/\s+/g, " ").trim()}`,
-    ),
+    ...card.sentences.map((s) => {
+      const text = sentences.get(s.id)?.text ?? s.text;
+      return `${s.id} | ${L.section[s.section]} | ${text.replace(/\s+/g, " ").trim()}`;
+    }),
   ];
   return `<karta>\n${lines.filter((l) => l !== null).join("\n")}\n</karta>`;
 }
 
 function factsBlock(ctx: PlanContext): string {
   const p = ctx.profile;
+  const l = ctx.locale;
+  const o = optionLabels(l);
   const lines = [
-    `Gmina: ${p.name} (${KIND_LABEL[p.kind]}), ${powiatDisplay(p.powiatName)}`,
-    `Liczba mieszkańców (${p.year}): ${int(p.population)}`,
-    `Osoby 65+: ${int(p.pop65)} (${pct(p.share65)}%)`,
-    `Osoby 80+: ${int(p.pop80)} (${pct(p.share80)}%; mediana gmin Małopolski ${pct(p.medianShare80)}%)`,
+    `Gmina: ${p.name} (${kindLabel(p.kind, l)}), ${powiatDisplay(p.powiatName, l)}`,
+    `Liczba mieszkańców (${p.year}): ${int(p.population, l)}`,
+    `Osoby 65+: ${int(p.pop65, l)} (${pct(p.share65, l)}%)`,
+    `Osoby 80+: ${int(p.pop80, l)} (${pct(p.share80, l)}%; mediana gmin Małopolski ${pct(p.medianShare80, l)}%)`,
     p.popChange10y === null
       ? "Zmiana liczby mieszkańców w 10 lat: brak porównania (zmiana granic)"
-      : `Zmiana liczby mieszkańców ${ctx.gus.baseYear}–${p.year}: ${signedPct(p.popChange10y)}`,
-    `Instytucja: ${INSTITUTION_LABEL[ctx.inputs.institution]}`,
-    `Zespół dostępny dla usługi: ${STAFF_LABEL[ctx.inputs.staff]}`,
-    `Budżet (tylko orientacyjnie, nie pisz o nim): ${BUDGET_LABEL[ctx.inputs.budget]}`,
-    `Czas realizacji: ${TIMEFRAME_LABEL[ctx.inputs.timeframe]}`,
-    `Planowana liczba odbiorców: ${ctx.inputs.groupSize ? int(ctx.inputs.groupSize) : TODO}`,
+      : `Zmiana liczby mieszkańców ${ctx.gus.baseYear}–${p.year}: ${signedPct(p.popChange10y, l)}`,
+    `Instytucja: ${o.institution[ctx.inputs.institution]}`,
+    `Zespół dostępny dla usługi: ${o.staff[ctx.inputs.staff]}`,
+    `Budżet (tylko orientacyjnie, nie pisz o nim): ${o.budget[ctx.inputs.budget]}`,
+    `Czas realizacji: ${o.timeframe[ctx.inputs.timeframe]}`,
+    `Planowana liczba odbiorców: ${ctx.inputs.groupSize ? int(ctx.inputs.groupSize, l) : todoMarker(l)}`,
     ctx.ramowyPlan
       ? "ROPS przygotował już Ramowy Plan Wdrożenia tej innowacji w naborze „Usługa Wrażliwa”."
       : null,
   ];
-  return `<fakty>\n${lines.filter((l) => l !== null).join("\n")}\n</fakty>`;
+  return `<fakty>\n${lines.filter((x) => x !== null).join("\n")}\n</fakty>`;
 }
+
+/**
+ * For an English plan: the table headers and the gap marker in English
+ * (the system prompt names the Polish ones and must not change).
+ */
+const ENGLISH_FORM = `Plan jest po angielsku. Nagłówki tabel pisz po angielsku: sekcja 4 „| Month | Stage | What needs doing |”, sekcja 5 „| Role | Tasks | Skills |”, sekcja 8 „| Risk | How to prevent it |”, sekcja 9 „| Indicator | Target | How to measure |”. Brakujące informacje oznaczaj dokładnie „${TODO_EN}”.`;
 
 /** The per-request message: data blocks, then the exact headings to write. */
 export function adaptPlanUserMessage(ctx: PlanContext): string {
-  const headings = AI_SECTIONS.map((n) => sectionHeading(n, ctx.card.title));
+  const title = cardTitle(ctx.card, ctx.locale);
+  const headings = AI_SECTIONS.map((n) => sectionHeading(n, title, ctx.locale));
   const parts = [
     cardBlock(ctx),
     factsBlock(ctx),
@@ -109,6 +123,7 @@ export function adaptPlanUserMessage(ctx: PlanContext): string {
       ? userData("potrzeby instytucji", ctx.inputs.needs)
       : "Instytucja nie opisała dodatkowych potrzeb.",
     `Napisz sekcje z dokładnie tymi nagłówkami, w tej kolejności:\n${headings.join("\n")}\n\nNie pisz sekcji ${FIXED_SECTIONS.join(", ")} — wstawi je system.`,
+    ctx.locale === "en" ? ENGLISH_FORM : null,
   ];
-  return parts.join("\n\n");
+  return parts.filter((p) => p !== null).join("\n\n");
 }

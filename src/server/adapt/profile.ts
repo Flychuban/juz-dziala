@@ -8,28 +8,41 @@
  *   - gmina wiejska lub miejsko-wiejska → dojazd i poruszanie się;
  *   - obszary Mapy, w których w powiecie zgłoszono ≥ 5 potrzeb → te obszary.
  */
-import { foldWithMap, pluralPl } from "~/components/kit/format";
-import { MAPA_AREA_LABEL, type MapaArea } from "~/lib/domain";
+import { foldWithMap } from "~/components/kit/format";
+import { powiatName as powiatNameIn } from "~/components/map/powiaty";
+import type { Locale } from "~/i18n/config";
+import { labelsFor, type MapaArea } from "~/lib/domain";
+import { municipalityT } from "./i18n";
 import type { Gmina, GminaKind, GminaProfile } from "./types";
 
-const ONE_DECIMAL = new Intl.NumberFormat("pl-PL", {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
-const INTEGER = new Intl.NumberFormat("pl-PL");
+const ONE_DECIMAL: Record<Locale, Intl.NumberFormat> = {
+  pl: new Intl.NumberFormat("pl-PL", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }),
+  en: new Intl.NumberFormat("en-GB", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }),
+};
+const INTEGER: Record<Locale, Intl.NumberFormat> = {
+  pl: new Intl.NumberFormat("pl-PL"),
+  en: new Intl.NumberFormat("en-GB"),
+};
+const loc = (l: string | undefined): Locale => (l === "en" ? "en" : "pl");
 
-/** „4,5" — a percentage figure with one decimal, Polish style. */
-export function pct(n: number): string {
-  return ONE_DECIMAL.format(n);
+/** „4,5" / "4.5" — a percentage figure with one decimal. */
+export function pct(n: number, locale = "pl"): string {
+  return ONE_DECIMAL[loc(locale)].format(n);
 }
-/** „28 187". */
-export function int(n: number): string {
-  return INTEGER.format(n);
+/** „28 187" / "28,187". */
+export function int(n: number, locale = "pl"): string {
+  return INTEGER[loc(locale)].format(n);
 }
 /** „−6,4%" / „+7,2%" — a signed change with a real minus sign. */
-export function signedPct(n: number): string {
-  if (n === 0) return "0,0%";
-  return `${n < 0 ? "−" : "+"}${pct(Math.abs(n))}%`;
+export function signedPct(n: number, locale = "pl"): string {
+  if (n === 0) return `${pct(0, locale)}%`;
+  return `${n < 0 ? "−" : "+"}${pct(Math.abs(n), locale)}%`;
 }
 
 /** Share of `part` in `total`, in percent, rounded to one decimal. */
@@ -65,10 +78,22 @@ export const KIND_LABEL: Record<GminaKind, string> = {
   wiejska: "gmina wiejska",
   "miejsko-wiejska": "gmina miejsko-wiejska",
 };
+const KIND_LABEL_EN: Record<GminaKind, string> = {
+  miejska: "urban municipality",
+  wiejska: "rural municipality",
+  "miejsko-wiejska": "urban-rural municipality",
+};
+/** „gmina wiejska" / "rural municipality". */
+export function kindLabel(kind: GminaKind, locale = "pl"): string {
+  return (locale === "en" ? KIND_LABEL_EN : KIND_LABEL)[kind];
+}
 
 /** „Bochnia (gmina miejska)" — names repeat, the kind tells them apart. */
-export function gminaLabel(g: Pick<Gmina, "name" | "kind">): string {
-  return `${g.name} (${KIND_LABEL[g.kind]})`;
+export function gminaLabel(
+  g: Pick<Gmina, "name" | "kind">,
+  locale = "pl",
+): string {
+  return `${g.name} (${kindLabel(g.kind, locale)})`;
 }
 
 /** „bocheński" from „powiat bocheński"; cities keep their name. */
@@ -83,7 +108,6 @@ export function powiatShort(powiatName: string): string {
 export type ThemeId = "seniors" | "digital" | "mobility" | `area:${MapaArea}`;
 
 type KeywordTheme = {
-  label: string;
   /** Run on the folded text (no diacritics, lower case). */
   pattern: RegExp;
   /** Which part of the card is read. */
@@ -97,7 +121,6 @@ const L = "\\p{L}*"; // rest of the word
 
 const KEYWORD_THEMES: Record<"digital" | "mobility", KeywordTheme> = {
   digital: {
-    label: "Wykluczenie cyfrowe i usługi na odległość",
     pattern: new RegExp(
       `${W}(cyfrow${L}|internet${L}|smartfon${L}|zdaln${L}|teleasyst${L}|telerehab${L}|kod(?:y|ow) qr)`,
       "u",
@@ -107,12 +130,11 @@ const KEYWORD_THEMES: Record<"digital" | "mobility", KeywordTheme> = {
   /*
    * Getting around: only cards for people with disabilities or seniors, and
    * only what the card says the solution IS or SOLVES. „przewóz" is the noun
- * (transporting people), not „przewozić dziecko w wózku". „mobilny" counts as
+   * (transporting people), not „przewozić dziecko w wózku". „mobilny" counts as
    * mobility (mobilność) or a service that comes to people (mobilne
    * centrum / usługi / pomoc / punkt) — not „aplikacja mobilna".
    */
   mobility: {
-    label: "Dojazd i poruszanie się",
     pattern: new RegExp(
       `${W}(dojazd${L}|dojezdz${L}|przewoz(?:u|em|ie|y|ow)?(?!\\p{L})|przewozeni${L}|transport${L} publiczn${L}|mobilnosc${L}|mobiln${L} (?:centrum|pomoc${L}|uslug${L}|punkt${L}|zesp${L}))`,
       "u",
@@ -122,10 +144,14 @@ const KEYWORD_THEMES: Record<"digital" | "mobility", KeywordTheme> = {
   },
 };
 
-export function themeLabel(id: ThemeId): string {
-  if (id === "seniors") return MAPA_AREA_LABEL.seniors;
-  if (id === "digital" || id === "mobility") return KEYWORD_THEMES[id].label;
-  return MAPA_AREA_LABEL[id.slice(5) as MapaArea] ?? id;
+/** „Seniorzy", „Dojazd i poruszanie się"… in the reader's language. */
+export function themeLabel(id: ThemeId, locale = "pl"): string {
+  const labels = labelsFor(locale);
+  if (id === "seniors") return labels.area.seniors;
+  if (id === "digital" || id === "mobility") {
+    return municipalityT(loc(locale))(`themes.${id}`);
+  }
+  return labels.area[id.slice(5) as MapaArea] ?? id;
 }
 
 export type ProfileCard = {
@@ -158,29 +184,42 @@ function keywordEvidence(card: ProfileCard, t: KeywordTheme): string | null {
   return raw.slice(map[from] ?? 0, (map[to - 1] ?? raw.length - 1) + 1);
 }
 
-/** Does the card fit the theme, and how do we know? */
-export function matchTheme(card: ProfileCard, theme: ThemeId): ThemeMatch | null {
+/**
+ * Does the card fit the theme, and how do we know? The rule always reads the
+ * Polish card (the source); in English the evidence quotes the Polish word.
+ */
+export function matchTheme(
+  card: ProfileCard,
+  theme: ThemeId,
+  locale = "pl",
+): ThemeMatch | null {
+  const t = municipalityT(loc(locale));
+  const labels = labelsFor(locale);
   if (theme === "seniors") {
     return card.mapaAreas.includes("seniors")
       ? {
           theme,
-          label: themeLabel(theme),
-          evidence: `obszar Mapy Wyzwań: ${MAPA_AREA_LABEL.seniors}`,
+          label: themeLabel(theme, locale),
+          evidence: t("rule.evidenceArea", { area: labels.area.seniors }),
         }
       : null;
   }
   if (theme === "digital" || theme === "mobility") {
     const word = keywordEvidence(card, KEYWORD_THEMES[theme]);
     return word
-      ? { theme, label: themeLabel(theme), evidence: `w opisie: „${word}”` }
+      ? {
+          theme,
+          label: themeLabel(theme, locale),
+          evidence: t("rule.evidenceWord", { word }),
+        }
       : null;
   }
   const area = theme.slice(5) as MapaArea;
   return card.mapaAreas.includes(area)
     ? {
         theme,
-        label: themeLabel(theme),
-        evidence: `obszar Mapy Wyzwań: ${MAPA_AREA_LABEL[area]}`,
+        label: themeLabel(theme, locale),
+        evidence: t("rule.evidenceArea", { area: labels.area[area] }),
       }
     : null;
 }
@@ -200,18 +239,26 @@ export const K_ANONYMITY = 5;
 
 /**
  * The printed rule. `reported` are the powiat's need counts, already
- * k-anonymised: only areas with a visible count (≥ 5) drive the rule.
+ * k-anonymised: only areas with a visible count (≥ 5) drive the rule. Pass
+ * them only for a reader allowed to see them (ROPS, a logged-in gmina):
+ * a „reported" line states the count.
  */
 export function profileSignals(
   p: GminaProfile,
   reported: ReportedArea[] = [],
-  powiatName = p.powiatName,
+  opts: { powiatName?: string; locale?: string; windowDays?: number } = {},
 ): ProfileSignal[] {
+  const locale = loc(opts.locale);
+  const t = municipalityT(locale);
+  const labels = labelsFor(locale);
   const out: ProfileSignal[] = [];
   if (p.share80 > p.medianShare80) {
     out.push({
       id: "share80",
-      text: `Udział osób w wieku 80+ wyższy niż mediana gmin Małopolski (${pct(p.share80)}% wobec ${pct(p.medianShare80)}%) → rozwiązania dla seniorów.`,
+      text: t("rule.share80", {
+        share: pct(p.share80, locale),
+        median: pct(p.medianShare80, locale),
+      }),
       themes: ["seniors"],
       weight: 1,
     });
@@ -219,7 +266,11 @@ export function profileSignals(
   if (p.depopulating && p.popChange10y !== null) {
     out.push({
       id: "depopulation",
-      text: `Liczba mieszkańców spadła o ${pct(Math.abs(p.popChange10y))}% w latach ${p.year - 10}–${p.year} → rozwiązania dla seniorów, przeciw wykluczeniu cyfrowemu i ułatwiające dojazd.`,
+      text: t("rule.depopulation", {
+        change: pct(Math.abs(p.popChange10y), locale),
+        from: String(p.year - 10),
+        to: String(p.year),
+      }),
       themes: ["seniors", "digital", "mobility"],
       weight: 1,
     });
@@ -227,7 +278,7 @@ export function profileSignals(
   if (p.kind !== "miejska") {
     out.push({
       id: "rural",
-      text: `${p.kind === "wiejska" ? "Gmina wiejska" : "Gmina miejsko-wiejska (z obszarami wiejskimi)"} — do usług trzeba często dojechać → rozwiązania ułatwiające dojazd i poruszanie się.`,
+      text: t(p.kind === "wiejska" ? "rule.rural" : "rule.urbanRural"),
       themes: ["mobility"],
       weight: 1,
     });
@@ -235,10 +286,19 @@ export function profileSignals(
   const visible = reported
     .filter((r) => r.count !== null && r.count >= K_ANONYMITY)
     .sort((a, b) => (b.count ?? 0) - (a.count ?? 0));
+  const where =
+    locale === "en"
+      ? powiatNameIn(opts.powiatName ?? p.powiatName, "en")
+      : powiatLocative(opts.powiatName ?? p.powiatName);
   for (const r of visible) {
     out.push({
       id: "reported",
-      text: `W ${powiatLocative(powiatName)} w ostatnich 90 dniach zgłoszono ${r.count} ${pluralPl(r.count ?? 0, "potrzebę", "potrzeby", "potrzeb")} w obszarze „${MAPA_AREA_LABEL[r.area]}” → rozwiązania z tego obszaru.`,
+      text: t("rule.reported", {
+        where,
+        count: r.count ?? 0,
+        days: opts.windowDays ?? 90,
+        area: labels.area[r.area],
+      }),
       themes: [`area:${r.area}`],
       weight: 2,
     });
@@ -246,7 +306,7 @@ export function profileSignals(
   if (out.length === 0) {
     out.push({
       id: "none",
-      text: `Dane GUS nie wskazują tu szczególnych potrzeb (udział osób 80+ nie wyższy niż mediana, ludność nie maleje, gmina miejska) → pokazujemy rozwiązania wybrane przez ROPS do upowszechniania.`,
+      text: t("rule.none"),
       themes: [],
       weight: 0,
     });
@@ -254,11 +314,15 @@ export function profileSignals(
   return out;
 }
 
-/** „powiat bocheński" as is; a city with powiat rights says so. */
-export function powiatDisplay(powiatName: string): string {
-  return /^powiat\s/i.test(powiatName)
-    ? powiatName
-    : `miasto na prawach powiatu ${powiatName}`;
+/**
+ * „powiat bocheński" as is, a city with powiat rights says so; in English
+ * "Bochnia County" / "Kraków (a city with county rights)".
+ */
+export function powiatDisplay(powiatName: string, locale = "pl"): string {
+  const isLand = /^powiat\s/i.test(powiatName);
+  const l = loc(locale);
+  const name = l === "en" ? powiatNameIn(powiatName, "en") : powiatName;
+  return isLand ? name : municipalityT(l)("cityCounty", { name });
 }
 
 /** „powiecie bocheńskim" / „Krakowie" — good enough for the 22 powiats. */
@@ -291,9 +355,14 @@ export type Recommendation = {
 export function recommend(
   cards: ProfileCard[],
   signals: ProfileSignal[],
-  opts: { limit?: number; ramowyPlanIds?: ReadonlySet<string> } = {},
+  opts: {
+    limit?: number;
+    ramowyPlanIds?: ReadonlySet<string>;
+    locale?: string;
+  } = {},
 ): Recommendation[] {
   const limit = opts.limit ?? 6;
+  const locale = opts.locale ?? "pl";
   const ramowy = opts.ramowyPlanIds ?? new Set<string>();
   const weights = new Map<ThemeId, number>();
   for (const s of signals)
@@ -319,7 +388,7 @@ export function recommend(
     const matches: ThemeMatch[] = [];
     let score = 0;
     for (const [theme, w] of weights) {
-      const m = matchTheme(card, theme);
+      const m = matchTheme(card, theme, locale);
       if (m) {
         matches.push(m);
         score += w;

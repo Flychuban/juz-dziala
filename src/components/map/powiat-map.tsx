@@ -4,12 +4,13 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { geoArea, geoMercator, geoPath } from "d3-geo";
+import { getLocale, getTranslations } from "next-intl/server";
 import { feature } from "topojson-client";
 import { type GeometryCollection, type Topology } from "topojson-specification";
 
 import { cn } from "~/lib/utils";
 import { PowiatMapSvg, type MapShape } from "./powiat-map-svg";
-import { POWIAT_NAMES, powiatKey } from "./powiaty";
+import { POWIAT_NAMES, POWIAT_NAMES_EN, powiatKey } from "./powiaty";
 
 type PowiatProps = { teryt?: string | number; name?: string };
 
@@ -33,12 +34,15 @@ async function loadTopology(): Promise<Topology | null> {
   }
 }
 
-const NUM = new Intl.NumberFormat("pl-PL", { maximumFractionDigits: 1 });
+const NUM: Record<"pl" | "en", Intl.NumberFormat> = {
+  pl: new Intl.NumberFormat("pl-PL", { maximumFractionDigits: 1 }),
+  en: new Intl.NumberFormat("en-GB", { maximumFractionDigits: 1 }),
+};
 
 type Bin = { from: number; to: number; label: string; fill: string };
 
 /** Sequential bins: one hue (primary) mixed into the background, light → dark. */
-function makeBins(values: number[]): Bin[] {
+function makeBins(values: number[], num: Intl.NumberFormat): Bin[] {
   const pos = [...new Set(values.filter((v) => v > 0))].sort((a, b) => a - b);
   if (pos.length === 0) return [];
   const shade = (i: number, n: number) => {
@@ -49,7 +53,7 @@ function makeBins(values: number[]): Bin[] {
     return pos.map((v, i) => ({
       from: v,
       to: v,
-      label: NUM.format(v),
+      label: num.format(v),
       fill: shade(i, pos.length),
     }));
   }
@@ -70,9 +74,7 @@ function makeBins(values: number[]): Bin[] {
       from,
       to,
       label:
-        from === to
-          ? NUM.format(from)
-          : `${NUM.format(from)}–${NUM.format(to)}`,
+        from === to ? num.format(from) : `${num.format(from)}–${num.format(to)}`,
       fill: shade(i, n),
     });
   }
@@ -83,8 +85,12 @@ function binFor(bins: Bin[], v: number) {
   return bins.find((b) => v >= b.from && v <= b.to) ?? bins.at(-1);
 }
 
-/** „powiat bocheński" for land powiats, „Kraków" for cities (from the map or the fallback list). */
-function fullName(key: string, name?: string) {
+/**
+ * „powiat bocheński" for land powiats, „Kraków" for cities (from the map or
+ * the fallback list); in English "Bochnia County" / "Kraków".
+ */
+function fullName(key: string, name?: string, locale = "pl") {
+  if (locale === "en" && POWIAT_NAMES_EN[key]) return POWIAT_NAMES_EN[key];
   const n = (name ?? POWIAT_NAMES[key] ?? key).trim();
   if (/^powiat\s/i.test(n))
     return n.replace(/^powiat\s+(m\.\s*)?/i, (_m, city: string | undefined) =>
@@ -108,8 +114,8 @@ function fullName(key: string, name?: string) {
  * @param values          TERYT (4-digit powiat code, or longer — the first 4 digits are used) → number.
  * @param label           What the numbers are, e.g. „Zgłoszone potrzeby w 2026 r." (table caption, map name).
  * @param highlight       TERYT codes to outline in the accent colour (e.g. the user's powiat).
- * @param highlightLabel  Word shown in the table for highlighted rows; default „wyróżniony".
- * @param valueLabel      Table column header for the numbers; default „Liczba".
+ * @param highlightLabel  Word shown in the table for highlighted rows; default „wyróżniony" / "highlighted".
+ * @param valueLabel      Table column header for the numbers; default „Liczba" / "Number".
  * @param hrefFor         Optional link per powiat (server-side function), e.g. teryt => `/municipality/${teryt}`.
  * @param source          Optional source line rendered under the map (pass a <SourceLine/>).
  */
@@ -117,8 +123,8 @@ export async function PowiatMap({
   values,
   label,
   highlight = [],
-  highlightLabel = "wyróżniony",
-  valueLabel = "Liczba",
+  highlightLabel,
+  valueLabel,
   hrefFor,
   source,
   className,
@@ -132,18 +138,23 @@ export async function PowiatMap({
   source?: React.ReactNode;
   className?: string;
 }) {
+  const t = await getTranslations("municipality.map");
+  const locale = (await getLocale()) === "en" ? "en" : "pl";
+  const num = NUM[locale];
+  highlightLabel ??= t("highlighted");
+  valueLabel ??= t("value");
   const vals = new Map<string, number>();
   for (const [k, v] of Object.entries(values)) {
     if (Number.isFinite(v)) vals.set(powiatKey(k), v);
   }
   const hl = new Set(highlight.map(powiatKey));
-  const bins = makeBins([...vals.values()]);
+  const bins = makeBins([...vals.values()], num);
 
   const topo = await loadTopology();
   let shapes: MapShape[] = [];
   let height = 0;
   const names = new Map<string, string>(
-    Object.keys(POWIAT_NAMES).map((k) => [k, fullName(k)]),
+    Object.keys(POWIAT_NAMES).map((k) => [k, fullName(k, undefined, locale)]),
   );
 
   if (topo) {
@@ -170,8 +181,8 @@ export async function PowiatMap({
         const d = gen(f);
         if (!key || !d) return [];
         const name = f.properties?.name
-          ? fullName(key, f.properties.name)
-          : fullName(key);
+          ? fullName(key, f.properties.name, locale)
+          : fullName(key, undefined, locale);
         names.set(key, name);
         const v = vals.get(key);
         return [
@@ -202,7 +213,7 @@ export async function PowiatMap({
     .sort(
       (a, b) =>
         (b.value ?? -Infinity) - (a.value ?? -Infinity) ||
-        a.name.localeCompare(b.name, "pl"),
+        a.name.localeCompare(b.name, locale),
     );
   const anyMissing = rows.some((r) => r.value === null);
   const anyZero = rows.some((r) => r.value !== null && r.value <= 0);
@@ -222,16 +233,17 @@ export async function PowiatMap({
             height={height}
             shapes={shapes}
             label={label}
+            locale={locale}
           />
         ) : (
           <p className="border-input bg-surface rounded-md border border-dashed p-4">
-            Mapa jest chwilowo niedostępna. Wszystkie dane są w tabeli.
+            {t("unavailable")}
           </p>
         )}
         {shapes.length > 0 ? (
           <div className="mt-4">
             <p className="text-sm font-bold">
-              Legenda: {valueLabel.toLowerCase()}
+              {t("legend", { label: valueLabel.toLowerCase() })}
             </p>
             <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
               {bins.map((b) => (
@@ -259,7 +271,7 @@ export async function PowiatMap({
                     aria-hidden="true"
                     className="border-input bg-background inline-block size-5 rounded-sm border border-dashed"
                   />
-                  brak danych
+                  {t("noData")}
                 </li>
               ) : null}
               {hl.size > 0 ? (
@@ -285,7 +297,7 @@ export async function PowiatMap({
           <thead className="bg-surface">
             <tr className="border-hairline border-b">
               <th scope="col" className="px-4 py-2 text-left font-semibold">
-                Powiat
+                {t("colPowiat")}
               </th>
               <th scope="col" className="px-4 py-2 text-right font-semibold">
                 {valueLabel}
@@ -322,9 +334,9 @@ export async function PowiatMap({
                   </th>
                   <td className="px-4 py-1.5 text-right">
                     {r.value === null ? (
-                      <span className="text-muted-foreground">brak danych</span>
+                      <span className="text-muted-foreground">{t("noData")}</span>
                     ) : (
-                      NUM.format(r.value)
+                      num.format(r.value)
                     )}
                   </td>
                 </tr>

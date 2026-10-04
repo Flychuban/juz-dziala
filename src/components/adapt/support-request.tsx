@@ -1,17 +1,24 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useTranslations } from "next-intl";
 import { SendIcon } from "lucide-react";
 
 import { CaseCreatedPanel } from "~/components/cases/case-created-panel";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import type { PlanInputs, PlanMode } from "~/server/adapt/options";
+import {
+  isValidationKey,
+  MAX_NEEDS_CHARS,
+  type PlanInputs,
+  type PlanSource,
+} from "~/server/adapt/options";
 import { api } from "~/trpc/react";
 
 /**
  * „Poproś ROPS o wsparcie we wdrożeniu" — sends the plan as a Sprawa
- * (kind „adapt") and shows the case code. The e-mail is optional.
+ * (kind „adapt") and shows the case code. The e-mail is optional. This is
+ * the main action under a finished plan.
  */
 export function SupportRequest({
   inputs,
@@ -20,9 +27,11 @@ export function SupportRequest({
 }: {
   inputs: PlanInputs;
   markdown: string;
-  mode: PlanMode;
+  mode: PlanSource;
 }) {
   const id = useId();
+  const t = useTranslations("adapt.support");
+  const tv = useTranslations("adapt.validation");
   const [email, setEmail] = useState("");
   const send = api.adapt.requestSupport.useMutation();
 
@@ -31,32 +40,29 @@ export function SupportRequest({
       <CaseCreatedPanel
         code={send.data.code}
         token={send.data.accessToken}
-        heading="Wysłaliśmy plan do ROPS"
+        heading={t("sent")}
       />
     );
   }
 
   const zod = send.error?.data?.zodError;
-  const fieldError = (
-    zod?.fieldErrors as Record<string, string[] | undefined> | undefined
-  )?.email?.[0];
+  const fields = zod?.fieldErrors as Record<string, string[] | undefined> | undefined;
+  const rawField = fields?.email?.[0];
+  const fieldError = rawField
+    ? isValidationKey(rawField)
+      ? tv(rawField, { max: MAX_NEEDS_CHARS })
+      : rawField
+    : undefined;
   const error = send.error
-    ? (fieldError ??
-      (zod ? "Sprawdź dane i spróbuj ponownie." : send.error.message))
+    ? (fieldError ?? (zod ? t("checkData") : send.error.message))
     : null;
 
   return (
-    <section
-      aria-labelledby={`${id}-h`}
-      className="border-hairline rounded-lg border p-5 md:p-6"
-    >
-      <h2 id={`${id}-h`} className="font-display text-xl font-bold">
-        Poproś ROPS o wsparcie we wdrożeniu
+    <section aria-labelledby={`${id}-h`}>
+      <h2 id={`${id}-h`} className="font-display text-xl font-bold md:text-2xl">
+        {t("heading")}
       </h2>
-      <p className="mt-2 max-w-[62ch]">
-        Wyślemy ten projekt planu do specjalistów ROPS w Krakowie. Dostaniesz
-        kod sprawy — po nim sprawdzisz odpowiedź, bez zakładania konta.
-      </p>
+      <p className="mt-2 max-w-[62ch]">{t("lead")}</p>
       <form
         noValidate
         className="mt-4 flex flex-col items-start gap-4"
@@ -72,10 +78,10 @@ export function SupportRequest({
       >
         <div className="w-full max-w-md">
           <label htmlFor={`${id}-email`} className="block font-semibold">
-            E-mail instytucji do odpowiedzi (nieobowiązkowo)
+            {t("emailLabel")}
           </label>
           <p id={`${id}-hint`} className="text-muted-foreground text-[0.9375rem]">
-            Zapiszemy go zaszyfrowany i użyjemy tylko w tej sprawie.
+            {t("emailHint")}
           </p>
           <Input
             id={`${id}-email`}
@@ -95,13 +101,13 @@ export function SupportRequest({
             role="alert"
             className="border-destructive border-l-4 pl-3 font-semibold"
           >
-            <span className="text-destructive">Nie udało się wysłać: </span>
+            <span className="text-destructive">{t("errorPrefix")} </span>
             {error}
           </p>
         ) : null}
         <Button type="submit" disabled={send.isPending}>
           <SendIcon aria-hidden="true" />
-          {send.isPending ? "Wysyłanie…" : "Wyślij plan do ROPS"}
+          {send.isPending ? t("sending") : t("send")}
         </Button>
       </form>
     </section>
