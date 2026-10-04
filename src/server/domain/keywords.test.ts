@@ -221,3 +221,46 @@ describe("keywordSearch", () => {
     expect(worst).toBeLessThan(50);
   });
 });
+
+describe("English (the translated cards)", () => {
+  const indexEn = buildKeywordIndex(FIXTURE_CARDS, { lang: "en" });
+  const searchEn = (q: string) => keywordSearch(indexEn, FIXTURE_CARDS, q);
+
+  it("indexes only cards that have an English translation", () => {
+    expect(indexEn.lang).toBe("en");
+    expect(indexEn.mini.documentCount).toBe(FIXTURE_CARDS.filter((c) => c.en).length);
+    expect(buildKeywordIndex(FIXTURE_CARDS).lang).toBe("pl");
+  });
+
+  it("expands everyday English into the card language, by stem and phrase", () => {
+    const a = analyzeQuery("My nan lives alone and mixes up her pills", "en");
+    const groups = a.triggeredGroups.map((g) => g.id);
+    expect(groups).toEqual(expect.arrayContaining(["seniors", "loneliness", "medication"]));
+    expect(a.detectedAreas).toEqual(expect.arrayContaining(["seniors", "health"]));
+    expect(a.triggeredGroups.find((g) => g.id === "loneliness")?.matched).toContain("lives alone");
+  });
+
+  it("reads ages, but not durations", () => {
+    expect(analyzeQuery("Mum is 81", "en").triggeredGroups.map((g) => g.id)).toContain("seniors");
+    expect(analyzeQuery("a 16-year-old boy", "en").triggeredGroups.map((g) => g.id)).toContain("family");
+    expect(analyzeQuery("aged 73", "en").triggeredGroups.map((g) => g.id)).toContain("seniors");
+    expect(analyzeQuery("it was 5 years ago", "en").triggeredGroups).toEqual([]);
+    expect(analyzeQuery("for 70 days", "en").triggeredGroups).toEqual([]);
+  });
+
+  it("finds the English card for an English query", () => {
+    expect(searchEn("My grandad is lonely and isolated").results[0]?.cardId).toBe("c001");
+    expect(searchEn("blind dad can't take the bus on his own").results[0]?.cardId).toBe("c004");
+    expect(searchEn("teenager with depression").results[0]?.cardId).toBe("c002");
+  });
+
+  it("reports the resident's own words and the card's English words", () => {
+    const hit = searchEn("she forgets her pills").results.find((h) => h.cardId === "c006");
+    expect(hit?.matchedUserTerms).toEqual(expect.arrayContaining(["pills"]));
+    expect(hit?.matchedCardTerms.length).toBeGreaterThan(0);
+  });
+
+  it("strips English placeholders too", () => {
+    expect(analyzeQuery("call me on [phone], [email], Mr [person]", "en").terms.map((t) => t.term)).not.toContain("phone");
+  });
+});

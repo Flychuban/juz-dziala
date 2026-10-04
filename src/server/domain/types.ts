@@ -30,6 +30,21 @@ export type SectionKey = (typeof SECTION_KEYS)[number];
 
 export type LibrarySentence = { id: string; section: SectionKey; text: string };
 
+/**
+ * The card in English, translated sentence by sentence with the Polish ids
+ * kept (data/library.en.json → innovations.en). Attached only while it is
+ * current: a translation of an older version of the card is dropped, and the
+ * Polish text is shown instead.
+ */
+export type LibraryCardEn = {
+  title: string;
+  sections: Record<SectionKey, string>;
+  /** sentence id → English text. */
+  sentences: Record<string, string>;
+  keywords: string[];
+  categoryLabels: string[];
+};
+
 export type LibraryCard = {
   id: string;
   slug: string;
@@ -50,6 +65,8 @@ export type LibraryCard = {
   sourceUrl: string;
   capturedAt: string;
   sha256: string;
+  /** English translation, when one exists and matches this version of the card. */
+  en?: LibraryCardEn | null;
 };
 
 export const mapaAreaSchema = z.enum(MAPA_AREAS);

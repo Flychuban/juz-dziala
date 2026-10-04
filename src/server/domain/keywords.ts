@@ -1,14 +1,20 @@
 /**
  * The instant keyword matcher: a MiniSearch index over the library cards with a
- * Polish stemmer and an everyday-language synonym layer. No network, no model;
+ * stemmer and an everyday-language synonym layer, in Polish (the cards as
+ * published) or English (their translations, `card.en`). No network, no model;
  * it answers in a few milliseconds and is what the page shows while the AI
  * match is still running, and what it falls back to when the AI fails.
  */
 import MiniSearch from "minisearch";
+import { isStopwordEn, processTermEn, stemEn } from "./english";
 import { fold, isStopword, normalize, stem, tokenize, tokenizeWithOffsets, type Token } from "./polish";
-import { PII_PLACEHOLDERS } from "./redact";
-import { AGE_BANDS, SYNONYM_GROUPS, type SynonymGroup } from "./synonyms";
+import { ALL_PII_PLACEHOLDERS } from "./redact";
+import { AGE_BANDS, SYNONYM_GROUPS, type AgeBand, type SynonymGroup } from "./synonyms";
+import { AGE_BANDS_EN, SYNONYM_GROUPS_EN } from "./synonyms.en";
 import type { LibraryCard, MapaArea } from "./types";
+
+/** The language of an index and of the query analysis run against it. */
+export type MatchLang = "pl" | "en";
 
 /** Field boosts: title 3, keywords 2, problems and target group 1.5, the rest 1. */
 export const FIELD_BOOSTS = {
@@ -47,18 +53,33 @@ export const LOW_CONFIDENCE_THRESHOLD = 0.6;
 type IndexedDoc = { id: string } & Record<Field, string>;
 
 export type KeywordIndex = {
+  lang: MatchLang;
   mini: MiniSearch<IndexedDoc>;
   /** cardId → stem → the card's own spelling of the first word with that stem. */
   surface: Map<string, Map<string, string>>;
   cardsById: Map<string, LibraryCard>;
 };
 
-/** Index-time term processing: fold, drop stopwords and single letters, stem. */
+/** Index-time term processing (Polish): fold, drop stopwords and single letters, stem. */
 export function processTerm(term: string): string | null {
   const f = fold(term);
   if (f.length < 2 || isStopword(f)) return null;
   return stem(f);
 }
+
+/** Everything that differs between the Polish and the English matcher. */
+type LangProfile = {
+  processTerm: (term: string) => string | null;
+  stem: (word: string) => string;
+  isStopword: (word: string) => boolean;
+  groups: readonly SynonymGroup[];
+  ageBands: readonly AgeBand[];
+  detectAges: (text: string) => { age: number; surface: string }[];
+  /** Compare diacritics when the text uses Polish ones („lęki" is not „leki"). */
+  diacritics: boolean;
+  /** The card text to index in this language; null when the card has none. */
+  fields: (card: LibraryCard) => Record<Field, string> | null;
+};
 
 function cardFields(card: LibraryCard): Record<Field, string> {
   return {
@@ -72,32 +93,48 @@ function cardFields(card: LibraryCard): Record<Field, string> {
   };
 }
 
-export function buildKeywordIndex(cards: readonly LibraryCard[]): KeywordIndex {
+function cardFieldsEn(card: LibraryCard): Record<Field, string> | null {
+  const en = card.en;
+  if (!en) return null;
+  return {
+    title: en.title,
+    keywords: en.keywords.join(" "),
+    problems: en.sections.problems,
+    targetGroup: en.sections.targetGroup,
+    solution: en.sections.solution,
+    whoCanUse: en.sections.whoCanUse,
+    categoryLabels: en.categoryLabels.join(" "),
+  };
+}
+
+export function buildKeywordIndex(cards: readonly LibraryCard[], { lang = "pl" }: { lang?: MatchLang } = {}): KeywordIndex {
+  const profile = PROFILES[lang];
   const mini = new MiniSearch<IndexedDoc>({
     fields: FIELDS,
     idField: "id",
     tokenize: (text) => tokenize(text),
-    processTerm: (term) => processTerm(term) ?? null,
+    processTerm: (term) => profile.processTerm(term) ?? null,
   });
   const surface = new Map<string, Map<string, string>>();
   const cardsById = new Map<string, LibraryCard>();
   const docs: IndexedDoc[] = [];
   for (const card of cards) {
     if (cardsById.has(card.id)) continue;
+    const fields = profile.fields(card);
+    if (!fields) continue;
     cardsById.set(card.id, card);
-    const fields = cardFields(card);
     docs.push({ id: card.id, ...fields });
     const words = new Map<string, string>();
     for (const field of FIELDS) {
       for (const token of tokenizeWithOffsets(fields[field])) {
-        const s = processTerm(token.text);
+        const s = profile.processTerm(token.text);
         if (s && !words.has(s)) words.set(s, token.text);
       }
     }
     surface.set(card.id, words);
   }
   mini.addAll(docs);
-  return { mini, surface, cardsById };
+  return { lang, mini, surface, cardsById };
 }
 
 // ---------------------------------------------------------------------------
@@ -115,21 +152,24 @@ function diacriticStem(word: string): string {
 type TriggerWord = { folded: string; withDiacritics: string };
 type CompiledTrigger = { group: SynonymGroup; phrase: string; words: TriggerWord[] };
 
-function compileWord(word: string): TriggerWord {
-  return { folded: stem(word), withDiacritics: diacriticStem(word) };
-}
-
-let compiledTriggers: CompiledTrigger[] | null = null;
-function triggers(): CompiledTrigger[] {
-  if (compiledTriggers) return compiledTriggers;
-  compiledTriggers = [];
-  for (const group of SYNONYM_GROUPS) {
+const compiledTriggers = new Map<MatchLang, CompiledTrigger[]>();
+function triggers(lang: MatchLang): CompiledTrigger[] {
+  const cached = compiledTriggers.get(lang);
+  if (cached) return cached;
+  const profile = PROFILES[lang];
+  const compileWord = (word: string): TriggerWord =>
+    profile.diacritics
+      ? { folded: stem(word), withDiacritics: diacriticStem(word) }
+      : { folded: profile.stem(word), withDiacritics: profile.stem(word) };
+  const out: CompiledTrigger[] = [];
+  for (const group of profile.groups) {
     for (const phrase of [...group.triggers, ...group.expansions]) {
       const words = tokenize(phrase).map(compileWord);
-      if (words.length > 0) compiledTriggers.push({ group, phrase, words });
+      if (words.length > 0) out.push({ group, phrase, words });
     }
   }
-  return compiledTriggers;
+  compiledTriggers.set(lang, out);
+  return out;
 }
 
 type QueryWord = Token & { folded: string; stemFolded: string; stemDiacritics: string; stop: boolean };
@@ -168,7 +208,7 @@ const AGE_AFTER_PO = /(?<![\p{L}\p{N}])po[  ](\d{2,3})(?![\p{N}])/gu;
 const DURATION_BEFORE = /(?:^|[^\p{L}])(?:od|przez|za|do)[  ]*$/u;
 const DURATION_AFTER = /^[^\p{L}]*temu(?![\p{L}])/u;
 
-function detectAges(text: string): { age: number; surface: string }[] {
+function detectAgesPl(text: string): { age: number; surface: string }[] {
   const out: { age: number; surface: string }[] = [];
   for (const m of text.matchAll(AGE)) {
     const before = text.slice(Math.max(0, m.index - 8), m.index).toLowerCase();
@@ -183,11 +223,54 @@ function detectAges(text: string): { age: number; surface: string }[] {
   return out;
 }
 
-/** Redaction placeholders ("[telefon]") are not the resident's words; "telefon" must not reach the matcher. */
+/** "73 years old", "16-year-old", "aged 73", "Mum is 73", "over 70". Durations ("for 5 years") are not ages. */
+const AGE_EN = /(?<![\p{L}\p{N}])(\d{1,3})[ \u00A0]?-?[ \u00A0]?(?:years?|yrs?)[ \u00A0]?-?[ \u00A0]?old(?![\p{L}])/giu;
+const AGE_EN_AGED = /(?<![\p{L}\p{N}])aged[ \u00A0](\d{1,3})(?![\p{N}])/giu;
+const AGE_EN_IS =
+  /(?<![\p{L}\p{N}])(?:is|am|are|was|turned|turns|turning)[ \u00A0](\d{1,3})(?![\p{N}])(?![ \u00A0]?(?:%|percent|per|years?|yrs?|pounds?|euros?|eur|zł|zl|pln|złotys?|zlotys?|minutes?|hours?|days?|weeks?|months?|kg|km|m|cm|metres?|meters?)(?![\p{L}]))/giu;
+const AGE_EN_OVER = /(?<![\p{L}\p{N}])(?:over|past)[ \u00A0](\d{2,3})(?![\p{N}])/giu;
+
+function detectAgesEn(text: string): { age: number; surface: string }[] {
+  const out: { age: number; surface: string }[] = [];
+  for (const re of [AGE_EN, AGE_EN_AGED, AGE_EN_IS]) {
+    for (const m of text.matchAll(re)) out.push({ age: Number(m[1]), surface: m[0] });
+  }
+  for (const m of text.matchAll(AGE_EN_OVER)) {
+    const age = Number(m[1]);
+    if (age >= 60 && age <= 120) out.push({ age, surface: m[0] });
+  }
+  return out;
+}
+
+const PROFILES: Record<MatchLang, LangProfile> = {
+  pl: {
+    processTerm,
+    stem,
+    isStopword: (w) => isStopword(w),
+    groups: SYNONYM_GROUPS,
+    ageBands: AGE_BANDS,
+    detectAges: detectAgesPl,
+    diacritics: true,
+    fields: cardFields,
+  },
+  en: {
+    processTerm: processTermEn,
+    stem: stemEn,
+    isStopword: isStopwordEn,
+    groups: SYNONYM_GROUPS_EN,
+    ageBands: AGE_BANDS_EN,
+    detectAges: detectAgesEn,
+    diacritics: false,
+    fields: cardFieldsEn,
+  },
+};
+
+/**
+ * Redaction placeholders ("[telefon]", "[phone]") are not the resident's words;
+ * "telefon" must not reach the matcher. Both languages' placeholders are removed.
+ */
 const PLACEHOLDERS = new RegExp(
-  Object.values(PII_PLACEHOLDERS)
-    .map((p) => p.replace(/[[\]\\^$.*+?(){}|]/g, "\\$&"))
-    .join("|"),
+  ALL_PII_PLACEHOLDERS.map((p) => p.replace(/[[\]\\^$.*+?(){}|]/g, "\\$&")).join("|"),
   "gu",
 );
 
@@ -195,15 +278,19 @@ export function stripPlaceholders(text: string): string {
   return text.replace(PLACEHOLDERS, " ");
 }
 
-export function analyzeQuery(query: string): QueryAnalysis {
+export function analyzeQuery(query: string, lang: MatchLang = "pl"): QueryAnalysis {
+  const profile = PROFILES[lang];
   const text = stripPlaceholders(query.normalize("NFC"));
-  const compareDiacritics = POLISH_DIACRITIC.test(text);
-  const words: QueryWord[] = tokenizeWithOffsets(text).map((t) => ({
-    ...t,
-    stemFolded: stem(t.text),
-    stemDiacritics: diacriticStem(t.text),
-    stop: t.folded.length < 2 || isStopword(t.folded),
-  }));
+  const compareDiacritics = profile.diacritics && POLISH_DIACRITIC.test(text);
+  const words: QueryWord[] = tokenizeWithOffsets(text).map((t) => {
+    const s = profile.stem(t.text);
+    return {
+      ...t,
+      stemFolded: s,
+      stemDiacritics: profile.diacritics ? diacriticStem(t.text) : s,
+      stop: t.folded.length < 2 || profile.isStopword(t.folded),
+    };
+  });
 
   const terms = new Map<string, QueryTerm>();
   const add = (term: string, weight: number, sources: string[], direct: boolean) => {
@@ -229,7 +316,7 @@ export function analyzeQuery(query: string): QueryAnalysis {
     triggered.set(group.id, entry);
   };
 
-  for (const t of triggers()) {
+  for (const t of triggers(lang)) {
     const n = t.words.length;
     for (let i = 0; i + n <= words.length; i++) {
       let ok = true;
@@ -242,10 +329,10 @@ export function analyzeQuery(query: string): QueryAnalysis {
     }
   }
 
-  for (const { age, surface } of detectAges(text)) {
-    for (const band of AGE_BANDS) {
+  for (const { age, surface } of profile.detectAges(text)) {
+    for (const band of profile.ageBands) {
       if (age < band.min || age > band.max) continue;
-      const group = SYNONYM_GROUPS.find((g) => g.id === band.groupId);
+      const group = profile.groups.find((g) => g.id === band.groupId);
       if (group) trigger(group, [surface], band.extraExpansions);
     }
   }
@@ -257,7 +344,7 @@ export function analyzeQuery(query: string): QueryAnalysis {
     for (const a of group.areas) if (!detectedAreas.includes(a)) detectedAreas.push(a);
     for (const phrase of [...group.expansions, ...extra]) {
       for (const word of tokenize(phrase)) {
-        const term = processTerm(word);
+        const term = profile.processTerm(word);
         if (term) add(term, EXPANSION_WEIGHT, matched, false);
       }
     }
@@ -299,7 +386,7 @@ export function keywordSearch(
   query: string,
   { limit = 10 }: { limit?: number } = {},
 ): KeywordResult {
-  const analysis = analyzeQuery(query);
+  const analysis = analyzeQuery(query, index.lang);
   if (analysis.terms.length === 0) {
     return { results: [], detectedAreas: analysis.detectedAreas, isLowConfidence: true };
   }

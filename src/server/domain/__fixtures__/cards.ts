@@ -12,17 +12,42 @@ type CardSpec = {
   sections?: Partial<Record<SectionKey, string>>;
   mapaAreas?: MapaArea[];
   keywords?: string[];
+  /** An English translation: the same sections, sentence for sentence (same count per section). */
+  en?: { title: string; sections: Partial<Record<SectionKey, string>>; keywords?: string[]; categoryLabels?: string[] };
 };
+
+const splitSentences = (text: string) =>
+  text
+    .split(/(?<=[.!?])\s+/u)
+    .map((s) => s.trim())
+    .filter(Boolean);
 
 /** Splits each section into sentences with ids "<cardId>.s<n>", numbered across the card. */
 export function makeCard(spec: CardSpec): LibraryCard {
   const sections = Object.fromEntries(SECTION_KEYS.map((k) => [k, spec.sections?.[k] ?? ""])) as Record<SectionKey, string>;
   const sentences: LibraryCard["sentences"] = [];
   for (const section of SECTION_KEYS) {
-    for (const raw of sections[section].split(/(?<=[.!?])\s+/u)) {
-      const text = raw.trim();
-      if (text) sentences.push({ id: `${spec.id}.s${sentences.length + 1}`, section, text });
+    for (const text of splitSentences(sections[section])) {
+      sentences.push({ id: `${spec.id}.s${sentences.length + 1}`, section, text });
     }
+  }
+  let en: LibraryCard["en"] = null;
+  if (spec.en) {
+    const enSections = Object.fromEntries(SECTION_KEYS.map((k) => [k, spec.en?.sections[k] ?? ""])) as Record<SectionKey, string>;
+    const enSentences: Record<string, string> = {};
+    for (const section of SECTION_KEYS) {
+      const pl = sentences.filter((s) => s.section === section);
+      const translated = splitSentences(enSections[section]);
+      if (translated.length !== pl.length) throw new Error(`fixture ${spec.id}.${section}: ${translated.length} English sentences for ${pl.length} Polish`);
+      pl.forEach((s, i) => (enSentences[s.id] = translated[i]!));
+    }
+    en = {
+      title: spec.en.title,
+      sections: enSections,
+      sentences: enSentences,
+      keywords: spec.en.keywords ?? [],
+      categoryLabels: spec.en.categoryLabels ?? [],
+    };
   }
   return {
     id: spec.id,
@@ -43,6 +68,7 @@ export function makeCard(spec: CardSpec): LibraryCard {
     sourceUrl: `https://example.org/fixture/${spec.slug}`,
     capturedAt: "2026-10-03T00:00:00Z",
     sha256: "0".repeat(64),
+    en,
   };
 }
 
@@ -59,6 +85,16 @@ export const FIXTURE_CARDS: LibraryCard[] = [
       targetGroup: "Osoby starsze, niesamodzielne, mieszkające na wsi.",
       whoCanUse: "Ośrodki pomocy społecznej, organizacje pozarządowe.",
     },
+    en: {
+      title: "Mobile support for older people",
+      categoryLabels: ["For older people"],
+      sections: {
+        solution: "A team of specialists visits the older person at home. It offers coaching, legal advice and rehabilitation.",
+        problems: "Older people feel lonely and rejected. They experience social isolation.",
+        targetGroup: "Older, dependent people living in the countryside.",
+        whoCanUse: "Social welfare centres, non-governmental organisations.",
+      },
+    },
   }),
   makeCard({
     id: "c002",
@@ -71,6 +107,16 @@ export const FIXTURE_CARDS: LibraryCard[] = [
       problems: "Dzieci i młodzież doświadczają depresji i kryzysów psychicznych.",
       targetGroup: "Młodzież szkolna i nastolatki w kryzysie.",
       whoCanUse: "Szkoły, poradnie psychologiczno-pedagogiczne.",
+    },
+    en: {
+      title: "Psychoeducation for young people",
+      categoryLabels: ["For children, young people and families"],
+      sections: {
+        solution: "A set of psychoeducational materials for schools.",
+        problems: "Children and young people experience depression and mental health crises.",
+        targetGroup: "School pupils and teenagers in crisis.",
+        whoCanUse: "Schools, psychological and educational counselling centres.",
+      },
     },
   }),
   makeCard({
@@ -97,6 +143,15 @@ export const FIXTURE_CARDS: LibraryCard[] = [
       problems: "Osoby niewidome i słabowidzące nie mogą samodzielnie korzystać z komunikacji miejskiej.",
       targetGroup: "Osoby z niepełnosprawnością wzroku.",
     },
+    en: {
+      title: "An app for blind people",
+      categoryLabels: ["For people with sensory disabilities"],
+      sections: {
+        solution: "A phone app announces the number of the approaching bus.",
+        problems: "Blind and partially sighted people cannot use public transport on their own.",
+        targetGroup: "People with a visual impairment.",
+      },
+    },
   }),
   makeCard({
     id: "c005",
@@ -120,6 +175,15 @@ export const FIXTURE_CARDS: LibraryCard[] = [
       solution: "Organizer przypomina o porze przyjęcia leków i powiadamia opiekuna.",
       problems: "Seniorzy mylą leki i zapominają o ich przyjmowaniu.",
       targetGroup: "Osoby starsze przyjmujące wiele leków.",
+    },
+    en: {
+      title: "Smart pill organiser",
+      categoryLabels: ["For health and medicine"],
+      sections: {
+        solution: "The organiser reminds you when to take your medicines and notifies a carer.",
+        problems: "Older people mix up their medicines and forget to take them.",
+        targetGroup: "Older people who take many medicines.",
+      },
     },
   }),
   makeCard({
