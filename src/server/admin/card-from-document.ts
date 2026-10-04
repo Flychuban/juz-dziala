@@ -1,9 +1,10 @@
 import "server-only";
 
-import { env } from "~/env";
-
 import { z } from "zod";
 
+import { env } from "~/env";
+import { type Locale } from "~/i18n/config";
+import { translatorFor } from "~/i18n/server";
 import { MAPA_AREAS, SECTION_KEYS, type SectionKey } from "~/lib/domain";
 import { userData } from "~/server/ai/structured";
 import {
@@ -76,9 +77,12 @@ export type DraftResult =
 const PRIVATE_HOST =
   /^(localhost|127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.|0\.|\[?::1\]?$|.*\.local$|.*\.internal$)/i;
 
+type T = ReturnType<typeof translatorFor<"admin">>;
+
 /** Fetches a public page or PDF for drafting (http/https only, 10 MB, 20 s). */
 async function fetchUrl(
   raw: string,
+  t: T,
 ): Promise<
   | { kind: "pdf"; base64: string }
   | { kind: "text"; text: string }
@@ -88,10 +92,10 @@ async function fetchUrl(
   try {
     url = new URL(raw);
   } catch {
-    return { error: "To nie jest poprawny adres." };
+    return { error: t("document.badAddress") };
   }
   if (!/^https?:$/.test(url.protocol) || PRIVATE_HOST.test(url.hostname))
-    return { error: "Podaj publiczny adres strony lub pliku (https://…)." };
+    return { error: t("document.publicAddress") };
   try {
     const res = await fetch(url, {
       redirect: "follow",
@@ -100,13 +104,13 @@ async function fetchUrl(
         "user-agent": "JuzDziala/1.0 (ROPS Krakow; HackYeah prototype)",
       },
     });
-    if (!res.ok) return { error: `Strona odpowiedziała kodem ${res.status}.` };
+    if (!res.ok)
+      return { error: t("document.httpStatus", { status: res.status }) };
     const len = Number(res.headers.get("content-length") ?? 0);
-    if (len > MAX_DOCUMENT_BYTES)
-      return { error: "Plik jest większy niż 10 MB." };
+    if (len > MAX_DOCUMENT_BYTES) return { error: t("document.tooBig") };
     const buf = Buffer.from(await res.arrayBuffer());
     if (buf.byteLength > MAX_DOCUMENT_BYTES)
-      return { error: "Plik jest większy niż 10 MB." };
+      return { error: t("document.tooBig") };
     const type = res.headers.get("content-type") ?? "";
     if (type.includes("pdf") || buf.subarray(0, 5).toString() === "%PDF-")
       return { kind: "pdf", base64: buf.toString("base64") };
@@ -115,9 +119,7 @@ async function fetchUrl(
       : buf.toString("utf8");
     return { kind: "text", text };
   } catch {
-    return {
-      error: "Nie udało się pobrać strony. Sprawdź adres albo wklej tekst.",
-    };
+    return { error: t("document.fetchFailed") };
   }
 }
 
@@ -131,24 +133,23 @@ function clean(s: string, max = 4000) {
  * source on the server, for PDFs it is marked for a person to check.
  * Pasted text and web pages are redacted (redactPII) before they reach the
  * model; a PDF is sent as is, so only public documents should be used.
+ * The card is always drafted in Polish (the Library's source language);
+ * only the messages follow the staff member's language.
  */
 export async function cardFromDocument(
   input: DocumentInput,
+  locale: Locale = "pl",
 ): Promise<DraftResult> {
+  const t = translatorFor(locale, "admin");
   let content: UserContent;
   let sourceText: string | null = null;
   let source: CardDraft["source"];
 
   if (input.kind === "url") {
     if (env.DEMO_MODE === "1") {
-      return {
-        ok: false,
-        reason: "input",
-        message:
-          "W wersji demonstracyjnej pobieranie stron jest wyłączone. Wklej tekst albo dodaj plik PDF.",
-      };
+      return { ok: false, reason: "input", message: t("document.demoNoUrl") };
     }
-    const got = await fetchUrl(input.url);
+    const got = await fetchUrl(input.url, t);
     if ("error" in got)
       return { ok: false, reason: "input", message: got.error };
     source = { kind: "url", name: input.url, url: input.url };
@@ -171,10 +172,10 @@ export async function cardFromDocument(
       return {
         ok: false,
         reason: "input",
-        message: "Wklej dłuższy tekst — co najmniej kilka zdań opisu.",
+        message: t("document.textTooShort"),
       };
     sourceText = redactPII(input.text.slice(0, MAX_TEXT_CHARS)).text;
-    source = { kind: "text", name: "Wklejony tekst", url: null };
+    source = { kind: "text", name: t("document.pastedText"), url: null };
     content = [
       {
         type: "text",
@@ -184,21 +185,13 @@ export async function cardFromDocument(
   } else {
     const bytes = Math.floor((input.base64.length * 3) / 4);
     if (bytes > MAX_DOCUMENT_BYTES)
-      return {
-        ok: false,
-        reason: "input",
-        message: "Plik jest większy niż 10 MB.",
-      };
+      return { ok: false, reason: "input", message: t("document.tooBig") };
     if (
       !Buffer.from(input.base64.slice(0, 8), "base64")
         .toString()
         .startsWith("%PDF")
     )
-      return {
-        ok: false,
-        reason: "input",
-        message: "To nie wygląda na plik PDF.",
-      };
+      return { ok: false, reason: "input", message: t("document.notPdf") };
     source = { kind: "pdf", name: input.filename, url: null };
     content = [
       pdfBlock(input.base64, input.filename),
@@ -218,14 +211,9 @@ export async function cardFromDocument(
       ? {
           ok: false,
           reason: "unavailable",
-          message: "Asystent AI jest niedostępny — wypełnij kartę ręcznie.",
+          message: t("document.aiUnavailable"),
         }
-      : {
-          ok: false,
-          reason: "failed",
-          message:
-            "Nie udało się przygotować szkicu. Spróbuj ponownie albo wypełnij kartę ręcznie.",
-        };
+      : { ok: false, reason: "failed", message: t("document.failed") };
   }
 
   const field = (f: z.infer<typeof draftField>, max?: number): DraftField => {

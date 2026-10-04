@@ -1,7 +1,8 @@
 import { type Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { AdminHeader } from "~/components/admin/admin-header";
-import { EmptyState, formatDatePl } from "~/components/kit";
+import { EmptyState, formatDate } from "~/components/kit";
 import {
   Table,
   TableBody,
@@ -12,103 +13,113 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import { INTL_LOCALE, isLocale } from "~/i18n/config";
 import { api } from "~/trpc/server";
 
-export const metadata: Metadata = { title: "AI: koszty i jakość" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("admin.ai");
+  return { title: t("metaTitle") };
+}
 
-const INT = new Intl.NumberFormat("pl-PL");
-const SEC = new Intl.NumberFormat("pl-PL", { maximumFractionDigits: 1 });
-const PCT = new Intl.NumberFormat("pl-PL", {
-  style: "percent",
-  maximumFractionDigits: 0,
-});
-const USD = new Intl.NumberFormat("pl-PL", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 4,
-});
+/**
+ * Every AI function id written to jd_ai_call (aiStructured/aiStream `fn`),
+ * with a readable name in admin.json → ai.fn. An id not listed here is shown
+ * as „Inne" with its code underneath.
+ */
+const FN_IDS = [
+  "match",
+  "cases.triage",
+  "library.easyText",
+  "ideas.assist",
+  "ideas.sketch",
+  "ideas.application",
+  "adapt.plan",
+  "admin.proposeCallTopic",
+  "admin.cardFromDocument",
+  "tests.summary",
+  "i18n.translate",
+] as const;
+type FnId = (typeof FN_IDS)[number];
+const isFnId = (fn: string): fn is FnId =>
+  (FN_IDS as readonly string[]).includes(fn);
 
-/** Readable names for the AI functions (fn column); unknown ones show their code. */
-const FN_LABEL: Record<string, string> = {
-  "admin.cardFromDocument": "Karta z dokumentu",
-  "admin.proposeCallTopic": "Temat naboru z białych plam",
-};
-
-const rate = (r?: { rate?: number | null; count?: number; total?: number }) =>
-  r && typeof r.rate === "number"
-    ? `${PCT.format(r.rate)} (${r.count ?? 0}/${r.total ?? 0})`
-    : "—";
+type Rate = { rate?: number | null; count?: number; total?: number };
 
 export default async function AdminAiPage() {
-  const { byFn, totals, evals } = await api.admin.ai.summary();
+  const [{ byFn, totals, evals }, t, locale] = await Promise.all([
+    api.admin.ai.summary(),
+    getTranslations("admin.ai"),
+    getLocale(),
+  ]);
+  const intl = INTL_LOCALE[isLocale(locale) ? locale : "pl"];
+  const INT = new Intl.NumberFormat(intl);
+  const SEC = new Intl.NumberFormat(intl, { maximumFractionDigits: 1 });
+  const PCT = new Intl.NumberFormat(intl, {
+    style: "percent",
+    maximumFractionDigits: 0,
+  });
+  const USD = new Intl.NumberFormat(intl, {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 4,
+  });
+  const seconds = (ms: number) => t("seconds", { value: SEC.format(ms / 1000) });
+  const rate = (r?: Rate) =>
+    r && typeof r.rate === "number"
+      ? `${PCT.format(r.rate)} (${r.count ?? 0}/${r.total ?? 0})`
+      : "—";
+  const fnLabel = (fn: string) => (isFnId(fn) ? t(`fn.${fn}`) : t("fn.other"));
 
   return (
     <>
-      <AdminHeader
-        title="AI: koszty i jakość"
-        lead={
-          <p>
-            Każde wywołanie modelu Claude jest zapisywane z liczbą tokenów,
-            czasem odpowiedzi i kosztem. Te liczby są podstawą szacunku kosztów
-            utrzymania serwisu.
-          </p>
-        }
-      />
+      <AdminHeader title={t("title")} lead={<p>{t("lead")}</p>} />
       <div className="mx-auto max-w-6xl space-y-14 px-4 py-10">
         <section aria-labelledby="usage-heading">
           <h2
             id="usage-heading"
             className="font-display text-2xl font-bold md:text-3xl"
           >
-            Wywołania według funkcji
+            {t("usageHeading")}
           </h2>
           {byFn.length === 0 ? (
             <EmptyState
               className="mt-6"
               headingLevel="h3"
-              title="Brak wywołań AI"
-              description={
-                <p>
-                  Nie zapisano jeszcze żadnego wywołania. Tabela wypełni się po
-                  pierwszym dopasowaniu, triażu sprawy lub szkicu dokumentu.
-                </p>
-              }
+              title={t("emptyTitle")}
+              description={<p>{t("emptyBody")}</p>}
             />
           ) : (
             <div className="mt-6">
               <Table>
-                <TableCaption>
-                  Wywołania AI od początku działania serwisu (koszt w USD według
-                  cennika modelu)
-                </TableCaption>
+                <TableCaption>{t("caption")}</TableCaption>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Funkcja</TableHead>
-                    <TableHead className="text-right">Wywołania</TableHead>
-                    <TableHead className="text-right">Śr. czas</TableHead>
-                    <TableHead className="text-right">p95</TableHead>
+                    <TableHead>{t("colFn")}</TableHead>
+                    <TableHead className="text-right">{t("colCalls")}</TableHead>
+                    <TableHead className="text-right">{t("colAvg")}</TableHead>
+                    <TableHead className="text-right">{t("colP95")}</TableHead>
                     <TableHead className="text-right">
-                      Tokeny wej./wyj.
+                      {t("colTokens")}
                     </TableHead>
+                    <TableHead className="text-right">{t("colCache")}</TableHead>
+                    <TableHead className="text-right">{t("colCost")}</TableHead>
                     <TableHead className="text-right">
-                      Z pamięci podręcznej
+                      {t("colAvgCost")}
                     </TableHead>
-                    <TableHead className="text-right">Koszt łącznie</TableHead>
-                    <TableHead className="text-right">Śr. koszt</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {byFn.map((r) => (
                     <TableRow key={r.fn}>
                       <TableCell>
-                        <span className="font-semibold">
-                          {FN_LABEL[r.fn] ?? r.fn}
-                        </span>
+                        <span className="font-semibold">{fnLabel(r.fn)}</span>
                         <span className="text-muted-foreground block text-sm">
-                          {r.fn}
-                          {r.failed ? ` · nieudane: ${r.failed}` : ""}
+                          <code>{r.fn}</code>
+                          {r.failed
+                            ? ` · ${t("failed", { count: r.failed })}`
+                            : ""}
                           {r.lastAt
-                            ? ` · ostatnio ${formatDatePl(r.lastAt)}`
+                            ? ` · ${t("last", { date: formatDate(r.lastAt, locale) })}`
                             : ""}
                         </span>
                       </TableCell>
@@ -116,10 +127,10 @@ export default async function AdminAiPage() {
                         {INT.format(r.calls)}
                       </TableCell>
                       <TableCell className="text-right whitespace-nowrap">
-                        {SEC.format(r.avgLatencyMs / 1000)} s
+                        {seconds(r.avgLatencyMs)}
                       </TableCell>
                       <TableCell className="text-right whitespace-nowrap">
-                        {SEC.format(r.p95LatencyMs / 1000)} s
+                        {seconds(r.p95LatencyMs)}
                       </TableCell>
                       <TableCell className="text-right whitespace-nowrap">
                         {INT.format(r.inputTokens)} /{" "}
@@ -139,7 +150,7 @@ export default async function AdminAiPage() {
                 </TableBody>
                 <TableFooter>
                   <TableRow>
-                    <TableCell>Razem</TableCell>
+                    <TableCell>{t("total")}</TableCell>
                     <TableCell className="text-right">
                       {INT.format(totals.calls)}
                     </TableCell>
@@ -170,39 +181,35 @@ export default async function AdminAiPage() {
             id="eval-heading"
             className="font-display text-2xl font-bold md:text-3xl"
           >
-            Jakość dopasowania — ostatnia ewaluacja
+            {t("evalHeading")}
           </h2>
           <p className="text-foreground/85 mt-2 max-w-[68ch]">
-            Zamrożony zestaw 20 opisów problemów (w tym próby wstrzyknięcia
-            poleceń i dane osobowe do usunięcia). Najnowszy wynik dla każdej
-            metody dopasowania.
+            {t("evalLead")}
           </p>
           {evals.length === 0 ? (
-            <p className="mt-4 font-semibold">
-              Brak wyników ewaluacji (eval/results).
-            </p>
+            <p className="mt-4 font-semibold">{t("evalNone")}</p>
           ) : (
             <div className="mt-6">
               <Table>
-                <TableCaption>Wyniki z katalogu eval/results</TableCaption>
+                <TableCaption>{t("evalCaption")}</TableCaption>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Metoda</TableHead>
+                    <TableHead>{t("colMethod")}</TableHead>
+                    <TableHead className="text-right">{t("colHit3")}</TableHead>
+                    <TableHead className="text-right">{t("colTop1")}</TableHead>
                     <TableHead className="text-right">
-                      Trafienie w top 3
+                      {t("colAbstain")}
+                    </TableHead>
+                    <TableHead className="text-right">{t("colLeaks")}</TableHead>
+                    <TableHead className="text-right">
+                      {t("colInjections")}
                     </TableHead>
                     <TableHead className="text-right">
-                      Najlepsze na 1. miejscu
+                      {t("colLatency")}
                     </TableHead>
                     <TableHead className="text-right">
-                      Słuszne „nie wiem”
+                      {t("colAvgCost")}
                     </TableHead>
-                    <TableHead className="text-right">Wycieki danych</TableHead>
-                    <TableHead className="text-right">
-                      Wykonane wstrzyknięcia
-                    </TableHead>
-                    <TableHead className="text-right">Czas p50 / p95</TableHead>
-                    <TableHead className="text-right">Śr. koszt</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -211,14 +218,14 @@ export default async function AdminAiPage() {
                       <TableCell>
                         <span className="font-semibold">
                           {e.matcher === "keyword"
-                            ? "Słowa kluczowe (bez AI)"
+                            ? t("methodKeyword")
                             : e.matcher === "ai"
-                              ? "AI + weryfikacja"
+                              ? t("methodAi")
                               : e.matcher}
                         </span>
                         <span className="text-muted-foreground block text-sm">
-                          {formatDatePl(e.startedAt)} · przypadki:{" "}
-                          {e.summary.cases ?? "—"}
+                          {formatDate(e.startedAt, locale)} ·{" "}
+                          {t("cases", { count: e.summary.cases ?? "—" })}
                         </span>
                       </TableCell>
                       <TableCell className="text-right whitespace-nowrap">
@@ -238,7 +245,7 @@ export default async function AdminAiPage() {
                       </TableCell>
                       <TableCell className="text-right whitespace-nowrap">
                         {e.summary.latencyMs?.p50 !== undefined
-                          ? `${SEC.format((e.summary.latencyMs.p50 ?? 0) / 1000)} / ${SEC.format((e.summary.latencyMs.p95 ?? 0) / 1000)} s`
+                          ? `${SEC.format((e.summary.latencyMs.p50 ?? 0) / 1000)} / ${seconds(e.summary.latencyMs.p95 ?? 0)}`
                           : "—"}
                       </TableCell>
                       <TableCell className="text-right">
@@ -254,11 +261,8 @@ export default async function AdminAiPage() {
           )}
         </section>
 
-        <p className="border-hairline bg-surface max-w-[68ch] rounded-md border p-4">
-          Te tabele są podstawą szacunku kosztów utrzymania: średni koszt
-          wywołania razy spodziewana liczba spraw miesięcznie. Ceny modelu: 4
-          USD za milion tokenów wejściowych i 20 USD za milion wyjściowych;
-          odczyt z pamięci podręcznej 0,20 USD.
+        <p className="border-hairline max-w-[68ch] border-l-4 pl-4">
+          {t("costNote")}
         </p>
       </div>
     </>

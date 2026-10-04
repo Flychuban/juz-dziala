@@ -1,10 +1,12 @@
 import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
+import { translatorFor } from "~/i18n/server";
 import { INNOVATION_STATUS } from "~/lib/domain";
 import {
   categoryLabels,
   createInnovation,
+  englishState,
   innovationInputSchema,
   newInnovationSchema,
   saveInnovation,
@@ -76,6 +78,8 @@ export const adminLibraryRouter = createTRPCRouter({
         .limit(5);
       return {
         card,
+        /** Is the English translation made from the current Polish text? */
+        english: englishState(card),
         history: history.filter((h) => h.entity === "innovation"),
       };
     }),
@@ -95,7 +99,8 @@ export const adminLibraryRouter = createTRPCRouter({
         input.id,
         input.input,
       );
-      if (!res) throw new Error("Nie znaleziono karty.");
+      if (!res)
+        throw new Error(translatorFor(ctx.locale, "admin")("editor.notFound"));
       return res;
     }),
 

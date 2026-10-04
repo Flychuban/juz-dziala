@@ -8,6 +8,7 @@ import {
   recentCallDeliveries,
   saveCall,
 } from "~/server/admin/calls";
+import { translatorFor } from "~/i18n/server";
 import { createTRPCRouter, roleProcedure } from "~/server/api/trpc";
 import { calls, subscriptions } from "~/server/db/schema";
 
@@ -47,16 +48,23 @@ export const adminCallsRouter = createTRPCRouter({
         input: callInputSchema,
       }),
     )
-    .mutation(({ ctx, input }) =>
-      saveCall(ctx.db, actor(ctx.staff), input.id, input.input),
-    ),
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await saveCall(ctx.db, actor(ctx.staff), input.id, input.input);
+      } catch (e) {
+        if (e instanceof Error && e.message === "calls.notFound")
+          throw new Error(translatorFor(ctx.locale, "admin")("calls.notFound"));
+        throw e;
+      }
+    }),
 
   /** „Opublikuj zmiany": notify() + the deliveries it produced. */
   publish: rops
     .input(z.object({ id: z.string().min(1).max(80) }))
     .mutation(async ({ ctx, input }) => {
       const res = await publishCall(ctx.db, actor(ctx.staff), input.id);
-      if (!res) throw new Error("Nie znaleziono naboru.");
+      if (!res)
+        throw new Error(translatorFor(ctx.locale, "admin")("calls.notFound"));
       return res;
     }),
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -14,19 +15,18 @@ import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
+import { useLabels } from "~/i18n/use-labels";
 import {
   INNOVATION_STATUS,
-  INNOVATION_STATUS_LABEL,
-  MAPA_AREA_LABEL,
   MAPA_AREAS,
   SECTION_KEYS,
-  SECTION_LABEL,
   type InnovationStatus,
   type MapaArea,
   type SectionKey,
 } from "~/lib/domain";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
+import { fieldErrorsOf, useErrorText } from "./error-text";
 
 /** A drafted field from „Dodaj z dokumentu" (see server/admin/card-from-document). */
 export type DraftFieldView = {
@@ -50,21 +50,6 @@ export type EditorCard = {
   licence?: string | null;
 };
 
-const STATUS_HINT: Record<InnovationStatus, string> = {
-  draft: "Widoczna tylko w panelu. Nikt poza zespołem jej nie zobaczy.",
-  verified: "Treść sprawdzona, ale jeszcze niewidoczna dla mieszkańców.",
-  published: "Widoczna w Bibliotece i w dopasowaniu — od razu po zapisaniu.",
-};
-
-const CHECK_TEXT: Record<DraftFieldView["check"], string> = {
-  verified: "Cytat znaleziony w dokumencie.",
-  unverified: "Plik PDF: porównaj cytat z dokumentem.",
-  not_found:
-    "Nie znaleźliśmy tego cytatu w dokumencie — sprawdź szczególnie uważnie.",
-  missing:
-    "Dokument nie zawiera tej informacji — uzupełnij ręcznie albo zostaw puste.",
-};
-
 type FieldKey = "title" | SectionKey;
 
 function QuotePanel({
@@ -78,10 +63,11 @@ function QuotePanel({
   onCheck: (v: boolean) => void;
   id: string;
 }) {
+  const t = useTranslations("admin.editor");
   const ok = field.check === "verified";
   return (
     <aside
-      aria-label="Źródło w dokumencie"
+      aria-label={t("quoteSource")}
       className="border-hairline bg-surface rounded-md border p-4 text-[0.9375rem]"
     >
       <p className="flex items-start gap-2 font-semibold">
@@ -96,10 +82,13 @@ function QuotePanel({
             className="mt-0.5 size-5 shrink-0"
           />
         )}
-        {CHECK_TEXT[field.check]}
+        {t(`check.${field.check}`)}
       </p>
       {field.quote ? (
-        <blockquote className="border-primary mt-3 border-l-4 pl-3 italic">
+        <blockquote
+          lang="pl"
+          className="border-primary mt-3 border-l-4 pl-3 italic"
+        >
           „{field.quote}”
         </blockquote>
       ) : null}
@@ -115,7 +104,7 @@ function QuotePanel({
             onChange={(e) => onCheck(e.target.checked)}
             className="size-5 shrink-0 accent-[var(--primary)]"
           />
-          Sprawdziłam/em z dokumentem
+          {t("checked")}
         </label>
       ) : null}
     </aside>
@@ -139,6 +128,11 @@ export function InnovationEditor({
   categories: { slug: string; label: string }[];
   draft?: Partial<Record<FieldKey, DraftFieldView>> & { warnings?: string[] };
 }) {
+  const t = useTranslations("admin.editor");
+  const L = useLabels();
+  const errorText = useErrorText();
+  // Cards are written in Polish (the Library's source language).
+  const pl = useLocale() === "en" ? "pl" : undefined;
   const router = useRouter();
   const [card, setCard] = useState<EditorCard>(initial);
   const [keywords, setKeywords] = useState(initial.keywords.join(", "));
@@ -200,13 +194,7 @@ export function InnovationEditor({
     }
   }
 
-  const fieldErrors = (() => {
-    const z = (
-      error?.data as
-        { zodError?: { fieldErrors?: Record<string, string[]> } } | undefined
-    )?.zodError?.fieldErrors;
-    return z ? Object.values(z).flat().filter(Boolean) : [];
-  })();
+  const fieldErrors = fieldErrorsOf(error, errorText);
 
   const field = (k: FieldKey) => draft?.[k];
   const twoCol = (k: FieldKey) =>
@@ -219,9 +207,9 @@ export function InnovationEditor({
       {draft?.warnings && draft.warnings.length > 0 ? (
         <Alert role="note">
           <CircleAlertIcon aria-hidden="true" />
-          <AlertTitle>Uwagi asystenta do dokumentu</AlertTitle>
+          <AlertTitle>{t("warnings")}</AlertTitle>
           <AlertDescription>
-            <ul className="list-disc pl-5">
+            <ul className="list-disc pl-5" lang={pl}>
               {draft.warnings.map((w) => (
                 <li key={w}>{w}</li>
               ))}
@@ -233,10 +221,11 @@ export function InnovationEditor({
       <div className={twoCol("title")}>
         <div>
           <label htmlFor="f-title" className="block text-lg font-bold">
-            Tytuł
+            {t("title")}
           </label>
           <Input
             id="f-title"
+            lang={pl}
             value={card.title}
             onChange={(e) => set("title", e.target.value)}
             required
@@ -257,25 +246,25 @@ export function InnovationEditor({
 
       <fieldset className="space-y-8">
         <legend className="font-display mb-4 text-2xl font-bold">
-          Sześć sekcji karty
+          {t("sections")}
         </legend>
         {SECTION_KEYS.map((k) => (
           <div key={k} className={twoCol(k)}>
             <div>
               <label htmlFor={`f-${k}`} className="block text-lg font-bold">
-                {SECTION_LABEL[k]}
+                {L.section[k]}
               </label>
               {k === "authors" ? (
                 <p
                   id={`f-${k}-hint`}
                   className="text-foreground/85 mt-1 text-[0.9375rem]"
                 >
-                  Tylko organizacje, każda w osobnym wierszu. Imiona i nazwiska
-                  osób prywatnych usuwamy przy zapisie.
+                  {t("authorsHint")}
                 </p>
               ) : null}
               <Textarea
                 id={`f-${k}`}
+                lang={pl}
                 value={card.sections[k]}
                 onChange={(e) => setSection(k, e.target.value)}
                 aria-describedby={k === "authors" ? `f-${k}-hint` : undefined}
@@ -298,7 +287,7 @@ export function InnovationEditor({
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <fieldset>
-          <legend className="text-lg font-bold">Obszary Mapy Wyzwań</legend>
+          <legend className="text-lg font-bold">{t("areas")}</legend>
           <ul className="mt-2 space-y-1">
             {MAPA_AREAS.map((a) => (
               <li key={a}>
@@ -309,14 +298,14 @@ export function InnovationEditor({
                     onChange={() => set("mapaAreas", toggle(card.mapaAreas, a))}
                     className="size-5 accent-[var(--primary)]"
                   />
-                  {MAPA_AREA_LABEL[a]}
+                  {L.area[a]}
                 </label>
               </li>
             ))}
           </ul>
         </fieldset>
         <fieldset>
-          <legend className="text-lg font-bold">Kategorie Biblioteki</legend>
+          <legend className="text-lg font-bold">{t("categories")}</legend>
           <ul className="mt-2 space-y-1">
             {categories.map((c) => (
               <li key={c.slug}>
@@ -329,7 +318,7 @@ export function InnovationEditor({
                     }
                     className="size-5 accent-[var(--primary)]"
                   />
-                  {c.label}
+                  <span lang={pl}>{c.label}</span>
                 </label>
               </li>
             ))}
@@ -340,16 +329,17 @@ export function InnovationEditor({
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div>
           <label htmlFor="f-keywords" className="block text-lg font-bold">
-            Słowa kluczowe
+            {t("keywords")}
           </label>
           <p
             id="f-keywords-hint"
             className="text-foreground/85 mt-1 text-[0.9375rem]"
           >
-            Oddziel przecinkami. Puste pole — wybierzemy je z treści karty.
+            {t("keywordsHint")}
           </p>
           <Textarea
             id="f-keywords"
+            lang={pl}
             value={keywords}
             onChange={(e) => setKeywords(e.target.value)}
             aria-describedby="f-keywords-hint"
@@ -359,7 +349,7 @@ export function InnovationEditor({
         <div className="space-y-6">
           <div>
             <label htmlFor="f-video" className="block text-lg font-bold">
-              Film na YouTube (adres)
+              {t("video")}
             </label>
             <Input
               id="f-video"
@@ -378,7 +368,7 @@ export function InnovationEditor({
               onChange={(e) => set("testingOpen", e.target.checked)}
               className="size-5 accent-[var(--primary)]"
             />
-            Otwarta dla testerów (moduł „Testuj innowacje”)
+            {t("testing")}
           </label>
         </div>
       </div>
@@ -387,13 +377,13 @@ export function InnovationEditor({
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           <div>
             <label htmlFor="f-source" className="block text-lg font-bold">
-              Źródło (adres strony lub dokumentu)
+              {t("source")}
             </label>
             <p
               id="f-source-hint"
               className="text-foreground/85 mt-1 text-[0.9375rem]"
             >
-              Pokażemy je pod kartą jako „Źródło”. Wymagane.
+              {t("sourceHint")}
             </p>
             <Input
               id="f-source"
@@ -409,13 +399,13 @@ export function InnovationEditor({
           </div>
           <div>
             <label htmlFor="f-licence" className="block text-lg font-bold">
-              Licencja
+              {t("licence")}
             </label>
             <p
               id="f-licence-hint"
               className="text-foreground/85 mt-1 text-[0.9375rem]"
             >
-              Np. „CC BY 4.0”. Zostaw puste, jeśli nie wiadomo.
+              {t("licenceHint")}
             </p>
             <Input
               id="f-licence"
@@ -429,7 +419,7 @@ export function InnovationEditor({
       ) : null}
 
       <fieldset>
-        <legend className="text-lg font-bold">Status</legend>
+        <legend className="text-lg font-bold">{t("status")}</legend>
         <ul className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-3">
           {INNOVATION_STATUS.map((s) => (
             <li key={s}>
@@ -451,10 +441,10 @@ export function InnovationEditor({
                 />
                 <span>
                   <span className="block font-bold">
-                    {INNOVATION_STATUS_LABEL[s]}
+                    {L.innovationStatus[s]}
                   </span>
                   <span className="text-foreground/85 block text-[0.9375rem]">
-                    {STATUS_HINT[s]}
+                    {t(`statusHint.${s}`)}
                   </span>
                 </span>
               </label>
@@ -467,7 +457,7 @@ export function InnovationEditor({
         {error ? (
           <Alert variant="destructive">
             <CircleAlertIcon aria-hidden="true" />
-            <AlertTitle>Nie zapisano</AlertTitle>
+            <AlertTitle>{t("notSaved")}</AlertTitle>
             <AlertDescription>
               {fieldErrors.length ? (
                 <ul className="list-disc pl-5">
@@ -484,20 +474,14 @@ export function InnovationEditor({
         {save.data ? (
           <Alert variant="success" role="status">
             <CheckCircle2Icon aria-hidden="true" />
-            <AlertTitle>
-              Zapisano. Zmiana widoczna od razu na stronie.
-            </AlertTitle>
+            <AlertTitle>{t("saved")}</AlertTitle>
             <AlertDescription>
               <p>
                 {save.data.changed.length
-                  ? `Zmienione pola: ${save.data.changed.length}. `
-                  : "Bez zmian w treści. "}
-                Zdania: {save.data.sentences.kept} bez zmian,{" "}
-                {save.data.sentences.added} nowe, {save.data.sentences.removed}{" "}
-                usunięte.
-                {save.data.published
-                  ? " Karta opublikowana — subskrybenci obszaru dostaną powiadomienie."
-                  : ""}
+                  ? t("changedFields", { count: save.data.changed.length })
+                  : t("noContentChange")}{" "}
+                {t("sentences", save.data.sentences)}
+                {save.data.published ? ` ${t("publishedNotice")}` : ""}
               </p>
               {save.data.status === "published" ? (
                 <p>
@@ -505,7 +489,7 @@ export function InnovationEditor({
                     href={`/library/${save.data.slug}`}
                     className="font-semibold"
                   >
-                    Zobacz kartę w Bibliotece
+                    {t("viewCard")}
                     <ExternalLinkIcon
                       aria-hidden="true"
                       className="ml-1 inline size-4"
@@ -526,23 +510,24 @@ export function InnovationEditor({
         >
           <SaveIcon aria-hidden="true" />
           {busy
-            ? "Zapisywanie…"
+            ? t("saving")
             : mode === "edit"
-              ? "Zapisz zmiany"
+              ? t("saveChanges")
               : card.status === "draft"
-                ? "Zapisz jako szkic"
-                : "Zapisz kartę"}
+                ? t("saveDraft")
+                : t("saveCard")}
         </Button>
         {mode === "create" && drafted.length > 0 ? (
           <p className="tabular text-base font-semibold" aria-live="polite">
-            Sprawdzone: {drafted.length - unchecked} z {drafted.length}
-            {unchecked > 0
-              ? " — zaznacz każde pole po porównaniu z dokumentem."
-              : ""}
+            {t("checkedCount", {
+              done: drafted.length - unchecked,
+              total: drafted.length,
+            })}
+            {unchecked > 0 ? ` ${t("checkEach")}` : ""}
           </p>
         ) : null}
         <Button asChild variant="outline">
-          <Link href="/admin/library">Wróć do listy</Link>
+          <Link href="/admin/library">{t("backToList")}</Link>
         </Button>
       </div>
     </form>

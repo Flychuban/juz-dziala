@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import {
   CheckCircle2Icon,
@@ -13,17 +14,16 @@ import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
+import { useLabels } from "~/i18n/use-labels";
 import {
-  CALL_STATUS_LABEL,
   CALL_STATUSES,
-  MAPA_AREA_LABEL,
   MAPA_AREAS,
   type CallStatus,
   type MapaArea,
 } from "~/lib/domain";
-import { countPl } from "~/components/kit/format";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
+import { fieldErrorsOf, useErrorText } from "./error-text";
 
 export type CallForm = {
   id: string | null;
@@ -41,17 +41,6 @@ export type CallForm = {
   notes: string;
 };
 
-/** What happened to one notice, in words. Demo mode simulates sending. */
-function deliveryLabel(channel: "email" | "sms", status: string): string {
-  if (status === "sent") return "Wysłano";
-  if (status === "failed") return "Błąd wysyłki";
-  if (status === "simulated")
-    return channel === "email"
-      ? "Zapisano powiadomienie (tryb demonstracyjny — wysyłka symulowana)"
-      : "SMS — symulacja";
-  if (status === "skipped") return "Nie wysłano — poczta nie jest skonfigurowana";
-  return status;
-}
 
 const toNum = (s: string) => {
   const n = Number(s.replace(/\s/g, "").replace(",", "."));
@@ -70,6 +59,25 @@ export function CallEditor({
   initial: CallForm;
   subscribers: Record<string, number>;
 }) {
+  const t = useTranslations("admin.callEditor");
+  const tc = useTranslations("admin.calls");
+  const L = useLabels();
+  const errorText = useErrorText();
+  // Calls are written in Polish; the English UI marks the fields as Polish.
+  const pl = useLocale() === "en" ? "pl" : undefined;
+  /** What happened to one notice, in words. Demo mode simulates sending. */
+  const deliveryLabel = (channel: "email" | "sms", status: string) =>
+    status === "sent"
+      ? t("delivery.sent")
+      : status === "failed"
+        ? t("delivery.failed")
+        : status === "simulated"
+          ? channel === "email"
+            ? t("delivery.simulatedEmail")
+            : t("delivery.simulatedSms")
+          : status === "skipped"
+            ? t("delivery.skipped")
+            : status;
   const router = useRouter();
   const [f, setF] = useState<CallForm>(initial);
   const save = api.admin.calls.save.useMutation();
@@ -115,13 +123,7 @@ export function CallEditor({
     else router.refresh();
   }
 
-  const fieldErrors = (() => {
-    const z = (
-      error?.data as
-        { zodError?: { fieldErrors?: Record<string, string[]> } } | undefined
-    )?.zodError?.fieldErrors;
-    return z ? Object.values(z).flat().filter(Boolean) : [];
-  })();
+  const fieldErrors = fieldErrorsOf(error, errorText);
 
   const text = (
     k: keyof CallForm,
@@ -143,6 +145,7 @@ export function CallEditor({
       ) : null}
       <Input
         id={`c-${k}`}
+        lang={type === "text" ? pl : undefined}
         type={type}
         value={f[k] as string}
         onChange={(e) => set(k, e.target.value as never)}
@@ -164,22 +167,23 @@ export function CallEditor({
     >
       <div>
         <label htmlFor="c-name" className="block text-lg font-bold">
-          Nazwa naboru
+          {t("name")}
         </label>
         <Textarea
           id="c-name"
+          lang={pl}
           value={f.name}
           onChange={(e) => set("name", e.target.value)}
           className="mt-2 min-h-20"
         />
       </div>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {text("program", "Program", "Np. FERS 2021–2027, działanie 5.1")}
-        {text("operator", "Operator naboru")}
+        {text("program", t("program"), t("programHint"))}
+        {text("operator", t("operator"))}
       </div>
 
       <fieldset>
-        <legend className="text-lg font-bold">Status</legend>
+        <legend className="text-lg font-bold">{t("status")}</legend>
         <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {CALL_STATUSES.map((s) => (
             <li key={s}>
@@ -196,7 +200,7 @@ export function CallEditor({
                   onChange={() => set("status", s)}
                   className="size-5 accent-[var(--primary)]"
                 />
-                {CALL_STATUS_LABEL[s]}
+                {L.callStatus[s]}
               </label>
             </li>
           ))}
@@ -204,25 +208,26 @@ export function CallEditor({
       </fieldset>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {text("windowFrom", "Początek naboru", undefined, "date")}
-        {text("windowTo", "Koniec naboru", undefined, "date")}
-        {text("amountMax", "Maksymalna kwota (zł)", undefined, "number")}
-        {text("amountAvg", "Średnia kwota (zł)", undefined, "number")}
+        {text("windowFrom", t("windowFrom"), undefined, "date")}
+        {text("windowTo", t("windowTo"), undefined, "date")}
+        {text("amountMax", t("amountMax"), undefined, "number")}
+        {text("amountAvg", t("amountAvg"), undefined, "number")}
       </div>
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div>
           <label htmlFor="c-eligibility" className="block font-bold">
-            Kto może się zgłosić
+            {t("eligibility")}
           </label>
           <p
             id="c-eligibility-hint"
             className="text-foreground/85 mt-1 text-[0.9375rem]"
           >
-            Jeden warunek w wierszu.
+            {t("eligibilityHint")}
           </p>
           <Textarea
             id="c-eligibility"
+            lang={pl}
             value={f.eligibility}
             onChange={(e) => set("eligibility", e.target.value)}
             aria-describedby="c-eligibility-hint"
@@ -230,7 +235,7 @@ export function CallEditor({
           />
         </div>
         <fieldset>
-          <legend className="font-bold">Obszary Mapy Wyzwań</legend>
+          <legend className="font-bold">{t("areas")}</legend>
           <ul className="mt-2 space-y-1">
             {MAPA_AREAS.map((a) => (
               <li key={a}>
@@ -248,10 +253,10 @@ export function CallEditor({
                     }
                     className="size-5 accent-[var(--primary)]"
                   />
-                  {MAPA_AREA_LABEL[a]}
+                  {L.area[a]}
                   {subscribers[`area:${a}`] ? (
                     <span className="text-muted-foreground tabular text-sm">
-                      · subskrybenci: {subscribers[`area:${a}`]}
+                      {t("subscribers", { count: subscribers[`area:${a}`]! })}
                     </span>
                   ) : null}
                 </label>
@@ -262,18 +267,14 @@ export function CallEditor({
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {text(
-          "sourceUrl",
-          "Źródło — strona naboru (adres)",
-          "Ogłoszenie ROPS z regulaminem i dokumentami.",
-          "url",
-        )}
+        {text("sourceUrl", t("sourceUrl"), t("sourceUrlHint"), "url")}
         <div>
           <label htmlFor="c-notes" className="block font-bold">
-            Uwagi
+            {t("notes")}
           </label>
           <Textarea
             id="c-notes"
+            lang={pl}
             value={f.notes}
             onChange={(e) => set("notes", e.target.value)}
             className="mt-2 min-h-24"
@@ -285,7 +286,7 @@ export function CallEditor({
         {error ? (
           <Alert variant="destructive">
             <CircleAlertIcon aria-hidden="true" />
-            <AlertTitle>Nie zapisano</AlertTitle>
+            <AlertTitle>{t("notSaved")}</AlertTitle>
             <AlertDescription>
               {fieldErrors.length ? (
                 <ul className="list-disc pl-5">
@@ -302,13 +303,8 @@ export function CallEditor({
         {save.data && !publish.data && !save.data.created ? (
           <Alert variant="success" role="status">
             <CheckCircle2Icon aria-hidden="true" />
-            <AlertTitle>
-              Zapisano. Zmiana widoczna od razu na stronie.
-            </AlertTitle>
-            <AlertDescription>
-              Subskrybenci nie zostali powiadomieni — użyj „Zapisz i opublikuj
-              zmiany”.
-            </AlertDescription>
+            <AlertTitle>{t("saved")}</AlertTitle>
+            <AlertDescription>{t("savedHint")}</AlertDescription>
           </Alert>
         ) : null}
         {publish.data ? (
@@ -316,31 +312,25 @@ export function CallEditor({
             <MegaphoneIcon aria-hidden="true" />
             <AlertTitle>
               {publish.data.kind === "call.published"
-                ? "Nabór opublikowany."
-                : "Zmiany opublikowane."}{" "}
-              Powiadomiono {publish.data.deliveries.length}{" "}
-              {publish.data.deliveries.length === 1
-                ? "subskrybenta"
-                : "subskrybentów"}
-              .
+                ? t("published")
+                : t("changesPublished")}{" "}
+              {t("notified", { count: publish.data.deliveries.length })}
             </AlertTitle>
             <AlertDescription>
-              <p>Temat wiadomości: „{publish.data.subject}”</p>
+              <p>{t("subject", { subject: publish.data.subject })}</p>
 
               {publish.data.deliveries.length ? (
                 <ul className="mt-2 space-y-1">
                   {publish.data.deliveries.map((d, i) => (
                     <li key={i} className="tabular">
-                      {d.channel === "sms" ? "SMS" : "E-mail"} · {d.toMasked} ·{" "}
+                      {d.channel === "sms" ? tc("sms") : tc("email")} ·{" "}
+                      {d.toMasked} ·{" "}
                       {deliveryLabel(d.channel, d.status)}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p>
-                  Nikt jeszcze nie zapisał się na powiadomienia o naborach w
-                  tych obszarach.
-                </p>
+                <p>{t("nobodySubscribed")}</p>
               )}
             </AlertDescription>
           </Alert>
@@ -350,7 +340,7 @@ export function CallEditor({
       <div className="border-hairline flex flex-wrap items-center gap-3 border-t pt-6">
         <Button type="submit" variant="secondary" size="lg" disabled={busy}>
           <SaveIcon aria-hidden="true" />
-          {save.isPending && !publish.isPending ? "Zapisywanie…" : "Zapisz"}
+          {save.isPending && !publish.isPending ? t("saving") : t("save")}
         </Button>
         <Button
           type="button"
@@ -359,12 +349,10 @@ export function CallEditor({
           onClick={() => void submit(true)}
         >
           <MegaphoneIcon aria-hidden="true" />
-          {publish.isPending ? "Powiadamianie…" : "Zapisz i opublikuj zmiany"}
+          {publish.isPending ? t("publishing") : t("publish")}
         </Button>
         <p className="text-foreground/85 tabular text-[0.9375rem]">
-          {reach === 0
-            ? "Nikt nie zapisał się jeszcze na powiadomienia o naborach ani o wybranych obszarach."
-            : `Powiadomimy ${countPl(reach, "zapisaną osobę", "zapisane osoby", "zapisanych osób")}.`}
+          {reach === 0 ? t("reachNone") : t("reach", { count: reach })}
         </p>
       </div>
     </form>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import {
   CircleAlertIcon,
   FileTextIcon,
@@ -55,23 +56,11 @@ const EMPTY: EditorCard = {
   licence: "",
 };
 
-const KINDS: { key: Kind; label: string; hint: string }[] = [
-  {
-    key: "pdf",
-    label: "Plik PDF",
-    hint: "Folder, raport lub opis innowacji — do 10 MB.",
-  },
-  {
-    key: "text",
-    label: "Wklejony tekst",
-    hint: "Skopiuj opis z dokumentu lub e-maila.",
-  },
-  {
-    key: "url",
-    label: "Adres strony",
-    hint: "Publiczna strona WWW albo link do pliku PDF.",
-  },
-];
+const KINDS = [
+  { key: "pdf", label: "kindPdf", hint: "kindPdfHint" },
+  { key: "text", label: "kindText", hint: "kindTextHint" },
+  { key: "url", label: "kindUrl", hint: "kindUrlHint" },
+] as const;
 
 /** „Dodaj z dokumentu": source → AI draft with quotes → editor (or a manual empty form). */
 export function DocumentDraft({
@@ -79,6 +68,8 @@ export function DocumentDraft({
 }: {
   categories: { slug: string; label: string }[];
 }) {
+  const t = useTranslations("admin.document");
+  const locale = useLocale();
   const [kind, setKind] = useState<Kind>("pdf");
   const [file, setFile] = useState<File | null>(null);
   const [text, setText] = useState("");
@@ -100,17 +91,15 @@ export function DocumentDraft({
     const fd = new FormData();
     fd.set("kind", kind);
     if (kind === "pdf") {
-      if (!file) return setProblem("Wybierz plik PDF.");
-      if (file.size > MAX_BYTES)
-        return setProblem("Plik jest większy niż 10 MB.");
+      if (!file) return setProblem(t("chooseFile"));
+      if (file.size > MAX_BYTES) return setProblem(t("tooBig"));
       fd.set("file", file);
     } else if (kind === "text") {
-      if (text.trim().length < 80)
-        return setProblem("Wklej dłuższy tekst — co najmniej kilka zdań.");
+      if (text.trim().length < 80) return setProblem(t("tooShort"));
       fd.set("text", text);
     } else {
       if (!/^https?:\/\/\S+$/.test(url.trim()))
-        return setProblem("Podaj pełny adres (https://…).");
+        return setProblem(t("badUrl"));
       fd.set("url", url.trim());
     }
     setState("loading");
@@ -128,9 +117,7 @@ export function DocumentDraft({
         setState(data.reason === "input" ? "idle" : "manual");
       }
     } catch {
-      setProblem(
-        "Nie udało się połączyć z serwerem. Spróbuj ponownie albo wypełnij kartę ręcznie.",
-      );
+      setProblem(t("network"));
       setState("idle");
     }
   }
@@ -164,19 +151,16 @@ export function DocumentDraft({
           tabIndex={-1}
           className="font-display text-2xl font-bold outline-none"
         >
-          {draft ? "Szkic do sprawdzenia" : "Nowa karta — wypełnij ręcznie"}
+          {draft ? t("draftHeading") : t("manualHeading")}
         </h2>
         {draft ? (
           <p className="text-foreground/85 mt-2 max-w-[68ch]">
-            Asystent przygotował szkic z dokumentu „{draft.source.name}”. Przy
-            każdym polu jest cytat, na którym się oparł. Porównaj je, popraw
-            tekst i zaznacz „Sprawdziłam/em” — dopiero wtedy zapiszesz szkic.
-            Szkic nie jest widoczny publicznie.
+            {t("draftLead", { name: draft.source.name })}
           </p>
         ) : problem ? (
           <Alert variant="warning" role="status" className="mt-4">
             <CircleAlertIcon aria-hidden="true" />
-            <AlertTitle>Bez asystenta AI</AlertTitle>
+            <AlertTitle>{t("noAi")}</AlertTitle>
             <AlertDescription>{problem}</AlertDescription>
           </Alert>
         ) : null}
@@ -204,7 +188,7 @@ export function DocumentDraft({
     <form onSubmit={submit} noValidate className="max-w-3xl space-y-8">
       <fieldset>
         <legend className="font-display text-2xl font-bold">
-          Skąd wziąć opis?
+          {t("source")}
         </legend>
         <ul className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
           {KINDS.map((k) => (
@@ -224,9 +208,9 @@ export function DocumentDraft({
                   className="mt-1 size-5 shrink-0 accent-[var(--primary)]"
                 />
                 <span>
-                  <span className="block font-bold">{k.label}</span>
+                  <span className="block font-bold">{t(k.label)}</span>
                   <span className="text-foreground/85 block text-[0.9375rem]">
-                    {k.hint}
+                    {t(k.hint)}
                   </span>
                 </span>
               </label>
@@ -238,7 +222,7 @@ export function DocumentDraft({
       {kind === "pdf" ? (
         <div>
           <p id="doc-file-label" className="block text-lg font-bold">
-            Plik PDF
+            {t("fileLabel")}
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-3">
             <input
@@ -255,19 +239,25 @@ export function DocumentDraft({
               className="border-primary text-primary bg-background hover:bg-accent inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-md border px-5 font-semibold peer-focus-visible:shadow-[0_0_0_3px_var(--ring),0_0_0_7px_var(--focus)]"
             >
               <FileTextIcon aria-hidden="true" className="size-5" />
-              Wybierz plik PDF
+              {t("fileButton")}
             </label>
             <span className="text-[0.9375rem]" aria-live="polite">
               {file
-                ? `${file.name} · ${(file.size / 1024 / 1024).toLocaleString("pl-PL", { maximumFractionDigits: 1 })} MB`
-                : "Nie wybrano pliku."}
+                ? t("fileSize", {
+                    name: file.name,
+                    size: (file.size / 1024 / 1024).toLocaleString(
+                      locale === "en" ? "en-GB" : "pl-PL",
+                      { maximumFractionDigits: 1 },
+                    ),
+                  })
+                : t("noFile")}
             </span>
           </div>
         </div>
       ) : kind === "text" ? (
         <div>
           <label htmlFor="doc-text" className="block text-lg font-bold">
-            Tekst opisu
+            {t("textLabel")}
           </label>
           <Textarea
             id="doc-text"
@@ -279,7 +269,7 @@ export function DocumentDraft({
       ) : (
         <div>
           <label htmlFor="doc-url" className="block text-lg font-bold">
-            Adres strony lub pliku
+            {t("urlLabel")}
           </label>
           <Input
             id="doc-url"
@@ -293,22 +283,17 @@ export function DocumentDraft({
         </div>
       )}
 
-      <p className="border-hairline bg-surface rounded-md border p-4 text-[0.9375rem]">
-        Tekst i strony WWW anonimizujemy przed wysłaniem do asystenta AI. Plik
-        PDF trafia do asystenta bez zmian — używaj dokumentów publicznych.
-        Asystent pisze tylko na podstawie dokumentu i przy każdym polu podaje
-        cytat.
+      <p className="border-hairline border-l-4 pl-4 text-[0.9375rem]">
+        {t("privacy")}
       </p>
 
       <div aria-live="polite">
         {state === "loading" ? (
-          <p className="font-semibold">
-            Asystent czyta dokument… To może potrwać do minuty.
-          </p>
+          <p className="font-semibold">{t("reading")}</p>
         ) : problem ? (
           <Alert variant="destructive">
             <CircleAlertIcon aria-hidden="true" />
-            <AlertTitle>Popraw dane</AlertTitle>
+            <AlertTitle>{t("fix")}</AlertTitle>
             <AlertDescription>{problem}</AlertDescription>
           </Alert>
         ) : null}
@@ -317,7 +302,7 @@ export function DocumentDraft({
       <div className="flex flex-wrap gap-3">
         <Button type="submit" size="lg" disabled={state === "loading"}>
           <FileSearchIcon aria-hidden="true" />
-          {state === "loading" ? "Przygotowuję szkic…" : "Przygotuj szkic"}
+          {state === "loading" ? t("preparing") : t("prepare")}
         </Button>
         <Button
           type="button"
@@ -330,7 +315,7 @@ export function DocumentDraft({
           }}
         >
           <PencilLineIcon aria-hidden="true" />
-          Wypełnij ręcznie
+          {t("manual")}
         </Button>
       </div>
     </form>

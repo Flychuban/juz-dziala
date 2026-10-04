@@ -16,13 +16,14 @@ import { slugify } from "./library";
 
 const isoDate = z
   .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "Data w formacie RRRR-MM-DD.")
+  // Message keys (admin.json); the editor shows them in the staff member's language.
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "callEditor.errors.date")
   .nullable();
 const money = z.number().int().min(0).max(100_000_000).nullable();
 
 export const callInputSchema = z
   .object({
-    name: z.string().trim().min(5, "Nazwa jest za krótka.").max(400),
+    name: z.string().trim().min(5, "callEditor.errors.nameShort").max(400),
     program: z.string().trim().max(400).nullable(),
     operator: z.string().trim().max(400).nullable(),
     amountMax: money,
@@ -38,13 +39,13 @@ export const callInputSchema = z
       .max(500)
       .refine(
         (v) => v === "" || /^https?:\/\/\S+$/.test(v),
-        "Podaj pełny adres (https://…).",
+        "callEditor.errors.fullUrl",
       )
       .nullable(),
     notes: z.string().trim().max(2000).nullable(),
   })
   .refine((c) => !c.windowFrom || !c.windowTo || c.windowFrom <= c.windowTo, {
-    message: "Koniec naboru nie może być przed jego początkiem.",
+    message: "callEditor.errors.window",
     path: ["windowTo"],
   });
 export type CallInput = z.infer<typeof callInputSchema>;
@@ -99,7 +100,7 @@ export async function saveCall(
   let callId = id;
   if (callId) {
     [before] = await db.select().from(calls).where(eq(calls.id, callId));
-    if (!before) throw new Error("Nie znaleziono naboru.");
+    if (!before) throw new Error("calls.notFound");
     await db
       .update(calls)
       .set({ ...row, updatedAt: new Date() })
