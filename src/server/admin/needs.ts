@@ -49,8 +49,6 @@ export function isUnmet(run: {
   // A failed AI call is not evidence that the library has no answer.
   if (run.status === "error") return false;
   if (run.abstained || run.status === "abstained") return true;
-  // A failed AI call says nothing about the library: not a „biała plama".
-  if (run.status === "error") return false;
   const kw = keywordShape.safeParse(run.keywordResult);
   const ai = aiShape.safeParse(run.aiResult);
   const aiMatches = ai.success ? (ai.data.matches?.length ?? 0) : 0;
