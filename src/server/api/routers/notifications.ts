@@ -12,7 +12,8 @@ import { notifications } from "~/server/db/schema";
 
 /**
  * In-app notifications. Staff read theirs through the bell (polled every
- * 5 s); the author's are addressed to "case:<caseId>".
+ * 5 s); the author's are addressed to "case:<caseId>". Staff notifications
+ * carry an English copy (`en`), shown when the staff member uses English.
  */
 const staff = roleProcedure("rops", "expert");
 
@@ -21,6 +22,7 @@ const fields = {
   kind: notifications.kind,
   title: notifications.title,
   body: notifications.body,
+  en: notifications.en,
   href: notifications.href,
   readAt: notifications.readAt,
   createdAt: notifications.createdAt,
@@ -47,7 +49,14 @@ export const notificationsRouter = createTRPCRouter({
         .orderBy(desc(notifications.createdAt))
         .limit(10),
     ]);
-    return { role: ctx.staff.role, unread: unread[0]?.n ?? 0, items };
+    const english = ctx.locale === "en";
+    return {
+      role: ctx.staff.role,
+      unread: unread[0]?.n ?? 0,
+      items: items.map(({ en, ...i }) =>
+        english && en ? { ...i, title: en.title, body: en.body ?? i.body } : i,
+      ),
+    };
   }),
 
   /** Mark some (ids) or all of the signed-in staff member's notifications read. */

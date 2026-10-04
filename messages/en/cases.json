@@ -1,1 +1,268 @@
-{}
+{
+  "meta": {
+    "lookup": "My case",
+    "case": "Case {code}",
+    "print": "Case code to print",
+    "plan": "Implementation plan to print"
+  },
+  "kind": {
+    "need": "Request for help",
+    "idea": "Idea",
+    "question": "Question for an expert",
+    "test": "Testing sign-up",
+    "feedback": "Feedback on an innovation",
+    "adapt": "Service implementation"
+  },
+  "status": {
+    "new": "Received",
+    "triaged": "We're reading it",
+    "in_progress": "Finding an answer",
+    "answered": "You have a reply",
+    "closed": "Closed"
+  },
+  "author": {
+    "received": "Case received. The ROPS team has been notified — the reply will appear in this thread.",
+    "replyClosing": "If you have any questions, reply here — we'll answer in this thread.",
+    "teamName": "ROPS Kraków"
+  },
+  "errors": {
+    "notFound": "We couldn't find a case with this code. Please check the code and try again.",
+    "badCode": "That doesn't look like a case code. A code looks like JD-XXXX-XXXX.",
+    "needToken": "To reply, open your case from its private link. The case code on its own only lets you read the replies.",
+    "badToken": "This private link isn't valid. Open your case from the link we showed you after you sent it."
+  },
+  "lookup": {
+    "title": "My case",
+    "lead": "Enter your case code to see the reply from ROPS. You don't need an account.",
+    "label": "Case code",
+    "hint": "A code looks like JD-XXXX-XXXX. Capital letters, spaces and dashes don't matter.",
+    "submit": "Check",
+    "checking": "Checking…",
+    "empty": "Please enter your case code.",
+    "invalidLoose": "That doesn't look like a case code. A code has 8 characters after „JD”, e.g. JD-7K3Q-X9MP."
+  },
+  "mine": {
+    "heading": "Your cases on this device",
+    "empty": "There are no saved cases on this device. A code is saved automatically when you send or open a case.",
+    "loading": "Loading your cases…",
+    "error": "Couldn't load your cases. Please try reloading the page.",
+    "meta": "Status: {status} · sent on {date}",
+    "newReply": "New reply",
+    "forget": "Remove from this device",
+    "forgetSr": "— case {code}"
+  },
+  "code": {
+    "label": "Case code",
+    "copy": "Copy code",
+    "copied": "The code has been copied.",
+    "copyFailed": "Couldn't copy. Please select the code and copy it yourself."
+  },
+  "timeline": {
+    "step": "Step {n}:",
+    "now": "Now",
+    "done": "Done",
+    "next": "Next step"
+  },
+  "thread": {
+    "you": "You",
+    "author": "Case author",
+    "residentTeam": "ROPS Kraków",
+    "staffTeam": "ROPS Hub team",
+    "expert": "Hub expert",
+    "info": "Information",
+    "system": "System",
+    "authorHint": "(resident or institution)",
+    "internal": "Internal note — the author can't see it",
+    "readAloud": "Read the reply aloud",
+    "empty": "No messages."
+  },
+  "view": {
+    "loading": "Loading case {code}…",
+    "cannotOpen": "We can't open this case",
+    "genericError": "Something went wrong. Please reload the page in a moment.",
+    "tryAgain": "Enter the code again",
+    "noEasy": "This page doesn't have an easy-read version yet — see <link>Easy-to-read information</link>.",
+    "eyebrow": "My case",
+    "kind": "Type",
+    "status": "Status",
+    "created": "Sent on",
+    "printSheet": "Print a sheet with the code",
+    "stages": "Case stages",
+    "yourRequest": "What you sent",
+    "redacted": "We hid phone numbers, e-mail addresses and PESEL numbers before saving what you wrote.",
+    "thread": "Conversation with ROPS",
+    "polling": "This page checks for new replies every few seconds.",
+    "newReply": "New reply from: {from}."
+  },
+  "reply": {
+    "heading": "Write to ROPS",
+    "needLink": "You can reply from your case's private link — the one we showed you right after you sent it. The case code on its own only lets you read the replies.",
+    "needLinkWhere": "On the device you sent the case from, the link was saved automatically: open the case from “My case”. The link is also in the confirmation message if you chose e-mail or text message.",
+    "tooShort": "Please write a message — at least 2 characters.",
+    "sent": "Message sent. ROPS has been notified.",
+    "failed": "Couldn't send the message. Please try again.",
+    "label": "Your message",
+    "hint": "Please don't include your PESEL number or address. We hide phone numbers and e-mail addresses automatically.",
+    "sending": "Sending…",
+    "send": "Send message"
+  },
+  "created": {
+    "heading": "Case received",
+    "lead": "You'll see the reply when you enter your case code under “My case”.",
+    "keep": "Save or print this code.",
+    "keepWhy": "It lets you check the reply — no account needed.",
+    "open": "Go to your case",
+    "print": "Print a sheet with the code",
+    "privateLink": "Your private link to the case",
+    "privateLinkHint": "It opens your case without the code and lets you reply in the thread. Please don't share it with anyone.",
+    "copyLink": "Copy link",
+    "linkCopied": "The link has been copied.",
+    "linkCopyFailed": "Couldn't copy. Please select the link and copy it yourself.",
+    "savedOnDevice": "We've also saved the code and the private link on this device — you'll find them under “My case”.",
+    "notSaved": "This browser doesn't let us save the code. Please write it down or print it.",
+    "next": {
+      "heading": "What happens next",
+      "staff": "The ROPS team is notified straight away — through the bell in the staff panel.",
+      "staffWithEmail": "The ROPS team is notified straight away — through the bell in the staff panel and by e-mail.",
+      "ai": "An AI assistant sorts the case and prepares a draft reply. A person reads and corrects the draft — nothing is sent without them.",
+      "reply": "The reply will appear on your case page ({code}){channel, select, email { and come to you by e-mail.} sms { and you'll get a text message telling you.} phone {. A member of ROPS staff will call you to pass it on.} other {. You can check it with your case code.}}",
+      "noteOff": "This version of the service doesn't send e-mails, and text messages are only simulated — you'll see the reply on your case page.",
+      "noteDemo": "Demo version: text messages are only simulated (we save them but don't send them), and e-mails go only to demo addresses — a message to any other address is only saved.",
+      "noteSms": "In this prototype text messages are only simulated — you'll always see the reply on your case page."
+    }
+  },
+  "print": {
+    "print": "Print",
+    "printSheet": "Print the sheet",
+    "back": "Back to the case",
+    "heading": "Your case code",
+    "qrAlt": "QR code. It opens your case page.",
+    "subject": "Subject",
+    "onBehalf": "Someone sent this case on your behalf. {reply, select, yes {You can check the reply and write back yourself.} other {You can check the reply yourself.}}",
+    "howTo": "How do I check the reply?",
+    "step1": "Scan the QR code with your phone's camera.",
+    "step2": "Or go to <b>{site}</b> and enter the case code: <mono>{code}</mono>.",
+    "step3": "{reply, select, yes {Read the reply from ROPS. You can write back from the page the QR code opens.} other {Read the reply from ROPS.}}",
+    "keep": "{reply, select, yes {Keep this sheet. The QR code and the case code open your case — don't show them to strangers.} other {Keep this sheet. The code opens your case — don't give it to strangers.}}"
+  },
+  "plan": {
+    "case": "case",
+    "footer": "A draft plan to discuss with ROPS. Amounts and dates marked „do weryfikacji” (to be checked) need checking. {owner}."
+  },
+  "modules": {
+    "newTab": "(opens in a new tab)",
+    "librarySource": "Social Innovation Library, ROPS Kraków",
+    "plan": {
+      "heading": "Implementation plan („Ramowy Plan Wdrożenia”)",
+      "detail": {
+        "innovation": "Innovation",
+        "gmina": "Municipality",
+        "institution": "Institution",
+        "staff": "Team",
+        "budget": "Budget (to be checked)",
+        "timeframe": "Duration",
+        "groupSize": "Planned number of people served",
+        "needs": "The institution's needs"
+      },
+      "option": {
+        "institution": {
+          "ops": "Social welfare centre (OPS)",
+          "cus": "Social services centre (CUS)",
+          "pcpr": "County family support centre (PCPR)",
+          "ngo": "Non-governmental organisation (NGO)",
+          "school": "School or educational institution",
+          "other": "Other institution"
+        },
+        "staff": {
+          "1": "1 person",
+          "2-3": "2–3 people",
+          "4-6": "4–6 people",
+          "7+": "7 people or more"
+        },
+        "budget": {
+          "to50": "up to PLN 50,000",
+          "50-200": "PLN 50,000–200,000",
+          "200-600": "PLN 200,000–600,000",
+          "600+": "over PLN 600,000"
+        },
+        "timeframe": {
+          "6": "up to 6 months",
+          "12": "12 months",
+          "24": "more than 12 months"
+        }
+      },
+      "madeWith": "Plan prepared",
+      "mode": {
+        "ai": "with the AI assistant",
+        "template": "from the template (without AI)",
+        "mixed": "partly by the AI assistant (the rest from the template)"
+      },
+      "sentToRops": "Sent to ROPS",
+      "ropsHasPlan": "ROPS already has an implementation plan for this innovation from the grant call „{call}”.",
+      "callNotice": "Grant call notice",
+      "print": "Print the plan",
+      "showAll": "Show the whole plan"
+    },
+    "idea": {
+      "heading": "Idea summary",
+      "name": "Name",
+      "what": "What is it about?",
+      "forWhom": "Who does it help?",
+      "stage": "What stage is it at?",
+      "area": "Area",
+      "notGiven": "not given",
+      "score": {
+        "heading": "Self-assessment against the grant call criteria (IWS)",
+        "note": "An initial assessment made in the idea builder — not the panel's assessment.",
+        "caption": "Self-assessment of the idea: points for each criterion",
+        "criterion": "Criterion",
+        "points": "Points",
+        "why": "Why",
+        "improve": "What to improve",
+        "min": "min. {n}",
+        "below": "— below",
+        "total": "Total",
+        "callMin": "(grant call minimum: {n})",
+        "meets": "meets the minimum",
+        "notYet": "doesn't meet the minimum yet"
+      },
+      "similar": "Similar solutions in the Library",
+      "applied": "Application submitted to the grant call:",
+      "yourCanvas": "Your Canvas",
+      "startCanvas": "Work out the idea on the Canvas",
+      "yourApplication": "Your application",
+      "startApplication": "Prepare an application",
+      "canvasPreview": "Idea Canvas (preview, read only)",
+      "noCanvas": "The author hasn't filled in the Canvas yet.",
+      "applicationPreview": "Submitted application (preview, read only)"
+    },
+    "innovation": {
+      "heading": "{kind, select, test {Testing sign-up} feedback {Feedback on an innovation} adapt {Innovation to implement} other {About this innovation}}",
+      "rating": "Rating:",
+      "ratingLabel": {
+        "1": "Very poor",
+        "2": "Poor",
+        "3": "Average",
+        "4": "Good",
+        "5": "Very good"
+      }
+    },
+    "match": {
+      "heading": "What the author saw in the results",
+      "searched": "Search on {date} · {stage}",
+      "stage": {
+        "verified": "Checked by AI",
+        "keyword": "Keyword match results",
+        "preliminary": "Preliminary results (AI was still checking)",
+        "abstained": "No confident match"
+      },
+      "crisis": "The search found signs of a crisis — the author was shown helpline numbers.",
+      "none": "The author got no ready-made solutions and asked a person for help.",
+      "preliminary": "Preliminary results",
+      "authorWords": "The author's words",
+      "card": "Card: {section}",
+      "firstStep": "First step:",
+      "open": "Open the results as the author saw them"
+    }
+  }
+}

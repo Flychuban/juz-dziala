@@ -1,1 +1,268 @@
-{}
+{
+  "meta": {
+    "lookup": "Moja sprawa",
+    "case": "Sprawa {code}",
+    "print": "Kod sprawy do druku",
+    "plan": "Ramowy Plan Wdrożenia do druku"
+  },
+  "kind": {
+    "need": "Prośba o pomoc",
+    "idea": "Pomysł",
+    "question": "Pytanie do eksperta",
+    "test": "Zgłoszenie do testów",
+    "feedback": "Opinia o innowacji",
+    "adapt": "Wdrożenie usługi"
+  },
+  "status": {
+    "new": "Przyjęta",
+    "triaged": "Czytamy",
+    "in_progress": "Szukamy odpowiedzi",
+    "answered": "Masz odpowiedź",
+    "closed": "Zamknięta"
+  },
+  "author": {
+    "received": "Sprawa przyjęta. Zespół ROPS dostał powiadomienie — odpowiedź pojawi się w tym wątku.",
+    "replyClosing": "Jeśli masz pytania, odpisz tutaj — odpowiemy w tym wątku.",
+    "teamName": "ROPS Kraków"
+  },
+  "errors": {
+    "notFound": "Nie znaleźliśmy sprawy o tym kodzie. Sprawdź kod i spróbuj ponownie.",
+    "badCode": "To nie wygląda na kod sprawy. Kod ma postać JD-XXXX-XXXX.",
+    "needToken": "Aby odpisać, otwórz sprawę z prywatnego linku. Sam kod sprawy pozwala tylko czytać odpowiedzi.",
+    "badToken": "Ten prywatny link jest nieprawidłowy. Otwórz sprawę z linku, który pokazaliśmy po jej wysłaniu."
+  },
+  "lookup": {
+    "title": "Moja sprawa",
+    "lead": "Wpisz kod sprawy, aby zobaczyć odpowiedź ROPS. Nie potrzebujesz konta.",
+    "label": "Kod sprawy",
+    "hint": "Kod ma postać JD-XXXX-XXXX. Wielkość liter, spacje i myślniki nie mają znaczenia.",
+    "submit": "Sprawdź",
+    "checking": "Sprawdzam…",
+    "empty": "Wpisz kod sprawy.",
+    "invalidLoose": "To nie wygląda na kod sprawy. Kod ma 8 znaków po „JD”, np. JD-7K3Q-X9MP."
+  },
+  "mine": {
+    "heading": "Twoje sprawy na tym urządzeniu",
+    "empty": "Na tym urządzeniu nie ma zapisanych spraw. Kod zapisuje się automatycznie, gdy zgłaszasz sprawę lub ją otwierasz.",
+    "loading": "Wczytuję Twoje sprawy…",
+    "error": "Nie udało się wczytać spraw. Spróbuj odświeżyć stronę.",
+    "meta": "Status: {status} · zgłoszona {date}",
+    "newReply": "Nowa odpowiedź",
+    "forget": "Usuń z tego urządzenia",
+    "forgetSr": "— sprawa {code}"
+  },
+  "code": {
+    "label": "Kod sprawy",
+    "copy": "Kopiuj kod",
+    "copied": "Skopiowano kod do schowka.",
+    "copyFailed": "Nie udało się skopiować. Zaznacz kod i skopiuj go ręcznie."
+  },
+  "timeline": {
+    "step": "Krok {n}:",
+    "now": "Teraz",
+    "done": "Zrobione",
+    "next": "Następny krok"
+  },
+  "thread": {
+    "you": "Ty",
+    "author": "Autor sprawy",
+    "residentTeam": "ROPS Kraków",
+    "staffTeam": "Zespół Hubu ROPS",
+    "expert": "Ekspert Hubu",
+    "info": "Informacja",
+    "system": "System",
+    "authorHint": "(mieszkaniec lub instytucja)",
+    "internal": "Notatka wewnętrzna — autor jej nie widzi",
+    "readAloud": "Czytaj odpowiedź na głos",
+    "empty": "Brak wiadomości."
+  },
+  "view": {
+    "loading": "Wczytuję sprawę {code}…",
+    "cannotOpen": "Nie możemy otworzyć tej sprawy",
+    "genericError": "Wystąpił błąd. Spróbuj odświeżyć stronę za chwilę.",
+    "tryAgain": "Wpisz kod jeszcze raz",
+    "noEasy": "Ta strona nie ma jeszcze wersji łatwej — zobacz <link>Tekst łatwy do czytania</link>.",
+    "eyebrow": "Moja sprawa",
+    "kind": "Rodzaj",
+    "status": "Status",
+    "created": "Zgłoszona",
+    "printSheet": "Wydrukuj kartkę z kodem",
+    "stages": "Etapy sprawy",
+    "yourRequest": "Twoje zgłoszenie",
+    "redacted": "Numery telefonów, adresy e-mail i numery PESEL ukryliśmy, zanim zapisaliśmy zgłoszenie.",
+    "thread": "Rozmowa z ROPS",
+    "polling": "Strona sprawdza nowe odpowiedzi co kilka sekund.",
+    "newReply": "Nowa odpowiedź od: {from}."
+  },
+  "reply": {
+    "heading": "Napisz do ROPS",
+    "needLink": "Odpisać możesz z prywatnego linku do sprawy — tego, który pokazaliśmy zaraz po jej wysłaniu. Sam kod sprawy pozwala tylko czytać odpowiedzi.",
+    "needLinkWhere": "Na urządzeniu, z którego wysłano sprawę, link zapisał się sam: otwórz sprawę z zakładki „Moja sprawa”. Link jest też w wiadomości z potwierdzeniem, jeśli wybrano kontakt e-mailem lub SMS-em.",
+    "tooShort": "Napisz wiadomość — co najmniej 2 znaki.",
+    "sent": "Wiadomość wysłana. ROPS dostał powiadomienie.",
+    "failed": "Nie udało się wysłać wiadomości. Spróbuj ponownie.",
+    "label": "Twoja wiadomość",
+    "hint": "Nie wpisuj numeru PESEL ani adresu. Numery telefonów i adresy e-mail ukryjemy automatycznie.",
+    "sending": "Wysyłam…",
+    "send": "Wyślij wiadomość"
+  },
+  "created": {
+    "heading": "Sprawa przyjęta",
+    "lead": "Odpowiedź zobaczysz po wpisaniu kodu sprawy w zakładce „Moja sprawa”.",
+    "keep": "Zapisz lub wydrukuj ten kod.",
+    "keepWhy": "Dzięki niemu sprawdzisz odpowiedź — bez zakładania konta.",
+    "open": "Przejdź do sprawy",
+    "print": "Wydrukuj kartkę z kodem",
+    "privateLink": "Twój prywatny link do sprawy",
+    "privateLinkHint": "Otwiera sprawę bez wpisywania kodu i pozwala odpisać w wątku. Nie udostępniaj go innym osobom.",
+    "copyLink": "Kopiuj link",
+    "linkCopied": "Skopiowano link do schowka.",
+    "linkCopyFailed": "Nie udało się skopiować. Zaznacz link i skopiuj go ręcznie.",
+    "savedOnDevice": "Kod i prywatny link zapisaliśmy też na tym urządzeniu — znajdziesz je w zakładce „Moja sprawa”.",
+    "notSaved": "Ta przeglądarka nie pozwala zapisać kodu. Zapisz go lub wydrukuj.",
+    "next": {
+      "heading": "Co dzieje się dalej",
+      "staff": "Zespół ROPS dostaje powiadomienie od razu — dzwonek w panelu pracownika.",
+      "staffWithEmail": "Zespół ROPS dostaje powiadomienie od razu — dzwonek w panelu pracownika i e-mail.",
+      "ai": "Asystent AI wstępnie porządkuje sprawę i szykuje szkic odpowiedzi. Szkic czyta i poprawia człowiek — bez niego nic nie zostanie wysłane.",
+      "reply": "Odpowiedź pojawi się na stronie Twojej sprawy ({code}){channel, select, email { i przyjdzie e-mailem.} sms { i dostaniesz SMS z powiadomieniem.} phone {. Pracownik ROPS zadzwoni, żeby ją przekazać.} other {. Sprawdzisz ją kodem sprawy.}}",
+      "noteOff": "W tej wersji serwisu e-maile nie są wysyłane, a SMS-y są tylko symulowane — odpowiedź zobaczysz na stronie sprawy.",
+      "noteDemo": "Wersja demonstracyjna: SMS-y są tylko symulowane (zapisujemy je, ale nie wysyłamy), a e-maile wysyłamy wyłącznie na adresy demonstracyjne — wiadomość na inny adres jest tylko zapisywana.",
+      "noteSms": "SMS-y są w prototypie tylko symulowane — odpowiedź zawsze zobaczysz na stronie sprawy."
+    }
+  },
+  "print": {
+    "print": "Drukuj",
+    "printSheet": "Drukuj kartkę",
+    "back": "Wróć do sprawy",
+    "heading": "Kod Twojej sprawy",
+    "qrAlt": "Kod QR. Prowadzi do strony Twojej sprawy.",
+    "subject": "Temat",
+    "onBehalf": "Ktoś zgłosił tę sprawę w Twoim imieniu. {reply, select, yes {Możesz sam(a) sprawdzić odpowiedź i dopisać wiadomość.} other {Możesz sam(a) sprawdzić odpowiedź.}}",
+    "howTo": "Jak sprawdzić odpowiedź?",
+    "step1": "Zeskanuj kod QR aparatem w telefonie.",
+    "step2": "Albo wejdź na stronę <b>{site}</b> i wpisz kod sprawy: <mono>{code}</mono>.",
+    "step3": "{reply, select, yes {Przeczytaj odpowiedź ROPS. Odpisać możesz ze strony otwartej kodem QR.} other {Przeczytaj odpowiedź ROPS.}}",
+    "keep": "{reply, select, yes {Zachowaj tę kartkę. Kod QR i kod sprawy otwierają Twoją sprawę — nie pokazuj ich obcym osobom.} other {Zachowaj tę kartkę. Kod otwiera Twoją sprawę — nie podawaj go obcym osobom.}}"
+  },
+  "plan": {
+    "case": "sprawa",
+    "footer": "Projekt planu do omówienia z ROPS. Kwoty i terminy oznaczone „do weryfikacji” wymagają sprawdzenia. {owner}."
+  },
+  "modules": {
+    "newTab": "(otwiera się w nowej karcie)",
+    "librarySource": "Biblioteka Innowacji Społecznych ROPS Kraków",
+    "plan": {
+      "heading": "Ramowy Plan Wdrożenia",
+      "detail": {
+        "innovation": "Innowacja",
+        "gmina": "Gmina",
+        "institution": "Instytucja",
+        "staff": "Zespół",
+        "budget": "Budżet (do weryfikacji)",
+        "timeframe": "Czas realizacji",
+        "groupSize": "Planowana liczba odbiorców",
+        "needs": "Potrzeby instytucji"
+      },
+      "option": {
+        "institution": {
+          "ops": "Ośrodek pomocy społecznej (OPS)",
+          "cus": "Centrum usług społecznych (CUS)",
+          "pcpr": "Powiatowe centrum pomocy rodzinie (PCPR)",
+          "ngo": "Organizacja pozarządowa (NGO)",
+          "school": "Szkoła lub placówka oświatowa",
+          "other": "Inna instytucja"
+        },
+        "staff": {
+          "1": "1 osoba",
+          "2-3": "2–3 osoby",
+          "4-6": "4–6 osób",
+          "7+": "7 osób lub więcej"
+        },
+        "budget": {
+          "to50": "do 50 tys. zł",
+          "50-200": "50–200 tys. zł",
+          "200-600": "200–600 tys. zł",
+          "600+": "powyżej 600 tys. zł"
+        },
+        "timeframe": {
+          "6": "do 6 miesięcy",
+          "12": "12 miesięcy",
+          "24": "dłużej niż 12 miesięcy"
+        }
+      },
+      "madeWith": "Plan przygotowano",
+      "mode": {
+        "ai": "z pomocą Asystenta AI",
+        "template": "z szablonu (bez AI)",
+        "mixed": "częściowo z pomocą Asystenta AI (reszta z szablonu)"
+      },
+      "sentToRops": "Wysłano do ROPS",
+      "ropsHasPlan": "ROPS ma już Ramowy Plan Wdrożenia tej innowacji z naboru „{call}”.",
+      "callNotice": "Ogłoszenie naboru",
+      "print": "Drukuj plan",
+      "showAll": "Pokaż cały plan"
+    },
+    "idea": {
+      "heading": "Fiszka pomysłu",
+      "name": "Nazwa",
+      "what": "Na czym polega?",
+      "forWhom": "Komu pomaga?",
+      "stage": "Na jakim etapie?",
+      "area": "Obszar",
+      "notGiven": "nie podano",
+      "score": {
+        "heading": "Samoocena według kryteriów naboru (IWS)",
+        "note": "Wstępna ocena przygotowana w Kreatorze pomysłów — nie jest oceną komisji.",
+        "caption": "Samoocena pomysłu: punkty za każde kryterium",
+        "criterion": "Kryterium",
+        "points": "Punkty",
+        "why": "Dlaczego",
+        "improve": "Co poprawić",
+        "min": "min. {n}",
+        "below": "— poniżej",
+        "total": "Razem",
+        "callMin": "(minimum naboru: {n})",
+        "meets": "spełnia minimum",
+        "notYet": "nie spełnia jeszcze minimum"
+      },
+      "similar": "Podobne rozwiązania w Bibliotece",
+      "applied": "Wniosek złożony w naborze:",
+      "yourCanvas": "Twój Canvas",
+      "startCanvas": "Rozpisz pomysł na Canvasie",
+      "yourApplication": "Twój wniosek",
+      "startApplication": "Przygotuj wniosek",
+      "canvasPreview": "Canvas pomysłu (podgląd, tylko do odczytu)",
+      "noCanvas": "Autor nie wypełnił jeszcze Canvasu.",
+      "applicationPreview": "Złożony wniosek (podgląd, tylko do odczytu)"
+    },
+    "innovation": {
+      "heading": "{kind, select, test {Zgłoszenie do testowania} feedback {Opinia o innowacji} adapt {Innowacja do wdrożenia} other {Dotyczy innowacji}}",
+      "rating": "Ocena:",
+      "ratingLabel": {
+        "1": "Bardzo słabo",
+        "2": "Słabo",
+        "3": "Średnio",
+        "4": "Dobrze",
+        "5": "Bardzo dobrze"
+      }
+    },
+    "match": {
+      "heading": "Co autor zobaczył w wynikach",
+      "searched": "Wyszukiwanie z {date} · {stage}",
+      "stage": {
+        "verified": "Sprawdzone przez AI",
+        "keyword": "Wyniki z dopasowania słów kluczowych",
+        "preliminary": "Wstępne wyniki (AI jeszcze sprawdzało)",
+        "abstained": "Nie mamy pewnego dopasowania"
+      },
+      "crisis": "Wyszukiwanie wykryło sygnały kryzysu — autor zobaczył telefony wsparcia.",
+      "none": "Autor nie dostał gotowych rozwiązań i poprosił o pomoc człowieka.",
+      "preliminary": "Wstępne wyniki",
+      "authorWords": "Słowa autora",
+      "card": "Karta: {section}",
+      "firstStep": "Pierwszy krok:",
+      "open": "Otwórz wyniki tak, jak widział je autor"
+    }
+  }
+}

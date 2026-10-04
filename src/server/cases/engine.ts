@@ -15,9 +15,12 @@ import {
 import { redactPII } from "~/server/domain/redact";
 import { encrypt } from "~/server/lib/crypto";
 import { notify } from "~/server/notify";
+import { receivedText } from "./author-text";
 import {
+  lendReceiptToken,
   requestDelivery,
   takeDelivery,
+  takeReceiptToken,
   type DeliveryOutcome,
 } from "./delivery-intent";
 import {
@@ -29,8 +32,8 @@ import { insertMessage } from "./messages";
 import { triageCase } from "./triage";
 import { SYSTEM_NAME } from "./types";
 
-export const RECEIVED_TEXT =
-  "Sprawa przyjęta. Odpowiemy zwykle w ciągu 2 dni roboczych.";
+/** First system message of a Polish case; `receivedText(locale)` for any language. */
+export const RECEIVED_TEXT = receivedText("pl");
 
 /**
  * Runs work after the response is sent (`after()` keeps a serverless
@@ -69,11 +72,15 @@ function isUniqueViolation(e: unknown): boolean {
  * sign-ups, feedback and adaptation requests. Text is redacted before it is
  * stored, the contact is encrypted (masked copy for display), and only the
  * hash of the private-link token is kept. Triage runs after the response.
+ *
+ * Pass `locale: ctx.locale` (default "pl"): the receipt, the first system
+ * message and every later message to the author use the case's language.
  */
 export async function createCase(
   input: CreateCaseInput,
 ): Promise<{ id: string; code: string; accessToken: string }> {
   const v = createCaseInputSchema.parse(input);
+  const locale = v.locale ?? "pl";
   const title = redactPII(v.title).text;
   const body = redactPII(v.body).text;
 
@@ -116,6 +123,7 @@ export async function createCase(
           plan: v.plan ?? null,
           rating: v.rating ?? null,
           isSample: v.isSample ?? false,
+          locale,
         })
         .returning({ id: cases.id, code: cases.code });
     } catch (e) {
@@ -128,7 +136,7 @@ export async function createCase(
     caseId: created.id,
     authorKind: "system",
     authorName: SYSTEM_NAME,
-    body: RECEIVED_TEXT,
+    body: receivedText(locale),
   });
   if (v.matchRunId) {
     await db
@@ -137,7 +145,13 @@ export async function createCase(
       .where(eq(matchRuns.id, v.matchRunId));
   }
 
-  await notify({ type: "case.created", caseId: created.id });
+  // The receipt (sent inside notify) carries the private link.
+  lendReceiptToken(created.id, accessToken);
+  try {
+    await notify({ type: "case.created", caseId: created.id });
+  } finally {
+    takeReceiptToken(created.id);
+  }
   const caseId = created.id;
   runInBackground("triage", () => triageCase(caseId));
 

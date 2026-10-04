@@ -1,6 +1,7 @@
 import "server-only";
 
 import { env } from "~/env";
+import { translatorFor } from "~/i18n/server";
 import { db } from "~/server/db";
 import { deliveries } from "~/server/db/schema";
 import { maskContact } from "~/server/domain/case-code";
@@ -21,6 +22,36 @@ export function mailTransport(): "resend" | "smtp" | null {
 }
 
 const FROM_FALLBACK = "Już Działa <no-reply@juz-dziala.local>";
+
+function allowlist(): string[] {
+  return (env.MAIL_ALLOWLIST ?? "")
+    .split(",")
+    .map((a) => a.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+/**
+ * What actually leaves the system — so the interface promises only that:
+ *   email "real"  — a transport is configured and this is not the public demo;
+ *         "demo"  — public demo: real e-mail only to MAIL_ALLOWLIST, others are
+ *                   recorded as simulated;
+ *         "off"   — no transport: nothing is sent (recorded as skipped).
+ *   SMS is always simulated in the prototype; a phone call is a task for a person.
+ *   staffEmail — the ROPS inbox (ROPS_INBOX_EMAIL) really gets an e-mail.
+ */
+export function deliveryModes(): {
+  demo: boolean;
+  email: "real" | "demo" | "off";
+  staffEmail: boolean;
+} {
+  const demo = env.DEMO_MODE === "1";
+  const transport = mailTransport();
+  const email = !transport ? "off" : demo ? "demo" : "real";
+  const inbox = env.ROPS_INBOX_EMAIL?.trim().toLowerCase();
+  const staffEmail =
+    !!inbox && email !== "off" && (!demo || allowlist().includes(inbox));
+  return { demo, email, staffEmail };
+}
 
 async function record(row: {
   channel: "email" | "sms" | "phone";
@@ -46,19 +77,21 @@ async function record(row: {
   }
 }
 
-/** Sends one plain-text e-mail. Never throws: the result says what happened. */
+/**
+ * Sends one plain-text e-mail. Never throws: the result says what happened.
+ * `logText` is what the delivery log keeps instead of `text` (e.g. with the
+ * private-link token masked).
+ */
 export async function sendMail(opts: {
   to: string;
   subject: string;
   text: string;
+  logText?: string;
   caseId?: string | null;
 }): Promise<DeliveryResult> {
   const transport = mailTransport();
   let result: DeliveryResult;
-  const allow = (env.MAIL_ALLOWLIST ?? "")
-    .split(",")
-    .map((a) => a.trim().toLowerCase())
-    .filter(Boolean);
+  const allow = allowlist();
   if (
     transport &&
     env.DEMO_MODE === "1" &&
@@ -67,13 +100,13 @@ export async function sendMail(opts: {
     // Public demo: anyone can act as staff, so never relay real mail to arbitrary addresses.
     result = {
       status: "simulated",
-      error: "Tryb demonstracyjny: wiadomość zapisana, nie wysłana.",
+      // The delivery log is a staff screen: Polish.
+      error: translatorFor("pl", "mail")("delivery.demo"),
     };
   } else if (!transport) {
     result = {
       status: "skipped",
-      error:
-        "Brak skonfigurowanej poczty (RESEND_API_KEY + MAIL_FROM lub SMTP_URL).",
+      error: translatorFor("pl", "mail")("delivery.noTransport"),
     };
   } else {
     try {
@@ -111,7 +144,7 @@ export async function sendMail(opts: {
     channel: "email",
     to: opts.to,
     subject: opts.subject,
-    body: opts.text,
+    body: opts.logText ?? opts.text,
     status: result.status,
     error: result.error,
     caseId: opts.caseId,
@@ -123,12 +156,13 @@ export async function sendMail(opts: {
 export async function simulateSms(opts: {
   to: string;
   text: string;
+  logText?: string;
   caseId?: string | null;
 }): Promise<DeliveryResult> {
   await record({
     channel: "sms",
     to: opts.to,
-    body: opts.text,
+    body: opts.logText ?? opts.text,
     status: "simulated",
     caseId: opts.caseId,
   });

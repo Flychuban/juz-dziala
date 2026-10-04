@@ -1,16 +1,21 @@
 import "server-only";
 
 import { env } from "~/env";
-import { RESIDENT_KIND_LABEL, RESIDENT_TEAM_NAME } from "~/server/cases/types";
+import type { Locale } from "~/i18n/config";
+import { translatorFor } from "~/i18n/server";
 import {
-  AUTHOR_ROLE_LABEL,
-  CASE_KIND_LABEL,
-  CONTACT_PREF_LABEL,
-  SITE,
+  labelsFor,
   type AuthorRole,
   type CaseKind,
   type ContactPref,
 } from "~/lib/domain";
+import { residentKindLabel } from "~/server/cases/author-text";
+
+/**
+ * Outbound text. Everything sent TO A CASE AUTHOR is written in the case's
+ * language (`cases.locale`); staff e-mails are Polish. Strings live in
+ * messages/{pl,en}/mail.json.
+ */
 
 /** Absolute base URL for links in e-mails and QR codes. */
 export function siteUrl(): string {
@@ -22,48 +27,79 @@ export function siteUrl(): string {
   return `http://localhost:${process.env.PORT ?? 3000}`;
 }
 
-export const caseUrl = (code: string) => `${siteUrl()}/case/${code}`;
+/** The case page; with the token it is the private link (read and reply). */
+export const caseUrl = (code: string, token?: string) =>
+  token
+    ? `${siteUrl()}/case/${code}?t=${encodeURIComponent(token)}`
+    : `${siteUrl()}/case/${code}`;
 export const adminCaseUrl = (code: string) =>
   `${siteUrl()}/admin/cases/${code}`;
 
-/** Residents know „ROPS", not the Hub's team name. */
-const SIGNATURE = `${RESIDENT_TEAM_NAME}
-${SITE.hub}
-${SITE.owner}`;
+/**
+ * `text` is sent; `logText` is what the delivery log keeps (the private-link
+ * token masked — staff screens never show it).
+ */
+export type Mail = { subject: string; text: string; logText?: string };
 
-const AUTO_FOOTER = `—
-Ta wiadomość została wysłana automatycznie. Nie odpowiadaj na nią.
-Odpowiedz w wątku sprawy na stronie ${SITE.name}.`;
+const mask = (text: string, token?: string) =>
+  token ? text.split(encodeURIComponent(token)).join("•••") : undefined;
 
-type Mail = { subject: string; text: string };
+function signature(locale: Locale): string {
+  const t = translatorFor(locale, "mail");
+  const site = labelsFor(locale).site;
+  return [t("common.team"), site.hub, site.owner].join("\n");
+}
 
-/** Receipt to the author right after the case is created. */
-export function receiptEmail(c: { code: string; kind: CaseKind }): Mail {
+function footer(locale: Locale): string {
+  return translatorFor(locale, "mail")("common.autoFooter", {
+    site: labelsFor(locale).site.name,
+  });
+}
+
+/** Receipt to the author right after the case is created (with the private link). */
+export function receiptEmail(
+  c: { code: string; kind: CaseKind; locale: Locale },
+  token?: string,
+): Mail {
+  const t = translatorFor(c.locale, "mail");
+  const text = [
+    t("common.greeting"),
+    "",
+    t("receipt.thanks", { kind: residentKindLabel(c.locale, c.kind) }),
+    "",
+    t("receipt.code", { code: c.code }),
+    "",
+    t("receipt.where"),
+    caseUrl(c.code, token),
+    ...(token ? ["", t("receipt.privateLink")] : []),
+    "",
+    t("receipt.orCode", { url: `${siteUrl()}/case` }),
+    t("receipt.keepCode"),
+    "",
+    signature(c.locale),
+    "",
+    footer(c.locale),
+  ].join("\n");
   return {
-    subject: `Przyjęliśmy Twoją sprawę ${c.code}`,
-    text: `Dzień dobry,
-
-dziękujemy. Twoja sprawa („${RESIDENT_KIND_LABEL[c.kind]}”) została przyjęta.
-
-Kod sprawy: ${c.code}
-
-Odpowiemy zwykle w ciągu 2 dni roboczych. Odpowiedź zobaczysz tutaj:
-${caseUrl(c.code)}
-
-Możesz też wejść na ${siteUrl()}/case i wpisać kod sprawy.
-Zachowaj ten kod — dzięki niemu sprawdzisz odpowiedź.
-
-${SIGNATURE}
-
-${AUTO_FOOTER}`,
+    subject: t("receipt.subject", { code: c.code }),
+    text,
+    logText: mask(text, token),
   };
 }
 
-export function receiptSms(c: { code: string }): string {
-  return `${SITE.name}: przyjęliśmy Twoją sprawę. Kod: ${c.code}. Odpowiedź sprawdzisz na ${caseUrl(c.code)}`;
+export function receiptSms(
+  c: { code: string; locale: Locale },
+  token?: string,
+): { text: string; logText?: string } {
+  const text = translatorFor(c.locale, "mail")("receipt.sms", {
+    site: labelsFor(c.locale).site.name,
+    code: c.code,
+    url: caseUrl(c.code, token),
+  });
+  return { text, logText: mask(text, token) };
 }
 
-/** Staff inbox e-mail about a new case. No body text — it stays in the panel. */
+/** Staff inbox e-mail about a new case. No body text — it stays in the panel. Polish. */
 export function staffNewCaseEmail(c: {
   code: string;
   kind: CaseKind;
@@ -71,48 +107,70 @@ export function staffNewCaseEmail(c: {
   authorRole: AuthorRole;
   contactPref: ContactPref;
   onBehalf: boolean;
+  locale: Locale;
 }): Mail {
+  const t = translatorFor("pl", "mail");
+  const l = labelsFor("pl");
   return {
-    subject: `[${SITE.name}] Nowa sprawa: ${CASE_KIND_LABEL[c.kind]} — ${c.code}`,
-    text: `Nowa sprawa w skrzynce Hubu.
-
-Rodzaj: ${CASE_KIND_LABEL[c.kind]}
-Tytuł: ${c.title}
-Kto zgłasza: ${AUTHOR_ROLE_LABEL[c.authorRole]}${c.onBehalf ? " (w imieniu innej osoby)" : ""}
-Preferowany kontakt: ${CONTACT_PREF_LABEL[c.contactPref]}
-
-Otwórz sprawę w panelu:
-${adminCaseUrl(c.code)}
-
-Wstępna ocena AI pojawi się w panelu w ciągu kilkudziesięciu sekund (jeśli AI jest dostępne).
-
-${AUTO_FOOTER}`,
+    subject: t("staffNewCase.subject", {
+      site: l.site.name,
+      kind: l.caseKind[c.kind],
+      code: c.code,
+    }),
+    text: [
+      t("staffNewCase.intro"),
+      "",
+      t("staffNewCase.kind", { kind: l.caseKind[c.kind] }),
+      t("staffNewCase.title", { title: c.title }),
+      t("staffNewCase.who", {
+        role: l.authorRole[c.authorRole],
+        onBehalf: c.onBehalf ? "yes" : "no",
+      }),
+      t("staffNewCase.contact", { pref: l.contactPref[c.contactPref] }),
+      ...(c.locale === "en" ? [t("staffNewCase.english")] : []),
+      "",
+      t("staffNewCase.open"),
+      adminCaseUrl(c.code),
+      "",
+      t("staffNewCase.ai"),
+      "",
+      footer("pl"),
+    ].join("\n"),
   };
 }
 
-/** A staff reply delivered to the author by e-mail. */
+/** A staff reply delivered to the author by e-mail, in the case's language. */
 export function replyEmail(c: {
   code: string;
   from: string;
   body: string;
+  locale: Locale;
 }): Mail {
+  const t = translatorFor(c.locale, "mail");
   return {
-    subject: `Odpowiedź w Twojej sprawie ${c.code}`,
-    text: `Dzień dobry,
-
-w Twojej sprawie ${c.code} jest nowa odpowiedź od: ${c.from}.
-
-${c.body}
-
-Cały wątek i możliwość odpowiedzi:
-${caseUrl(c.code)}
-
-${SIGNATURE}
-
-${AUTO_FOOTER}`,
+    subject: t("reply.subject", { code: c.code }),
+    text: [
+      t("common.greeting"),
+      "",
+      t("reply.intro", { code: c.code, from: c.from }),
+      "",
+      c.body,
+      "",
+      t("reply.thread"),
+      caseUrl(c.code),
+      t("reply.howToReply"),
+      "",
+      signature(c.locale),
+      "",
+      footer(c.locale),
+    ].join("\n"),
   };
 }
 
-export function replySms(c: { code: string }): string {
-  return `${SITE.name}: nowa odpowiedź w sprawie ${c.code}. Sprawdź: ${caseUrl(c.code)}`;
+export function replySms(c: { code: string; locale: Locale }): string {
+  return translatorFor(c.locale, "mail")("reply.sms", {
+    site: labelsFor(c.locale).site.name,
+    code: c.code,
+    url: caseUrl(c.code),
+  });
 }

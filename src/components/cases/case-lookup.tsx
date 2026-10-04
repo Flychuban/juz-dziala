@@ -1,19 +1,21 @@
 "use client";
 
 import { SearchIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { RESIDENT_KIND_LABEL } from "~/server/cases/types";
 import { api } from "~/trpc/react";
 import { fmtDate, looseCaseCode } from "./format";
 import { forgetCase, readMyCases, type SavedCase } from "./my-cases";
-import { STEP_LABEL } from "./status-timeline";
 
-/** Big, format-tolerant code entry for /case. */
+/**
+ * Big, format-tolerant code entry for /case. Without JavaScript the form is a
+ * plain GET to /case?code=…, which redirects to the case page.
+ */
 export function CaseLookup({
   initialValue = "",
   initialError,
@@ -21,6 +23,7 @@ export function CaseLookup({
   initialValue?: string;
   initialError?: string;
 }) {
+  const t = useTranslations("cases.lookup");
   const router = useRouter();
   const [value, setValue] = useState(initialValue);
   const [error, setError] = useState(initialError ?? "");
@@ -34,15 +37,13 @@ export function CaseLookup({
   return (
     <form
       noValidate
+      action="/case"
+      method="get"
       onSubmit={(e) => {
         e.preventDefault();
         const code = looseCaseCode(value);
         if (!code) {
-          setError(
-            value.trim()
-              ? "To nie wygląda na kod sprawy. Kod ma 8 znaków po „JD”, np. JD-7K3Q-X9MP."
-              : "Wpisz kod sprawy.",
-          );
+          setError(value.trim() ? t("invalidLoose") : t("empty"));
           inputRef.current?.focus();
           return;
         }
@@ -53,11 +54,10 @@ export function CaseLookup({
       className="flex flex-col gap-3"
     >
       <label htmlFor="case-code" className="text-xl font-semibold">
-        Kod sprawy
+        {t("label")}
       </label>
       <p id="case-code-hint" className="text-muted-foreground">
-        Kod ma postać JD-XXXX-XXXX. Wielkość liter, spacje i myślniki nie mają
-        znaczenia.
+        {t("hint")}
       </p>
       <div className="flex flex-col gap-3 sm:flex-row">
         <input
@@ -83,7 +83,7 @@ export function CaseLookup({
           className="h-auto min-h-14 max-w-full px-6 text-lg font-semibold whitespace-normal"
         >
           <SearchIcon aria-hidden="true" />
-          {busy ? "Sprawdzam…" : "Sprawdź"}
+          {busy ? t("checking") : t("submit")}
         </Button>
       </div>
       {error && (
@@ -101,6 +101,8 @@ export function CaseLookup({
 
 /** „Twoje sprawy na tym urządzeniu" — read from localStorage after mount. */
 export function MyCases() {
+  const t = useTranslations("cases");
+  const locale = useLocale();
   const [saved, setSaved] = useState<SavedCase[] | null>(null);
   useEffect(() => setSaved(readMyCases()), []);
   const codes = saved?.map((s) => s.code) ?? [];
@@ -123,23 +125,20 @@ export function MyCases() {
   return (
     <section aria-labelledby="my-cases-heading" className="mt-12">
       <h2 id="my-cases-heading" className="text-2xl font-bold">
-        Twoje sprawy na tym urządzeniu
+        {t("mine.heading")}
       </h2>
       {codes.length === 0 ? (
-        <p className="text-muted-foreground mt-2">
-          Na tym urządzeniu nie ma zapisanych spraw. Kod zapisuje się
-          automatycznie, gdy zgłaszasz sprawę lub ją otwierasz.
-        </p>
+        <p className="text-muted-foreground mt-2">{t("mine.empty")}</p>
       ) : q.isPending ? (
         <p role="status" className="mt-2">
-          Wczytuję Twoje sprawy…
+          {t("mine.loading")}
         </p>
       ) : q.error ? (
         <p role="alert" className="mt-2">
-          Nie udało się wczytać spraw. Spróbuj odświeżyć stronę.
+          {t("mine.error")}
         </p>
       ) : (
-        <ul className="mt-4 flex flex-col gap-3">
+        <ul className="border-hairline mt-4 flex flex-col border-t">
           {q.data.map((c) => {
             const s = saved.find((x) => x.code === c.code);
             const fresh =
@@ -152,7 +151,7 @@ export function MyCases() {
             return (
               <li
                 key={c.code}
-                className="border-hairline flex flex-col gap-2 rounded-md border p-4 sm:flex-row sm:items-center sm:justify-between"
+                className="border-hairline flex flex-col gap-2 border-b py-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="flex flex-col gap-1">
                   <Link
@@ -162,15 +161,17 @@ export function MyCases() {
                     {c.code}
                   </Link>
                   <p>
-                    {RESIDENT_KIND_LABEL[c.kind]}: {c.title}
+                    {t(`kind.${c.kind}`)}: {c.title}
                   </p>
                   <p className="text-muted-foreground text-sm">
-                    Status: {STEP_LABEL[c.status]} · zgłoszona{" "}
-                    {fmtDate(c.createdAt)}
+                    {t("mine.meta", {
+                      status: t(`status.${c.status}`),
+                      date: fmtDate(c.createdAt, locale),
+                    })}
                   </p>
                   {fresh && (
                     <Badge className="h-auto px-2.5 py-1 text-sm">
-                      Nowa odpowiedź
+                      {t("mine.newReply")}
                     </Badge>
                   )}
                 </div>
@@ -183,8 +184,11 @@ export function MyCases() {
                     setSaved(readMyCases());
                   }}
                 >
-                  Usuń z tego urządzenia
-                  <span className="sr-only"> — sprawa {c.code}</span>
+                  {t("mine.forget")}
+                  <span className="sr-only">
+                    {" "}
+                    {t("mine.forgetSr", { code: c.code })}
+                  </span>
                 </Button>
               </li>
             );

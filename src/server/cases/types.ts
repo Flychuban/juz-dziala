@@ -46,6 +46,14 @@ export type CaseTriage = {
   createdAt: string;
 };
 
+/*
+ * The Polish constants below are kept for existing callers. Text that goes to
+ * a case author must use the case's language: `replyClosing(locale)`,
+ * `residentTeamName(locale)`, `residentStatusLabel(locale, s)` and
+ * `residentKindLabel(locale, k)` from `./author-text` (server), or the
+ * `cases` messages (`kind.*`, `status.*`) in components.
+ */
+
 /** Staff display names in the thread. */
 export const TEAM_NAME = "Zespół Hubu ROPS";
 /** What residents see instead: they know „ROPS", not the Hub's team name. */

@@ -1,12 +1,9 @@
 import { CheckIcon, CircleDotIcon, CircleIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import type { CaseStatus } from "~/lib/domain";
 import { cn } from "~/lib/utils";
-import { RESIDENT_STATUS_LABEL } from "~/server/cases/types";
 import { fmtDateTime } from "./format";
-
-/** Resident-facing step names (staff screens keep CASE_STATUS_LABEL). */
-export const STEP_LABEL: Record<CaseStatus, string> = RESIDENT_STATUS_LABEL;
 
 export type TimelineStep = {
   status: CaseStatus;
@@ -15,7 +12,10 @@ export type TimelineStep = {
   at: Date | string | null;
 };
 
-/** Przyjęta → Wstępnie oceniona → W toku → Odpowiedziano. State is in text, not colour. */
+/**
+ * Przyjęta → Czytamy → Szukamy odpowiedzi → Masz odpowiedź, in resident words
+ * (messages `cases.status.*`). State is in text, not colour.
+ */
 export function StatusTimeline({
   steps,
   className,
@@ -23,6 +23,8 @@ export function StatusTimeline({
   steps: TimelineStep[];
   className?: string;
 }) {
+  const t = useTranslations("cases");
+  const locale = useLocale();
   return (
     <ol
       className={cn(
@@ -58,12 +60,18 @@ export function StatusTimeline({
           </span>
           <span className="flex min-w-0 flex-col">
             <span className="font-semibold">
-              <span className="sr-only">Krok {i + 1}: </span>
-              {STEP_LABEL[s.status]}
+              <span className="sr-only">
+                {t("timeline.step", { n: i + 1 })}{" "}
+              </span>
+              {t(`status.${s.status}`)}
             </span>
             <span className="text-sm">
-              {s.current ? "Teraz" : s.reached ? "Zrobione" : "Następny krok"}
-              {s.at ? ` · ${fmtDateTime(s.at)}` : ""}
+              {s.current
+                ? t("timeline.now")
+                : s.reached
+                  ? t("timeline.done")
+                  : t("timeline.next")}
+              {s.at ? ` · ${fmtDateTime(s.at, locale)}` : ""}
             </span>
           </span>
         </li>

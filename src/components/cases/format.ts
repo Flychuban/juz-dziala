@@ -1,18 +1,26 @@
-/** Polish date, age and plural helpers for case screens. Client-safe. */
-const TZ = "Europe/Warsaw";
+/** Date, age and plural helpers for case screens. Client-safe. */
+import { INTL_LOCALE, TIME_ZONE } from "~/i18n/config";
 
-const dateTime = new Intl.DateTimeFormat("pl-PL", {
-  dateStyle: "medium",
-  timeStyle: "short",
-  timeZone: TZ,
+const formats = (tag: string) => ({
+  dateTime: new Intl.DateTimeFormat(tag, {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: TIME_ZONE,
+  }),
+  dateOnly: new Intl.DateTimeFormat(tag, {
+    dateStyle: "long",
+    timeZone: TIME_ZONE,
+  }),
 });
-const dateOnly = new Intl.DateTimeFormat("pl-PL", {
-  dateStyle: "long",
-  timeZone: TZ,
-});
+const FMT = { pl: formats(INTL_LOCALE.pl), en: formats(INTL_LOCALE.en) };
+const fmt = (locale: string) => (locale === "en" ? FMT.en : FMT.pl);
 
-export const fmtDateTime = (d: Date | string) => dateTime.format(new Date(d));
-export const fmtDate = (d: Date | string) => dateOnly.format(new Date(d));
+/** „3 paź 2026, 14:05" / "3 Oct 2026, 14:05" (Europe/Warsaw). Polish by default. */
+export const fmtDateTime = (d: Date | string, locale = "pl") =>
+  fmt(locale).dateTime.format(new Date(d));
+/** „3 października 2026" / "3 October 2026". Polish by default. */
+export const fmtDate = (d: Date | string, locale = "pl") =>
+  fmt(locale).dateOnly.format(new Date(d));
 
 /** 1 sprawa · 2 sprawy · 5 spraw · 12 spraw · 22 sprawy */
 export function plural(
@@ -46,4 +54,21 @@ export function looseCaseCode(s: string): string | null {
   const body = raw.length === 10 && raw.startsWith("JD") ? raw.slice(2) : raw;
   if (body.length !== 8) return null;
   return `JD-${body.slice(0, 4)}-${body.slice(4)}`;
+}
+
+/** Any next-intl translator scoped to `cases.modules` (client or server). */
+type ModulesT = ((key: never) => string) & { has: (key: never) => boolean };
+
+/**
+ * A plan detail's value in the reader's language: an answer code (`option`,
+ * e.g. "ops", "50-200") is named from `cases.modules.plan.option.*`; free
+ * text and unknown codes keep the stored value.
+ */
+export function planDetailValue(
+  t: ModulesT,
+  d: { key: string; value: string; option?: string },
+): string {
+  if (!d.option) return d.value;
+  const path = `plan.option.${d.key}.${d.option}` as never;
+  return t.has(path) ? t(path) : d.value;
 }

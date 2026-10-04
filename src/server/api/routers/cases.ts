@@ -1,6 +1,8 @@
+import { TRPCError } from "@trpc/server";
 import { and, eq, inArray, max } from "drizzle-orm";
 import { z } from "zod";
 
+import { translatorFor } from "~/i18n/server";
 import {
   createTRPCRouter,
   publicProcedure,
@@ -9,24 +11,28 @@ import {
 import {
   caseOr404,
   limitReplyPerCode,
+  ownsCase,
   recordMisses,
+  requireToken,
 } from "~/server/cases/access";
+import { caseLocale } from "~/server/cases/author-text";
 import { addMessage, createCase, setCaseStatus } from "~/server/cases/engine";
 import { createCaseInputSchema } from "~/server/cases/input";
 import { casePayloads } from "~/server/cases/payloads";
 import { authorMessages, timelineFor } from "~/server/cases/queries";
 import { AUTHOR_NAME } from "~/server/cases/types";
 import { cases, messages } from "~/server/db/schema";
-import { hashToken, normalizeCaseCode } from "~/server/domain/case-code";
+import { normalizeCaseCode } from "~/server/domain/case-code";
+import { deliveryModes } from "~/server/mail/send";
 
 /**
  * Module V — the author's side of a Sprawa. Residents have no accounts: the
- * case code alone is the key (the private link adds a token but is not
- * required) — a deliberate trade-off for seniors who read codes over the
- * phone; guessing is what is limited, see `~/server/cases/access`. Never
- * returns the contact.
+ * case code alone opens a case for reading (seniors read codes over the
+ * phone); writing needs the private-link token too. Guessing is what is
+ * limited, see `~/server/cases/access`. Never returns the contact.
  */
 const codeInput = z.string().trim().min(1).max(40);
+const tokenInput = z.string().max(200);
 
 export const casesRouter = createTRPCRouter({
   /** Open a Sprawa from a public form. Other modules call `createCase()` directly. */
@@ -43,19 +49,20 @@ export const casesRouter = createTRPCRouter({
         // Only automated tests may flag their cases as sample data, and only
         // with a „[test]" title — `seed/clean-tests.ts` removes them.
         isSample: input.isSample === true && input.title.startsWith("[test]"),
+        locale: ctx.locale,
       });
       return { code: r.code, accessToken: r.accessToken };
     }),
 
   /** The author's view: status, timeline and the visible thread. */
   get: publicProcedure
-    .input(z.object({ code: codeInput, token: z.string().max(200).optional() }))
+    .input(z.object({ code: codeInput, token: tokenInput.optional() }))
     .query(async ({ ctx, input }) => {
       const c = await caseOr404(ctx, input.code);
       const [timeline, thread, payloads] = await Promise.all([
         timelineFor(c),
         authorMessages(c.id),
-        casePayloads(c, { staff: false }),
+        casePayloads(c, { staff: false, locale: ctx.locale }),
       ]);
       return {
         code: c.code,
@@ -66,11 +73,12 @@ export const casesRouter = createTRPCRouter({
         contactPref: c.contactPref,
         onBehalf: c.onBehalf,
         isSample: c.isSample,
+        /** The author's language (the plan and system notes are written in it). */
+        locale: caseLocale(c.locale),
         createdAt: c.createdAt,
         updatedAt: c.updatedAt,
-        privateLink: input.token
-          ? hashToken(input.token) === c.tokenHash
-          : false,
+        /** The token is this case's private link: the author may write. */
+        privateLink: ownsCase(c, input.token),
         ...payloads,
         timeline,
         messages: thread.map((m) => ({
@@ -89,21 +97,37 @@ export const casesRouter = createTRPCRouter({
       };
     }),
 
-  /** The author writes back in the thread. */
+  /**
+   * „Co dzieje się dalej" under a new case: the author's chosen channel and
+   * what really leaves the system (demo mode, e-mail transport, ROPS inbox).
+   */
+  whatNext: publicProcedure
+    .input(z.object({ code: codeInput, token: tokenInput }))
+    .query(async ({ ctx, input }) => {
+      const c = await caseOr404(ctx, input.code);
+      await requireToken(ctx, c, input.token);
+      return { contactPref: c.contactPref, ...deliveryModes() };
+    }),
+
+  /** The author writes back in the thread — needs the private-link token. */
   reply: publicProcedure
     .input(
       z.object({
         code: codeInput,
-        body: z
-          .string()
-          .trim()
-          .min(2, "Napisz wiadomość — co najmniej 2 znaki.")
-          .max(4000, "Wiadomość jest za długa — skróć ją do 4000 znaków."),
+        token: tokenInput.optional(),
+        body: z.string().trim().max(4000),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       await rateLimit(ctx, "cases.reply", { limit: 20, windowSec: 600 });
       const c = await caseOr404(ctx, input.code);
+      await requireToken(ctx, c, input.token);
+      if (input.body.length < 2) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: translatorFor(ctx.locale, "cases")("reply.tooShort"),
+        });
+      }
       await limitReplyPerCode(ctx, c.code);
       const m = await addMessage({
         caseId: c.id,
