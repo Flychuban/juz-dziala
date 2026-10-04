@@ -151,10 +151,8 @@ export async function GET(req: NextRequest) {
       },
       generatedAt: new Date().toISOString(),
       count: data.length,
-      next:
-        last && rows.length === limit
-          ? { after: last.id, since: last.createdAt.toISOString() }
-          : null,
+      // Page by id: ids only grow, timestamps of seeded rows may not.
+      next: last && rows.length === limit ? { after: last.id } : null,
       data,
     },
     { headers: { "Cache-Control": "no-store" } },

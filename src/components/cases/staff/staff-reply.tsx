@@ -93,7 +93,17 @@ export function StaffReply({
       );
       await onSent(r.id);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("sendFailed"));
+      // Validation comes back as a message key (reply.tooShort / reply.tooLong).
+      const field = (
+        e as { data?: { zodError?: { fieldErrors?: { body?: string[] } } } }
+      ).data?.zodError?.fieldErrors?.body?.[0];
+      setError(
+        field === "reply.tooShort" || field === "reply.tooLong"
+          ? t(field === "reply.tooShort" ? "tooShort" : "tooLong")
+          : e instanceof Error
+            ? e.message
+            : t("sendFailed"),
+      );
     }
   };
 

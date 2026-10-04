@@ -227,7 +227,8 @@
     "source": "Source:",
     "librarySource": "ROPS Social Innovation Library",
     "asOf": "as of {date}",
-    "translatedQuote": "Translation of a sentence from the Polish card"
+    "translatedQuote": "Translation of a sentence from the Polish card",
+    "basisNoCards": "No card fits confidently enough, so the draft only has gaps to fill in"
   },
   "controls": {
     "heading": "Case handling",
@@ -286,7 +287,8 @@
     "smsSimulated": "Text message saved as a simulation — the prototype does not send text messages.",
     "phoneTask": "Task added: call the author back (note in the thread).",
     "expertName": "{name}, Hub expert",
-    "expertNameSample": "{name}, Hub expert (sample person)"
+    "expertNameSample": "{name}, Hub expert (sample person)",
+    "tooLong": "The reply is too long — shorten it to 6,000 characters."
   },
   "expert": {
     "metaTitle": "My cases",

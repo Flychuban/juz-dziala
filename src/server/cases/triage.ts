@@ -34,6 +34,16 @@ import {
 } from "./library-candidates";
 import { REPLY_CLOSING, RESIDENT_TEAM_NAME, type CaseTriage } from "./types";
 
+// TODO(merge): use replyClosing/residentTeamName/caseLocale from ~/server/cases
+// (added on release/en-polish). Local fallbacks with the same behaviour:
+const caseLocale = (v: unknown): Locale => (v === "en" ? "en" : "pl");
+const replyClosing = (locale: Locale) =>
+  locale === "en"
+    ? translatorFor("en", "admin")("triageDraft.closing")
+    : REPLY_CLOSING;
+/** What residents see as the sender: „ROPS Kraków" in both languages. */
+const residentTeamName = (_locale: Locale) => RESIDENT_TEAM_NAME;
+
 /**
  * Triage: a one-sentence summary, Mapa areas, urgency, a powiat guess, a
  * suggested expert, similar cases and a reply draft. The draft may use ONLY
@@ -42,11 +52,10 @@ import { REPLY_CLOSING, RESIDENT_TEAM_NAME, type CaseTriage } from "./types";
  * from keyword matches, honestly labelled, and the status stays „Nowa".
  *
  * Languages: the reply draft is written in the case author's language
- * (`cases.locale`); the summary is Polish for the Hub team, with an English
- * `summaryEn` from the same call for staff who use the panel in English.
- * The language rules are given per field at the end of the user turn instead
- * of through `aiStructured({ locale })`, whose directive would turn every
- * text — the Polish staff summary too — into English.
+ * (`cases.locale`, passed to aiStructured) and ends with that language's
+ * closing line; the summary is Polish for the Hub team (for an English case
+ * the shared English directive may turn it English), and `summaryEn` from the
+ * same call serves staff who use the panel in English.
  */
 const triageSchema = z.object({
   summary: z.string(),
@@ -104,7 +113,8 @@ function draftText(locale: Locale) {
     crisisTalk: t("triageDraft.crisisTalk"),
     crisisNextStep: t("triageDraft.crisisNextStep"),
     // Polish keeps the shared constant, so every Polish reply ends the same way.
-    closing: locale === "en" ? t("triageDraft.closing") : REPLY_CLOSING,
+    closing: replyClosing(locale),
+    team: residentTeamName(locale),
   };
 }
 
@@ -171,7 +181,7 @@ ${d.nextStepLabel} ${d.nextStepGap}
 
 ${d.closing}
 
-${RESIDENT_TEAM_NAME}`;
+${d.team}`;
   }
   const en = locale === "en";
   const list = cards
@@ -191,14 +201,14 @@ ${d.nextStepLabel} ${d.libraryNextStep}
 
 ${d.closing}
 
-${RESIDENT_TEAM_NAME}`;
+${d.team}`;
 }
 
 /** Every reply keeps the thread open: the closing line is added if missing. */
 function withClosing(draft: string, locale: Locale): string {
-  const closing = draftText(locale).closing;
+  const { closing, team } = draftText(locale);
   if (draft.includes(closing)) return draft;
-  const sig = draft.lastIndexOf(RESIDENT_TEAM_NAME);
+  const sig = draft.lastIndexOf(team);
   if (sig > 0) {
     return `${draft.slice(0, sig).trimEnd()}\n\n${closing}\n\n${draft.slice(sig)}`;
   }
@@ -256,7 +266,7 @@ ${d.nextStepLabel} ${d.crisisNextStep}
 
 ${d.closing}
 
-${RESIDENT_TEAM_NAME}`;
+${d.team}`;
 }
 
 /**
@@ -347,7 +357,7 @@ function languageBlock(locale: Locale): string {
 export async function triageCase(caseId: string): Promise<CaseTriage | null> {
   const [c] = await db.select().from(cases).where(eq(cases.id, caseId));
   if (!c) return null;
-  const locale: Locale = c.locale === "en" ? "en" : "pl";
+  const locale = caseLocale(c.locale);
 
   const text = `${c.title}\n${c.bodyRedacted}`;
   const crisisCheck = detectCrisis(text);
@@ -429,6 +439,10 @@ export async function triageCase(caseId: string): Promise<CaseTriage | null> {
     schema: triageSchema,
     system: [{ text: SYSTEM, cache: true }],
     user,
+    // The author's language. Its directive goes last in the user turn, so for
+    // an English case every text — the summary too — may come back in English;
+    // summaryEn is English either way.
+    locale,
     effort: "low",
     maxTokens: 3000,
     timeoutMs: 40_000,

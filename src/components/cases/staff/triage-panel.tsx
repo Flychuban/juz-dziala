@@ -277,7 +277,11 @@ export function TriagePanel({
             </label>
             <p id="triage-draft-hint" className="text-muted-foreground text-sm">
               {t("draftHint", {
-                basis: tr.crisis ? t("basisCrisis") : t("basisCards"),
+                basis: tr.crisis
+                  ? t("basisCrisis")
+                  : tr.cards.length
+                    ? t("basisCards")
+                    : t("basisNoCards"),
               })}
             </p>
             <Textarea

@@ -387,8 +387,9 @@ export const adminInboxRouter = createTRPCRouter({
         body: z
           .string()
           .trim()
-          .min(2, "Napisz odpowiedź — co najmniej 2 znaki.")
-          .max(6000, "Odpowiedź jest za długa — skróć ją do 6000 znaków."),
+          // Message keys (admin.json), shown in the staff member's language.
+          .min(2, "reply.tooShort")
+          .max(6000, "reply.tooLong"),
         sendEmail: z.boolean().default(false),
         internal: z.boolean().default(false),
       }),

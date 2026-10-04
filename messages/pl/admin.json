@@ -227,7 +227,8 @@
     "source": "Źródło:",
     "librarySource": "Biblioteka Innowacji Społecznych ROPS",
     "asOf": "stan na {date}",
-    "translatedQuote": "Tłumaczenie zdania z polskiej karty"
+    "translatedQuote": "Tłumaczenie zdania z polskiej karty",
+    "basisNoCards": "Żadna karta nie pasuje wystarczająco pewnie, więc szkic ma tylko luki do uzupełnienia"
   },
   "controls": {
     "heading": "Prowadzenie sprawy",
@@ -286,7 +287,8 @@
     "smsSimulated": "SMS zapisany jako symulacja — prototyp nie wysyła SMS-ów.",
     "phoneTask": "Dodano zadanie: oddzwoń do autora (notatka w wątku).",
     "expertName": "{name}, ekspert Hubu",
-    "expertNameSample": "{name}, ekspert Hubu (osoba przykładowa)"
+    "expertNameSample": "{name}, ekspert Hubu (osoba przykładowa)",
+    "tooLong": "Odpowiedź jest za długa — skróć ją do 6000 znaków."
   },
   "expert": {
     "metaTitle": "Moje sprawy",

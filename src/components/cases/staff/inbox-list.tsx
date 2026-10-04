@@ -16,15 +16,10 @@ import {
   CASE_STATUSES,
   MAPA_AREAS,
   type CaseKind,
-  type CaseStatus,
-  type MapaArea,
 } from "~/lib/domain";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
-import { caseHref, hoursSince, isOpenStatus } from "./labels";
-
-const pick = <T extends string>(v: string | null, all: readonly T[]) =>
-  v && (all as readonly string[]).includes(v) ? (v as T) : undefined;
+import { caseHref, hoursSince, inboxInput, isOpenStatus } from "./labels";
 
 const selectClass =
   "border-input bg-background min-h-12 w-full rounded-md border px-3 text-base";
@@ -43,24 +38,17 @@ export function InboxList({
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
-  const status = pick<CaseStatus>(sp.get("status"), CASE_STATUSES);
-  const kind = pick<CaseKind>(sp.get("kind"), CASE_KINDS);
-  const area = pick<MapaArea>(sp.get("area"), MAPA_AREAS);
-  const qParam = sp.get("q") ?? "";
-  const waiting = sp.get("waiting") === "1";
+  const input = inboxInput((k) => sp.get(k));
+  const { status, kind, area } = input;
+  const qParam = input.q ?? "";
+  const waiting = input.waiting ?? false;
   const [q, setQ] = useState(qParam);
   useEffect(() => setQ(qParam), [qParam]);
 
-  const list = api.admin.inbox.list.useQuery(
-    {
-      status,
-      kind,
-      area,
-      q: qParam || undefined,
-      waiting: waiting || undefined,
-    },
-    { refetchInterval: 10_000, placeholderData: keepPreviousData },
-  );
+  const list = api.admin.inbox.list.useQuery(input, {
+    refetchInterval: 10_000,
+    placeholderData: keepPreviousData,
+  });
 
   const setParam = (key: string, value: string | undefined) => {
     const next = new URLSearchParams(sp.toString());
@@ -310,15 +298,9 @@ export function InboxList({
                 <dl className="grid grid-cols-1 content-start gap-x-2 text-sm sm:min-w-52 sm:grid-cols-[auto_1fr]">
                   <dt className="text-muted-foreground">{t("statusLabel")}</dt>
                   <dd className="font-semibold">{L.caseStatus[r.status]}</dd>
-                  <dt className="text-muted-foreground">
-                    {t("urgencyLabel")}
-                  </dt>
-                  <dd>
-                    {r.urgency ? L.urgency[r.urgency] : tl("unassessed")}
-                  </dd>
-                  <dt className="text-muted-foreground">
-                    {t("createdLabel")}
-                  </dt>
+                  <dt className="text-muted-foreground">{t("urgencyLabel")}</dt>
+                  <dd>{r.urgency ? L.urgency[r.urgency] : tl("unassessed")}</dd>
+                  <dt className="text-muted-foreground">{t("createdLabel")}</dt>
                   <dd>{relativeAge(r.createdAt, tt)}</dd>
                   <dt className="text-muted-foreground">
                     {t("activityLabel")}

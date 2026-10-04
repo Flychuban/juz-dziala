@@ -228,6 +228,13 @@ export async function seedSampleCases(): Promise<void> {
   const now = Date.now();
   const at = (hoursAgo: number) => new Date(now - hoursAgo * H);
   let unread = 0;
+  // Outbox rows of every case, written at the end in time order (ids grow
+  // with time, as they do when notify() writes them one by one).
+  const outbox: {
+    type: string;
+    payload: Record<string, unknown>;
+    createdAt: Date;
+  }[] = [];
 
   for (const c of SAMPLE_CASES) {
     const createdAt = at(c.hoursAgo);
@@ -368,7 +375,7 @@ export async function seedSampleCases(): Promise<void> {
           },
           createdAt: m.createdAt,
         });
-    await db.insert(events).values(ev);
+    outbox.push(...ev);
 
     // Unread bell items for the Hub team (and the assigned expert).
     if (c.unread) {
@@ -418,6 +425,9 @@ export async function seedSampleCases(): Promise<void> {
       });
     }
   }
+
+  outbox.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  await db.insert(events).values(outbox);
 
   console.log(
     `[seed] sample cases: ${SAMPLE_CASES.length} (replaced ${removed}), ${unread} unread notifications for the Hub team`,

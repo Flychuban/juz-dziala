@@ -5,6 +5,7 @@ import { Suspense } from "react";
 
 import { CaseWorkspace } from "~/components/cases/staff/case-workspace";
 import { InboxList } from "~/components/cases/staff/inbox-list";
+import { inboxInput } from "~/components/cases/staff/labels";
 import { SampleBadge } from "~/components/kit";
 import { requireStaff } from "~/components/layout/staff-gate";
 import { personTitle } from "~/server/cases/sample-people";
@@ -50,29 +51,37 @@ export default async function Page({
       </HydrateClient>
     );
   }
+  const input = inboxInput((k) => {
+    const v = sp[k];
+    return typeof v === "string" ? v : undefined;
+  });
   const [t, locale, me] = await Promise.all([
     getTranslations("admin.expert"),
     getLocale(),
     signedInPerson(),
+    // The expert's cases arrive with the HTML, not after a spinner.
+    api.admin.inbox.list.prefetch(input),
   ]);
   const title = me ? personTitle(me, locale) : null;
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 [overflow-wrap:anywhere]">
-      <h1 className="text-3xl font-bold">{t("title")}</h1>
-      {me && (
-        <p className="mt-2 flex flex-wrap items-center gap-2 font-semibold">
-          {title
-            ? t("signedInAs", { name: me.displayName, title })
-            : me.displayName}
-          {me.isSample && <SampleBadge />}
-        </p>
-      )}
-      <p className="mt-2 max-w-prose">{t("lead")}</p>
-      <div className="mt-6">
-        <Suspense fallback={<p role="status">{t("loading")}</p>}>
-          <InboxList basePath="/expert" />
-        </Suspense>
+    <HydrateClient>
+      <div className="mx-auto max-w-6xl px-4 py-8 [overflow-wrap:anywhere]">
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
+        {me && (
+          <p className="mt-2 flex flex-wrap items-center gap-2 font-semibold">
+            {title
+              ? t("signedInAs", { name: me.displayName, title })
+              : me.displayName}
+            {me.isSample && <SampleBadge />}
+          </p>
+        )}
+        <p className="mt-2 max-w-prose">{t("lead")}</p>
+        <div className="mt-6">
+          <Suspense fallback={<p role="status">{t("loading")}</p>}>
+            <InboxList basePath="/expert" />
+          </Suspense>
+        </div>
       </div>
-    </div>
+    </HydrateClient>
   );
 }
