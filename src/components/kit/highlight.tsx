@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { cn } from "~/lib/utils";
 import { findTermRanges } from "./terms";
 
@@ -58,6 +58,7 @@ export function UserTerms({
   className?: string;
 }) {
   const tk = useTranslations("common.kit");
+  const [open, close] = useLocale() === "en" ? ["“", "”"] : ["„", "”"];
   const unique = [...new Set(terms.map((t) => t.trim()).filter(Boolean))];
   if (unique.length === 0) return null;
   return (
@@ -71,7 +72,9 @@ export function UserTerms({
           key={t}
           className="border-brand-accent bg-background text-foreground inline-flex items-center rounded-sm border px-2.5 py-1 text-base leading-snug font-semibold"
         >
-          „{t}”
+          {open}
+          {t}
+          {close}
         </li>
       ))}
     </ul>
