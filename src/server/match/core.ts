@@ -12,7 +12,7 @@ import { createHash } from "node:crypto";
 import type { Locale } from "~/i18n/config";
 import { buildCompactIndex } from "~/server/ai/prompts/match";
 import type { AiResult } from "~/server/ai/structured";
-import { stemEn } from "~/server/domain/english";
+import { isStopwordEn, stemEn } from "~/server/domain/english";
 import {
   buildKeywordIndex,
   keywordSearch,
@@ -21,7 +21,7 @@ import {
   type KeywordIndex,
   type KeywordResult,
 } from "~/server/domain/keywords";
-import { fold, stem } from "~/server/domain/polish";
+import { fold, isStopword, stem } from "~/server/domain/polish";
 import {
   SECTION_KEYS,
   type LibraryCard,
@@ -228,7 +228,7 @@ const GENERIC_STEMS = new Set(
 );
 /** The same for English ("person", "problem", "lives"). */
 const GENERIC_STEMS_EN = new Set(
-  ["person", "people", "problem", "help", "need", "needs", "lives", "live", "home", "house", "situation", "life", "time", "day", "year", "years", "old", "thing"].map(
+  ["person", "people", "problem", "help", "need", "needs", "lives", "live", "home", "house", "situation", "life", "time", "day", "year", "years", "old", "thing", "use", "used"].map(
     (w) => stemEn(w),
   ),
 );
@@ -242,11 +242,21 @@ export function meaningfulTerms(terms: readonly string[]): string[] {
 }
 
 /**
+ * English function words ("it", "there", "wants") mean nothing to the Polish
+ * index but can still prefix-match a Polish card word; they are blanked before
+ * the Polish search. A word that is also a Polish stopword ("do", "no", "to")
+ * stays, so Polish phrases typed on the English site still match.
+ */
+function withoutEnglishStopwords(query: string): string {
+  return query.replace(/[\p{L}\p{M}\p{N}]+/gu, (w) => (isStopwordEn(w) && !isStopword(w) ? " " : w));
+}
+
+/**
  * Both indexes, each card at its best score. A card the English translation
  * scored higher is marked `lang: "en"` (its matched card words are English).
  */
 function searchBoth(catalog: Catalog, query: string): KeywordResult & { langById: Map<string, "en"> } {
-  const pl = keywordSearch(catalog.index, catalog.cards, query, { limit: CANDIDATES });
+  const pl = keywordSearch(catalog.index, catalog.cards, withoutEnglishStopwords(query), { limit: CANDIDATES });
   const en = keywordSearch(catalog.indexEn, catalog.cards, query, { limit: CANDIDATES });
   const best = new Map<string, KeywordHit>();
   const langById = new Map<string, "en">();

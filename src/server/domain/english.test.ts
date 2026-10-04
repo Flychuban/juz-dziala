@@ -41,7 +41,7 @@ describe("processTermEn", () => {
     expect(processTermEn("doesn")).toBeNull();
     expect(processTermEn("a")).toBeNull();
     expect(processTermEn("alone")).toBe("alon");
-    expect(isStopwordEn("no")).toBe(false);
+    expect(isStopwordEn("nobody")).toBe(false);
     expect(isStopwordEn("without")).toBe(false);
   });
 });

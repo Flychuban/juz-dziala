@@ -9,10 +9,10 @@
 import { normalize } from "./polish";
 
 /**
- * Function words dropped for retrieval. Deliberately kept: "alone", "no",
- * "nobody", "without", "own" — they carry meaning ("lives alone", "no food",
- * "on her own"). Phrase triggers in synonyms.en.ts still see every word,
- * stopwords included.
+ * Function words dropped for retrieval. "not" and "no" are dropped like the
+ * Polish „nie": phrase triggers in synonyms.en.ts still see every word,
+ * stopwords included ("no food", "doesn't go out"). Deliberately kept:
+ * "alone", "nobody", "without", "own" — they carry meaning on their own.
  */
 const STOPWORD_LIST = [
   "a", "about", "above", "after", "again", "against", "all", "also", "am", "an", "and", "any", "are",
@@ -34,6 +34,7 @@ const STOPWORD_LIST = [
   "hello", "hi", "dear", "thanks", "thank", "almost", "already", "always", "still", "lot", "lots",
   "something", "anything", "everything", "someone", "anyone", "everyone", "somebody", "anybody",
   "thing", "things", "way", "know", "think", "want", "wants", "wanted", "tell", "said", "say", "says",
+  "call", "calls", "called", "calling", "not", "no",
 ];
 const STOPWORDS: ReadonlySet<string> = new Set(STOPWORD_LIST);
 
