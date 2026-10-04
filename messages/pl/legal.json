@@ -1,1 +1,155 @@
-{}
+{
+  "accessibility": {
+    "metaTitle": "Deklaracja dostępności",
+    "eyebrow": "Dostępność",
+    "title": "Deklaracja dostępności",
+    "lead": "Regionalny Ośrodek Polityki Społecznej w Krakowie zobowiązuje się zapewnić dostępność serwisu „Już Działa” zgodnie z ustawą z dnia 4 kwietnia 2019 r. o dostępności cyfrowej stron internetowych i aplikacji mobilnych podmiotów publicznych.",
+    "translationNote": "To jest tłumaczenie. Wiążąca wersja deklaracji dostępności jest po polsku.",
+    "translationLink": "Przeczytaj wersję polską",
+    "prototype": "To deklaracja prototypu przygotowanego na HackYeah 2026. Miejsca oznaczone „do uzupełnienia przez ROPS” wymagają danych, których zespół prototypu nie zna — nie zostały wymyślone.",
+    "toFill": "do uzupełnienia przez ROPS",
+    "scope": {
+      "heading": "Zakres deklaracji",
+      "name": "Nazwa serwisu: Już Działa — Małopolski Hub Innowacji Społecznych.",
+      "published": "Data publikacji serwisu: 3 października 2026 r. (prototyp).",
+      "updated": "Data ostatniej istotnej aktualizacji: 4 października 2026 r."
+    },
+    "status": {
+      "heading": "Stan dostępności cyfrowej",
+      "body": "Serwis jest <b>częściowo zgodny</b> z ustawą o dostępności cyfrowej z powodu niezgodności lub wyłączeń wymienionych poniżej.",
+      "issuesHeading": "Niezgodności i wyłączenia",
+      "videos": "Filmy o innowacjach pochodzą z kanału ROPS w serwisie YouTube. Nie wszystkie mają napisy przygotowane ręcznie ani audiodeskrypcję.",
+      "pdfs": "Dokumenty PDF dołączone do kart innowacji pochodzą od autorów innowacji i mogą nie być w pełni dostępne.",
+      "pjm": "Nagranie informacji o serwisie w polskim języku migowym jest w przygotowaniu (zob. <link>Informacja w PJM</link>).",
+      "voice": "Wpisywanie głosem („Powiedz”) działa tylko w przeglądarkach, które je obsługują. Zawsze można wpisać tekst z klawiatury.",
+      "translation": "Wersja angielska serwisu jest tłumaczeniem. Opisy innowacji i materiały ROPS przetłumaczyła sztuczna inteligencja; część dokumentów i materiałów do pobrania jest dostępna tylko po polsku."
+    },
+    "preparation": {
+      "heading": "Przygotowanie deklaracji",
+      "date": "Data sporządzenia deklaracji: 4 października 2026 r.",
+      "method": "Metoda: samoocena zespołu prototypu — testy automatyczne (axe), obsługa wyłącznie z klawiatury, czytnik ekranu VoiceOver, ekran telefonu 360 px, powiększenie do 200%."
+    },
+    "features": {
+      "heading": "Ułatwienia w serwisie",
+      "text": "Duży tekst domyślnie (18 px) i przyciski A+ / A− w górnym pasku.",
+      "contrast": "Tryb wysokiego kontrastu (przycisk „Kontrast”).",
+      "easy": "Tryb „Tekst łatwy” (przycisk w górnym pasku): przy każdym rozwiązaniu pokazujemy krótką wersję łatwą do czytania — krótkie zdania, proste słowa. Przygotowuje ją automatycznie asystent AI wyłącznie na podstawie karty; pełny opis zostaje pod spodem.",
+      "easyRead": "<link>Tekst łatwy do czytania</link>.",
+      "readAloud": "Czytanie na głos wyników i opisów innowacji.",
+      "forms": "Formularze podzielone na pojedyncze pytania, bez limitu czasu.",
+      "map": "Mapa zawsze ma wersję w postaci tabeli.",
+      "account": "Nie trzeba zakładać konta ani podawać nazwiska.",
+      "english": "Wersja serwisu w języku angielskim (przełącznik języka w górnym pasku)."
+    },
+    "shortcuts": {
+      "heading": "Skróty klawiaturowe",
+      "body": "Serwis nie definiuje własnych skrótów. Działają standardowe skróty przeglądarki. Pierwsze naciśnięcie klawisza Tab pokazuje odnośnik „Przejdź do treści”."
+    },
+    "contact": {
+      "heading": "Informacje zwrotne i dane kontaktowe",
+      "body": "Jeśli zauważysz problem z dostępnością, napisz do nas. Osoba kontaktowa, adres e-mail i telefon: <em>do uzupełnienia przez ROPS</em>. Tą samą drogą możesz poprosić o informację niedostępną w serwisie albo o udostępnienie jej w innej formie."
+    },
+    "procedure": {
+      "heading": "Procedura wnioskowo-skargowa",
+      "body": "Każdy ma prawo zażądać zapewnienia dostępności cyfrowej strony, jej elementu albo dostępu alternatywnego. Żądanie powinno zawierać dane osoby zgłaszającej, wskazanie strony lub elementu oraz sposób kontaktu. ROPS realizuje żądanie niezwłocznie, nie później niż w ciągu 7 dni. Jeżeli nie jest to możliwe, informuje o terminie — nie dłuższym niż 2 miesiące. W razie odmowy można złożyć skargę, a po jej rozpatrzeniu zawiadomić <link>Rzecznika Praw Obywatelskich</link>."
+    },
+    "building": {
+      "heading": "Dostępność architektoniczna",
+      "body": "Opis dostępności siedziby ROPS Kraków (wejścia, windy, toalety, parking, pętla indukcyjna, pies asystujący): <em>do uzupełnienia przez ROPS</em>."
+    },
+    "interpreter": {
+      "heading": "Tłumacz języka migowego",
+      "body": "Możliwość skorzystania z tłumacza polskiego języka migowego online: <em>do uzupełnienia przez ROPS</em>."
+    },
+    "apps": {
+      "heading": "Aplikacje mobilne",
+      "body": "Serwis nie ma aplikacji mobilnej. Działa w przeglądarce telefonu od szerokości 320 px."
+    }
+  },
+  "easyRead": {
+    "metaTitle": "Tekst łatwy do czytania",
+    "eyebrow": "Dostępność",
+    "title": "Tekst łatwy do czytania",
+    "lead": "Informacja o stronie Już Działa napisana prostym językiem.",
+    "home": "Przejdź na stronę główną",
+    "sections": {
+      "what": {
+        "h": "Co to jest za strona?",
+        "lines": {
+          "1": "Ta strona nazywa się Już Działa.",
+          "2": "Prowadzi ją Regionalny Ośrodek Polityki Społecznej w Krakowie.",
+          "3": "W skrócie: ROPS.",
+          "4": "ROPS pomaga ludziom w Małopolsce."
+        }
+      },
+      "why": {
+        "h": "Do czego jest ta strona?",
+        "lines": {
+          "1": "Możesz tu opisać swój problem.",
+          "2": "Na przykład: Mama mieszka sama i nie wychodzi z domu.",
+          "3": "Strona pokaże Ci rozwiązania.",
+          "4": "Te rozwiązania już działają w Małopolsce.",
+          "5": "Sprawdził je ROPS."
+        }
+      },
+      "how": {
+        "h": "Jak to zrobić?",
+        "lines": {
+          "1": "Wejdź na stronę główną.",
+          "2": "Napisz swój problem w dużym okienku.",
+          "3": "Możesz też nacisnąć przycisk Powiedz i mówić.",
+          "4": "Naciśnij przycisk Szukaj rozwiązań."
+        }
+      },
+      "human": {
+        "h": "Co jeśli potrzebuję pomocy człowieka?",
+        "lines": {
+          "1": "Naciśnij przycisk Poproś ROPS o pomoc.",
+          "2": "Dostaniesz kod sprawy.",
+          "3": "Zapisz ten kod albo go wydrukuj.",
+          "4": "Pracownik ROPS odpowie Ci.",
+          "5": "Odpowiedź zobaczysz po wpisaniu kodu w zakładce Moja sprawa.",
+          "6": "Możemy też do Ciebie zadzwonić, jeśli tego chcesz."
+        }
+      },
+      "account": {
+        "h": "Czy muszę zakładać konto?",
+        "lines": {
+          "1": "Nie.",
+          "2": "Nie musisz zakładać konta.",
+          "3": "Nie musisz podawać nazwiska."
+        }
+      },
+      "bigger": {
+        "h": "Jak powiększyć tekst?",
+        "lines": {
+          "1": "Na górze strony są przyciski A+ i A−.",
+          "2": "A+ powiększa tekst.",
+          "3": "Przycisk Kontrast zmienia kolory na bardziej wyraźne."
+        }
+      },
+      "simpler": {
+        "h": "Jak czytać prościej?",
+        "lines": {
+          "1": "Na górze strony jest przycisk Tekst łatwy.",
+          "2": "Naciśnij go.",
+          "3": "Przy każdym rozwiązaniu zobaczysz krótki, prosty opis.",
+          "4": "Ten opis przygotowuje komputer na podstawie karty.",
+          "5": "Pełny opis jest zawsze pod spodem."
+        }
+      }
+    }
+  },
+  "signLanguage": {
+    "metaTitle": "Informacja w polskim języku migowym",
+    "eyebrow": "Dostępność",
+    "title": "Informacja w polskim języku migowym (PJM)",
+    "lead": "Tu będzie nagranie, w którym tłumacz PJM opowiada, czym jest serwis Już Działa i jak z niego korzystać.",
+    "placeholderLabel": "Miejsce na nagranie w polskim języku migowym — w przygotowaniu",
+    "placeholder": "Nagranie w PJM — przygotuje je tłumacz polskiego języka migowego przed uruchomieniem serwisu.",
+    "meanwhile": "Do czasu publikacji nagrania możesz skorzystać z <easy>informacji w tekście łatwym do czytania</easy> albo napisać do nas przez formularz <ask>Zapytaj eksperta</ask>."
+  },
+  "about": {
+    "text": "Już Działa — Małopolski Hub Innowacji Społecznych\nProwadzi: Regionalny Ośrodek Polityki Społecznej w Krakowie (ROPS Kraków), instytucja Województwa Małopolskiego.\n\nSerwis łączy problemy społeczne zgłaszane przez mieszkańców, organizacje i gminy z rozwiązaniami sprawdzonymi w Małopolsce i opisanymi w Bibliotece Innowacji Społecznych ROPS Kraków.\n\nCo można zrobić:\n1. Opisać problem (tekstem lub głosem) i otrzymać pasujące innowacje z cytatem ze źródła.\n2. Poprosić ROPS o pomoc i sprawdzać odpowiedź kodem sprawy, bez zakładania konta.\n3. Przeglądać Bibliotekę Innowacji Społecznych, filmy i materiały.\n4. Poznać wyzwania społeczne z Mapy Wyzwań Społecznych.\n5. Zgłosić pomysł na innowację i przygotować szkic wniosku w otwartym naborze.\n6. Zgłosić chęć testowania innowacji i ocenić rozwiązania.\n7. Zadać pytanie ekspertowi i zapisać się na powiadomienia o naborach.\n8. (Instytucje) Przygotować projekt Ramowego Planu Wdrożenia innowacji jako usługi.\n\nDostępność: /accessibility (deklaracja), /easy-read (tekst łatwy), /sign-language (PJM).\nDane: Biblioteka Innowacji Społecznych ROPS Kraków; GUS BDL. Otwarte API: /api/v1/innovations, /api/v1/calls\n"
+  }
+}

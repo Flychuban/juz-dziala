@@ -1,8 +1,9 @@
 /**
  * Optional data files produced by the Data agent: data/knowledge.json (facts
- * per Mapa area, with source) and data/gminas.json (gmina names and TERYT
- * codes). Either may be missing; every reader then returns an empty result.
- * Parsers are tolerant of shape and never invent a value they cannot read.
+ * per Mapa area, with source; English in data/knowledge.en.json) and
+ * data/gminas.json (gmina names and TERYT codes). Any may be missing; every
+ * reader then returns an empty result. Parsers are tolerant of shape and
+ * never invent a value they cannot read.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -150,6 +151,69 @@ let knowledgeCache: Map<MapaArea, KnowledgeFact> | null = null;
 export function knowledgeFacts(): Map<MapaArea, KnowledgeFact> {
   knowledgeCache ??= parseKnowledge(readJson("knowledge.json"));
   return knowledgeCache;
+}
+
+// ---------------------------------------------------------------------------
+// English: data/knowledge.en.json mirrors knowledge.json with the prose translated
+// ---------------------------------------------------------------------------
+
+/** „3,5%" → „3.5%" (a decimal comma only; „PLN 1,092" keeps its thousands comma). */
+export function englishDecimals(value: string): string {
+  return value.replace(/(\d),(\d{1,2})(?!\d)/g, "$1.$2");
+}
+
+/** Scope words the sources use, in English. Unknown scopes pass through. */
+const SCOPE_EN: Record<string, string> = { Polska: "Poland", Małopolska: "Małopolska" };
+export function englishScope(scope: string): string {
+  return SCOPE_EN[scope.trim()] ?? scope;
+}
+
+/** knowledge.en.json with figure values and scopes written the English way. */
+export function englishKnowledgeJson(json: unknown): unknown {
+  if (!isRec(json) || !Array.isArray(json.areas)) return json;
+  return {
+    ...json,
+    areas: (json.areas as unknown[]).map((a): unknown =>
+      isRec(a) && Array.isArray(a.figures)
+        ? {
+            ...a,
+            figures: (a.figures as unknown[]).map((f): unknown =>
+              isRec(f)
+                ? {
+                    ...f,
+                    ...(typeof f.value === "string" ? { value: englishDecimals(f.value) } : {}),
+                    ...(typeof f.scope === "string" ? { scope: englishScope(f.scope) } : {}),
+                  }
+                : f,
+            ),
+          }
+        : a,
+    ),
+  };
+}
+
+/** A fact plus the language it is written in ("pl" when no English version exists). */
+export type LocalizedKnowledgeFact = KnowledgeFact & { lang: "pl" | "en" };
+
+const localizedCache: Partial<Record<"pl" | "en", Map<MapaArea, LocalizedKnowledgeFact>>> = {};
+
+/**
+ * Knowledge facts in the visitor's language: English from
+ * data/knowledge.en.json where that area has one, otherwise the Polish fact
+ * marked `lang: "pl"` (the page wraps it in lang="pl").
+ */
+export function knowledgeFactsFor(locale: string): Map<MapaArea, LocalizedKnowledgeFact> {
+  const key = locale === "en" ? "en" : "pl";
+  const cached = localizedCache[key];
+  if (cached) return cached;
+  const out = new Map<MapaArea, LocalizedKnowledgeFact>();
+  for (const [area, fact] of knowledgeFacts()) out.set(area, { ...fact, lang: "pl" });
+  if (key === "en") {
+    for (const [area, fact] of parseKnowledge(englishKnowledgeJson(readJson("knowledge.en.json"))))
+      out.set(area, { ...fact, lang: "en" });
+  }
+  localizedCache[key] = out;
+  return out;
 }
 
 let gminaCache: Gmina[] | null = null;

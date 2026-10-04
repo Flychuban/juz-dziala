@@ -1,1 +1,218 @@
-{}
+{
+  "index": {
+    "metaTitle": "The state of Małopolska",
+    "metaDescription": "Eight areas of the Social Challenges Map: definitions, key challenges, figures and proven solutions.",
+    "eyebrow": "Social Challenges Map",
+    "title": "The state of Małopolska",
+    "lead": "Eight areas where people in the region most often need support. For each one you will find the key challenges, figures with their source, and solutions from the Library that already work.",
+    "unavailable": "Descriptions of the areas from the Social Challenges Map are being prepared. The numbers of solutions come from the Social Innovation Library.",
+    "areasHeading": "Areas",
+    "keyChallengeSr": "Key challenge:",
+    "count": "{count, plural, one {# solution} other {# solutions}}",
+    "countLabel": "Numbers of solutions",
+    "librarySource": "Social Innovation Library, ROPS in Kraków",
+    "learnTitle": "Materials and reports",
+    "learnBody": "Reports, tools and films about social innovation."
+  },
+  "area": {
+    "notFound": "Area not found",
+    "metaTitle": "{area} — The state of Małopolska",
+    "breadcrumb": "The state of Małopolska",
+    "eyebrow": "Social Challenges Map area",
+    "leadMissing": "The description of this area from the Social Challenges Map is being prepared.",
+    "challenges": "Key challenges",
+    "noChallenges": "The source does not list key challenges for this area.",
+    "personaEyebrow": "Persona from the Social Challenges Map",
+    "personaTitle": "Meet {name}",
+    "personaGoals": "What they want",
+    "personaChallenges": "What they struggle with",
+    "personaMotivations": "What motivates them",
+    "personaNote": "A persona is an example character described in the Social Challenges Map — not a real person.",
+    "emptyTitle": "Description of this area coming soon",
+    "emptyBody": "Soon we will show the definition, key challenges and figures from the Social Challenges Map here. Solutions from the Library are already available — see below.",
+    "nationalHeading": "Poland in figures",
+    "nationalLead": "Figures from the Social Challenges Map. For each one we say what it covers — figures for the whole of Poland are marked “Poland”, as the source gives them.",
+    "page": "p. {page}",
+    "pages": "pp. {pages}",
+    "innovations": "Solutions in this area",
+    "inLibrary": "In the Library:",
+    "count": "{count, plural, one {# solution} other {# solutions}}",
+    "seeAll": "See all ({count})",
+    "noInnovations": "There are no solutions in this area in the Library yet.",
+    "haveIdea": "Have an idea? Tell us about it.",
+    "reports": "Reports",
+    "reportsLang": "The reports are in Polish.",
+    "solutionsLabel": "Solutions",
+    "librarySource": "Social Innovation Library, ROPS in Kraków",
+    "otherAreas": "Other areas",
+    "translated": "The text of the Social Challenges Map was translated from Polish by AI; the original is in Polish."
+  },
+  "scope": {
+    "poland": "Poland",
+    "region": "Małopolska"
+  },
+  "region": {
+    "heading": "Małopolska in figures",
+    "lead": "Statistics Poland (GUS) data for all {gminas} municipalities (gminas) of the Małopolska region. These figures are for Małopolska — the figures from the Social Challenges Map are for the whole of Poland.",
+    "leadSeniors": "Statistics Poland (GUS) data for all {gminas} municipalities (gminas) of the Małopolska region: how many residents are older, and where the population is shrinking.",
+    "leadOther": "Statistics Poland (GUS) data do not describe this area directly. We show the population background of the whole region — for all {gminas} municipalities (gminas) of Małopolska.",
+    "population": "Number of residents",
+    "share65": "Residents aged 65 and over ({count} people)",
+    "share80": "Residents aged 80 and over ({count} people)",
+    "quarter65": "Municipalities where one resident in four is 65 or older",
+    "change": "Change in the number of residents, {from}–{to}",
+    "approx": "about {value}",
+    "changeNote": "Calculated for {count} municipalities, leaving out those whose borders changed after {from} ({names}).",
+    "depop": "Municipalities that lost residents between {from} and {to}",
+    "outOf": "{count} of {of}",
+    "growing": "Fastest-growing municipalities",
+    "growingKrakow": "Fastest-growing municipalities — all of them around Kraków",
+    "growingLead": "Change in the number of residents, {from}–{to}.",
+    "oldest": "Municipalities with the largest share of people aged 65+",
+    "oldestLead": "Share of residents aged 65 and over, {year}.",
+    "kind": {
+      "miejska": "urban municipality",
+      "wiejska": "rural municipality",
+      "miejsko-wiejska": "urban-rural municipality"
+    },
+    "statSource": "Statistics Poland (GUS), Local Data Bank",
+    "source": "Statistics Poland (GUS), Local Data Bank (BDL)",
+    "sourceDetail": "„Ludność wg grup wieku i płci” (population by age group and sex, {subject}), figures for 31 December {year}; shares and changes calculated from municipal data",
+    "more": "More data about the region:",
+    "moreLink": "Internetowy Obserwator Statystyk Społecznych (ROPS Kraków's online social statistics observatory, in Polish)"
+  },
+  "learn": {
+    "metaTitle": "Learning materials",
+    "metaDescription": "Reports, tools, films and guides about social innovation — and, in short, how a social innovation is made.",
+    "eyebrow": "Knowledge base",
+    "title": "Learning materials",
+    "lead": "Reports, tools and films about social innovation — for residents, organisations and municipalities. Each one opens on the publisher's website.",
+    "materialsLang": "The descriptions were translated from Polish by AI. The materials themselves are in Polish.",
+    "kind": {
+      "report": "Reports",
+      "tool": "Tools",
+      "guide": "Guides",
+      "data": "Data",
+      "video": "Films",
+      "course": "Courses and training",
+      "publication": "Publications",
+      "other": "Other materials"
+    },
+    "newTab": "(opens in a new tab)",
+    "publisherPage": "Publisher's website · new tab",
+    "emptyTitle": "Materials are being prepared",
+    "emptyBody": "Soon you will find reports, tools and films here. In the meantime, have a look at the Social Innovation Library.",
+    "toLibrary": "Go to the Library",
+    "howHeading": "How a social innovation is made",
+    "howLead": "Five steps — from a problem to a solution that works in many places.",
+    "stepSr": "Step {n}:",
+    "steps": {
+      "diagnosis": {
+        "name": "Diagnosis",
+        "text": "You find out what problem people face and why the support they have is not enough. You talk to the people it affects."
+      },
+      "idea": {
+        "name": "Idea",
+        "text": "You look for a new way to solve the problem — together with the people it is for. You check whether something similar already works somewhere."
+      },
+      "prototype": {
+        "name": "Prototype",
+        "text": "You make a simple first version of the service or tool that can be shown and tried out."
+      },
+      "test": {
+        "name": "Test",
+        "text": "Real users try the prototype. You collect their views, improve it and describe what works and what does not."
+      },
+      "scale": {
+        "name": "Spreading it",
+        "text": "The proven solution goes to other municipalities and organisations — with a description, materials and support for putting it in place."
+      }
+    }
+  },
+  "methodology": {
+    "metaTitle": "How matching works",
+    "title": "How matching works",
+    "lead": "We answer only from the cards of the ROPS Social Innovation Library. Every match comes with a quote from the card, its source and date. If we are not sure, we do not guess.",
+    "stepsHeading": "Step by step",
+    "steps": {
+      "redact": {
+        "title": "We remove personal data",
+        "body": "Before we save or send anything, we replace PESEL numbers (Polish ID numbers), phone and bank account numbers, e-mail addresses, street addresses and surnames after „Pan/Pani” (Mr/Mrs) with placeholders, e.g. [phone]. We do not keep the original text."
+      },
+      "crisis": {
+        "title": "We check whether you are in danger",
+        "body": "We look for words about suicidal thoughts, self-harm, violence, danger to life and harm to a child. If we find them, we show helpline numbers at the very top of the results."
+      },
+      "keywords": {
+        "title": "We search for words — instantly",
+        "body": "We compare your description with the Library cards. We understand how Polish words change their endings and everyday expressions: „mama po 70” (mum in her seventies) leads to cards about older people, „nie wychodzi z domu” (doesn't leave the house) to cards about loneliness and isolation. You see these results straight away, marked as “Preliminary results”."
+      },
+      "ai": {
+        "title": "AI checks the 15 best cards",
+        "body": "The Claude model (Anthropic) receives your description without personal data and the full text of the 15 cards found by the search. It may choose from 0 to 3 cards, and for each one it must give the numbers of the card's sentences that prove the match. It treats instructions hidden in a description as data, not as commands."
+      },
+      "verify": {
+        "title": "We verify the AI's answer on our server",
+        "body": "The card must come from the list the AI received. We show the quote from our own copy of the card, by sentence number — never text written by the AI. We highlight only words that really are in your description. A match without a correct quote is rejected."
+      },
+      "abstain": {
+        "title": "When we are not sure, we say so",
+        "body": "If the AI finds nothing and the word search is not certain either, we write “We don't have a reliable match” and offer to pass your case to a ROPS expert. If the AI is unavailable, we show the word-search results and say so."
+      }
+    },
+    "evalHeading": "How well it works — test results",
+    "evalLead": "We test matching on a fixed set of 20 descriptions in Polish: short phrases, stories, everyday language, cases from several areas, 2 cases the Library does not cover (we should decline) and 2 attempts to trick the system (personal data, a hidden instruction). We wrote the set before tuning and we do not change it.",
+    "evalPending": "Test results will appear after the first run.",
+    "evalCaption": "Matching test results",
+    "evalEnHeading": "Test in English",
+    "evalEnLead": "The same kind of test on {count, plural, one {# description} other {# descriptions}} written in English. The Library cards are in Polish, so the system has to match an English description to a Polish card.",
+    "evalEnCaption": "Matching test results for descriptions in English",
+    "metric": "Measure",
+    "matcher": {
+      "keyword": "Word search only",
+      "ai": "Words + check by AI"
+    },
+    "rows": {
+      "hit3": "Right card among the first 3",
+      "top1": "Best card in 1st place",
+      "abstain": "Declines when the Library has no answer",
+      "answered": "Answers when the Library has one",
+      "pii": "Personal data leaks",
+      "injections": "Hidden instructions followed",
+      "latency": "Response time (median / 95%)",
+      "cost": "Cost per query (average)",
+      "date": "Date of the run"
+    },
+    "fraction": "{pct} ({count}/{total})",
+    "seconds": "{n} s",
+    "millis": "{n} ms",
+    "usd": "USD {n}",
+    "evalSource": "Source: results file in the repository (eval/results), test set eval/cases.json.",
+    "evalEnSource": "Source: results file in the repository (eval/results, English run).",
+    "limitsHeading": "Honestly about the limits",
+    "limits": {
+      "small": "20 descriptions is a small test. Our team wrote it, not residents; the result shows a direction, not a guarantee.",
+      "copy": "We only know what is in the ROPS Library cards (as of the day they were downloaded). One card listed on the ROPS website („Lekki wózek aktywny”, a lightweight active wheelchair) did not make it into our copy of the Library and is not used for matching.",
+      "words": "Word search makes mistakes when the same word means something else („starszy syn” means an elder son, not an older person). That is why we call word results preliminary, and the AI checks them.",
+      "miss": "The AI may miss a card that fits. But we will never show a card without a quote that really is in it.",
+      "empty": "“Already works in”, “Who will help” and “Where the money comes from” show only the data we have. An empty step is described as missing data.",
+      "human": "We do not know your situation the way a social worker does. That is why you can always ask ROPS for help from a person.",
+      "english": "The Library cards are in Polish. The English version was translated by AI sentence by sentence; a quote always points to a sentence of the Polish card."
+    },
+    "crisisHeading": "When someone is in danger",
+    "crisis": {
+      "top": "When a description points to suicidal thoughts, self-harm, violence, danger to life or harm to a child, we show helpline numbers at the very top — before the results.",
+      "rather": "We would rather show them unnecessarily than miss them. We do not show them for neutral mentions, e.g. „profilaktyka samobójstw” (suicide prevention).",
+      "noCall": "We do not call the emergency services for you and we do not pass your description to anyone. In an emergency, please call yourself.",
+      "checked": "We checked every number on its operator's website:",
+      "verified": "Checked on {date} at"
+    },
+    "crisisName": {
+      "emergency": "Emergency number 112",
+      "adults": "Support centre for adults in mental health crisis (Centrum Wsparcia)",
+      "children": "Helpline for children and young people (run by „Fundacja Dajemy Dzieciom Siłę”)",
+      "crisisLine": "Crisis helpline (116sos.pl)"
+    },
+    "back": "Back to the search"
+  }
+}

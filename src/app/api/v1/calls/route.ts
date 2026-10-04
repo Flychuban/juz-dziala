@@ -3,8 +3,10 @@ import { type NextRequest } from "next/server";
 
 import {
   CALL_STATUS_LABEL,
+  CALL_STATUS_LABEL_EN,
   CALL_STATUSES,
   MAPA_AREA_LABEL,
+  MAPA_AREA_LABEL_EN,
   SITE,
 } from "~/lib/domain";
 import { db } from "~/server/db";
@@ -15,13 +17,17 @@ export const dynamic = "force-dynamic";
 /**
  * Open JSON API: grant calls („nabory") for social innovation, as published
  * by ROPS Kraków. Optional `?status=open|planned|closed|demo`. CORS-open,
- * cacheable for 5 minutes. Each record links to its own source.
+ * cacheable for 5 minutes. Each record links to its own source. `en` holds
+ * the English version of the call's prose (AI translation) or null; the
+ * response does not depend on the visitor's language cookie.
  */
 export async function GET(req: NextRequest) {
   const status = req.nextUrl.searchParams.get("status");
   if (status && !(CALL_STATUSES as readonly string[]).includes(status)) {
     return Response.json(
-      { error: `Nieznany status. Dozwolone: ${CALL_STATUSES.join(", ")}` },
+      {
+        error: `Nieznany status / Unknown status. Dozwolone / allowed: ${CALL_STATUSES.join(", ")}`,
+      },
       { status: 400, headers: { "Access-Control-Allow-Origin": "*" } },
     );
   }
@@ -52,6 +58,15 @@ export async function GET(req: NextRequest) {
       sourceUrl: c.sourceUrl,
       notes: c.notes,
       updatedAt: c.updatedAt.toISOString(),
+      en: c.en
+        ? {
+            ...c.en,
+            statusLabel: CALL_STATUS_LABEL_EN[c.status],
+            areaLabels: c.areas.map((a) => MAPA_AREA_LABEL_EN[a]),
+            translatedBy:
+              "AI (Claude), from the Polish text; the call documents at sourceUrl are binding",
+          }
+        : null,
     }));
 
   return Response.json(

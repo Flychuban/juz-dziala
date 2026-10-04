@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { CheckIcon, XIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-import { MAPA_AREA_LABEL, type MapaArea } from "~/lib/domain";
+import { useLabels } from "~/i18n/use-labels";
+import { type MapaArea } from "~/lib/domain";
 import { cn } from "~/lib/utils";
 
 export type LibraryParams = {
@@ -43,6 +45,7 @@ function Option({
   marker?: "radio" | "check";
   children: React.ReactNode;
 }) {
+  const t = useTranslations("library.filters");
   return (
     <Link
       href={href}
@@ -71,18 +74,18 @@ function Option({
           )
         ) : null}
       </span>
-      <span className={cn("min-w-0 flex-1", selected ? "font-bold" : "font-medium")}>
+      <span
+        className={cn("min-w-0 flex-1", selected ? "font-bold" : "font-medium")}
+      >
         {children}
       </span>
       {count !== undefined ? (
         <span className="text-muted-foreground tabular text-[0.9375rem]">
-          <span className="sr-only">, liczba rozwiązań: </span>
+          <span className="sr-only">{t("countSr")} </span>
           {count}
         </span>
       ) : null}
-      {selected ? (
-        <span className="sr-only"> (wybrane — kliknij, aby usunąć)</span>
-      ) : null}
+      {selected ? <span className="sr-only"> {t("selectedSr")}</span> : null}
     </Link>
   );
 }
@@ -102,10 +105,12 @@ export function LibraryFilters({
   categories: { slug: string; label: string; count: number }[];
   withVideo: number;
 }) {
+  const t = useTranslations("library.filters");
+  const labels = useLabels();
   return (
     <div className="space-y-8">
       <section>
-        <h3 className="font-display text-lg font-bold">Obszar Mapy Wyzwań</h3>
+        <h3 className="font-display text-lg font-bold">{t("area")}</h3>
         <ul className="-mx-2 mt-2 flex flex-col gap-0.5">
           {areas.map((a) => {
             const selected = params.area === a.key;
@@ -118,7 +123,7 @@ export function LibraryFilters({
                   selected={selected}
                   count={a.count}
                 >
-                  {MAPA_AREA_LABEL[a.key]}
+                  {labels.area[a.key]}
                 </Option>
               </li>
             );
@@ -126,7 +131,7 @@ export function LibraryFilters({
         </ul>
       </section>
       <section>
-        <h3 className="font-display text-lg font-bold">Dla kogo</h3>
+        <h3 className="font-display text-lg font-bold">{t("category")}</h3>
         <ul className="-mx-2 mt-2 flex flex-col gap-0.5">
           {categories.map((c) => {
             const selected = params.category === c.slug;
@@ -147,7 +152,7 @@ export function LibraryFilters({
         </ul>
       </section>
       <section>
-        <h3 className="font-display text-lg font-bold">Film</h3>
+        <h3 className="font-display text-lg font-bold">{t("video")}</h3>
         <ul className="-mx-2 mt-2 flex flex-col">
           <li>
             <Option
@@ -156,7 +161,7 @@ export function LibraryFilters({
               count={withVideo}
               marker="check"
             >
-              Tylko z filmem
+              {t("videoOnly")}
             </Option>
           </li>
         </ul>
@@ -173,15 +178,17 @@ export function ActiveFilters({
   params: LibraryParams;
   categoryLabel?: string;
 }) {
+  const t = useTranslations("library.filters");
+  const labels = useLabels();
   const items: { label: string; href: string }[] = [];
   if (params.q)
     items.push({
-      label: `„${params.q}”`,
+      label: t("query", { q: params.q }),
       href: libraryHref(params, { q: undefined }),
     });
   if (params.area)
     items.push({
-      label: MAPA_AREA_LABEL[params.area],
+      label: labels.area[params.area],
       href: libraryHref(params, { area: undefined }),
     });
   if (params.category)
@@ -191,14 +198,14 @@ export function ActiveFilters({
     });
   if (params.video)
     items.push({
-      label: "Tylko z filmem",
+      label: t("videoOnly"),
       href: libraryHref(params, { video: false }),
     });
   if (items.length === 0) return null;
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-muted-foreground text-[0.9375rem] font-semibold">
-        Wybrane:
+        {t("chosen")}
       </span>
       <ul className="flex flex-wrap gap-2">
         {items.map((i) => (
@@ -208,7 +215,7 @@ export function ActiveFilters({
               scroll={false}
               className="border-input bg-surface text-foreground hover:border-foreground inline-flex min-h-11 items-center gap-1.5 rounded-md border px-3 text-[0.9375rem] font-semibold no-underline"
             >
-              <span className="sr-only">Usuń filtr: </span>
+              <span className="sr-only">{t("removeSr")} </span>
               {i.label}
               <XIcon aria-hidden="true" className="size-4" />
             </Link>
@@ -221,7 +228,7 @@ export function ActiveFilters({
           scroll={false}
           className="text-foreground inline-flex min-h-11 items-center px-1 text-[0.9375rem] font-semibold underline decoration-1 underline-offset-4"
         >
-          Wyczyść wszystkie
+          {t("clearAll")}
         </Link>
       ) : null}
     </div>

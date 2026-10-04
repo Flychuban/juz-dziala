@@ -1,1 +1,155 @@
-{}
+{
+  "accessibility": {
+    "metaTitle": "Accessibility statement",
+    "eyebrow": "Accessibility",
+    "title": "Accessibility statement",
+    "lead": "The Regional Social Policy Centre in Kraków (ROPS) undertakes to make the „Już Działa” service accessible in accordance with the Act of 4 April 2019 on the digital accessibility of websites and mobile applications of public bodies.",
+    "translationNote": "This is a translation. The legally binding version of this accessibility statement is in Polish.",
+    "translationLink": "Read the Polish version",
+    "prototype": "This is the statement of a prototype built for HackYeah 2026. Places marked “to be completed by ROPS” need information the prototype team does not have — it has not been made up.",
+    "toFill": "to be completed by ROPS",
+    "scope": {
+      "heading": "Scope of the statement",
+      "name": "Name of the service: Już Działa — Małopolska Social Innovation Hub.",
+      "published": "Date the service was published: 3 October 2026 (prototype).",
+      "updated": "Date of the last significant update: 4 October 2026."
+    },
+    "status": {
+      "heading": "Digital accessibility status",
+      "body": "The service is <b>partially compliant</b> with the Digital Accessibility Act because of the non-compliances or exemptions listed below.",
+      "issuesHeading": "Non-compliances and exemptions",
+      "videos": "The films about innovations come from the ROPS channel on YouTube. Not all of them have hand-made subtitles or audio description.",
+      "pdfs": "PDF documents attached to the innovation cards come from the authors of the innovations and may not be fully accessible.",
+      "pjm": "A recording of information about the service in Polish Sign Language is being prepared (see <link>Information in PJM</link>).",
+      "voice": "Voice input (“Speak”) works only in browsers that support it. You can always type the text with a keyboard.",
+      "translation": "The English version of the service is a translation. Innovation descriptions and ROPS materials were translated by AI; some documents and downloadable materials are available only in Polish."
+    },
+    "preparation": {
+      "heading": "Preparation of the statement",
+      "date": "Date the statement was prepared: 4 October 2026.",
+      "method": "Method: self-assessment by the prototype team — automated tests (axe), keyboard-only use, the VoiceOver screen reader, a 360 px phone screen and zoom up to 200%."
+    },
+    "features": {
+      "heading": "Accessibility features",
+      "text": "Large text by default (18 px) and A+ / A− buttons in the top bar.",
+      "contrast": "High-contrast mode (the “Contrast” button).",
+      "easy": "“Easy read” mode (a button in the top bar): with every solution we show a short, easy-to-read version — short sentences, simple words. An AI assistant prepares it automatically, using only the card; the full description stays below.",
+      "easyRead": "<link>Easy-to-read information</link>.",
+      "readAloud": "Reading results and innovation descriptions aloud.",
+      "forms": "Forms split into single questions, with no time limit.",
+      "map": "The map always has a version in the form of a table.",
+      "account": "You do not need to create an account or give your surname.",
+      "english": "An English version of the service (the language switch in the top bar)."
+    },
+    "shortcuts": {
+      "heading": "Keyboard shortcuts",
+      "body": "The service does not define its own shortcuts. The browser's standard shortcuts work. The first press of the Tab key shows the “Skip to content” link."
+    },
+    "contact": {
+      "heading": "Feedback and contact details",
+      "body": "If you notice an accessibility problem, write to us. Contact person, e-mail address and phone: <em>to be completed by ROPS</em>. In the same way you can ask for information that is not accessible in the service, or for it to be provided in another form."
+    },
+    "procedure": {
+      "heading": "Requests and complaints procedure",
+      "body": "Everyone has the right to request digital accessibility of a page, an element of it, or alternative access. The request should include the details of the person making it, the page or element concerned, and a way to contact them. ROPS deals with the request without delay, and no later than within 7 days. If that is not possible, it gives a date — no later than 2 months. If the request is refused, you can make a complaint and, once it has been considered, notify the <link>Commissioner for Human Rights (Rzecznik Praw Obywatelskich)</link>."
+    },
+    "building": {
+      "heading": "Physical accessibility",
+      "body": "Description of the accessibility of the ROPS Kraków building (entrances, lifts, toilets, parking, induction loop, assistance dogs): <em>to be completed by ROPS</em>."
+    },
+    "interpreter": {
+      "heading": "Sign language interpreter",
+      "body": "Availability of an online Polish Sign Language interpreter: <em>to be completed by ROPS</em>."
+    },
+    "apps": {
+      "heading": "Mobile apps",
+      "body": "The service has no mobile app. It works in a phone browser from a width of 320 px."
+    }
+  },
+  "easyRead": {
+    "metaTitle": "Easy-to-read information",
+    "eyebrow": "Accessibility",
+    "title": "Easy-to-read information",
+    "lead": "Information about the Już Działa website in simple words.",
+    "home": "Go to the home page",
+    "sections": {
+      "what": {
+        "h": "What is this website?",
+        "lines": {
+          "1": "This website is called Już Działa.",
+          "2": "It is run by the Regional Social Policy Centre in Kraków.",
+          "3": "Its short name is ROPS.",
+          "4": "ROPS helps people in Małopolska."
+        }
+      },
+      "why": {
+        "h": "What is this website for?",
+        "lines": {
+          "1": "You can describe your problem here.",
+          "2": "For example: My mum lives alone and does not leave the house.",
+          "3": "The website will show you solutions.",
+          "4": "These solutions already work in Małopolska.",
+          "5": "ROPS has checked them."
+        }
+      },
+      "how": {
+        "h": "How do I do it?",
+        "lines": {
+          "1": "Go to the home page.",
+          "2": "Write your problem in the big box.",
+          "3": "You can also press the Speak button and talk.",
+          "4": "Press the Find solutions button."
+        }
+      },
+      "human": {
+        "h": "What if I need help from a person?",
+        "lines": {
+          "1": "Press the Ask ROPS for help button.",
+          "2": "You will get a case code.",
+          "3": "Write this code down or print it.",
+          "4": "Someone from ROPS will answer you.",
+          "5": "To see the answer, type your code on the My case page.",
+          "6": "We can also phone you if you want."
+        }
+      },
+      "account": {
+        "h": "Do I need an account?",
+        "lines": {
+          "1": "No.",
+          "2": "You do not need an account.",
+          "3": "You do not need to give your surname."
+        }
+      },
+      "bigger": {
+        "h": "How do I make the text bigger?",
+        "lines": {
+          "1": "At the top of the page there are buttons A+ and A−.",
+          "2": "A+ makes the text bigger.",
+          "3": "The Contrast button makes the colours stronger."
+        }
+      },
+      "simpler": {
+        "h": "How can I read more easily?",
+        "lines": {
+          "1": "At the top of the page there is an Easy read button.",
+          "2": "Press it.",
+          "3": "You will see a short, simple text with every solution.",
+          "4": "A computer writes this text from the description.",
+          "5": "The full description is always below it."
+        }
+      }
+    }
+  },
+  "signLanguage": {
+    "metaTitle": "Information in Polish Sign Language",
+    "eyebrow": "Accessibility",
+    "title": "Information in Polish Sign Language (PJM)",
+    "lead": "Here there will be a recording in which a Polish Sign Language (PJM) interpreter explains what the Już Działa service is and how to use it.",
+    "placeholderLabel": "Space for the recording in Polish Sign Language — being prepared",
+    "placeholder": "Recording in PJM — a Polish Sign Language interpreter will make it before the service is launched.",
+    "meanwhile": "Until the recording is published, you can read the <easy>easy-to-read information</easy> or write to us using the <ask>Ask an expert</ask> form."
+  },
+  "about": {
+    "text": "Już Działa — Małopolska Social Innovation Hub (Małopolski Hub Innowacji Społecznych)\nRun by: the Regional Social Policy Centre in Kraków (ROPS Kraków), an institution of the Małopolska Region.\n\nThe service connects social problems reported by residents, organisations and municipalities with solutions proven in Małopolska and described in the ROPS Kraków Social Innovation Library (Biblioteka Innowacji Społecznych).\n\nWhat you can do:\n1. Describe a problem (in writing or by voice) and get matching innovations with a quote from the source.\n2. Ask ROPS for help and check the reply with a case code, without creating an account.\n3. Browse the Social Innovation Library, films and materials.\n4. Learn about the social challenges in the Social Challenges Map (Mapa Wyzwań Społecznych).\n5. Submit an idea for an innovation and prepare a draft application in an open call for proposals.\n6. Sign up to test innovations and rate solutions.\n7. Ask an expert a question and subscribe to notifications about calls for proposals.\n8. (Institutions) Prepare a draft implementation framework plan for running an innovation as a service.\n\nThe service is in Polish; this English version is a translation. Innovation descriptions were translated by AI.\n\nAccessibility: /accessibility (statement), /easy-read (easy-to-read information), /sign-language (Polish Sign Language, PJM).\nData: ROPS Kraków Social Innovation Library; Statistics Poland (GUS) Local Data Bank (BDL). Open API: /api/v1/innovations, /api/v1/calls\n"
+  }
+}

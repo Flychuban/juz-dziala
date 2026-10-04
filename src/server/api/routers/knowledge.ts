@@ -4,20 +4,28 @@ import path from "node:path";
 import { z } from "zod";
 
 import {
-  MAPA_AREA_LABEL,
+  labelsFor,
   MAPA_AREAS,
   mapaAreaSchema,
   type MapaArea,
 } from "~/lib/domain";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { regionFigures } from "~/server/knowledge/region";
+import { englishKnowledgeJson } from "~/server/match/data-files";
 import { libraryFacets, listInnovations } from "./library";
 
 /*
  * Kondycja Małopolski (Mapa Wyzwań Społecznych) and Materiały.
- * Reads data/knowledge.json and data/learn.json (produced by the Data agent).
- * Both are optional: a missing or malformed file yields `available: false`
- * and the pages render an empty state instead of failing.
+ * Reads data/knowledge.json and data/learn.json (produced by the Data agent),
+ * and in English data/knowledge.en.json / data/learn.en.json, which mirror the
+ * Polish files. All are optional: a missing or malformed file yields
+ * `available: false` (or the Polish original, marked lang "pl") and the pages
+ * render an empty state instead of failing. Regional figures („Małopolska w
+ * liczbach") come from data/gminas.json — see ~/server/knowledge/region.
  */
+
+/** Language a piece of content is shown in. */
+type ContentLang = "pl" | "en";
 
 const str = z.string().trim();
 const strList = z
@@ -122,6 +130,8 @@ export type KnowledgeFigure = z.infer<typeof figureSchema>;
 export type KnowledgePersona = z.infer<typeof personaSchema>;
 export type KnowledgeArea = {
   key: MapaArea;
+  /** Language of the prose below ("pl" when no English version exists). */
+  lang: ContentLang;
   label: string;
   definition: string | null;
   keyChallenges: string[];
@@ -130,7 +140,7 @@ export type KnowledgeArea = {
   reports: { title: string; url: string | null }[];
   pages: (number | string)[];
 };
-export type LearnItem = z.infer<typeof learnItemSchema>;
+export type LearnItem = z.infer<typeof learnItemSchema> & { lang: ContentLang };
 
 async function readJson(file: string): Promise<unknown> {
   try {
@@ -141,18 +151,19 @@ async function readJson(file: string): Promise<unknown> {
   }
 }
 
-/** data/knowledge.json, validated leniently; null when missing or unusable. */
-export async function loadKnowledge(): Promise<{
-  source: KnowledgeSource | null;
-  areas: KnowledgeArea[];
-} | null> {
-  const raw = await readJson("knowledge.json");
+function parseKnowledgeFile(
+  raw: unknown,
+  lang: ContentLang,
+): { source: KnowledgeSource | null; areas: KnowledgeArea[] } | null {
   const parsed = knowledgeSchema.safeParse(raw);
   if (!parsed.success) {
     if (raw !== null)
-      console.warn("[knowledge] data/knowledge.json has an unexpected shape");
+      console.warn(
+        `[knowledge] knowledge file (${lang}) has an unexpected shape`,
+      );
     return null;
   }
+  const labels = labelsFor(lang).area;
   const areas: KnowledgeArea[] = [];
   for (const a of parsed.data.areas) {
     const r = areaSchema.safeParse(a);
@@ -160,7 +171,8 @@ export async function loadKnowledge(): Promise<{
     const d = r.data;
     areas.push({
       key: d.key,
-      label: d.label?.trim() ?? MAPA_AREA_LABEL[d.key],
+      lang,
+      label: labels[d.key] ?? d.label?.trim() ?? d.key,
       definition: d.definition?.trim() ?? null,
       keyChallenges: d.keyChallenges,
       persona: d.persona ?? null,
@@ -174,21 +186,63 @@ export async function loadKnowledge(): Promise<{
   return { source: parsed.data.source, areas };
 }
 
-/** data/learn.json — an array, or {items:[…]}; null when missing. */
-export async function loadLearn(): Promise<LearnItem[] | null> {
-  const raw = await readJson("learn.json");
-  if (raw === null) return null;
-  const list: unknown[] = Array.isArray(raw)
+/**
+ * data/knowledge.json, validated leniently; null when missing or unusable.
+ * In English each area comes from data/knowledge.en.json when it has one
+ * (figure values and scopes written the English way), otherwise the Polish
+ * area is returned with `lang: "pl"`.
+ */
+export async function loadKnowledge(locale = "pl"): Promise<{
+  source: KnowledgeSource | null;
+  areas: KnowledgeArea[];
+} | null> {
+  const pl = parseKnowledgeFile(await readJson("knowledge.json"), "pl");
+  if (!pl || locale !== "en") return pl;
+  const en = parseKnowledgeFile(
+    englishKnowledgeJson(await readJson("knowledge.en.json")),
+    "en",
+  );
+  if (!en) return pl;
+  const byKey = new Map(en.areas.map((a) => [a.key, a]));
+  return {
+    source: en.source ?? pl.source,
+    areas: pl.areas.map((a) => byKey.get(a.key) ?? a),
+  };
+}
+
+function learnList(raw: unknown): unknown[] {
+  return Array.isArray(raw)
     ? raw
     : raw &&
         typeof raw === "object" &&
         Array.isArray((raw as { items?: unknown }).items)
       ? (raw as { items: unknown[] }).items
       : [];
+}
+
+/**
+ * data/learn.json — an array, or {items:[…]}; null when missing. In English
+ * each item comes from data/learn.en.json (matched by its link) when present.
+ */
+export async function loadLearn(locale = "pl"): Promise<LearnItem[] | null> {
+  const raw = await readJson("learn.json");
+  if (raw === null) return null;
+  const english = new Map<string, z.infer<typeof learnItemSchema>>();
+  if (locale === "en") {
+    for (const x of learnList(await readJson("learn.en.json"))) {
+      const r = learnItemSchema.safeParse(x);
+      if (r.success) english.set(r.data.url, r.data);
+    }
+  }
   const items: LearnItem[] = [];
-  for (const x of list) {
+  for (const x of learnList(raw)) {
     const r = learnItemSchema.safeParse(x);
-    if (r.success) items.push(r.data);
+    if (!r.success) continue;
+    const en = english.get(r.data.url);
+    // The kind is a key, not prose: always the Polish file's.
+    items.push(
+      en ? { ...en, kind: r.data.kind, lang: "en" } : { ...r.data, lang: "pl" },
+    );
   }
   return items;
 }
@@ -198,22 +252,25 @@ export const knowledgeRouter = createTRPCRouter({
   /**
    * The 8 Mapa areas, always all 8 (in MAPA_AREAS order), each with its
    * innovation count from the library and — when knowledge.json is present —
-   * its definition and first key challenge.
+   * its definition and first key challenge; plus the regional GUS figures.
    */
   areas: publicProcedure.query(async ({ ctx }) => {
     const [knowledge, facets] = await Promise.all([
-      loadKnowledge(),
+      loadKnowledge(ctx.locale),
       libraryFacets(ctx.db),
     ]);
     const byKey = new Map(knowledge?.areas.map((a) => [a.key, a]) ?? []);
+    const labels = labelsFor(ctx.locale).area;
     return {
       available: knowledge !== null && knowledge.areas.length > 0,
       source: knowledge?.source ?? null,
+      region: regionFigures(),
       areas: MAPA_AREAS.map((key) => {
         const k = byKey.get(key);
         return {
           key,
-          label: k?.label ?? MAPA_AREA_LABEL[key],
+          lang: k?.lang ?? ctx.locale,
+          label: labels[key],
           definition: k?.definition ?? null,
           firstChallenge: k?.keyChallenges[0] ?? null,
           innovationCount: facets.areas.find((a) => a.key === key)?.count ?? 0,
@@ -222,26 +279,27 @@ export const knowledgeRouter = createTRPCRouter({
     };
   }),
 
-  /** One area: its knowledge.json entry (or null) and the library cards in it. */
+  /** One area: its knowledge.json entry (or null), the library cards in it, and the regional GUS figures. */
   area: publicProcedure
     .input(z.object({ key: mapaAreaSchema }))
     .query(async ({ ctx, input }) => {
       const [knowledge, innovations] = await Promise.all([
-        loadKnowledge(),
-        listInnovations(ctx.db, { area: input.key }),
+        loadKnowledge(ctx.locale),
+        listInnovations(ctx.db, { area: input.key }, ctx.locale),
       ]);
       return {
         key: input.key,
-        label: MAPA_AREA_LABEL[input.key],
+        label: labelsFor(ctx.locale).area[input.key],
         source: knowledge?.source ?? null,
         area: knowledge?.areas.find((a) => a.key === input.key) ?? null,
+        region: regionFigures(),
         innovations,
       };
     }),
 
   /** Materiały (data/learn.json): reports, tools, films, guides. */
-  learn: publicProcedure.query(async () => {
-    const items = await loadLearn();
+  learn: publicProcedure.query(async ({ ctx }) => {
+    const items = await loadLearn(ctx.locale);
     return {
       available: items !== null && items.length > 0,
       items: items ?? [],
