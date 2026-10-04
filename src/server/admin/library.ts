@@ -1,5 +1,7 @@
 import "server-only";
 
+import { createHash } from "node:crypto";
+
 import { asc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
@@ -34,18 +36,19 @@ const youtubeOrEmpty = z
       /^https:\/\/(www\.|m\.)?(youtube\.com|youtu\.be|youtube-nocookie\.com)\//.test(
         v,
       ),
-    "Podaj adres filmu z YouTube (https://www.youtube.com/… lub https://youtu.be/…).",
+    // Message keys (admin.json); the editor shows them in the staff member's language.
+    "editor.errors.videoUrl",
   );
 
 const httpUrl = z
   .string()
   .trim()
   .max(500)
-  .refine((v) => /^https?:\/\/\S+$/.test(v), "Podaj pełny adres (https://…).");
+  .refine((v) => /^https?:\/\/\S+$/.test(v), "editor.errors.fullUrl");
 
 /** Editable fields of a card (staff editor and „Dodaj z dokumentu"). */
 export const innovationInputSchema = z.object({
-  title: z.string().trim().min(3, "Tytuł jest za krótki.").max(200),
+  title: z.string().trim().min(3, "editor.errors.titleShort").max(200),
   sections: sectionsSchema,
   mapaAreas: z.array(mapaAreaSchema).max(8),
   categories: z.array(z.string().trim().max(120)).max(12).default([]),
@@ -63,6 +66,23 @@ export const newInnovationSchema = innovationInputSchema.extend({
 export type NewInnovationInput = z.infer<typeof newInnovationSchema>;
 
 type Row = typeof innovations.$inferSelect;
+
+/**
+ * Whether the card's English version (innovations.en) was made from its
+ * current Polish text — the same sha256 scripts/translate-data.ts stores.
+ */
+export function englishState(
+  card: Pick<Row, "title" | "sections" | "en">,
+): "current" | "stale" | "missing" {
+  if (!card.en) return "missing";
+  const ordered = Object.fromEntries(
+    SECTION_KEYS.map((k) => [k, card.sections[k]]),
+  );
+  const sha = createHash("sha256")
+    .update(JSON.stringify(ordered) + card.title)
+    .digest("hex");
+  return sha === card.en.sourceSha ? "current" : "stale";
+}
 
 /** The author section keeps organisations and drops private persons (no personal data). */
 function cleanSections(sections: Record<SectionKey, string>) {
@@ -146,8 +166,9 @@ export async function saveInnovation(
   const published =
     input.status === "published" && before.status !== "published";
 
-  // The cached „tekst łatwy" was written from the old text: drop it so it is
-  // rewritten from the edited card on the next request.
+  // The cached „tekst łatwy" (Polish and English) was written from the old
+  // text: drop both so they are rewritten from the edited card on the next
+  // request. A stale `en` translation is detected by its sourceSha instead.
   const contentChanged = Object.keys(diff).some(
     (k) => k === "title" || k.startsWith("sections."),
   );
@@ -155,7 +176,7 @@ export async function saveInnovation(
     .update(innovations)
     .set({
       ...after,
-      ...(contentChanged ? { easyText: null } : {}),
+      ...(contentChanged ? { easyText: null, easyTextEn: null } : {}),
       updatedBy: actor,
       updatedAt: new Date(),
     })

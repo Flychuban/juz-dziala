@@ -1,4 +1,5 @@
 import { type Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { CheckCircle2Icon } from "lucide-react";
 
@@ -15,7 +16,8 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { id } = await params;
-  return { title: id === "new" ? "Nowy nabór" : "Edycja naboru" };
+  const t = await getTranslations("admin.callPage");
+  return { title: id === "new" ? t("metaNew") : t("metaEdit") };
 }
 
 export default async function CallPage({
@@ -28,11 +30,14 @@ export default async function CallPage({
   const { id } = await params;
   const saved = (await searchParams).saved === "1";
   const isNew = id === "new";
-  const [call, subscribers] = await Promise.all([
+  const [call, subscribers, t, tc, locale] = await Promise.all([
     isNew
       ? Promise.resolve(null)
       : api.admin.calls.get({ id: decodeURIComponent(id) }),
     api.admin.calls.subscribers(),
+    getTranslations("admin.callPage"),
+    getTranslations("admin.calls"),
+    getLocale(),
   ]);
   if (!isNew && !call) notFound();
 
@@ -71,26 +76,26 @@ export default async function CallPage({
   return (
     <>
       <AdminHeader
-        title={call ? "Edycja naboru" : "Nowy nabór"}
-        breadcrumbs={[{ label: "Nabory", href: "/admin/calls" }]}
+        title={call ? t("titleEdit") : t("titleNew")}
+        breadcrumbs={[{ label: tc("title"), href: "/admin/calls" }]}
         lead={
-          call ? (
-            <p>{call.name}</p>
-          ) : (
-            <p>
-              Kwoty i daty wpisuj tylko ze źródła — z ogłoszenia lub regulaminu
-              naboru.
-            </p>
-          )
+          <>
+            {call ? (
+              <p lang={locale === "en" ? "pl" : undefined}>{call.name}</p>
+            ) : (
+              <p>{t("leadNew")}</p>
+            )}
+            {locale === "en" ? (
+              <p className="mt-2 text-base">{t("englishNote")}</p>
+            ) : null}
+          </>
         }
       />
       <div className="mx-auto max-w-6xl px-4 py-10">
         {saved ? (
           <Alert variant="success" role="status" className="mb-8">
             <CheckCircle2Icon aria-hidden="true" />
-            <AlertTitle>
-              Nabór zapisany. Zmiana widoczna od razu na stronie.
-            </AlertTitle>
+            <AlertTitle>{t("saved")}</AlertTitle>
           </Alert>
         ) : null}
         <CallEditor initial={initial} subscribers={subscribers} />

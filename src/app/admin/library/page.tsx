@@ -1,10 +1,11 @@
 import { type Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { FileUpIcon, SearchIcon } from "lucide-react";
 
 import { AdminHeader } from "~/components/admin/admin-header";
 import { StatusBadge } from "~/components/admin/status-badge";
-import { countPl, EmptyState, formatDatePl } from "~/components/kit";
+import { EmptyState, formatDate } from "~/components/kit";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import {
@@ -18,14 +19,16 @@ import {
 } from "~/components/ui/table";
 import {
   INNOVATION_STATUS,
-  INNOVATION_STATUS_LABEL,
-  MAPA_AREA_LABEL,
+  labelsFor,
   type InnovationStatus,
 } from "~/lib/domain";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/server";
 
-export const metadata: Metadata = { title: "Biblioteka — edycja" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("admin.library");
+  return { title: t("metaTitle") };
+}
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 const one = (v: string | string[] | undefined) =>
@@ -36,6 +39,13 @@ export default async function AdminLibraryPage({
 }: {
   searchParams: SearchParams;
 }) {
+  const [t, locale] = await Promise.all([
+    getTranslations("admin.library"),
+    getLocale(),
+  ]);
+  const L = labelsFor(locale);
+  // Cards are edited in Polish (the Library's source language).
+  const pl = locale === "en" ? "pl" : undefined;
   const sp = await searchParams;
   const q = one(sp.q).slice(0, 200);
   const statusRaw = one(sp.status);
@@ -61,19 +71,18 @@ export default async function AdminLibraryPage({
   return (
     <>
       <AdminHeader
-        title="Biblioteka — edycja"
+        title={t("title")}
         lead={
-          <p>
-            Wszystkie karty Biblioteki Innowacji Społecznych. Zapisana zmiana
-            jest od razu widoczna na stronie i w dopasowaniu; każda trafia do
-            dziennika zmian.
-          </p>
+          <>
+            <p>{t("lead")}</p>
+            {locale === "en" ? <p className="mt-2">{t("englishNote")}</p> : null}
+          </>
         }
       >
         <Button asChild size="lg">
           <Link href="/admin/library/new">
             <FileUpIcon aria-hidden="true" />
-            Dodaj z dokumentu
+            {t("fromDocument")}
           </Link>
         </Button>
       </AdminHeader>
@@ -83,12 +92,12 @@ export default async function AdminLibraryPage({
           method="get"
           action="/admin/library"
           role="search"
-          aria-label="Szukaj kart"
+          aria-label={t("searchForm")}
           className="flex max-w-2xl flex-col gap-3 sm:flex-row sm:items-end"
         >
           <div className="flex-1">
             <label htmlFor="q" className="block font-semibold">
-              Szukaj po tytule, słowie kluczowym lub numerze karty
+              {t("searchLabel")}
             </label>
             <Input
               id="q"
@@ -101,11 +110,11 @@ export default async function AdminLibraryPage({
           {status ? <input type="hidden" name="status" value={status} /> : null}
           <Button type="submit">
             <SearchIcon aria-hidden="true" />
-            Szukaj
+            {t("search")}
           </Button>
         </form>
 
-        <nav aria-label="Filtruj według statusu" className="mt-6">
+        <nav aria-label={t("statusFilter")} className="mt-6">
           <ul className="flex flex-wrap gap-2">
             {[undefined, ...INNOVATION_STATUS].map((s) => {
               const active = s === status;
@@ -121,7 +130,7 @@ export default async function AdminLibraryPage({
                         : "border-input hover:bg-surface",
                     )}
                   >
-                    {s ? INNOVATION_STATUS_LABEL[s] : "Wszystkie"}
+                    {s ? L.innovationStatus[s] : t("all")}
                     <span className="tabular font-normal">
                       {s ? counts[s] : all.length}
                     </span>
@@ -133,18 +142,20 @@ export default async function AdminLibraryPage({
         </nav>
 
         <p role="status" className="font-display mt-8 text-xl font-bold">
-          {countPl(rows.length, "karta", "karty", "kart")}
-          {q ? <span className="font-normal"> dla „{q}”</span> : null}
+          {t("count", { count: rows.length })}
+          {q ? (
+            <span className="font-normal"> {t("countFor", { q })}</span>
+          ) : null}
         </p>
 
         {rows.length === 0 ? (
           <EmptyState
             className="mt-4"
-            title="Brak kart"
-            description={<p>Zmień wyszukiwanie albo filtr statusu.</p>}
+            title={t("emptyTitle")}
+            description={<p>{t("emptyBody")}</p>}
             action={
               <Button asChild variant="secondary">
-                <Link href="/admin/library">Pokaż wszystkie</Link>
+                <Link href="/admin/library">{t("showAll")}</Link>
               </Button>
             }
           />
@@ -152,16 +163,16 @@ export default async function AdminLibraryPage({
           <div className="mt-4">
             <Table>
               <TableCaption className="sr-only">
-                Karty Biblioteki i ich status
+                {t("caption")}
               </TableCaption>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Karta</TableHead>
-                  <TableHead>Obszary</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Ostatnia zmiana</TableHead>
+                  <TableHead>{t("colCard")}</TableHead>
+                  <TableHead>{t("colAreas")}</TableHead>
+                  <TableHead>{t("colStatus")}</TableHead>
+                  <TableHead>{t("colChanged")}</TableHead>
                   <TableHead>
-                    <span className="sr-only">Akcje</span>
+                    <span className="sr-only">{t("colActions")}</span>
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -172,29 +183,30 @@ export default async function AdminLibraryPage({
                       <Link
                         href={`/admin/library/${r.slug}/edit`}
                         className="font-semibold underline decoration-1 underline-offset-4"
+                        lang={pl}
                       >
                         {r.title}
                       </Link>
                       <span className="text-muted-foreground block text-sm">
                         {r.id}
-                        {r.testingOpen ? " · otwarta dla testerów" : ""}
-                        {r.videoUrl ? " · film" : ""}
+                        {r.testingOpen ? ` · ${t("openForTesters")}` : ""}
+                        {r.videoUrl ? ` · ${t("film")}` : ""}
                       </span>
                     </TableCell>
                     <TableCell className="min-w-40 text-[0.9375rem]">
                       {r.mapaAreas.length
-                        ? r.mapaAreas.map((a) => MAPA_AREA_LABEL[a]).join(", ")
+                        ? r.mapaAreas.map((a) => L.area[a]).join(", ")
                         : "—"}
                     </TableCell>
                     <TableCell>
                       <StatusBadge status={r.status} />
                     </TableCell>
                     <TableCell className="text-[0.9375rem] whitespace-nowrap">
-                      {formatDatePl(r.updatedAt)}
+                      {formatDate(r.updatedAt, locale)}
                       {r.updatedBy ? (
                         <span className="text-muted-foreground block text-sm">
                           {r.updatedBy.startsWith("rops")
-                            ? "zespół ROPS"
+                            ? t("byTeam")
                             : r.updatedBy}
                         </span>
                       ) : null}
@@ -204,14 +216,16 @@ export default async function AdminLibraryPage({
                         href={`/admin/library/${r.slug}/edit`}
                         className="inline-flex min-h-11 items-center font-semibold underline decoration-1 underline-offset-4"
                       >
-                        Edytuj<span className="sr-only">: {r.title}</span>
+                        {t("edit")}
+                        <span className="sr-only">: {r.title}</span>
                       </Link>
                       {r.status === "published" ? (
                         <Link
                           href={`/library/${r.slug}`}
                           className="ml-4 inline-flex min-h-11 items-center underline decoration-1 underline-offset-4"
                         >
-                          Zobacz<span className="sr-only">: {r.title}</span>
+                          {t("view")}
+                          <span className="sr-only">: {r.title}</span>
                         </Link>
                       ) : null}
                     </TableCell>

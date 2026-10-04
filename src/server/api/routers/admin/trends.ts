@@ -21,7 +21,7 @@ const filter = z.object({
     .default(30),
 });
 
-/** II (admin only) · Needs over time and „Białe plamy". */
+/** II (admin only) · Needs over time and „Białe plamy" (labels in the viewer's language). */
 export const adminTrendsRouter = createTRPCRouter({
   /** Totals, per powiat, per area, per week, and area × powiat × week cells. */
   overview: rops.input(filter).query(async ({ ctx, input }) => {
@@ -29,7 +29,7 @@ export const adminTrendsRouter = createTRPCRouter({
       days: input.days,
       area: input.area,
     });
-    return summarize(needs);
+    return summarize(needs, ctx.locale);
   }),
 
   /** Unmet needs grouped by area × powiat with redacted example phrasings. */
@@ -38,6 +38,7 @@ export const adminTrendsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) =>
       whiteSpots(
         await loadNeeds(ctx.db, { days: input.days, area: input.area }),
+        ctx.locale,
       ),
     ),
 
@@ -53,5 +54,7 @@ export const adminTrendsRouter = createTRPCRouter({
         days: filter.shape.days,
       }),
     )
-    .mutation(({ ctx, input }) => proposeCallTopic(ctx.db, input)),
+    .mutation(({ ctx, input }) =>
+      proposeCallTopic(ctx.db, { ...input, locale: ctx.locale }),
+    ),
 });

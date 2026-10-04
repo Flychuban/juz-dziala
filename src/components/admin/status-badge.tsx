@@ -1,10 +1,12 @@
 import { CheckIcon } from "lucide-react";
 
-import { INNOVATION_STATUS_LABEL, type InnovationStatus } from "~/lib/domain";
+import { useLabels } from "~/i18n/use-labels";
+import { type InnovationStatus } from "~/lib/domain";
 import { cn } from "~/lib/utils";
 
 /** Card status in words (never colour alone): Szkic · Sprawdzona · Opublikowana. */
 export function StatusBadge({ status }: { status: InnovationStatus }) {
+  const L = useLabels();
   return (
     <span
       className={cn(
@@ -18,7 +20,7 @@ export function StatusBadge({ status }: { status: InnovationStatus }) {
       {status === "published" ? (
         <CheckIcon aria-hidden="true" className="size-4" />
       ) : null}
-      {INNOVATION_STATUS_LABEL[status]}
+      {L.innovationStatus[status]}
     </span>
   );
 }

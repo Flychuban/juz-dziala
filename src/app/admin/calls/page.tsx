@@ -1,9 +1,10 @@
 import { type Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PlusIcon } from "lucide-react";
 
 import { AdminHeader } from "~/components/admin/admin-header";
-import { EmptyState, formatDatePl } from "~/components/kit";
+import { EmptyState, formatDate } from "~/components/kit";
 import { Button } from "~/components/ui/button";
 import {
   Table,
@@ -14,54 +15,49 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { CALL_STATUS_LABEL, MAPA_AREA_LABEL } from "~/lib/domain";
+import { labelsFor } from "~/lib/domain";
 import { api } from "~/trpc/server";
 
-export const metadata: Metadata = { title: "Nabory — edycja" };
-
-const PLN = new Intl.NumberFormat("pl-PL", {
-  style: "currency",
-  currency: "PLN",
-  maximumFractionDigits: 0,
-});
-const DELIVERY_STATUS: Record<string, string> = {
-  sent: "wysłano",
-  simulated: "symulacja",
-  skipped: "nie wysłano (brak poczty)",
-  failed: "błąd",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("admin.calls");
+  return { title: t("metaTitle") };
+}
 
 export default async function AdminCallsPage() {
-  const [rows, subscribers, deliveries] = await Promise.all([
+  const [rows, subscribers, deliveries, t, locale] = await Promise.all([
     api.admin.calls.list(),
     api.admin.calls.subscribers(),
     api.admin.calls.deliveries(),
+    getTranslations("admin.calls"),
+    getLocale(),
   ]);
+  const L = labelsFor(locale);
+  const PLN = new Intl.NumberFormat(locale === "en" ? "en-GB" : "pl-PL", {
+    style: "currency",
+    currency: "PLN",
+    maximumFractionDigits: 0,
+  });
+  // Calls are written in Polish; English UI shows them as Polish text.
+  const pl = locale === "en" ? "pl" : undefined;
   const areaSubs = Object.entries(subscribers)
     .filter(([t]) => t.startsWith("area:"))
     .reduce((n, [, c]) => n + c, 0);
 
   return (
     <>
-      <AdminHeader
-        title="Nabory"
-        lead={
-          <p>
-            Nabory na innowacje społeczne. Zapisana zmiana jest od razu widoczna
-            w serwisie i w otwartym API. „Opublikuj zmiany” dodatkowo powiadamia
-            osoby, które zapisały się na nabory lub na obszar naboru.
-          </p>
-        }
-      >
+      <AdminHeader title={t("title")} lead={<p>{t("lead")}</p>}>
         <div className="flex flex-wrap items-center gap-4">
           <Button asChild size="lg">
             <Link href="/admin/calls/new">
               <PlusIcon aria-hidden="true" />
-              Nowy nabór
+              {t("new")}
             </Link>
           </Button>
           <p className="tabular text-[0.9375rem]">
-            Subskrypcje: nabory — {subscribers.calls ?? 0}, obszary — {areaSubs}
+            {t("subscriptions", {
+              calls: subscribers.calls ?? 0,
+              areas: areaSubs,
+            })}
           </p>
         </div>
       </AdminHeader>
@@ -69,19 +65,19 @@ export default async function AdminCallsPage() {
       <div className="mx-auto max-w-6xl px-4 py-10">
         {rows.length === 0 ? (
           <EmptyState
-            title="Brak naborów"
-            description={<p>Dodaj pierwszy nabór.</p>}
+            title={t("emptyTitle")}
+            description={<p>{t("emptyBody")}</p>}
           />
         ) : (
           <Table>
-            <TableCaption>Nabory ({rows.length})</TableCaption>
+            <TableCaption>{t("caption", { count: rows.length })}</TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead>Nabór</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Termin</TableHead>
-                <TableHead className="text-right">Maks. kwota</TableHead>
-                <TableHead>Obszary</TableHead>
+                <TableHead>{t("colCall")}</TableHead>
+                <TableHead>{t("colStatus")}</TableHead>
+                <TableHead>{t("colWindow")}</TableHead>
+                <TableHead className="text-right">{t("colAmount")}</TableHead>
+                <TableHead>{t("colAreas")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -91,29 +87,35 @@ export default async function AdminCallsPage() {
                     <Link
                       href={`/admin/calls/${c.id}`}
                       className="font-semibold underline decoration-1 underline-offset-4"
+                      lang={pl}
                     >
                       {c.name}
                     </Link>
                     {c.program ? (
-                      <span className="text-muted-foreground block text-sm">
+                      <span
+                        className="text-muted-foreground block text-sm"
+                        lang={pl}
+                      >
                         {c.program}
                       </span>
                     ) : null}
                   </TableCell>
                   <TableCell className="whitespace-nowrap">
-                    {CALL_STATUS_LABEL[c.status]}
+                    {L.callStatus[c.status]}
                   </TableCell>
                   <TableCell className="text-[0.9375rem] whitespace-nowrap">
-                    {c.windowFrom ? formatDatePl(c.windowFrom) : "—"}
+                    {c.windowFrom ? formatDate(c.windowFrom, locale) : "—"}
                     <br />
-                    {c.windowTo ? `do ${formatDatePl(c.windowTo)}` : ""}
+                    {c.windowTo
+                      ? t("until", { date: formatDate(c.windowTo, locale) })
+                      : ""}
                   </TableCell>
                   <TableCell className="text-right whitespace-nowrap">
                     {c.amountMax ? PLN.format(c.amountMax) : "—"}
                   </TableCell>
                   <TableCell className="text-[0.9375rem]">
                     {c.areas.length
-                      ? c.areas.map((a) => MAPA_AREA_LABEL[a]).join(", ")
+                      ? c.areas.map((a) => L.area[a]).join(", ")
                       : "—"}
                   </TableCell>
                 </TableRow>
@@ -130,34 +132,35 @@ export default async function AdminCallsPage() {
             id="deliveries-heading"
             className="font-display text-2xl font-bold"
           >
-            Ostatnie powiadomienia o naborach
+            {t("deliveriesHeading")}
           </h2>
           {deliveries.length ? (
             <div className="mt-4">
               <Table>
                 <TableCaption className="sr-only">
-                  Ostatnie powiadomienia
+                  {t("deliveriesCaption")}
                 </TableCaption>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Kiedy</TableHead>
-                    <TableHead>Temat</TableHead>
-                    <TableHead>Kanał i odbiorca</TableHead>
-                    <TableHead>Wynik</TableHead>
+                    <TableHead>{t("colWhen")}</TableHead>
+                    <TableHead>{t("colSubject")}</TableHead>
+                    <TableHead>{t("colChannel")}</TableHead>
+                    <TableHead>{t("colResult")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {deliveries.map((d) => (
                     <TableRow key={d.id}>
                       <TableCell className="whitespace-nowrap">
-                        {formatDatePl(d.createdAt)}
+                        {formatDate(d.createdAt, locale)}
                       </TableCell>
-                      <TableCell>{d.subject}</TableCell>
+                      <TableCell lang={pl}>{d.subject}</TableCell>
                       <TableCell className="tabular">
-                        {d.channel === "sms" ? "SMS" : "E-mail"} · {d.toMasked}
+                        {d.channel === "sms" ? t("sms") : t("email")} ·{" "}
+                        {d.toMasked}
                       </TableCell>
                       <TableCell>
-                        {DELIVERY_STATUS[d.status] ?? d.status}
+                        {t(`delivery.${d.status}`)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -165,9 +168,7 @@ export default async function AdminCallsPage() {
               </Table>
             </div>
           ) : (
-            <p className="text-foreground/85 mt-3">
-              Jeszcze nikogo nie powiadomiono.
-            </p>
+            <p className="text-foreground/85 mt-3">{t("noDeliveries")}</p>
           )}
         </section>
       </div>

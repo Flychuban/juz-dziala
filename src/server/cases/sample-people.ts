@@ -53,6 +53,44 @@ export const SAMPLE_PEOPLE: SamplePerson[] = [
   },
 ];
 
+/**
+ * English titles of the sample people, for staff screens in English. Names
+ * stay as they are; other modules may use these too.
+ */
+export const SAMPLE_PEOPLE_EN: Record<
+  string,
+  { title: string; orgName: string; bio: string }
+> = {
+  "p-mentor-1": {
+    title: "Mentor — older people and respite care",
+    orgName: "Association (sample)",
+    bio: "A sample mentor. Helps municipalities set up services for older people and for carers of people with disabilities.",
+  },
+  "p-mentor-2": {
+    title: "Expert — homelessness and poverty",
+    orgName: "Foundation (sample)",
+    bio: "A sample expert. Advises on services for people experiencing homelessness and on routes out of poverty.",
+  },
+  "p-mentor-3": {
+    title: "Mentor — families and mental health",
+    orgName: "Support centre (sample)",
+    bio: "A sample mentor. Supports projects for families, foster care and mental health prevention.",
+  },
+  "p-mentor-4": {
+    title: "Expert — integration of foreigners and health",
+    orgName: "Organisation (sample)",
+    bio: "A sample expert. Advises on integration services and on access to health care.",
+  },
+};
+
+/** A person's title in the viewer's language (English only for the sample people). */
+export function personTitle(
+  p: { id: string; title: string | null },
+  locale: string,
+): string | null {
+  return locale === "en" ? (SAMPLE_PEOPLE_EN[p.id]?.title ?? p.title) : p.title;
+}
+
 /** Idempotent upsert of the sample people. */
 export async function seedSamplePeople(): Promise<void> {
   for (const p of SAMPLE_PEOPLE) {

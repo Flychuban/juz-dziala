@@ -1,6 +1,7 @@
 "use client";
 
 import { SendIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState, type RefObject } from "react";
 
 import { Button } from "~/components/ui/button";
@@ -18,28 +19,10 @@ import { api, type RouterOutputs } from "~/trpc/react";
 type Data = RouterOutputs["admin"]["inbox"]["get"];
 type Delivery = RouterOutputs["admin"]["inbox"]["reply"]["delivery"];
 
-function deliveryText(d: Delivery): string {
-  if (!d) return "";
-  switch (d.channel) {
-    case "email":
-      return d.status === "sent"
-        ? "E-mail do autora: wysłany."
-        : d.status === "skipped"
-          ? "E-mail nie został wysłany: poczta nie jest skonfigurowana w tym środowisku. Treść jest w dzienniku wysyłek."
-          : `Nie udało się wysłać e-maila${d.error ? `: ${d.error}` : ""}.`;
-    case "sms":
-      return "SMS zapisany jako symulacja — prototyp nie wysyła SMS-ów.";
-    case "phone":
-      return "Dodano zadanie: oddzwoń do autora (notatka w wątku).";
-    case "none":
-      return "";
-  }
-}
-
 /**
  * Staff reply. A reply always lands in the author's thread; „Wyślij też…"
  * additionally uses the author's channel. In demo mode an e-mail to the
- * author needs an explicit confirmation.
+ * author needs an explicit confirmation. The one primary action is „Wyślij".
  */
 export function StaffReply({
   data,
@@ -54,6 +37,7 @@ export function StaffReply({
   onSent: (messageId: string) => Promise<void>;
   inputRef: RefObject<HTMLTextAreaElement | null>;
 }) {
+  const t = useTranslations("admin.reply");
   const pref = data.contact.pref;
   const [internal, setInternal] = useState(false);
   const [deliver, setDeliver] = useState(pref !== "none");
@@ -62,13 +46,33 @@ export function StaffReply({
   const [confirming, setConfirming] = useState(false);
   const reply = api.admin.inbox.reply.useMutation();
 
+  const deliveryText = (d: Delivery): string => {
+    if (!d) return "";
+    switch (d.channel) {
+      case "email":
+        return d.status === "sent"
+          ? t("emailSent")
+          : d.status === "skipped"
+            ? t("emailSkipped")
+            : d.error
+              ? t("emailFailedWith", { error: d.error })
+              : t("emailFailed");
+      case "sms":
+        return t("smsSimulated");
+      case "phone":
+        return t("phoneTask");
+      case "none":
+        return "";
+    }
+  };
+
   const channelLabel =
     pref === "email"
-      ? `Wyślij też e-mail do autora (${data.contact.value ?? "adres zapisany"})`
+      ? t("sendEmail", { address: data.contact.value ?? t("savedAddress") })
       : pref === "sms"
-        ? "Wyślij też SMS do autora (symulacja w prototypie)"
+        ? t("sendSms")
         : pref === "phone"
-          ? "Dodaj zadanie: oddzwoń do autora i przekaż odpowiedź"
+          ? t("callback")
           : null;
 
   const send = async () => {
@@ -83,21 +87,22 @@ export function StaffReply({
       setBody("");
       setError("");
       setDone(
-        [
-          internal
-            ? "Notatka dodana. Autor jej nie widzi."
-            : "Odpowiedź jest w wątku — autor zobaczy ją na stronie sprawy.",
-          deliveryText(r.delivery),
-        ]
+        [internal ? t("noteAdded") : t("replied"), deliveryText(r.delivery)]
           .filter(Boolean)
           .join(" "),
       );
       await onSent(r.id);
     } catch (e) {
+      // Validation comes back as a message key (reply.tooShort / reply.tooLong).
+      const field = (
+        e as { data?: { zodError?: { fieldErrors?: { body?: string[] } } } }
+      ).data?.zodError?.fieldErrors?.body?.[0];
       setError(
-        e instanceof Error
-          ? e.message
-          : "Nie udało się wysłać. Spróbuj ponownie.",
+        field === "reply.tooShort" || field === "reply.tooLong"
+          ? t(field === "reply.tooShort" ? "tooShort" : "tooLong")
+          : e instanceof Error
+            ? e.message
+            : t("sendFailed"),
       );
     }
   };
@@ -108,7 +113,7 @@ export function StaffReply({
       className="border-hairline rounded-lg border p-4"
     >
       <h2 id="staff-reply-heading" className="text-xl font-bold">
-        Odpowiedz
+        {t("heading")}
       </h2>
       <form
         noValidate
@@ -117,7 +122,7 @@ export function StaffReply({
           e.preventDefault();
           setDone("");
           if (body.trim().length < 2) {
-            setError("Napisz odpowiedź — co najmniej 2 znaki.");
+            setError(t("tooShort"));
             inputRef.current?.focus();
             return;
           }
@@ -130,12 +135,14 @@ export function StaffReply({
         }}
       >
         <label htmlFor="staff-reply" className="font-semibold">
-          {internal ? "Notatka wewnętrzna" : "Odpowiedź do autora"}
+          {internal ? t("internalLabel") : t("replyLabel")}
         </label>
         <p id="staff-reply-hint" className="text-muted-foreground text-sm">
           {internal
-            ? "Zobaczą ją tylko pracownicy Hubu i przydzielony ekspert."
-            : "Autor zobaczy ją w wątku sprawy. Pisz prosto, krótkimi zdaniami."}
+            ? t("internalHint")
+            : data.case.locale === "en"
+              ? t("replyHintEnglish")
+              : t("replyHint")}
         </p>
         <Textarea
           ref={inputRef}
@@ -167,7 +174,7 @@ export function StaffReply({
             onChange={(e) => setInternal(e.target.checked)}
             className="size-5"
           />
-          Notatka wewnętrzna — autor jej nie zobaczy
+          {t("internalToggle")}
         </label>
         {!internal &&
           (channelLabel ? (
@@ -181,9 +188,7 @@ export function StaffReply({
               {channelLabel}
             </label>
           ) : (
-            <p className="text-muted-foreground text-sm">
-              Autor nie podał kontaktu — sprawdza odpowiedź kodem sprawy.
-            </p>
+            <p className="text-muted-foreground text-sm">{t("noContact")}</p>
           ))}
 
         <div>
@@ -194,10 +199,10 @@ export function StaffReply({
           >
             <SendIcon aria-hidden="true" />
             {reply.isPending
-              ? "Wysyłam…"
+              ? t("sending")
               : internal
-                ? "Dodaj notatkę"
-                : "Wyślij odpowiedź"}
+                ? t("addNote")
+                : t("send")}
           </Button>
         </div>
         <p role="status" className="font-semibold">
@@ -208,13 +213,11 @@ export function StaffReply({
       <Dialog open={confirming} onOpenChange={setConfirming}>
         <DialogContent showCloseButton={false} className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg">
-              Wysłać e-mail do autora?
-            </DialogTitle>
+            <DialogTitle className="text-lg">{t("confirmTitle")}</DialogTitle>
             <DialogDescription className="text-base">
-              To jest wersja demonstracyjna, dlatego każdy e-mail do autora
-              wymaga potwierdzenia. Odpowiedź trafi do wątku sprawy i na adres{" "}
-              {data.contact.value ?? "zapisany przy sprawie"}.
+              {t("confirmBody", {
+                address: data.contact.value ?? t("savedOnCase"),
+              })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -224,14 +227,14 @@ export function StaffReply({
               className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
               onClick={() => setConfirming(false)}
             >
-              Anuluj
+              {t("cancel")}
             </Button>
             <Button
               type="button"
               className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
               onClick={() => void send()}
             >
-              Tak, wyślij e-mail
+              {t("confirm")}
             </Button>
           </DialogFooter>
         </DialogContent>
