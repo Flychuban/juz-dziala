@@ -23,8 +23,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("metaTitle") };
 }
 
-const DELIVERY = ["sent", "simulated", "skipped", "failed"] as const;
-
 export default async function AdminCallsPage() {
   const [rows, subscribers, deliveries, t, locale] = await Promise.all([
     api.admin.calls.list(),
@@ -162,9 +160,7 @@ export default async function AdminCallsPage() {
                         {d.toMasked}
                       </TableCell>
                       <TableCell>
-                        {(DELIVERY as readonly string[]).includes(d.status)
-                          ? t(`delivery.${d.status as (typeof DELIVERY)[number]}`)
-                          : d.status}
+                        {t(`delivery.${d.status}`)}
                       </TableCell>
                     </TableRow>
                   ))}
