@@ -30,6 +30,9 @@ const QUERY_EN = "My mum is 80, lives alone in a village, hardly leaves the hous
 
 /** One AI-verified match per language, reused for both widths (one AI call each). */
 const matchCache = new Map<string, string>();
+// Reuse stored runs (no AI call): SHOT_MATCH_PL=/match/<id> SHOT_MATCH_EN=/match/<id>
+if (process.env.SHOT_MATCH_PL) matchCache.set("pl", process.env.SHOT_MATCH_PL);
+if (process.env.SHOT_MATCH_EN) matchCache.set("en", process.env.SHOT_MATCH_EN);
 async function createMatch(page: Page, lang: "pl" | "en" = "pl"): Promise<string> {
   const cached = matchCache.get(lang);
   if (cached) {
