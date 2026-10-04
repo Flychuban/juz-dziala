@@ -1,1 +1,175 @@
-{}
+{
+  "meta": {
+    "title": "Network and mentors",
+    "description": "Organisations behind the innovations in the Library, the Hub's mentors and experts, partnerships, open grant calls and notifications."
+  },
+  "eyebrow": "Network",
+  "title": "Network and mentors",
+  "lead": "Who in Małopolska creates social innovations, who you can ask for advice, who you could partner with, and which grant calls are open now. Sign up and we'll let you know about new grant calls and solutions.",
+  "nav": {
+    "label": "On this page",
+    "calls": "Open grant calls",
+    "ask": "Ask an expert",
+    "people": "Mentors and experts",
+    "orgs": "Organisations",
+    "partners": "Find a partner",
+    "subscribe": "Notifications"
+  },
+  "calls": {
+    "heading": "Open grant calls",
+    "dates": "{range, select, both {from {from} to {to}} to {until {to}} other {dates are on the grant call page}}",
+    "when": "Dates:",
+    "forWhom": "Who can apply:",
+    "operator": "Run by:",
+    "demoAction": "Submit an idea and prepare an application",
+    "page": "Grant call page",
+    "source": "ROPS Kraków — grant calls",
+    "emptyTitle": "No grant call is open right now",
+    "emptyBody": "Sign up below — we'll let you know when a new one opens."
+  },
+  "ask": {
+    "heading": "Ask an expert",
+    "lead": "Do you have a question about a service, a project or a grant call? The ROPS team will pass it on to an expert in the right area.",
+    "created": "Question received",
+    "finish": "Send question",
+    "question": {
+      "title": "What is your question?",
+      "hint": "Write it the way you would say it on the phone. Please don't give names or addresses.",
+      "label": "Your question",
+      "example": "For example: “How can a municipality organise respite care for carers?”",
+      "error": "Please write your question in at least one sentence."
+    },
+    "area": {
+      "title": "Which area is it about?",
+      "hint": "This helps us choose the right expert.",
+      "legend": "Area of the „Mapa Wyzwań Społecznych”",
+      "unknown": "I don't know / other",
+      "error": "Choose an area, or “I don't know / other”."
+    },
+    "contact": {
+      "title": "How should we reply?",
+      "hint": "You can always see the reply with your case code.",
+      "who": "You are asking as"
+    },
+    "case": {
+      "area": "Area: {area}",
+      "areaUnknown": "Area: not sure / other",
+      "who": "Asked by: {role}{onBehalf, select, yes { (on behalf of another person or group)} other {}}"
+    }
+  },
+  "people": {
+    "heading": "Mentors and experts",
+    "sample": "In this prototype we show sample people — this is not real data. In the full service, mentors and experts who work with ROPS will be listed here.",
+    "role": {
+      "mentor": "Mentor",
+      "expert": "Expert",
+      "rops": "ROPS"
+    },
+    "askInArea": "Ask about this area",
+    "emptyTitle": "The list of mentors is being prepared",
+    "emptyBody": "You can ask your question now — the ROPS team will find an expert."
+  },
+  "orgs": {
+    "heading": "Organisations that create innovations",
+    "lead": "{count, plural, one {# organisation} other {# organisations}} from the cards of the Social Innovation Library — the authors of solutions tested in Małopolska's incubators. We don't list private individuals.",
+    "connectLead": "Would you like to work with one of them? Choose “Connect me with this organisation”. ROPS arranges the contact — we don't show anyone's contact details.",
+    "type": {
+      "fundacja": "Foundations",
+      "stowarzyszenie": "Associations",
+      "uczelnia": "Universities",
+      "jst": "Local government (municipalities, counties)",
+      "ops": "Social welfare centres",
+      "firma": "Companies",
+      "inna": "Other institutions"
+    },
+    "solutions": "{count, plural, one {Solution:} other {Solutions:}}",
+    "connect": "Connect me with this organisation",
+    "connectSr": ": {org}",
+    "source": "Social Innovation Library, ROPS Kraków (the „Autorzy” section)"
+  },
+  "partner": {
+    "heading": "Find a partner",
+    "lead": "Looking for a partner for a joint project or service — a municipality, an organisation, a school or a social enterprise? Answer five short questions.",
+    "broker": "ROPS arranges the contact: it reads your request, gets in touch with the other side and replies in your case thread. We don't show anyone's contact details.",
+    "created": "Partnership request received",
+    "finish": "Send request",
+    "withOrg": "Request to connect with: <b>{org}</b>",
+    "who": {
+      "title": "Who do you represent?",
+      "hint": "Choose what best describes your institution.",
+      "legend": "Type of institution",
+      "error": "Please choose the type of institution."
+    },
+    "type": {
+      "gmina": "Municipality (gmina)",
+      "ops": "Social welfare centre (OPS / CUS / PCPR)",
+      "ngo": "Non-governmental organisation (NGO)",
+      "school": "School",
+      "social_enterprise": "Social enterprise",
+      "other": "Other institution"
+    },
+    "gmina": {
+      "title": "Where do you work?",
+      "hint": "This helps us find a partner near you. You can skip this step.",
+      "label": "Your municipality"
+    },
+    "offer": {
+      "title": "What can you offer?",
+      "hint": "For example: premises, volunteers, experience with a similar service, transport, your team's time.",
+      "label": "What you offer",
+      "error": "Please write a few words about what you can offer."
+    },
+    "need": {
+      "title": "Who or what are you looking for?",
+      "hint": "For example: a school for joint activities, an organisation that runs a similar service, a municipality for a pilot.",
+      "label": "What you are looking for",
+      "error": "Please write a few words about what you are looking for.",
+      "orgLabel": "A particular organisation",
+      "orgHint": "If you'd like to connect with someone in particular, enter their name."
+    },
+    "contact": {
+      "title": "How should we reply?",
+      "hint": "You can always see the reply on your case page, with your code."
+    },
+    "case": {
+      "prefix": "Partnership",
+      "intro": "Looking for a partner — a request for ROPS to arrange the contact.",
+      "who": "Written by",
+      "org": "Request to connect with",
+      "offer": "What we offer",
+      "need": "What we are looking for"
+    }
+  },
+  "subscribe": {
+    "heading": "Notifications",
+    "lead": "We'll let you know when ROPS announces a grant call or when a new solution in your area appears in the Library.",
+    "languageNote": "For now, notifications are sent in Polish only.",
+    "topic": "What should we notify you about?",
+    "calls": "New grant calls",
+    "callsHint": "ROPS grants and programmes, as soon as they open.",
+    "area": "New solutions in a chosen area",
+    "areaHint": "When a new solution appears in the Library.",
+    "areaLabel": "Area",
+    "channel": "Channel",
+    "email": "E-mail",
+    "sms": "Text message (SMS)",
+    "smsHint": "In this prototype text messages are only simulated.",
+    "emailLabel": "E-mail address",
+    "phoneLabel": "Phone number",
+    "contactHint": "We encrypt it. The system shows only a shortened form, e.g. j***@g***.pl.",
+    "notSaved": "Not saved:",
+    "saving": "Saving…",
+    "submit": "Sign me up",
+    "done": "Done. We'll let you know about {what, select, calls {new grant calls} other {new solutions in the area “{area}”}}: {contact}.",
+    "already": "This contact ({contact}) is already signed up for notifications about {what, select, calls {new grant calls} other {new solutions in the area “{area}”}}."
+  },
+  "errors": {
+    "email": "Please enter an e-mail address, e.g. name@example.com.",
+    "phone": "Please enter a phone number — 9 digits, e.g. 600 100 200.",
+    "gmina": "Please choose a municipality from the list.",
+    "gminaInPowiat": "Please choose a municipality in the selected county, or clear the county.",
+    "generic": "Couldn't send. Please check the form and try again.",
+    "offline": "No connection to the server. Please check your internet and try again — your answers are still in the form.",
+    "notSent": "Not sent:"
+  }
+}

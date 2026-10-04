@@ -1,1 +1,175 @@
-{}
+{
+  "meta": {
+    "title": "Sieć i mentorzy",
+    "description": "Organizacje, które stworzyły innowacje z Biblioteki, mentorzy i eksperci Hubu, partnerstwa, otwarte nabory i powiadomienia."
+  },
+  "eyebrow": "Sieć",
+  "title": "Sieć i mentorzy",
+  "lead": "Kto w Małopolsce tworzy innowacje społeczne, kogo możesz zapytać o radę, z kim zbudować partnerstwo i jakie nabory trwają teraz. Zapisz się, a powiadomimy Cię o nowych naborach i rozwiązaniach.",
+  "nav": {
+    "label": "Na tej stronie",
+    "calls": "Otwarte nabory",
+    "ask": "Zapytaj eksperta",
+    "people": "Mentorzy i eksperci",
+    "orgs": "Organizacje",
+    "partners": "Szukam partnera",
+    "subscribe": "Powiadomienia"
+  },
+  "calls": {
+    "heading": "Otwarte nabory",
+    "dates": "{range, select, both {od {from} do {to}} to {do {to}} other {termin podany na stronie naboru}}",
+    "when": "Termin:",
+    "forWhom": "Dla kogo:",
+    "operator": "Prowadzi:",
+    "demoAction": "Zgłoś pomysł i przygotuj wniosek",
+    "page": "Strona naboru",
+    "source": "ROPS Kraków — nabory",
+    "emptyTitle": "Teraz nie trwa żaden nabór",
+    "emptyBody": "Zapisz się niżej — damy znać, gdy ruszy nowy."
+  },
+  "ask": {
+    "heading": "Zapytaj eksperta",
+    "lead": "Masz pytanie o usługę, projekt albo nabór? Zespół ROPS przekaże je ekspertowi z odpowiedniego obszaru.",
+    "created": "Pytanie przyjęte",
+    "finish": "Wyślij pytanie",
+    "question": {
+      "title": "Jakie masz pytanie?",
+      "hint": "Napisz tak, jak powiedział(a)byś to przez telefon. Nie podawaj nazwisk ani adresów.",
+      "label": "Twoje pytanie",
+      "example": "Np. „Jak zorganizować w gminie wsparcie wytchnieniowe dla opiekunów?”",
+      "error": "Napisz pytanie w co najmniej jednym zdaniu."
+    },
+    "area": {
+      "title": "Którego obszaru dotyczy?",
+      "hint": "To pomoże dobrać eksperta.",
+      "legend": "Obszar Mapy Wyzwań Społecznych",
+      "unknown": "Nie wiem / inny",
+      "error": "Wybierz obszar albo „Nie wiem / inny”."
+    },
+    "contact": {
+      "title": "Jak mamy odpowiedzieć?",
+      "hint": "Odpowiedź zobaczysz zawsze po kodzie sprawy.",
+      "who": "Pytasz jako"
+    },
+    "case": {
+      "area": "Obszar: {area}",
+      "areaUnknown": "Obszar: nie wiem / inny",
+      "who": "Pyta: {role}{onBehalf, select, yes { (w imieniu innej osoby lub grupy)} other {}}"
+    }
+  },
+  "people": {
+    "heading": "Mentorzy i eksperci",
+    "sample": "W prototypie pokazujemy osoby przykładowe — nie są to prawdziwe dane. W wersji docelowej będą tu mentorzy i eksperci współpracujący z ROPS.",
+    "role": {
+      "mentor": "Mentor(ka)",
+      "expert": "Ekspert(ka)",
+      "rops": "ROPS"
+    },
+    "askInArea": "Zapytaj w tym obszarze",
+    "emptyTitle": "Lista mentorów jest w przygotowaniu",
+    "emptyBody": "Pytanie możesz zadać już teraz — zespół ROPS dobierze eksperta."
+  },
+  "orgs": {
+    "heading": "Organizacje, które tworzą innowacje",
+    "lead": "{count, plural, one {# organizacja} few {# organizacje} many {# organizacji} other {# organizacji}} z kart Biblioteki Innowacji Społecznych — autorzy rozwiązań, które przetestowano w małopolskich inkubatorach. Osób prywatnych nie wymieniamy.",
+    "connectLead": "Chcesz współpracować z którąś z nich? Wybierz „Połącz mnie z tą organizacją”. ROPS pośredniczy w kontakcie — nie pokazujemy niczyich danych kontaktowych.",
+    "type": {
+      "fundacja": "Fundacje",
+      "stowarzyszenie": "Stowarzyszenia",
+      "uczelnia": "Uczelnie",
+      "jst": "Samorządy (gminy, powiaty)",
+      "ops": "Ośrodki pomocy społecznej",
+      "firma": "Firmy i spółki",
+      "inna": "Inne instytucje"
+    },
+    "solutions": "{count, plural, one {Rozwiązanie:} other {Rozwiązania:}}",
+    "connect": "Połącz mnie z tą organizacją",
+    "connectSr": ": {org}",
+    "source": "Biblioteka Innowacji Społecznych ROPS Kraków (sekcja „Autorzy”)"
+  },
+  "partner": {
+    "heading": "Szukam partnera",
+    "lead": "Szukasz partnera do wspólnego projektu lub usługi — gminy, organizacji, szkoły albo firmy społecznej? Odpowiedz na pięć krótkich pytań.",
+    "broker": "ROPS pośredniczy w kontakcie: zapozna się z prośbą, skontaktuje się z drugą stroną i odpowie w wątku Twojej sprawy. Nie pokazujemy niczyich danych kontaktowych.",
+    "created": "Prośba o partnera przyjęta",
+    "finish": "Wyślij prośbę",
+    "withOrg": "Prośba o kontakt z: <b>{org}</b>",
+    "who": {
+      "title": "Kogo reprezentujesz?",
+      "hint": "Wybierz, co najlepiej opisuje Twoją instytucję.",
+      "legend": "Typ instytucji",
+      "error": "Wybierz typ instytucji."
+    },
+    "type": {
+      "gmina": "Gmina",
+      "ops": "OPS / CUS / PCPR",
+      "ngo": "Organizacja pozarządowa (NGO)",
+      "school": "Szkoła",
+      "social_enterprise": "Firma społeczna",
+      "other": "Inna instytucja"
+    },
+    "gmina": {
+      "title": "Gdzie działasz?",
+      "hint": "To pomoże znaleźć partnera blisko Ciebie. Możesz pominąć ten krok.",
+      "label": "Twoja gmina"
+    },
+    "offer": {
+      "title": "Co możesz zaoferować?",
+      "hint": "Np. lokal, wolontariuszy, doświadczenie z podobną usługą, transport, czas zespołu.",
+      "label": "Co oferujesz",
+      "error": "Napisz kilka słów o tym, co możesz zaoferować."
+    },
+    "need": {
+      "title": "Kogo lub czego szukasz?",
+      "hint": "Np. szkoły do wspólnych zajęć, organizacji, która prowadzi podobną usługę, gminy do pilotażu.",
+      "label": "Czego szukasz",
+      "error": "Napisz kilka słów o tym, czego szukasz.",
+      "orgLabel": "Konkretna organizacja",
+      "orgHint": "Jeśli chcesz połączyć się z kimś konkretnym, wpisz nazwę."
+    },
+    "contact": {
+      "title": "Jak mamy odpowiedzieć?",
+      "hint": "Odpowiedź zobaczysz zawsze na stronie sprawy, po kodzie."
+    },
+    "case": {
+      "prefix": "Partnerstwo",
+      "intro": "Szukam partnera — prośba o pośrednictwo ROPS.",
+      "who": "Kto pisze",
+      "org": "Prośba o kontakt z",
+      "offer": "Co oferujemy",
+      "need": "Czego szukamy"
+    }
+  },
+  "subscribe": {
+    "heading": "Powiadomienia",
+    "lead": "Powiadomimy Cię, gdy ROPS ogłosi nabór albo gdy w Bibliotece pojawi się nowe rozwiązanie w Twoim obszarze.",
+    "languageNote": "Powiadomienia wysyłamy na razie tylko po polsku.",
+    "topic": "O czym mamy Cię powiadamiać?",
+    "calls": "O nowych naborach",
+    "callsHint": "Granty i programy ROPS, gdy tylko ruszą.",
+    "area": "O nowych rozwiązaniach w wybranym obszarze",
+    "areaHint": "Gdy w Bibliotece pojawi się nowe rozwiązanie.",
+    "areaLabel": "Obszar",
+    "channel": "Kanał",
+    "email": "E-mail",
+    "sms": "SMS",
+    "smsHint": "W prototypie SMS-y są tylko symulowane.",
+    "emailLabel": "Adres e-mail",
+    "phoneLabel": "Numer telefonu",
+    "contactHint": "Zaszyfrujemy go. W systemie widać tylko skrót, np. j***@g***.pl.",
+    "notSaved": "Nie zapisano:",
+    "saving": "Zapisujemy…",
+    "submit": "Zapisz mnie",
+    "done": "Zapisane. Powiadomimy Cię o {what, select, calls {nowych naborach} other {nowych rozwiązaniach w obszarze „{area}”}}: {contact}.",
+    "already": "Ten kontakt ({contact}) jest już zapisany na powiadomienia o {what, select, calls {nowych naborach} other {nowych rozwiązaniach w obszarze „{area}”}}."
+  },
+  "errors": {
+    "email": "Podaj adres e-mail, np. imie@przyklad.pl.",
+    "phone": "Podaj numer telefonu — 9 cyfr, np. 600 100 200.",
+    "gmina": "Wybierz gminę z listy.",
+    "gminaInPowiat": "Wybierz gminę w wybranym powiecie albo „— nie wybieram —”.",
+    "generic": "Nie udało się wysłać. Sprawdź pola formularza i spróbuj ponownie.",
+    "offline": "Brak połączenia z serwerem. Sprawdź internet i spróbuj ponownie — Twoje odpowiedzi zostały w formularzu.",
+    "notSent": "Nie wysłano:"
+  }
+}
