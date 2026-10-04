@@ -47,6 +47,8 @@ export function isUnmet(run: {
   aiResult: unknown;
 }): boolean {
   if (run.abstained || run.status === "abstained") return true;
+  // A failed AI call says nothing about the library: not a „biała plama".
+  if (run.status === "error") return false;
   const kw = keywordShape.safeParse(run.keywordResult);
   const ai = aiShape.safeParse(run.aiResult);
   const aiMatches = ai.success ? (ai.data.matches?.length ?? 0) : 0;

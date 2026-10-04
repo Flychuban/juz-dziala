@@ -672,6 +672,7 @@
     "methodKeyword": "Słowa kluczowe (bez AI)",
     "methodAi": "AI + weryfikacja",
     "cases": "przypadki: {count}",
-    "costNote": "Te tabele są podstawą szacunku kosztów utrzymania: średni koszt wywołania razy spodziewana liczba spraw miesięcznie. Ceny modelu: 4 USD za milion tokenów wejściowych i 20 USD za milion wyjściowych; odczyt z pamięci podręcznej 0,20 USD."
+    "costNote": "Te tabele są podstawą szacunku kosztów utrzymania: średni koszt wywołania razy spodziewana liczba spraw miesięcznie. Ceny modelu: 4 USD za milion tokenów wejściowych i 20 USD za milion wyjściowych; odczyt z pamięci podręcznej 0,20 USD.",
+    "methodEnglish": "{name} — opisy po angielsku"
   }
 }

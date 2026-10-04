@@ -63,12 +63,21 @@ export default async function AdminAiPage() {
     currency: "USD",
     maximumFractionDigits: 4,
   });
-  const seconds = (ms: number) => t("seconds", { value: SEC.format(ms / 1000) });
+  const seconds = (ms: number) =>
+    t("seconds", { value: SEC.format(ms / 1000) });
   const rate = (r?: Rate) =>
     r && typeof r.rate === "number"
       ? `${PCT.format(r.rate)} (${r.count ?? 0}/${r.total ?? 0})`
       : "—";
   const fnLabel = (fn: string) => (isFnId(fn) ? t(`fn.${fn}`) : t("fn.other"));
+  /** Matcher ids of eval runs: keyword, ai, and their English runs (-en). */
+  const methodLabel = (m: string) => {
+    const english = m.endsWith("-en");
+    const base = english ? m.slice(0, -3) : m;
+    if (base !== "keyword" && base !== "ai") return m;
+    const name = base === "keyword" ? t("methodKeyword") : t("methodAi");
+    return english ? t("methodEnglish", { name }) : name;
+  };
 
   return (
     <>
@@ -95,13 +104,17 @@ export default async function AdminAiPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>{t("colFn")}</TableHead>
-                    <TableHead className="text-right">{t("colCalls")}</TableHead>
+                    <TableHead className="text-right">
+                      {t("colCalls")}
+                    </TableHead>
                     <TableHead className="text-right">{t("colAvg")}</TableHead>
                     <TableHead className="text-right">{t("colP95")}</TableHead>
                     <TableHead className="text-right">
                       {t("colTokens")}
                     </TableHead>
-                    <TableHead className="text-right">{t("colCache")}</TableHead>
+                    <TableHead className="text-right">
+                      {t("colCache")}
+                    </TableHead>
                     <TableHead className="text-right">{t("colCost")}</TableHead>
                     <TableHead className="text-right">
                       {t("colAvgCost")}
@@ -200,7 +213,9 @@ export default async function AdminAiPage() {
                     <TableHead className="text-right">
                       {t("colAbstain")}
                     </TableHead>
-                    <TableHead className="text-right">{t("colLeaks")}</TableHead>
+                    <TableHead className="text-right">
+                      {t("colLeaks")}
+                    </TableHead>
                     <TableHead className="text-right">
                       {t("colInjections")}
                     </TableHead>
@@ -217,11 +232,7 @@ export default async function AdminAiPage() {
                     <TableRow key={e.file}>
                       <TableCell>
                         <span className="font-semibold">
-                          {e.matcher === "keyword"
-                            ? t("methodKeyword")
-                            : e.matcher === "ai"
-                              ? t("methodAi")
-                              : e.matcher}
+                          {methodLabel(e.matcher)}
                         </span>
                         <span className="text-muted-foreground block text-sm">
                           {formatDate(e.startedAt, locale)} ·{" "}

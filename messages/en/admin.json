@@ -672,6 +672,7 @@
     "methodKeyword": "Keywords (no AI)",
     "methodAi": "AI + verification",
     "cases": "cases: {count}",
-    "costNote": "These tables are the basis of the running-cost estimate: the average cost of a call times the expected number of cases a month. Model prices: USD 4 per million input tokens and USD 20 per million output tokens; reading from the cache USD 0.20."
+    "costNote": "These tables are the basis of the running-cost estimate: the average cost of a call times the expected number of cases a month. Model prices: USD 4 per million input tokens and USD 20 per million output tokens; reading from the cache USD 0.20.",
+    "methodEnglish": "{name} — descriptions in English"
   }
 }

@@ -74,6 +74,16 @@ describe("isUnmet", () => {
       }),
     ).toBe(true);
   });
+  it("does not count a run whose AI call failed (status error)", () => {
+    expect(
+      isUnmet({
+        abstained: false,
+        status: "error",
+        keywordResult: { isLowConfidence: true, hits: [] },
+        aiResult: null,
+      }),
+    ).toBe(false);
+  });
   it("does not count a confident match, or a low-confidence one the AI answered", () => {
     expect(
       isUnmet({
