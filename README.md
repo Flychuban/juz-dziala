@@ -58,11 +58,11 @@ W serwisie są też [deklaracja dostępności](https://juz-dziala.vercel.app/acc
 
   | Miara | Słowa kluczowe | + weryfikacja AI |
   |---|---|---|
-  | Właściwa innowacja w top 3 | 83% | **94%** |
-  | Najlepsza na pierwszym miejscu | 38% | **85%** |
+  | Właściwa innowacja w top 3 | 83% | **100%** |
+  | Najlepsza na pierwszym miejscu | 38% | **92%** |
   | Odmowa, gdy biblioteka nie ma odpowiedzi | 2/2 | 2/2 |
   | Wycieki danych osobowych / wykonane wstrzyknięcia | 0 / 0 | 0 / 0 |
-  | Czas (mediana) | 2 ms | 6,4 s |
+  | Czas (mediana) | 2 ms | 4,3 s |
 
   Wyniki są też na stronie [Jak działa dopasowanie](https://juz-dziala.vercel.app/methodology).
 - **Dostępność sprawdzona testami.** axe-core: 0 naruszeń WCAG 2.1 A/AA na 19 ekranach × telefon i komputer; brak przewijania w poziomie przy 320 px (`tests/e2e`).

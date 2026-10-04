@@ -59,12 +59,12 @@ Wszystko powstało podczas HackYeah, od zera, w nowym repozytorium. Wcześniej n
 - Kreator pomysłów, Tester i Middleman z Ramowym Planem Wdrożenia.
 
 **Zmierzona trafność** na zamrożonym zestawie 20 przypadków:
-- 94% w top 3 (same słowa kluczowe: 83%);
-- 85% na pierwszym miejscu;
+- 100% w top 3 (same słowa kluczowe: 83%);
+- 92% na pierwszym miejscu;
 - 2/2 poprawne odmowy;
 - 0 wycieków danych osobowych.
 
-Koszt jednego dopasowania to 0,07 $. AI kosztuje ok. 150 $ miesięcznie przy 2 000 dopasowań.
+Koszt jednego dopasowania to 0,04 $. AI kosztuje ok. 100 $ miesięcznie przy 2 000 dopasowań.
 
 **Do niedzieli (cel):**
 - Test dostępności z klawiaturą i czytnikiem ekranu.

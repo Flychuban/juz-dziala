@@ -11,10 +11,10 @@ ROPS Kraków od 10 lat inkubuje innowacje społeczne, ale osoba, która ich potr
 
 **Matchmaking społeczny.**
 - Opis problemu, także głosem, daje natychmiastowe wyniki ze słów kluczowych.
-- AI weryfikuje je w ok. 6 s. Model może wskazać tylko numery zdań z kart, a serwer wstawia ich dokładny tekst, więc cytat nie może zostać wymyślony.
+- AI weryfikuje je w ok. 4 s. Model może wskazać tylko numery zdań z kart, a serwer wstawia ich dokładny tekst, więc cytat nie może zostać wymyślony.
 - Każdy wynik pokazuje słowa użytkownika, które zadecydowały, oraz „Twoją ścieżkę”: rozwiązanie → gdzie działa → kto pomoże → skąd pieniądze.
 - Gdy system nie ma pewności, mówi „nie wiem” i przekazuje sprawę ekspertowi.
-- Trafność na zamrożonym zestawie 20 przypadków: 94% w top 3 (same słowa kluczowe: 83%), 85% na pierwszym miejscu, 2/2 poprawne odmowy, 0 wycieków danych osobowych.
+- Trafność na zamrożonym zestawie 20 przypadków: 100% w top 3 (same słowa kluczowe: 83%), 92% na pierwszym miejscu, 2/2 poprawne odmowy, 0 wycieków danych osobowych.
 
 **Jedna „Sprawa” dla 7 modułów.**
 - Potrzeba, pomysł, pytanie, zgłoszenie do testów, opinia i prośba o wdrożenie dostają kod sprawy i dwustronny wątek.
@@ -38,7 +38,7 @@ ROPS Kraków od 10 lat inkubuje innowacje społeczne, ale osoba, która ich potr
 - Next.js, PostgreSQL w UE i model Claude przez jedną warstwę z limitami i zapisem kosztu każdego wywołania.
 - Otwarte API i kolejka zdarzeń do integracji.
 - Może działać na infrastrukturze Województwa.
-- Koszt: infrastruktura ok. 25–70 $ i AI ok. 150 $ miesięcznie przy 2 000 dopasowań (zmierzone: 0,07 $ za dopasowanie).
+- Koszt: infrastruktura ok. 25–70 $ i AI ok. 100 $ miesięcznie przy 2 000 dopasowań (zmierzone: 0,04 $ za dopasowanie).
 
 ## Linki
 - Demo: https://juz-dziala.vercel.app — przełącznik „Tryb demonstracyjny” pozwala wejść jako mieszkaniec, pracownik ROPS, ekspert albo gmina.
