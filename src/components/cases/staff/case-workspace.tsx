@@ -21,6 +21,7 @@ import { CaseControls, ContactAndDeliveries } from "./case-controls";
 import { fmtDateTime } from "./labels";
 import { StaffReply } from "./staff-reply";
 import { TriagePanel } from "./triage-panel";
+import { textLang } from "~/lib/text-lang";
 
 /**
  * One case for staff (ROPS at /admin/cases/[code], an expert at
@@ -135,7 +136,9 @@ export function CaseWorkspace({
             </>
           )}
         </p>
-        <h1 className="text-3xl font-bold break-words">{c.title}</h1>
+        <h1 className="text-3xl font-bold break-words">
+          <span lang={textLang(c.title)}>{c.title}</span>
+        </h1>
         <p className="text-muted-foreground">
           {t("created", { date: fmtDateTime(c.createdAt, locale) })} ·{" "}
           {L.authorRole[c.authorRole]}
@@ -176,7 +179,7 @@ export function CaseWorkspace({
               <h2 id="request-heading" className="text-xl font-bold">
                 {t("request")}
               </h2>
-              <p className="mt-2 text-lg whitespace-pre-wrap">{c.body}</p>
+              <p className="mt-2 text-lg whitespace-pre-wrap" lang={textLang(c.body)}>{c.body}</p>
               <p className="text-muted-foreground mt-3 text-sm">
                 {t("redacted")}
               </p>

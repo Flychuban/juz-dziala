@@ -5,7 +5,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { EXPERT_NAV, PUBLIC_NAV, resolveNav, STAFF_NAV } from "~/config/nav";
 import { labelsFor } from "~/lib/domain";
-import { STAFF_COOKIE, verifyStaffSession } from "~/server/auth/session";
+import { DEMO_STAFF, STAFF_COOKIE, verifyStaffSession } from "~/server/auth/session";
 import { AccessibilityToolbar } from "./accessibility-toolbar";
 import { DemoRoleSwitcher } from "./demo-role-switcher";
 import { LanguageSwitch } from "./language-switch";
@@ -30,7 +30,10 @@ export async function SiteHeader() {
     staff?.role === "rops" ? STAFF_NAV : staff?.role === "expert" ? EXPERT_NAV : [],
     tn,
   );
-  const staffLabel = staff ? `${L.staffRole[staff.role]}: ${staff.name}` : undefined;
+  const td = await getTranslations("common.demo.names");
+  // Demo accounts get their name in the page language; real accounts keep theirs.
+  const demoName = staff?.personId === (staff ? DEMO_STAFF[staff.role].personId : undefined) && staff ? td(staff.role) : staff?.name;
+  const staffLabel = staff ? `${L.staffRole[staff.role]}: ${demoName}` : undefined;
 
   return (
     <header data-site-header className="border-hairline bg-background border-b">

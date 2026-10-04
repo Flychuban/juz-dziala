@@ -5,6 +5,7 @@ import type { MessageAuthorKind } from "~/lib/domain";
 import { ReadAloud } from "~/components/kit";
 import { cn } from "~/lib/utils";
 import { fmtDateTime } from "./format";
+import { textLang } from "~/lib/text-lang";
 
 export type ThreadMessage = {
   id: string;
@@ -120,12 +121,15 @@ export function CaseThread({
                 {t("internal")}
               </p>
             )}
-            <MessageBody text={m.body} />
+            <div lang={textLang(m.body)}>
+              <MessageBody text={m.body} />
+            </div>
             {readAloud &&
               (m.authorKind === "rops" || m.authorKind === "expert") && (
                 <div className="mt-2" data-no-print>
                   <ReadAloud
                     text={`${who(m, viewer, t)}: ${m.body.replace(/^#{1,6}\s+/gmu, "")}`}
+                    lang={textLang(m.body)}
                     label={t("readAloud")}
                   />
                 </div>

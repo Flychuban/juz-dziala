@@ -10,6 +10,7 @@ import { useLabels } from "~/i18n/use-labels";
 import { CASE_KINDS, MAPA_AREAS } from "~/lib/domain";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
+import { textLang } from "~/lib/text-lang";
 
 function Counter({
   label,
@@ -208,7 +209,7 @@ export function Pulpit() {
                   href={`/admin/cases/${c.code}`}
                   className="font-semibold break-words"
                 >
-                  {c.title}
+                  <span lang={textLang(c.title)}>{c.title}</span>
                 </Link>
                 {c.summary && (
                   <p
@@ -290,7 +291,9 @@ function WhiteSpotsTeaser() {
                 {w.sample && <SampleBadge />}
               </p>
               {w.examples[0] && (
-                <p className="text-muted-foreground mt-1">„{w.examples[0]}”</p>
+                <p className="text-muted-foreground mt-1" lang={textLang(w.examples[0])}>
+                  „{w.examples[0]}”
+                </p>
               )}
             </li>
           ))}

@@ -20,6 +20,7 @@ import {
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { caseHref, hoursSince, inboxInput, isOpenStatus } from "./labels";
+import { textLang } from "~/lib/text-lang";
 
 const selectClass =
   "border-input bg-background min-h-12 w-full rounded-md border px-3 text-base";
@@ -265,7 +266,7 @@ export function InboxList({
                     href={caseHref(basePath, r.code)}
                     className="text-lg font-semibold break-words"
                   >
-                    {r.title}
+                    <span lang={textLang(r.title)}>{r.title}</span>
                   </Link>
                   <p
                     className={cn(

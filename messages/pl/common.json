@@ -65,7 +65,12 @@
     "modeNow": "Tryb demonstracyjny: {role}",
     "resident": "Mieszkaniec",
     "residentNoLogin": "Mieszkaniec (bez logowania)",
-    "hint": "Zobacz platformę oczami różnych użytkowników. Logowanie tylko na potrzeby prezentacji."
+    "hint": "Zobacz platformę oczami różnych użytkowników. Logowanie tylko na potrzeby prezentacji.",
+    "names": {
+      "rops": "Zespół Hubu (demo)",
+      "expert": "Ekspert (demo)",
+      "jst": "Urząd Gminy (demo)"
+    }
   },
   "staffGate": {
     "title": "Strefa pracownika",

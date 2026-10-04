@@ -185,7 +185,7 @@ export default async function AdminLibraryPage({
                         className="font-semibold underline decoration-1 underline-offset-4"
                         lang={pl}
                       >
-                        {r.title}
+                        <span lang="pl">{r.title}</span>
                       </Link>
                       <span className="text-muted-foreground block text-sm">
                         {r.id}

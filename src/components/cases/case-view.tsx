@@ -16,6 +16,7 @@ import { CaseThread } from "./case-thread";
 import { fmtDate } from "./format";
 import { markSeen, readMyCases, rememberCase } from "./my-cases";
 import { StatusTimeline } from "./status-timeline";
+import { textLang } from "~/lib/text-lang";
 
 /** Errors that will not go away by asking again (and must not count as more guesses). */
 const FINAL = new Set(["NOT_FOUND", "TOO_MANY_REQUESTS", "FORBIDDEN"]);
@@ -134,7 +135,7 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
         tabIndex={-1}
         className="mt-1 text-3xl font-bold break-words"
       >
-        {c.title}
+        <span lang={textLang(c.title)}>{c.title}</span>
       </h1>
       <dl className="mt-3 grid gap-x-6 gap-y-1 sm:grid-cols-[auto_1fr]">
         <dt className="text-muted-foreground">{t("kind")}</dt>
@@ -201,7 +202,7 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
           <summary className="min-h-12 cursor-pointer py-2 font-semibold">
             {t("yourRequest")}
           </summary>
-          <p className="mt-2 whitespace-pre-wrap">{c.body}</p>
+          <p className="mt-2 whitespace-pre-wrap" lang={textLang(c.body)}>{c.body}</p>
           <p className="text-muted-foreground mt-3 text-sm">
             {t("redacted")}
           </p>

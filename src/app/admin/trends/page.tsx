@@ -26,6 +26,7 @@ import { labelsFor, MAPA_AREAS, mapaAreaSchema } from "~/lib/domain";
 import { cn } from "~/lib/utils";
 import { TREND_DAYS } from "~/server/admin/trends";
 import { api } from "~/trpc/server";
+import { textLang } from "~/lib/text-lang";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("admin.trends");
@@ -315,7 +316,7 @@ export default async function TrendsPage({
                   <ul className="mt-3 space-y-2">
                     {s.examples.map((e) => (
                       <li key={e}>
-                        <blockquote className="border-input text-foreground/90 border-l-4 pl-3">
+                        <blockquote lang={textLang(e)} className="border-input text-foreground/90 border-l-4 pl-3">
                           „{e}”
                         </blockquote>
                       </li>

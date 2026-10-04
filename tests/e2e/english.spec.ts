@@ -19,9 +19,38 @@ import { expect, test, type BrowserContext, type Page } from "@playwright/test";
 import { blockingSummary, runAxe, settle } from "./helpers";
 import { PUBLIC_ROUTES, STAFF_ROUTES } from "./routes";
 
-const PROPER = (JSON.parse(readFileSync(join(process.cwd(), "messages", "proper-names.json"), "utf8")) as string[]).sort(
-  (a, b) => b.length - a.length,
-);
+const readData = (f: string) => JSON.parse(readFileSync(join(process.cwd(), f), "utf8")) as unknown;
+
+/**
+ * Proper names stay Polish in English (WCAG 3.1.2 exempts them): the curated
+ * list plus every gmina, county, organisation, innovation title (Polish and the
+ * English title, which keeps brand names), sample person and Polish source
+ * title in the data.
+ */
+function properNames(): string[] {
+  const names = new Set<string>(readData("messages/proper-names.json") as string[]);
+  for (const g of readData("data/gminas.json") as { name: string; powiatName: string }[]) {
+    names.add(g.name);
+    names.add(g.powiatName.replace(/^powiat\s+/, ""));
+  }
+  for (const o of (readData("data/network.json") as { orgs: { name: string }[] }).orgs) names.add(o.name);
+  for (const c of readData("data/library.json") as { title: string; sections: { authors?: string } }[]) {
+    names.add(c.title);
+    for (const a of (c.sections.authors ?? "").split(/[,;\n]/)) if (a.trim()) names.add(a.trim());
+  }
+  for (const c of Object.values(readData("data/library.en.json") as Record<string, { title: string }>)) names.add(c.title);
+  for (const a of (readData("data/knowledge.json") as { areas: { reports?: { title: string }[] }[] }).areas)
+    for (const r of a.reports ?? []) for (const part of r.title.split(/,\s*|\.\s+/)) names.add(part.trim());
+  for (const l of readData("data/learn.json") as { publisher?: string; title: string }[]) {
+    if (l.publisher) names.add(l.publisher);
+    names.add(l.title);
+  }
+  const people = readFileSync(join(process.cwd(), "src/server/cases/sample-people.ts"), "utf8");
+  for (const m of people.matchAll(/displayName: "([^"]+)"/g)) names.add(m[1]!);
+  for (const extra of ["Główny Urząd Statystyczny", "Akademia Sztuk Pięknych", "Politechnika Krakowska"]) names.add(extra);
+  return [...names].filter((n) => n.length > 2).sort((a, b) => b.length - a.length);
+}
+const PROPER = properNames();
 
 const EN_QUERY = "My mum is 80, lives alone in a village, hardly leaves the house and mixes up her pills.";
 
@@ -47,22 +76,22 @@ async function polishLeaks(page: Page): Promise<string[]> {
       if (!el || !text || !/[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/.test(text)) continue;
       if (el.closest("script,style,noscript,textarea,input,nextjs-portal")) continue;
       if (isPl(el) || !visible(el)) continue;
-      out.push(text.slice(0, 140));
+      out.push(text);
     }
     for (const el of document.querySelectorAll("[aria-label],[title],[placeholder]")) {
       for (const a of ["aria-label", "title", "placeholder"]) {
         const v = el.getAttribute(a);
-        if (v && /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/.test(v) && !isPl(el)) out.push(`[${a}] ${v.slice(0, 140)}`);
+        if (v && /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/.test(v) && !isPl(el)) out.push(`[${a}] ${v}`);
       }
     }
     return out;
   });
   const clean = (s: string) => {
-    let t = s.replace(/„[^”]*”/g, "").replace(/"[^"]*"/g, "");
+    let t = s;
     for (const p of PROPER) t = t.split(p).join("");
-    return t;
+    return t.replace(/„[^”]*(”|$)/g, "").replace(/"[^"]*"/g, "").replace(/\([^)]*\)/g, "");
   };
-  return [...new Set(found)].filter((s) => /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/.test(clean(s)));
+  return [...new Set(found)].filter((s) => /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/.test(clean(s))).map((s) => s.slice(0, 160));
 }
 
 test.describe("English version", () => {

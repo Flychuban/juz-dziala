@@ -65,7 +65,12 @@
     "modeNow": "Demo mode: {role}",
     "resident": "Resident",
     "residentNoLogin": "Resident (no login)",
-    "hint": "See the platform through the eyes of different users. Login exists only for the presentation."
+    "hint": "See the platform through the eyes of different users. Login exists only for the presentation.",
+    "names": {
+      "rops": "Hub team (demo)",
+      "expert": "Expert (demo)",
+      "jst": "Municipal office (demo)"
+    }
   },
   "staffGate": {
     "title": "Staff area",
