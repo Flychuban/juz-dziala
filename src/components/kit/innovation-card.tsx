@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AwardIcon, PlayCircleIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { type MapaArea } from "~/lib/domain";
 import { cn } from "~/lib/utils";
@@ -14,6 +15,8 @@ export type InnovationCardData = {
   summary: string;
   videoUrl?: string | null;
   badge?: string | null;
+  /** Language of title/summary when it differs from the page (e.g. "pl" for an untranslated card in English mode). */
+  lang?: string;
 };
 
 /**
@@ -36,6 +39,7 @@ export function InnovationCard({
   terms?: readonly string[];
   className?: string;
 }) {
+  const t = useTranslations("common.kit");
   const H = headingLevel;
   return (
     <article
@@ -50,7 +54,7 @@ export function InnovationCard({
           {item.categoryLabels.join(" · ")}
         </p>
       ) : null}
-      <H className="font-display text-xl leading-snug font-bold tracking-tight">
+      <H className="font-display text-xl leading-snug font-bold tracking-tight" lang={item.lang}>
         <Link
           href={`/library/${item.slug}`}
           className="text-foreground decoration-primary decoration-2 underline-offset-4 group-hover:underline after:absolute after:inset-0 after:rounded-lg"
@@ -62,7 +66,7 @@ export function InnovationCard({
           )}
         </Link>
       </H>
-      <p className="text-foreground/85 mt-2 line-clamp-2 text-base leading-snug">
+      <p className="text-foreground/85 mt-2 line-clamp-2 text-base leading-snug" lang={item.lang}>
         {terms?.length ? (
           <Highlight text={item.summary} terms={terms} />
         ) : (
@@ -79,14 +83,14 @@ export function InnovationCard({
               aria-hidden="true"
               className="text-primary size-5"
             />
-            Film
+            {t("film")}
           </span>
         ) : null}
       </div>
       {item.badge ? (
         <p className="border-hairline text-brand-accent mt-4 flex items-center gap-2 border-t pt-3 text-sm font-bold">
           <AwardIcon aria-hidden="true" className="size-5 shrink-0" />
-          <span className="min-w-0 [overflow-wrap:anywhere]">Wybrana do upowszechniania</span>
+          <span className="min-w-0 [overflow-wrap:anywhere]">{t("selectedForDissemination")}</span>
         </p>
       ) : null}
     </article>

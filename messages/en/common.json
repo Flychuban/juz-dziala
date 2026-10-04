@@ -162,6 +162,8 @@
     "original": "Polish original",
     "breadcrumb": "You are here",
     "backTo": "Back: {label}",
-    "yourWords": "Your words"
+    "yourWords": "Your words",
+    "film": "Film",
+    "selectedForDissemination": "Selected for wider use"
   }
 }

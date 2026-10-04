@@ -162,6 +162,8 @@
     "original": "Oryginał po polsku",
     "breadcrumb": "Jesteś tutaj",
     "backTo": "Wróć: {label}",
-    "yourWords": "Twoje słowa"
+    "yourWords": "Twoje słowa",
+    "film": "Film",
+    "selectedForDissemination": "Wybrana do upowszechniania"
   }
 }
