@@ -24,7 +24,7 @@ Read `docs/UX.md` before building a screen.
   and adaptation requests are all cases. Every state change goes through `notify()`
   (`src/server/notify.ts`), which writes the outbox and fans out notifications.
 - **All Claude calls go through `src/server/ai/structured.ts`** (`aiStructured` for JSON,
-  `aiStream` for long Markdown). The model is `claude-opus-5-5`; server-side refusal
+  `aiStream` for long Markdown). The model is `claude-sonnet-5-5`; server-side refusal
   fallbacks are enabled on every call. Never call the SDK directly elsewhere. Untrusted
   text goes inside `userData()`. Rate-limit public AI procedures with `rateLimit()`
   (per session, not per IP).

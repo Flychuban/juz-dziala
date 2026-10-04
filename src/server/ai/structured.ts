@@ -15,14 +15,14 @@ import { count, gte } from "drizzle-orm";
  * jd_ai_call with tokens, cache hits, latency and cost — the basis of the
  * cost estimate. Server-side refusal fallbacks are enabled on every call.
  */
-export const AI_MODEL = "claude-opus-5-5";
-/** USD per million tokens for claude-opus-5-5 (claude-api skill, cached 2026-09-25). */
+export const AI_MODEL = "claude-sonnet-5-5";
+/** USD per million tokens for claude-sonnet-5-5 (claude-api skill, cached 2026-09-25). */
 const PRICE = {
-  input: 4,
-  output: 20,
+  input: 2,
+  output: 10,
   cacheRead: 0.2,
-  cacheWrite5m: 5,
-  cacheWrite1h: 8,
+  cacheWrite5m: 2.5,
+  cacheWrite1h: 4,
 };
 const BETAS = ["server-side-fallback-2026-07-01"] as const;
 

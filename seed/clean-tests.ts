@@ -1,10 +1,14 @@
 /**
- * Removes cases created by automated tests: sample cases whose title starts
- * with „[test]" (the e2e specs create them that way), together with their
- * thread, notifications, deliveries, outbox events and audit entries.
- * Real cases are never touched. Wired into `pnpm db:seed` by the orchestrator.
+ * Removes what automated tests leave behind, so the jury never sees it:
+ *  - sample cases whose title starts with „[test]" (the e2e specs create them so);
+ *  - match runs (and the help-request cases opened from them) whose text is
+ *    exactly one of the fixed e2e / screenshot queries below.
+ * Together with their thread, notifications, deliveries, outbox events and
+ * audit entries. Other cases are never touched. Runs on every `pnpm db:seed`;
+ * `pnpm exec tsx --env-file=<env> seed/clean-tests.ts` runs it alone.
  */
 import { and, eq, inArray, like, or, sql } from "drizzle-orm";
+import { pathToFileURL } from "node:url";
 
 import { db } from "~/server/db";
 import {
@@ -12,17 +16,36 @@ import {
   cases,
   deliveries,
   events,
+  matchRuns,
   messages,
   notifications,
 } from "~/server/db/schema";
 
+/** The fixed inputs of tests/e2e and scripts/screenshots.ts (after redaction they are unchanged). */
+export const TEST_QUERIES = [
+  "Mama ma 73 lata, mieszka sama na wsi i prawie nie wychodzi z domu, myli leki.",
+  "Mama ma 73 lata, owdowiała, mieszka sama pod Limanową, prawie nie wychodzi z domu i myli leki.",
+  "My mum is 80, lives alone in a village, hardly leaves the house and mixes up her pills.",
+];
+
 export async function cleanTestCases(): Promise<number> {
+  const runs = await db
+    .select({ id: matchRuns.id })
+    .from(matchRuns)
+    .where(and(eq(matchRuns.isSample, false), inArray(matchRuns.queryRedacted, TEST_QUERIES)));
+  const runIds = runs.map((r) => r.id);
   const rows = await db
     .select({ id: cases.id, code: cases.code })
     .from(cases)
-    .where(and(eq(cases.isSample, true), like(cases.title, "[test]%")));
+    .where(
+      or(
+        and(eq(cases.isSample, true), like(cases.title, "[test]%")),
+        runIds.length ? inArray(cases.matchRunId, runIds) : sql`false`,
+      ),
+    );
+  if (runIds.length) await db.delete(matchRuns).where(inArray(matchRuns.id, runIds));
   if (rows.length === 0) {
-    console.log("[seed] test cases: none");
+    console.log(`[seed] test cases: none (test match runs removed: ${runIds.length})`);
     return 0;
   }
   const ids = rows.map((r) => r.id);
@@ -52,6 +75,10 @@ export async function cleanTestCases(): Promise<number> {
       );
     await tx.delete(cases).where(inArray(cases.id, ids));
   });
-  console.log(`[seed] test cases removed: ${rows.length}`);
+  console.log(`[seed] test cases removed: ${rows.length}, test match runs: ${runIds.length}`);
   return rows.length;
+}
+
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  void cleanTestCases().then(() => process.exit(0));
 }
