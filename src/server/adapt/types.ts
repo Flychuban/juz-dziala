@@ -3,6 +3,7 @@
  * Pure TypeScript — no database, no Next.js — so everything that builds on
  * them can be unit-tested.
  */
+import type { Locale } from "~/i18n/config";
 import type { CallStatus, MapaArea, SectionKey } from "~/lib/domain";
 import type { PlanInputs } from "./options";
 
@@ -46,6 +47,14 @@ export type GusSource = {
 
 export type CardSentence = { id: string; section: SectionKey; text: string };
 
+/** The English translation of a card (sentence ids kept), as a plan needs it. */
+export type PlanCardEn = {
+  title: string;
+  sections: Partial<Record<SectionKey, string>>;
+  /** Sentence id → English text. */
+  sentences: Record<string, string>;
+};
+
 /** A library card, as much of it as a plan needs. */
 export type PlanCard = {
   id: string;
@@ -62,6 +71,8 @@ export type PlanCard = {
   materialsUrl: string | null;
   /** Organisations named as authors (real, public — from the card). */
   orgNames: string[];
+  /** English translation; null until translated. */
+  en: PlanCardEn | null;
 };
 
 export type FundingKind = "usluga-wrazliwa" | "iws";
@@ -86,6 +97,17 @@ export type FundingCall = {
   innovationTitles: string[];
   /** Is THIS innovation one of them? */
   includesInnovation: boolean;
+  /**
+   * The call's own words in English (from its translated announcement), when
+   * the plan is written in English and a translation exists.
+   */
+  en: {
+    program: string | null;
+    operator: string | null;
+    purpose: string | null;
+    ownContribution: string | null;
+    innovationTitles: string[];
+  } | null;
 };
 
 export type RamowyPlan = {
@@ -96,6 +118,8 @@ export type RamowyPlan = {
 
 /** Everything a Ramowy Plan Wdrożenia is built from. */
 export type PlanContext = {
+  /** The language the plan is written in (the visitor's). */
+  locale: Locale;
   inputs: PlanInputs;
   card: PlanCard;
   profile: GminaProfile;

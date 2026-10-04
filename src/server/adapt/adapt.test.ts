@@ -1,27 +1,40 @@
 import { readFileSync } from "node:fs";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import { SECTION_LABEL } from "~/lib/domain";
+import { SECTION_LABEL, SECTION_LABEL_EN } from "~/lib/domain";
+import { AI_STREAM_LINES } from "~/server/ai/structured";
 import type { LibraryCard } from "~/server/domain/types";
-import { kAnonymize } from "./needs-count";
+import { canSeeNeeds, kAnonymize } from "./needs-count";
+import {
+  optionLabels,
+  planInputSchema,
+  planSourceMarker,
+  readPlanSource,
+  type PlanSource,
+} from "./options";
 import { createPlanAssembler } from "./plan-stream";
 import {
   FIXED_SECTIONS,
   planFooter,
   planHeader,
+  planSentences,
   section10,
   section7,
   templatePlan,
   templateSections,
   TODO,
+  TODO_EN,
+  todoMarker,
 } from "./plan-template";
 import {
   buildProfile,
   featuredRuralGmina,
+  gminaLabel,
   median,
   matchTheme,
   medianShare80,
+  powiatDisplay,
   powiatLocative,
   profileSignals,
   recommend,
@@ -29,15 +42,30 @@ import {
   signedPct,
   type ProfileCard,
 } from "./profile";
-import type { FundingCall, Gmina, PlanCard, PlanContext } from "./types";
+import { readStoredPlan } from "./stored-plan";
+import type { FundingCall, Gmina, PlanCard, PlanCardEn, PlanContext } from "./types";
+
+// AI_STREAM_LINES lives next to the Claude client; the client itself is never
+// touched here, so its server-only imports are stubbed.
+vi.mock("server-only", () => ({}));
+vi.mock("~/env", () => ({ env: {} }));
+vi.mock("~/server/db", () => ({ db: {} }));
 
 const gminas = JSON.parse(readFileSync("data/gminas.json", "utf8")) as Gmina[];
 const library = JSON.parse(
   readFileSync("data/library.json", "utf8"),
 ) as LibraryCard[];
+const libraryEn = JSON.parse(
+  readFileSync("data/library.en.json", "utf8"),
+) as Record<string, PlanCardEn>;
+
+/** Every line aiStream writes when it fails, in both languages. */
+const FAILURE_LINES = Object.values(AI_STREAM_LINES).flatMap((l) =>
+  Object.values(l),
+);
 
 /** Intl pl-PL groups digits with a no-break space. */
-const nb = (s: string) => s.replace(/\u00a0/g, " ");
+const nb = (s: string) => s.replace(/ /g, " ");
 const byTeryt = (t: string) => gminas.find((g) => g.teryt === t)!;
 const toProfileCard = (c: LibraryCard): ProfileCard => ({
   id: c.id,
@@ -63,6 +91,13 @@ const toPlanCard = (c: LibraryCard): PlanCard => ({
   folderUrl: c.folderUrl,
   materialsUrl: c.materialsUrl,
   orgNames: [],
+  en: libraryEn[c.id]
+    ? {
+        title: libraryEn[c.id]!.title,
+        sections: libraryEn[c.id]!.sections,
+        sentences: libraryEn[c.id]!.sentences,
+      }
+    : null,
 });
 
 const UW: FundingCall = {
@@ -80,11 +115,24 @@ const UW: FundingCall = {
   ownContribution: "Wkład własny nie jest wymagany; grant pokrywa 100% kosztów.",
   innovationTitles: ["Organizator kompleksowej opieki w miejscu zamieszkania"],
   includesInnovation: true,
+  en: {
+    program: "European Funds for Małopolska 2021-2027, Measure 6.23",
+    operator: "ROPS Kraków",
+    purpose: "A grant for a pilot implementation of an innovative social service.",
+    ownContribution: "No own contribution is required; the grant covers 100% of the costs.",
+    innovationTitles: ["Home-based comprehensive care organiser"],
+  },
 };
 
-function ctxFor(cardId: string, teryt: string, over: Partial<PlanContext["inputs"]> = {}): PlanContext {
+function ctxFor(
+  cardId: string,
+  teryt: string,
+  over: Partial<PlanContext["inputs"]> = {},
+  locale: PlanContext["locale"] = "pl",
+): PlanContext {
   const card = library.find((c) => c.id === cardId)!;
   return {
+    locale,
     inputs: {
       innovationId: cardId,
       institution: "ops",
@@ -111,6 +159,9 @@ function ctxFor(cardId: string, teryt: string, over: Partial<PlanContext["inputs
   };
 }
 
+const sectionNumbers = (md: string) =>
+  [...md.matchAll(/^## (\d+)\. /gm)].map((m) => Number(m[1]));
+
 describe("GUS profile", () => {
   it("computes shares and the Małopolska median from gminas.json", () => {
     expect(gminas).toHaveLength(183);
@@ -124,6 +175,7 @@ describe("GUS profile", () => {
     const greboszow = buildProfile(byTeryt("1204032"), gminas);
     expect(greboszow.depopulating).toBe(true);
     expect(signedPct(greboszow.popChange10y!)).toBe("−8,6%");
+    expect(signedPct(greboszow.popChange10y!, "en")).toBe("−8.6%");
     const szczawa = buildProfile(byTeryt("1207132"), gminas);
     expect(szczawa.popChange10y).toBeNull();
     expect(szczawa.depopulating).toBeNull();
@@ -136,6 +188,18 @@ describe("GUS profile", () => {
   it("puts a powiat in the locative", () => {
     expect(powiatLocative("powiat bocheński")).toBe("powiecie bocheńskim");
     expect(powiatLocative("Kraków")).toBe("Krakowie");
+  });
+
+  it("names gminas and powiats in plain English", () => {
+    const g = byTeryt("1204032");
+    expect(gminaLabel(g)).toBe("Gręboszów (gmina wiejska)");
+    expect(gminaLabel(g, "en")).toBe("Gręboszów (rural municipality)");
+    expect(powiatDisplay("powiat dąbrowski")).toBe("powiat dąbrowski");
+    expect(powiatDisplay("powiat dąbrowski", "en")).toBe("Dąbrowa County");
+    expect(powiatDisplay("Kraków")).toBe("miasto na prawach powiatu Kraków");
+    expect(powiatDisplay("Kraków", "en")).toBe("Kraków (a city with county rights)");
+    expect(optionLabels("en").budget["200-600"]).toBe("PLN 200,000–600,000");
+    expect(optionLabels("pl").budget["200-600"]).toBe("200–600 tys. zł");
   });
 });
 
@@ -150,6 +214,17 @@ describe("the printed recommendation rule", () => {
     expect(s[1]!.text).toContain("spadła o 8,6% w latach 2015–2025");
   });
 
+  it("prints the rule in English with English numbers", () => {
+    const p = buildProfile(byTeryt("1204032"), gminas);
+    const s = profileSignals(p, [], { locale: "en" });
+    expect(s[0]!.text).toContain("(7.4% against 4.0%)");
+    expect(s[1]!.text).toContain("fell by 8.6% between 2015 and 2025");
+    expect(s[2]!.text).toMatch(/^A rural municipality/);
+    // Only the proper name „Małopolska" keeps its Polish letter.
+    const text = s.map((x) => x.text).join(" ").replace(/Małopolsk\p{L}*/gu, "");
+    expect(text).not.toMatch(/[ąćęłńóśźż]/);
+  });
+
   it("only areas with ≥ 5 reported needs drive the rule", () => {
     const p = buildProfile(byTeryt("1261011"), gminas); // Kraków
     const s = profileSignals(p, [
@@ -159,7 +234,13 @@ describe("the printed recommendation rule", () => {
     const reported = s.filter((x) => x.id === "reported");
     expect(reported).toHaveLength(1);
     expect(reported[0]!.text).toContain("7 potrzeb");
+    expect(reported[0]!.text).toContain("W Krakowie");
     expect(reported[0]!.themes).toEqual(["area:mental_health"]);
+  });
+
+  it("without needs (a public page) the rule never mentions reports", () => {
+    const p = buildProfile(byTeryt("1261011"), gminas);
+    expect(profileSignals(p).some((x) => x.id === "reported")).toBe(false);
   });
 
   it("gives an ageing, rural gmina seniors AND transport, each with a reason", () => {
@@ -178,6 +259,19 @@ describe("the printed recommendation rule", () => {
     // and the list leads with seniors, then getting around.
     expect(recs[0]!.card.id).toBe("c052");
     expect(recs[1]!.matches.map((m) => m.theme)).toContain("mobility");
+  });
+
+  it("explains a match in English, quoting the Polish word that made it", () => {
+    const p = buildProfile(byTeryt("1204032"), gminas);
+    const recs = recommend(cards, profileSignals(p, [], { locale: "en" }), {
+      locale: "en",
+    });
+    expect(recs[0]!.card.id).toBe("c052");
+    const labels = recs.flatMap((r) => r.matches.map((m) => m.label));
+    expect(labels).toContain("Older people");
+    expect(labels).toContain("Getting around");
+    const mobility = recs.flatMap((r) => r.matches).find((m) => m.theme === "mobility")!;
+    expect(mobility.evidence).toMatch(/^in the description: „.+”$/);
   });
 
   it("mobility means getting around, for disability or seniors cards only", () => {
@@ -217,7 +311,7 @@ const ZERO = {
   mental_health: 0,
 };
 
-describe("k-anonymity", () => {
+describe("needs are for ROPS and the logged-in gmina only", () => {
   it("never publishes a count below 5", () => {
     const n = kAnonymize({
       total: 9,
@@ -247,6 +341,14 @@ describe("k-anonymity", () => {
       }),
     ).toMatchObject({ total: null });
   });
+
+  it("shows them to ROPS and a gmina login, never to the public or an expert", () => {
+    expect(canSeeNeeds({ role: "rops" })).toBe(true);
+    expect(canSeeNeeds({ role: "jst" })).toBe(true);
+    expect(canSeeNeeds({ role: "expert" })).toBe(false);
+    expect(canSeeNeeds(null)).toBe(false);
+    expect(canSeeNeeds(undefined)).toBe(false);
+  });
 });
 
 describe("template plan (no AI)", () => {
@@ -254,12 +356,12 @@ describe("template plan (no AI)", () => {
 
   it("has all ten sections in order, the disclaimer and the sources", () => {
     const md = templatePlan(ctx);
-    const numbers = [...md.matchAll(/^## (\d+)\. /gm)].map((m) => Number(m[1]));
-    expect(numbers).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(sectionNumbers(md)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     expect(md).toContain("Projekt planu przygotowany automatycznie — wymaga weryfikacji przez specjalistę ROPS");
     expect(md).toContain("ROPS ma już Ramowy Plan Wdrożenia tej innowacji");
     expect(md).toContain("## Źródła");
     expect(md).toContain(TODO);
+    expect(md).toContain("z szablonu, bez udziału AI");
   });
 
   it("quotes only real card sentences, cited by section, never by internal id", () => {
@@ -318,26 +420,96 @@ describe("template plan (no AI)", () => {
   });
 });
 
+describe("template plan in English", () => {
+  const ctx = ctxFor("c066", "1204032", {}, "en");
+  const md = nb(templatePlan(ctx));
+
+  it("has all ten sections with English headings, disclaimer and gap marker", () => {
+    expect(sectionNumbers(md)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(md).toContain("# Framework Implementation Plan: “Home-based comprehensive care organiser”");
+    expect(md).toContain("## 1. Aim of the service");
+    expect(md).toContain("## 3. Description of the service, based on the innovation “Home-based comprehensive care organiser”");
+    expect(md).toContain("## 10. Funding");
+    expect(md).toContain("Draft plan prepared automatically — it must be checked by a ROPS specialist");
+    expect(md).toContain("## Sources");
+    expect(md).toContain(TODO_EN);
+    expect(md).not.toContain(TODO);
+    expect(md).toContain("from the template, without AI");
+  });
+
+  it("quotes the English card sentence for each id, labelled as translated", () => {
+    const quotes = [
+      ...md.matchAll(/“([^”]+)” \*\(card, section “([^”]+)”; translated from Polish\)\*/g),
+    ];
+    expect(quotes.length).toBeGreaterThan(3);
+    const en = libraryEn.c066!;
+    const unescape = (t: string) => t.replace(/\\([\\*_`[\]|])/g, "$1");
+    for (const q of quotes) {
+      const id = Object.keys(en.sentences).find(
+        (k) => en.sentences[k]!.replace(/\s+/g, " ").trim() === unescape(q[1]!),
+      );
+      expect(id, q[1]).toBeDefined();
+      const section = ctx.card.sentences.find((s) => s.id === id)!.section;
+      expect(q[2]).toBe(SECTION_LABEL_EN[section]);
+    }
+    expect(md).toContain("(card, section “Target group”; translated from Polish)");
+    expect(md).not.toMatch(/c\d{3}\.s\d+/);
+  });
+
+  it("falls back to the Polish sentence, labelled as such, when one is not translated", () => {
+    const card = { ...ctx.card, en: { ...ctx.card.en!, sentences: {} } };
+    const quotes = planSentences(card, "en");
+    const first = quotes.get(ctx.card.sentences[0]!.id)!;
+    expect(first.translated).toBe(false);
+    expect(first.text).toBe(ctx.card.sentences[0]!.text);
+    const out = templatePlan({ ...ctx, card });
+    expect(out).toContain("Polish original, not yet translated");
+  });
+
+  it("writes figures, money and calls the English way", () => {
+    expect(md).toContain("| Number of residents |");
+    expect(md).toContain("−8.6% — the population is falling");
+    expect(md).toContain("Gręboszów (rural municipality, Dąbrowa County)");
+    expect(md).toContain("PLN 90,000–360,000"); // personnel 45–60% of PLN 200,000–600,000
+    expect(md).toContain("| Budget | PLN 200,000–600,000 (to be verified) |");
+    expect(md).toContain("Grant amount: up to PLN 600,000");
+    expect(md).toContain("Status: **Closed**");
+    expect(md).toContain("Programme: European Funds for Małopolska 2021-2027, Measure 6.23");
+    expect(md).toContain("Usługa Wrażliwa – upowszechnianie innowacji społecznych w środowiskach lokalnych (call II)");
+    expect(md).toContain("**was on the list**");
+    expect(md).toContain("40 people");
+    // Nothing of the Polish template leaks into the English plan.
+    for (const pl of ["Cel usługi", "do weryfikacji", "mieszkańców", "Źródła", "zł"]) {
+      expect(md, pl).not.toContain(pl);
+    }
+  });
+});
+
 describe("streamed AI plan assembly", () => {
-  const ctx = ctxFor("c066", "1204032");
-  const sentences = new Map(ctx.card.sentences.map((s) => [s.id, s]));
-  const make = () =>
+  const make = (ctx: PlanContext) =>
     createPlanAssembler({
       header: planHeader(ctx),
       sections: templateSections(ctx),
       fixed: FIXED_SECTIONS,
-      sentences,
-      footer: ({ fallbackUsed }) => planFooter(ctx, "ai", { fallbackUsed }),
+      sentences: planSentences(ctx.card, ctx.locale),
+      locale: ctx.locale,
+      todo: todoMarker(ctx.locale),
+      failureLines: FAILURE_LINES,
+      footer: (source) => planFooter(ctx, source),
+      trailer: planSourceMarker,
     });
-  const run = (chunks: string[]) => {
-    const a = make();
+  const run = (chunks: string[], ctx = ctxFor("c066", "1204032")) => {
+    const a = make(ctx);
     let out = a.start();
     for (const c of chunks) out += a.push(c);
     out += a.end();
-    return { out, fallbackUsed: a.fallbackUsed };
+    return { out, fallbackUsed: a.fallbackUsed, source: a.source, failed: a.failed };
   };
+  const ctx = ctxFor("c066", "1204032");
   const firstId = ctx.card.sentences[0]!.id;
   const firstText = ctx.card.sentences[0]!.text;
+  const ALL_AI =
+    "## 1. Cel\nA\n## 3. Opis\nB\n## 4. Etapy\nE\n## 5. Zespół\nZ\n## 6. Partnerzy\nP\n## 8. Ryzyka\nR\n## 9. Wskaźniki\nW\n";
 
   it("splices server sections in order and drops the model's preamble and title", () => {
     const model = [
@@ -345,14 +517,16 @@ describe("streamed AI plan assembly", () => {
       "## 1. Cel usługi\nCel A.\n## 3. Opis\nOpis B.\n",
       "## 4. Etapy\nE\n## 5. Zespół\nZ\n## 6. Partnerzy\nP\n## 8. Ryzyka\nR\n## 9. Wskaźniki\nW\n",
     ];
-    const { out, fallbackUsed } = run(model);
+    const { out, fallbackUsed, source } = run(model);
     expect(fallbackUsed).toBe(false);
+    expect(source).toBe("ai");
     expect(out).not.toContain("Oto plan");
     expect(out).not.toContain("Mój tytuł");
-    const numbers = [...out.matchAll(/^## (\d+)\. /gm)].map((m) => Number(m[1]));
-    expect(numbers).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(sectionNumbers(out)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     // our heading wording, not the model's
     expect(out).toContain("## 3. Opis usługi na bazie innowacji „Organizator");
+    expect(out).toContain("z pomocą Asystenta AI; liczby, budżet i nabory wstawił system");
+    expect(readPlanSource(out)).toMatchObject({ source: "ai" });
   });
 
   it("replaces the model's own section 7 with ours (no invented money)", () => {
@@ -384,15 +558,135 @@ describe("streamed AI plan assembly", () => {
     expect(out).not.toMatch(/c\d{3}\.s\d+/);
   });
 
-  it("completes a plan the model abandoned, from the template", () => {
-    const { out, fallbackUsed } = run([
+  it("completes a plan the model abandoned, from the template, and says it is mixed", () => {
+    const { out, fallbackUsed, source, failed } = run([
       "## 1. Cel\nA\n## 3. Opis\nB\n",
       "\n\n_Wystąpił błąd generowania. Spróbuj ponownie._",
     ]);
+    expect(failed).toBe(true);
     expect(fallbackUsed).toBe(true);
-    const numbers = [...out.matchAll(/^## (\d+)\. /gm)].map((m) => Number(m[1]));
-    expect(numbers).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(source).toBe("mixed");
+    expect(sectionNumbers(out)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     expect(out).not.toContain("Wystąpił błąd");
     expect(out).toContain("brakujące sekcje uzupełniono z szablonu");
+    expect(readPlanSource(out)).toMatchObject({ source: "mixed" });
+  });
+
+  it("never prints a section the model was cut off in the middle of", () => {
+    // The deadline aborts the model inside section 3: what it wrote of
+    // section 3 is dropped and the template's section 3 stands in for it.
+    const { out } = run([
+      "## 1. Cel\nPełny cel.\n## 3. Opis\nPołowa zda",
+      "\n\n_Wystąpił błąd generowania. Spróbuj ponownie._",
+    ]);
+    expect(out).toContain("Pełny cel.");
+    expect(out).not.toContain("Połowa zda");
+    expect(out).toContain("Na czym polega rozwiązanie (z karty):");
+  });
+
+  it("recognises every failure line aiStream writes, in Polish and in English", () => {
+    expect(FAILURE_LINES.length).toBeGreaterThanOrEqual(6);
+    for (const line of FAILURE_LINES) {
+      const { out, source, failed } = run([`## 1. Cel\nA\n## 3. Opis\nB\n\n\n${line}`]);
+      expect(failed, line).toBe(true);
+      expect(source, line).toBe("mixed");
+      expect(out, line).not.toContain(line);
+      expect(sectionNumbers(out)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    }
+  });
+
+  it("a model that never answered is a template plan, and the footer says so", () => {
+    // aiStream writes the unavailable line alone, with no newline.
+    const { out, source } = run([AI_STREAM_LINES.pl.unavailable]);
+    expect(source).toBe("template");
+    expect(out).toContain("z szablonu, bez udziału AI");
+    expect(out).not.toContain("z pomocą Asystenta AI");
+    expect(readPlanSource(out)).toMatchObject({ source: "template" });
+  });
+
+  it("an empty section from the model is filled from the template", () => {
+    const { out, source } = run([ALL_AI.replace("## 4. Etapy\nE\n", "## 4. Etapy\n\n")]);
+    expect(source).toBe("mixed");
+    expect(out).toContain("Harmonogram to propozycja do dopasowania.");
+  });
+
+  describe("in English", () => {
+    const en = ctxFor("c066", "1204032", {}, "en");
+
+    it("handles the English failure line and fills the rest in English", () => {
+      const { out, source } = run(
+        [
+          "## 1. Aim\nA clear aim.\n## 3. Description\nHalf a sen",
+          `\n\n${AI_STREAM_LINES.en.error}`,
+        ],
+        en,
+      );
+      expect(source).toBe("mixed");
+      expect(out).not.toContain(AI_STREAM_LINES.en.error);
+      expect(out).not.toContain("Half a sen");
+      expect(sectionNumbers(out)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      expect(out).toContain("## 1. Aim of the service");
+      expect(out).toContain("What the solution is (from the card):");
+      expect(out).toContain("partly with the help of the AI assistant");
+      expect(readPlanSource(out).markdown).not.toContain("plan-source");
+    });
+
+    it("quotes the translated sentence and swaps the Polish gap marker", () => {
+      const { out, source } = run(
+        [
+          `## 1. Aim\n> [[${firstId}]]\nStart date: [DO UZUPEŁNIENIA]\n`,
+          "## 3. D\nB\n## 4. E\nE\n## 5. T\nT\n## 6. P\nP\n## 8. R\nR\n## 9. I\nI\n",
+        ],
+        en,
+      );
+      expect(source).toBe("ai");
+      const enText = libraryEn.c066!.sentences[firstId]!.replace(/\s+/g, " ").trim();
+      expect(out).toContain(`“${enText.slice(0, 30)}`);
+      expect(out).toContain("; translated from Polish)*");
+      expect(out).toContain(`Start date: ${TODO_EN}`);
+      expect(out).not.toContain(TODO);
+      expect(out).toContain("with the help of the AI assistant; figures, budget and calls");
+    });
+  });
+});
+
+describe("plan source marker", () => {
+  it("is read and removed, also while it is still arriving", () => {
+    const body = `# Plan\n\ntext\n${planSourceMarker("mixed")}`;
+    expect(readPlanSource(body)).toEqual({ markdown: "# Plan\n\ntext\n", source: "mixed" });
+    expect(readPlanSource("# Plan\n\ntext\n\n<!-- plan-sou")).toEqual({
+      markdown: "# Plan\n\ntext\n",
+      source: null,
+    });
+    expect(readPlanSource("# Plan")).toEqual({ markdown: "# Plan", source: null });
+  });
+});
+
+describe("stored plan and validation", () => {
+  it("labels a stored plan's details in the reader's language", () => {
+    const raw = {
+      markdown: "# Plan",
+      mode: "mixed",
+      locale: "en",
+      inputs: { institution: "ngo", staff: "4-6", budget: "to50", timeframe: "6", groupSize: 12 },
+      innovationTitle: "Home-based comprehensive care organiser",
+      gminaName: "Gręboszów",
+    };
+    const en = readStoredPlan(raw, "en")!;
+    expect(en.source).toBe<PlanSource>("mixed");
+    expect(en.locale).toBe("en");
+    expect(en.details).toContainEqual({ label: "Budget (to be verified)", value: "up to PLN 50,000" });
+    const pl = readStoredPlan(raw, "pl")!;
+    expect(pl.details).toContainEqual({ label: "Zespół", value: "4–6 osób" });
+    expect(readStoredPlan({ mode: "ai" }, "pl")).toBeNull();
+    expect(readStoredPlan({ markdown: "x" }, "pl")?.locale).toBe("pl");
+  });
+
+  it("validation messages are keys the screens translate", () => {
+    const r = planInputSchema.safeParse({ innovationId: "c066", gminaTeryt: "9999999" });
+    expect(r.success).toBe(false);
+    const messages = r.error!.issues.map((i) => i.message);
+    expect(messages).toContain("institution");
+    expect(messages).toContain("gmina");
   });
 });

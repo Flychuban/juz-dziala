@@ -2,6 +2,7 @@ import "server-only";
 
 import { and, arrayContains, eq } from "drizzle-orm";
 
+import type { Locale } from "~/i18n/config";
 import type { Db } from "~/server/db";
 import { innovations, orgs } from "~/server/db/schema";
 import { redactPII } from "~/server/domain/redact";
@@ -40,6 +41,13 @@ export async function loadPlanCard(
     folderUrl: card.folderUrl,
     materialsUrl: card.materialsUrl,
     orgNames: cardOrgs.filter((o) => !o.isSample).map((o) => o.name),
+    en: card.en
+      ? {
+          title: card.en.title,
+          sections: card.en.sections,
+          sentences: card.en.sentences,
+        }
+      : null,
   };
 }
 
@@ -48,12 +56,14 @@ export type PlanContextResult =
   | { ok: false; reason: "innovation" | "gmina" };
 
 /**
- * Everything the plan is built from. The institution's free text is redacted
- * here, before it reaches the template, the model or the database.
+ * Everything the plan is built from, in the plan's language. The institution's
+ * free text is redacted here, before it reaches the template, the model or
+ * the database.
  */
 export async function loadPlanContext(
   db: Db,
   inputs: PlanInputs,
+  locale: Locale = "pl",
 ): Promise<PlanContextResult> {
   const [card, gmina, all] = await Promise.all([
     loadPlanCard(db, inputs.innovationId),
@@ -64,7 +74,7 @@ export async function loadPlanContext(
   if (!gmina) return { ok: false, reason: "gmina" };
   const [gus, { funding, ramowyPlan }] = await Promise.all([
     gusSourceFor(gmina),
-    fundingFor(db, card.id),
+    fundingFor(db, card.id, locale),
   ]);
   const needs = inputs.needs?.trim()
     ? redactPII(inputs.needs.trim()).text
@@ -72,6 +82,7 @@ export async function loadPlanContext(
   return {
     ok: true,
     ctx: {
+      locale,
       inputs: { ...inputs, needs },
       card,
       profile: buildProfile(gmina, all),

@@ -32,3 +32,55 @@ export const POWIAT_NAMES: Record<string, string> = {
 export function powiatKey(teryt: string | number): string {
   return String(teryt).replace(/\D/g, "").slice(0, 4);
 }
+
+/**
+ * English names of the 22 powiats (as English sources write them: the county
+ * is named after its seat town). Cities with powiat rights keep their name.
+ */
+export const POWIAT_NAMES_EN: Record<string, string> = {
+  "1201": "Bochnia County",
+  "1202": "Brzesko County",
+  "1203": "Chrzanów County",
+  "1204": "Dąbrowa County",
+  "1205": "Gorlice County",
+  "1206": "Kraków County",
+  "1207": "Limanowa County",
+  "1208": "Miechów County",
+  "1209": "Myślenice County",
+  "1210": "Nowy Sącz County",
+  "1211": "Nowy Targ County",
+  "1212": "Olkusz County",
+  "1213": "Oświęcim County",
+  "1214": "Proszowice County",
+  "1215": "Sucha County",
+  "1216": "Tarnów County",
+  "1217": "Tatra County",
+  "1218": "Wadowice County",
+  "1219": "Wieliczka County",
+  "1261": "Kraków",
+  "1262": "Nowy Sącz",
+  "1263": "Tarnów",
+};
+
+/** True for the three cities with powiat rights (1261–1263). */
+export function isCityPowiat(key: string): boolean {
+  return powiatKey(key).startsWith("126");
+}
+
+/** The 4-digit key of a powiat from its Polish name („powiat bocheński", „Kraków"). */
+export function powiatKeyByName(name: string): string | null {
+  const short = name.replace(/^powiat\s+(m\.\s*)?/i, "").trim();
+  for (const [k, v] of Object.entries(POWIAT_NAMES)) if (v === short) return k;
+  return null;
+}
+
+/**
+ * „powiat bocheński" / "Bochnia County"; cities keep their name („Kraków").
+ * Unknown names pass through unchanged.
+ */
+export function powiatName(name: string, locale: string): string {
+  const key = powiatKeyByName(name);
+  if (!key) return name;
+  if (locale === "en") return POWIAT_NAMES_EN[key] ?? name;
+  return isCityPowiat(key) ? POWIAT_NAMES[key]! : `powiat ${POWIAT_NAMES[key]}`;
+}

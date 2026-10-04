@@ -1,1 +1,141 @@
-{}
+{
+  "cityCounty": "{name} (a city with county rights)",
+  "themes": {
+    "digital": "Digital exclusion and remote services",
+    "mobility": "Getting around"
+  },
+  "rule": {
+    "evidenceArea": "challenge area: {area}",
+    "evidenceWord": "in the description: „{word}”",
+    "share80": "A higher share of people aged 80+ than the median Małopolska municipality ({share}% against {median}%) → solutions for older people.",
+    "depopulation": "The population fell by {change}% between {from} and {to} → solutions for older people, against digital exclusion and for getting around.",
+    "rural": "A rural municipality — people often have to travel to reach services → solutions that help with getting around.",
+    "urbanRural": "An urban-rural municipality (with rural areas) — people often have to travel to reach services → solutions that help with getting around.",
+    "reported": "In {where}, {count, plural, one {# need was} other {# needs were}} reported in the last {days} days in the area “{area}” → solutions from this area.",
+    "none": "The GUS data show no particular needs here (the share of people aged 80+ is not above the median, the population is not falling, it is an urban municipality) → we show solutions ROPS selected for wider use."
+  },
+  "index": {
+    "title": "For municipalities",
+    "description": "A municipality's profile in GUS data and solutions from the ROPS Library that fit it — like a catalogue.",
+    "eyebrow": "Innovation Middleman — implementation assistant · for municipalities and counties",
+    "lead": "See how your municipality is changing in GUS data and which solutions from the ROPS Library fit it. Every match states the rule behind it.",
+    "panel": {
+      "heading": "Municipality panel",
+      "account": "Municipality account: {gmina}, {powiat}.",
+      "demo": "Demo version: the municipality account shows a sample municipality. Use the search above to open the profile of another municipality — together with the needs reported in its county.",
+      "needsHeading": "Needs reported in the county",
+      "private": "Only the ROPS team and the logged-in municipality can see this.",
+      "plan": "Plan a service for {gmina}",
+      "challenge": "Report a local challenge",
+      "profile": "Municipality profile"
+    },
+    "featured": {
+      "eyebrow": "Example: a rural municipality",
+      "heading": "{name} — {kind}, {powiat}",
+      "why": "Why this municipality: among rural municipalities that are losing residents, it has the highest share of people aged 80+ in Małopolska.",
+      "residents": "Residents",
+      "share80": "People aged 80+ (median for municipalities: {median}%)",
+      "change": "Change in the number of residents over 10 years",
+      "falling": "the population is falling",
+      "topHeading": "Solutions that fit (the first on the municipality's profile)",
+      "profile": "See the profile of {name}",
+      "plan": "Plan a service for this municipality"
+    },
+    "map": {
+      "heading": "People aged 80+ in the counties of Małopolska",
+      "lead": "Share of people aged 80 and over in the county's population. Click a county to see its municipalities. Median for Małopolska municipalities: {median}%.",
+      "label": "Share of people aged 80+ in the county's population (%)",
+      "labelYear": "Share of people aged 80+ in the county's population (%), {year}",
+      "valueLabel": "Share 80+ (%)",
+      "highlight": "selected"
+    },
+    "list": {
+      "heading": "Municipalities by county",
+      "lead": "{gminas, plural, one {# municipality} other {# municipalities}} in {powiats, plural, one {# county} other {# counties}}. Open a county to choose a municipality.",
+      "count": "{count, plural, one {# municipality} other {# municipalities}}",
+      "caption": "Municipalities: {powiat}",
+      "colGmina": "Municipality",
+      "colShare80": "Share 80+",
+      "colChange": "Change over 10 years",
+      "noComparison": "no comparison"
+    }
+  },
+  "profile": {
+    "metaNotFound": "Municipality not found",
+    "metaTitle": "{name} — municipality profile",
+    "metaDescription": "{name}: population, older residents and solutions from the ROPS Library that fit its profile.",
+    "breadcrumb": "For municipalities",
+    "eyebrow": "Municipality profile · {where}",
+    "lead": "{count, plural, one {# person lives} other {# people live}} here; {share65}% are aged 65 or over, and {share80}% are aged 80 or over.",
+    "leadFell": "Between {from} and {to} the population fell by {change}%.",
+    "leadGrew": "Between {from} and {to} the population grew by {change}%.",
+    "plan": "Plan a service in this municipality",
+    "others": "Other municipalities: {powiat}",
+    "planNote": "The plan will start with “<t>{title}</t>” — the first solution that fits the municipality's profile. You can change it in the first step.",
+    "residentsHeading": "Residents in GUS data",
+    "fallingTitle": "The population is falling",
+    "fallingBody": "Between {from} and {to} the number of residents changed by {change}. Services need to be planned for an older and more scattered community.",
+    "statPopulation": "Number of residents (as of 31 December)",
+    "stat65": "People aged 65+ — {share}% of residents",
+    "stat80": "People aged 80+ — {share}% of residents (median for Małopolska municipalities: {median}%)",
+    "statChangeNone": "none",
+    "statChangeLabelNone": "Change in the number of residents {from}–{to}: no comparison — the municipality changed its boundaries",
+    "statChangeLabelFalling": "Change in the number of residents {from}–{to}: the population is falling",
+    "statChangeLabelGrowing": "Change in the number of residents {from}–{to}: the population is growing",
+    "gusSourceShort": "GUS BDL, {year}",
+    "gusSource": "{source}, {year} — data for {gmina}",
+    "needsHeading": "Needs reported in the county",
+    "needsStaffNote": "Visible only to the ROPS team and the logged-in municipality.",
+    "needsIntro": "Problems described in the Już Działa search and cases from the last {days} days in: {powiat}. We hide numbers below {k} so that nobody can be identified.",
+    "needsHidden": "Needs reported by residents are visible to the ROPS team and the logged-in municipality.",
+    "recsHeading": "Solutions that fit the municipality's profile",
+    "why": "Why these",
+    "ruleNote": "The rule: first the best solution for each reason, then those that fit the most reasons. In a tie, innovations ROPS selected for wider use and those with a Framework Implementation Plan come first.",
+    "fitsBecause": "It fits because:",
+    "ramowy": "ROPS has a Framework Implementation Plan („Usługa Wrażliwa”)",
+    "badge": "Selected for wider use",
+    "planOne": "Plan a service",
+    "noRecs": "We found no matching solutions.",
+    "browseLibrary": "Browse the whole Library",
+    "librarySource": "Social Innovation Library, ROPS Kraków"
+  },
+  "needs": {
+    "tooFew": "In the last {days} days there were fewer than {k} reports in the county — too few to show details without the risk of identifying people.",
+    "caption": "Reported needs by challenge area — {powiat}, since {date}",
+    "colArea": "Area",
+    "colCount": "Reports",
+    "lessThan": "fewer than {k}",
+    "total": "Total",
+    "sample": "The figures also include sample reports.",
+    "source": "Już Działa — anonymous reports from residents"
+  },
+  "search": {
+    "form": "Municipality profile",
+    "pick": "Choose a municipality from the suggestions.",
+    "label": "Your municipality",
+    "hint": "Type the beginning of the name and choose the municipality from the list.",
+    "opening": "Opening the profile…",
+    "submit": "Show the municipality's profile"
+  },
+  "combobox": {
+    "label": "Municipality",
+    "placeholder": "Type the municipality's name, e.g. Gręboszów",
+    "listLabel": "{label}: suggestions",
+    "noneLive": "No municipality with this name.",
+    "foundLive": "Found: {count}. Use the arrow keys to choose.",
+    "none": "We could not find the municipality “{query}”. Check the spelling — the beginning of the name is enough.",
+    "showing": "Showing {shown} of {count}. Type more letters.",
+    "selected": "Selected: <b>{label}</b>, {powiat}",
+    "errorPrefix": "Please note:"
+  },
+  "map": {
+    "highlighted": "highlighted",
+    "value": "Number",
+    "unavailable": "The map is not available at the moment. All the data is in the table.",
+    "legend": "Key: {label}",
+    "noData": "no data",
+    "colPowiat": "County",
+    "svgTitle": "Map: {label}",
+    "hint": "Hover over a county or move to it with the Tab key to see the number."
+  }
+}

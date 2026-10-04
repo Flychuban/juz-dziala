@@ -5,8 +5,9 @@ import path from "node:path";
 
 import { asc, inArray } from "drizzle-orm";
 
+import type { Locale } from "~/i18n/config";
 import type { Db } from "~/server/db";
-import { calls } from "~/server/db/schema";
+import { calls, innovations } from "~/server/db/schema";
 import type {
   FundingCall,
   FundingKind,
@@ -146,6 +147,23 @@ async function callInnovations() {
   return m;
 }
 
+type CallEnJson = {
+  id: string;
+  program?: string | null;
+  operator?: string | null;
+  notes?: string | null;
+};
+
+let callsEnCache: Map<string, CallEnJson> | null = null;
+/** data/calls.en.json — the announcements' own words in English, by call id. */
+async function callsEn(): Promise<Map<string, CallEnJson>> {
+  if (callsEnCache) return callsEnCache;
+  const rows = (await readJson<CallEnJson[]>("calls.en.json")) ?? [];
+  const m = new Map(rows.map((c) => [c.id, c]));
+  if (m.size > 0) callsEnCache = m;
+  return m;
+}
+
 /** Which family a call belongs to, by its published name/programme. */
 export function fundingKind(c: {
   id: string;
@@ -158,7 +176,7 @@ export function fundingKind(c: {
   return null;
 }
 
-function sentences(text: string | null): string[] {
+function sentences(text: string | null | undefined): string[] {
   return (text ?? "")
     .split(/(?<=[.!?])\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ])/u)
     .map((s) => s.trim())
@@ -169,10 +187,14 @@ function sentences(text: string | null): string[] {
  * The calls that can pay for an implementation (Usługa Wrażliwa) or for
  * developing an innovation (IWS), newest first. Demo calls are left out:
  * a plan for a real institution never points at a call ROPS did not announce.
+ * For an English plan each call also carries its announcement's own English
+ * words (`calls.en`, else data/calls.en.json) and the English titles of the
+ * innovations it was limited to.
  */
 export async function fundingFor(
   db: Db,
   innovationId: string,
+  locale: Locale = "pl",
 ): Promise<{ funding: FundingCall[]; ramowyPlan: RamowyPlan | null }> {
   const rows = await db
     .select()
@@ -180,12 +202,43 @@ export async function fundingFor(
     .where(inArray(calls.status, ["open", "planned", "closed"]))
     .orderBy(asc(calls.windowFrom));
   const lists = await callInnovations();
+  const enFile = locale === "en" ? await callsEn() : new Map<string, CallEnJson>();
+  const listedIds = [
+    ...new Set(
+      rows.flatMap((c) => (lists.get(c.id) ?? []).map((i) => i.cardId)),
+    ),
+  ].filter((id): id is string => !!id);
+  const enTitles = new Map<string, string>();
+  if (locale === "en" && listedIds.length > 0) {
+    const cards = await db
+      .select({ id: innovations.id, en: innovations.en })
+      .from(innovations)
+      .where(inArray(innovations.id, listedIds));
+    for (const c of cards) if (c.en?.title) enTitles.set(c.id, c.en.title);
+  }
   const funding: FundingCall[] = [];
   for (const c of rows) {
     const kind = fundingKind(c);
     if (!kind) continue;
     const list = lists.get(c.id) ?? [];
     const notes = sentences(c.notes);
+    let en: FundingCall["en"] = null;
+    if (locale === "en") {
+      const src = c.en ?? enFile.get(c.id) ?? null;
+      if (src) {
+        const enNotes = sentences(src.notes);
+        en = {
+          program: src.program ?? null,
+          operator: src.operator ?? null,
+          purpose: enNotes[0] ?? null,
+          ownContribution:
+            enNotes.find((x) => /own contribution/i.test(x)) ?? null,
+          innovationTitles: list.map((i) =>
+            i.cardId ? (enTitles.get(i.cardId) ?? i.title) : i.title,
+          ),
+        };
+      }
+    }
     funding.push({
       id: c.id,
       kind,
@@ -201,6 +254,7 @@ export async function fundingFor(
       ownContribution: notes.find((s) => /^Wkład własny/i.test(s)) ?? null,
       innovationTitles: list.map((i) => i.title),
       includesInnovation: list.some((i) => i.cardId === innovationId),
+      en,
     });
   }
   // Usługa Wrażliwa first (it funds implementation), newest first within kind.

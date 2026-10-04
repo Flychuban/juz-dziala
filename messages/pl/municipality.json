@@ -1,1 +1,141 @@
-{}
+{
+  "cityCounty": "miasto na prawach powiatu {name}",
+  "themes": {
+    "digital": "Wykluczenie cyfrowe i usługi na odległość",
+    "mobility": "Dojazd i poruszanie się"
+  },
+  "rule": {
+    "evidenceArea": "obszar Mapy Wyzwań: {area}",
+    "evidenceWord": "w opisie: „{word}”",
+    "share80": "Udział osób w wieku 80+ wyższy niż mediana gmin Małopolski ({share}% wobec {median}%) → rozwiązania dla seniorów.",
+    "depopulation": "Liczba mieszkańców spadła o {change}% w latach {from}–{to} → rozwiązania dla seniorów, przeciw wykluczeniu cyfrowemu i ułatwiające dojazd.",
+    "rural": "Gmina wiejska — do usług trzeba często dojechać → rozwiązania ułatwiające dojazd i poruszanie się.",
+    "urbanRural": "Gmina miejsko-wiejska (z obszarami wiejskimi) — do usług trzeba często dojechać → rozwiązania ułatwiające dojazd i poruszanie się.",
+    "reported": "W {where} w ostatnich {days} dniach zgłoszono {count, plural, one {# potrzebę} few {# potrzeby} many {# potrzeb} other {# potrzeby}} w obszarze „{area}” → rozwiązania z tego obszaru.",
+    "none": "Dane GUS nie wskazują tu szczególnych potrzeb (udział osób 80+ nie wyższy niż mediana, ludność nie maleje, gmina miejska) → pokazujemy rozwiązania wybrane przez ROPS do upowszechniania."
+  },
+  "index": {
+    "title": "Dla gminy",
+    "description": "Profil gminy w danych GUS i rozwiązania z Biblioteki ROPS dopasowane do gminy — jak w katalogu.",
+    "eyebrow": "Middleman Innowacji — asystent wdrożenia · dla gmin i powiatów",
+    "lead": "Sprawdź, jak zmienia się Twoja gmina w danych GUS i które rozwiązania z Biblioteki ROPS do niej pasują. Każde dopasowanie ma wypisaną regułę.",
+    "panel": {
+      "heading": "Panel gminy",
+      "account": "Konto gminy: {gmina}, {powiat}.",
+      "demo": "Wersja demonstracyjna: konto gminy pokazuje przykładową gminę. Profil innej gminy — razem z potrzebami z jej powiatu — otworzysz wyszukiwarką powyżej.",
+      "needsHeading": "Potrzeby zgłaszane w powiecie",
+      "private": "Widzi to tylko zespół ROPS i zalogowana gmina.",
+      "plan": "Zaplanuj usługę dla gminy {gmina}",
+      "challenge": "Zgłoś lokalne wyzwanie",
+      "profile": "Profil gminy"
+    },
+    "featured": {
+      "eyebrow": "Przykład: gmina wiejska",
+      "heading": "{name} — {kind}, {powiat}",
+      "why": "Dlaczego ta gmina: wśród gmin wiejskich, w których ubywa mieszkańców, ma najwyższy udział osób w wieku 80+ w Małopolsce.",
+      "residents": "Mieszkańcy",
+      "share80": "Osoby w wieku 80+ (mediana gmin: {median}%)",
+      "change": "Zmiana liczby mieszkańców w 10 lat",
+      "falling": "ludność maleje",
+      "topHeading": "Pasujące rozwiązania (pierwsze z listy w profilu gminy)",
+      "profile": "Zobacz profil gminy {name}",
+      "plan": "Zaplanuj usługę dla tej gminy"
+    },
+    "map": {
+      "heading": "Seniorzy 80+ w powiatach Małopolski",
+      "lead": "Udział osób w wieku 80 lat i więcej w ludności powiatu. Kliknij powiat, aby zobaczyć listę jego gmin. Mediana gmin Małopolski: {median}%.",
+      "label": "Udział osób w wieku 80+ w ludności powiatu (%)",
+      "labelYear": "Udział osób w wieku 80+ w ludności powiatu (%), {year}",
+      "valueLabel": "Udział 80+ (%)",
+      "highlight": "wybrany"
+    },
+    "list": {
+      "heading": "Gminy w powiatach",
+      "lead": "{gminas, plural, one {# gmina} few {# gminy} many {# gmin} other {# gminy}} w {powiats, plural, one {# powiecie} few {# powiatach} many {# powiatach} other {# powiatach}}. Rozwiń powiat, aby wybrać gminę.",
+      "count": "{count, plural, one {# gmina} few {# gminy} many {# gmin} other {# gminy}}",
+      "caption": "Gminy: {powiat}",
+      "colGmina": "Gmina",
+      "colShare80": "Udział 80+",
+      "colChange": "Zmiana w 10 lat",
+      "noComparison": "brak porównania"
+    }
+  },
+  "profile": {
+    "metaNotFound": "Nie znaleziono gminy",
+    "metaTitle": "{name} — profil gminy",
+    "metaDescription": "Gmina {name}: ludność, seniorzy i rozwiązania z Biblioteki ROPS dopasowane do jej profilu.",
+    "breadcrumb": "Dla gminy",
+    "eyebrow": "Profil gminy · {where}",
+    "lead": "Mieszka tu {count, plural, one {# osoba} few {# osoby} many {# osób} other {# osoby}}; {share65}% ma 65 lat lub więcej, a {share80}% — 80 lat lub więcej.",
+    "leadFell": "W latach {from}–{to} liczba mieszkańców spadła o {change}%.",
+    "leadGrew": "W latach {from}–{to} liczba mieszkańców wzrosła o {change}%.",
+    "plan": "Zaplanuj usługę w tej gminie",
+    "others": "Inne gminy: {powiat}",
+    "planNote": "Plan zacznie się od rozwiązania „<t>{title}</t>” — pierwszego z dopasowanych do profilu gminy. Możesz je zmienić w pierwszym kroku.",
+    "residentsHeading": "Mieszkańcy w danych GUS",
+    "fallingTitle": "Ludność gminy maleje",
+    "fallingBody": "W latach {from}–{to} liczba mieszkańców zmieniła się o {change}. Usługi trzeba planować dla starszej i bardziej rozproszonej społeczności.",
+    "statPopulation": "Liczba mieszkańców (stan na 31 grudnia)",
+    "stat65": "Osoby w wieku 65+ — {share}% mieszkańców",
+    "stat80": "Osoby w wieku 80+ — {share}% mieszkańców (mediana gmin Małopolski: {median}%)",
+    "statChangeNone": "brak",
+    "statChangeLabelNone": "Zmiana liczby mieszkańców {from}–{to}: brak porównania — gmina zmieniła granice",
+    "statChangeLabelFalling": "Zmiana liczby mieszkańców {from}–{to}: ludność maleje",
+    "statChangeLabelGrowing": "Zmiana liczby mieszkańców {from}–{to}: ludność rośnie",
+    "gusSourceShort": "GUS BDL, {year}",
+    "gusSource": "{source}, {year} — dane dla gminy {gmina}",
+    "needsHeading": "Potrzeby zgłaszane w powiecie",
+    "needsStaffNote": "Widoczne tylko dla zespołu ROPS i zalogowanej gminy.",
+    "needsIntro": "Opisy problemów z wyszukiwarki „Już Działa” i sprawy z ostatnich {days} dni z obszaru: {powiat}. Liczby mniejsze niż {k} ukrywamy, żeby nikogo nie dało się rozpoznać.",
+    "needsHidden": "Potrzeby zgłaszane przez mieszkańców widzi zespół ROPS i zalogowana gmina.",
+    "recsHeading": "Rozwiązania dopasowane do profilu gminy",
+    "why": "Dlaczego te",
+    "ruleNote": "Reguła: najpierw najlepsze rozwiązanie dla każdego powodu, potem te, które pasują do największej liczby powodów. Przy remisie wygrywają innowacje wybrane przez ROPS do upowszechniania i te z Ramowym Planem Wdrożenia.",
+    "fitsBecause": "Pasuje, bo:",
+    "ramowy": "ROPS ma Ramowy Plan Wdrożenia (Usługa Wrażliwa)",
+    "badge": "Wybrana do upowszechniania",
+    "planOne": "Zaplanuj usługę",
+    "noRecs": "Nie znaleźliśmy pasujących rozwiązań.",
+    "browseLibrary": "Przejrzyj całą Bibliotekę",
+    "librarySource": "Biblioteka Innowacji Społecznych, ROPS w Krakowie"
+  },
+  "needs": {
+    "tooFew": "W ostatnich {days} dniach w powiecie było mniej niż {k} zgłoszeń — za mało, by pokazać szczegóły bez ryzyka rozpoznania osób.",
+    "caption": "Zgłoszone potrzeby według obszarów Mapy Wyzwań — {powiat}, od {date}",
+    "colArea": "Obszar",
+    "colCount": "Zgłoszenia",
+    "lessThan": "mniej niż {k}",
+    "total": "Razem",
+    "sample": "W zestawieniu są też zgłoszenia przykładowe.",
+    "source": "Już Działa — anonimowe zgłoszenia mieszkańców"
+  },
+  "search": {
+    "form": "Profil gminy",
+    "pick": "Wybierz gminę z listy podpowiedzi.",
+    "label": "Twoja gmina",
+    "hint": "Wpisz początek nazwy i wybierz gminę z listy.",
+    "opening": "Otwieram profil…",
+    "submit": "Pokaż profil gminy"
+  },
+  "combobox": {
+    "label": "Gmina",
+    "placeholder": "Wpisz nazwę gminy, np. Gręboszów",
+    "listLabel": "{label}: podpowiedzi",
+    "noneLive": "Nie znaleziono gminy o tej nazwie.",
+    "foundLive": "Znaleziono: {count}. Użyj strzałek, aby wybrać.",
+    "none": "Nie znaleźliśmy gminy „{query}”. Sprawdź pisownię — wystarczy początek nazwy.",
+    "showing": "Pokazujemy {shown} z {count}. Wpisz więcej liter.",
+    "selected": "Wybrano: <b>{label}</b>, {powiat}",
+    "errorPrefix": "Uwaga:"
+  },
+  "map": {
+    "highlighted": "wyróżniony",
+    "value": "Liczba",
+    "unavailable": "Mapa jest chwilowo niedostępna. Wszystkie dane są w tabeli.",
+    "legend": "Legenda: {label}",
+    "noData": "brak danych",
+    "colPowiat": "Powiat",
+    "svgTitle": "Mapa: {label}",
+    "hint": "Najedź na powiat lub przejdź do niego klawiszem Tab, aby zobaczyć liczbę."
+  }
+}

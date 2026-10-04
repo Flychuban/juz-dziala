@@ -1,34 +1,32 @@
 /**
  * The Ramowy Plan Wdrożenia, built without AI — every section filled from the
  * innovation card, the gmina's GUS figures, the institution's answers and the
- * ROPS calls, with „[DO UZUPEŁNIENIA]" where only the institution knows.
+ * ROPS calls, with „[DO UZUPEŁNIENIA]" ("[TO BE COMPLETED]") where only the
+ * institution knows.
  *
  * Sections 2 (scale), 7 (budget) and 10 (funding) are ALWAYS taken from here,
  * even when the AI writes the rest: figures, money and call facts never come
  * from the model.
+ *
+ * Every word comes from messages/{pl,en}/adapt.json (`plan.*`) in the plan's
+ * language (`ctx.locale`). Card quotes are always OUR text for a sentence id:
+ * the Polish original, or in English the translated sentence, labelled so.
  */
-import { formatDatePl, pluralPl } from "~/components/kit/format";
-import { CALL_STATUS_LABEL, SECTION_LABEL, type MapaArea } from "~/lib/domain";
-import {
-  BUDGET_BOUNDS,
-  BUDGET_LABEL,
-  INSTITUTION_LABEL,
-  PLAN_DISCLAIMER,
-  STAFF_LABEL,
-  TIMEFRAME_LABEL,
-  type PlanMode,
-} from "./options";
-import {
-  int,
-  KIND_LABEL,
-  pct,
-  powiatDisplay,
-  signedPct,
-} from "./profile";
+import { formatDate } from "~/components/kit/format";
+import type { Locale } from "~/i18n/config";
+import { labelsFor, type MapaArea } from "~/lib/domain";
+import { adaptT, type AdaptT } from "./i18n";
+import { BUDGET_BOUNDS, optionLabels, type PlanSource } from "./options";
+import { int, kindLabel, pct, powiatDisplay, signedPct } from "./profile";
 import type { CardSentence, PlanCard, PlanContext } from "./types";
 
+/** The gap marker, by language. */
 export const TODO = "[DO UZUPEŁNIENIA]";
+export const TODO_EN = "[TO BE COMPLETED]";
 export const CHECK = "do weryfikacji";
+export function todoMarker(locale: Locale): string {
+  return locale === "en" ? TODO_EN : TODO;
+}
 
 export const SECTION_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
 export type SectionNumber = (typeof SECTION_NUMBERS)[number];
@@ -37,24 +35,25 @@ export const FIXED_SECTIONS: readonly SectionNumber[] = [2, 7, 10];
 /** Sections the AI writes (the template stands in when it does not). */
 export const AI_SECTIONS: readonly SectionNumber[] = [1, 3, 4, 5, 6, 8, 9];
 
-export function sectionTitle(n: SectionNumber, cardTitle: string): string {
-  const titles: Record<SectionNumber, string> = {
-    1: "Cel usługi",
-    2: "Grupa docelowa i skala",
-    3: `Opis usługi na bazie innowacji „${cardTitle}”`,
-    4: "Etapy wdrożenia i harmonogram",
-    5: "Zespół i kompetencje",
-    6: "Partnerzy",
-    7: "Budżet orientacyjny",
-    8: "Ryzyka i jak im zapobiec",
-    9: "Wskaźniki rezultatu",
-    10: "Finansowanie",
-  };
-  return titles[n];
+/** The card title in the plan's language. */
+export function cardTitle(card: PlanCard, locale: Locale): string {
+  return locale === "en" && card.en?.title ? card.en.title : card.title;
 }
 
-export function sectionHeading(n: SectionNumber, cardTitle: string): string {
-  return `## ${n}. ${sectionTitle(n, cardTitle)}`;
+export function sectionTitle(
+  n: SectionNumber,
+  title: string,
+  locale: Locale = "pl",
+): string {
+  return adaptT(locale)(`plan.titles.s${n}`, { title });
+}
+
+export function sectionHeading(
+  n: SectionNumber,
+  title: string,
+  locale: Locale = "pl",
+): string {
+  return `## ${n}. ${sectionTitle(n, title, locale)}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -69,48 +68,114 @@ export function mdText(text: string): string {
     .replace(/([\\*_`[\]|])/g, "\\$1");
 }
 
+/** A sentence as a plan quotes it: our text, its card section, translated or not. */
+export type QuotedSentence = Pick<CardSentence, "text" | "section"> & {
+  /** True when `text` is the English translation of the card sentence. */
+  translated?: boolean;
+};
+
 /**
  * A card sentence as we print it — always OUR text for the id, cited by the
  * card section it comes from. Internal sentence ids never reach the reader.
+ * In English the citation says whether the words are a translation.
  */
-export function quoteSentence(s: Pick<CardSentence, "text" | "section">): string {
-  return `„${mdText(s.text)}” *(karta, sekcja „${SECTION_LABEL[s.section]}”)*`;
+export function quoteSentence(s: QuotedSentence, locale: Locale = "pl"): string {
+  const section = labelsFor(locale).section[s.section];
+  const key =
+    locale === "en"
+      ? s.translated
+        ? "plan.quoteTranslated"
+        : "plan.quoteOriginal"
+      : "plan.quote";
+  return adaptT(locale)(key, { text: mdText(s.text), section });
 }
 
-function quoteBlock(sentences: CardSentence[]): string {
-  return sentences.map((s) => `> ${quoteSentence(s)}`).join("\n>\n");
-}
-
-function sentencesOf(
+/** Every sentence of the card in the plan's language, by id. */
+export function planSentences(
   card: PlanCard,
-  section: CardSentence["section"],
-  max: number,
-): CardSentence[] {
-  return card.sentences
-    .filter((s) => s.section === section && s.text.trim().length > 0)
-    .slice(0, max);
+  locale: Locale,
+): Map<string, QuotedSentence> {
+  return new Map(
+    card.sentences.map((s) => {
+      const en = locale === "en" ? card.en?.sentences[s.id]?.trim() : undefined;
+      return [
+        s.id,
+        en
+          ? { text: en, section: s.section, translated: true }
+          : { text: s.text, section: s.section, translated: false },
+      ];
+    }),
+  );
 }
 
-const MONEY = new Intl.NumberFormat("pl-PL", { maximumFractionDigits: 0 });
+const MONEY: Record<Locale, Intl.NumberFormat> = {
+  pl: new Intl.NumberFormat("pl-PL", { maximumFractionDigits: 0 }),
+  en: new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 }),
+};
 function roundMoney(n: number): number {
   const step = n < 10_000 ? 100 : n < 100_000 ? 500 : 1000;
   return Math.round(n / step) * step;
 }
-function amount(n: number): string {
-  return MONEY.format(roundMoney(n));
+function amount(n: number, locale: Locale): string {
+  return MONEY[locale].format(roundMoney(n));
 }
-export function zl(n: number): string {
-  return `${amount(n)} zł`;
-}
-
-function gminaPhrase(ctx: PlanContext): string {
-  const p = ctx.profile;
-  return `${p.name} (${KIND_LABEL[p.kind]}, ${powiatDisplay(p.powiatName)})`;
+/** „90 000 zł" / "PLN 90,000". */
+export function zl(n: number, locale: Locale = "pl"): string {
+  return adaptT(locale)("plan.money", { amount: amount(n, locale) });
 }
 
-function groupSizeText(n: number | null | undefined): string {
-  if (!n) return TODO;
-  return `${int(n)} ${pluralPl(n, "osoba", "osoby", "osób")}`;
+/** The context plus its translator and gap markers. */
+type Ctx = PlanContext & {
+  t: AdaptT;
+  todo: string;
+  check: string;
+  quotes: Map<string, QuotedSentence>;
+};
+
+function withT(ctx: PlanContext): Ctx {
+  const t = adaptT(ctx.locale);
+  return {
+    ...ctx,
+    t,
+    todo: t("plan.todo"),
+    check: t("plan.check"),
+    quotes: planSentences(ctx.card, ctx.locale),
+  };
+}
+
+function sentencesOf(
+  c: Ctx,
+  section: CardSentence["section"],
+  max: number,
+): QuotedSentence[] {
+  return c.card.sentences
+    .filter((s) => s.section === section && s.text.trim().length > 0)
+    .slice(0, max)
+    .map((s) => c.quotes.get(s.id)!);
+}
+
+function quoteBlock(c: Ctx, sentences: QuotedSentence[]): string {
+  return sentences.map((s) => `> ${quoteSentence(s, c.locale)}`).join("\n>\n");
+}
+
+function gminaPhrase(c: Ctx): string {
+  const p = c.profile;
+  return c.t("plan.gminaPhrase", {
+    name: p.name,
+    kind: kindLabel(p.kind, c.locale),
+    powiat: powiatDisplay(p.powiatName, c.locale),
+  });
+}
+
+function people(c: Ctx, n: number): string {
+  return c.t("plan.people", { count: n });
+}
+
+function row(...cells: string[]): string {
+  return `| ${cells.join(" | ")} |`;
+}
+function tableHead(...cells: string[]): string[] {
+  return [row(...cells), `|${cells.map(() => "---").join("|")}|`];
 }
 
 // ---------------------------------------------------------------------------
@@ -118,59 +183,85 @@ function groupSizeText(n: number | null | undefined): string {
 // ---------------------------------------------------------------------------
 
 export function planHeader(ctx: PlanContext): string {
-  const { card, inputs } = ctx;
+  const c = withT(ctx);
+  const { card, inputs, t } = c;
+  const o = optionLabels(c.locale);
+  const title = mdText(cardTitle(card, c.locale));
   const lines = [
-    `# Ramowy Plan Wdrożenia: „${mdText(card.title)}”`,
+    t("plan.header.title", { title }),
     "",
-    `**${INSTITUTION_LABEL[inputs.institution]}** · ${gminaPhrase(ctx)}`,
+    `**${o.institution[inputs.institution]}** · ${gminaPhrase(c)}`,
     "",
-    `> **${PLAN_DISCLAIMER}.**`,
+    `> **${t("disclaimer")}.**`,
     "",
   ];
   if (ctx.ramowyPlan) {
-    lines.push(
-      `> ROPS ma już Ramowy Plan Wdrożenia tej innowacji (nabór „Usługa Wrażliwa”)${ctx.ramowyPlan.sourceUrl ? ` — [ogłoszenie naboru](${ctx.ramowyPlan.sourceUrl})` : ""}. Porównaj ten projekt z planem ROPS.`,
-      "",
-    );
+    const link = ctx.ramowyPlan.sourceUrl
+      ? t("plan.header.callLink", { url: ctx.ramowyPlan.sourceUrl })
+      : "";
+    lines.push(`> ${t("plan.header.ramowy", { link })}`, "");
   }
   lines.push(
-    "| Założenie | Wartość |",
-    "|---|---|",
-    `| Innowacja | „${mdText(card.title)}” — Biblioteka Innowacji Społecznych ROPS w Krakowie |`,
-    `| Instytucja | ${INSTITUTION_LABEL[inputs.institution]} |`,
-    `| Gmina | ${gminaPhrase(ctx)} |`,
-    `| Zespół | ${STAFF_LABEL[inputs.staff]} |`,
-    `| Budżet | ${BUDGET_LABEL[inputs.budget]} (${CHECK}) |`,
-    `| Czas realizacji | ${TIMEFRAME_LABEL[inputs.timeframe]} |`,
-    `| Planowana liczba odbiorców | ${inputs.groupSize ? groupSizeText(inputs.groupSize) : "nie podano"} |`,
+    ...tableHead(t("plan.header.colAssumption"), t("plan.header.colValue")),
+    row(t("plan.header.innovation"), t("plan.header.innovationValue", { title })),
+    row(t("plan.header.institution"), o.institution[inputs.institution]),
+    row(t("plan.header.gmina"), gminaPhrase(c)),
+    row(t("plan.header.staff"), o.staff[inputs.staff]),
+    row(t("plan.header.budget"), `${o.budget[inputs.budget]} (${c.check})`),
+    row(t("plan.header.timeframe"), o.timeframe[inputs.timeframe]),
+    row(
+      t("plan.header.groupSize"),
+      inputs.groupSize ? people(c, inputs.groupSize) : t("plan.notGiven"),
+    ),
     "",
   );
   return lines.join("\n");
 }
 
-export function planFooter(
-  ctx: PlanContext,
-  mode: PlanMode,
-  opts: { fallbackUsed?: boolean } = {},
-): string {
-  const { card, gus } = ctx;
-  const calls = ctx.funding.filter((c) => c.sourceUrl);
+/** Sources and „who prepared this" — the source is known only at the end. */
+export function planFooter(ctx: PlanContext, source: PlanSource): string {
+  const c = withT(ctx);
+  const { card, gus, t } = c;
+  const calls = ctx.funding.filter((f) => f.sourceUrl);
+  const how =
+    source === "ai"
+      ? t("plan.footer.howAi")
+      : source === "mixed"
+        ? t("plan.footer.howMixed")
+        : t("plan.footer.howTemplate");
+  const cardKey =
+    c.locale === "en" && card.en ? "plan.footer.cardTranslated" : "plan.footer.card";
   const lines = [
     "",
     "---",
     "",
-    "## Źródła",
+    `## ${t("plan.footer.sources")}`,
     "",
-    `- Karta innowacji „${mdText(card.title)}”: Biblioteka Innowacji Społecznych, ROPS w Krakowie — ${card.sourceUrl} (stan na ${formatDatePl(card.capturedAt)})`,
-    `- Ludność gminy: ${gus.name}, ${gus.year} — ${gus.url} (pobrano ${formatDatePl(gus.capturedAt)})`,
+    `- ${t(cardKey, {
+      title: mdText(cardTitle(card, c.locale)),
+      url: card.sourceUrl,
+      date: formatDate(card.capturedAt, c.locale),
+    })}`,
+    `- ${t("plan.footer.gus", {
+      name: gus.name,
+      year: String(gus.year),
+      url: gus.url,
+      date: formatDate(gus.capturedAt, c.locale),
+    })}`,
     ...calls.map(
-      (c) =>
-        `- Nabór „${mdText(shortCallName(c.name))}”: ogłoszenie ROPS w Krakowie — ${c.sourceUrl}`,
+      (f) =>
+        `- ${t("plan.footer.call", {
+          name: mdText(shortCallName(f.name, c.locale)),
+          url: f.sourceUrl!,
+        })}`,
     ),
     "",
-    `Przygotowano ${formatDatePl(ctx.generatedAt)} w serwisie Już Działa — ${mode === "ai" ? "z pomocą Asystenta AI; liczby, budżet i nabory wstawił system z danych źródłowych" : "z szablonu, bez udziału AI"}.${opts.fallbackUsed ? " Asystent AI nie przygotował wszystkich części — brakujące sekcje uzupełniono z szablonu." : ""}`,
+    t("plan.footer.prepared", {
+      date: formatDate(ctx.generatedAt, c.locale),
+      how,
+    }),
     "",
-    `**${PLAN_DISCLAIMER}.**`,
+    `**${t("disclaimer")}.**`,
     "",
   ];
   return lines.join("\n");
@@ -179,391 +270,486 @@ export function planFooter(
 /**
  * „Usługa Wrażliwa – upowszechnianie… (II nabór)" out of the long official
  * call name: the quoted project name, plus the call's ordinal when it has one.
+ * The project name is a proper name and stays Polish in both languages.
  */
-export function shortCallName(name: string): string {
+export function shortCallName(name: string, locale: Locale = "pl"): string {
   const m = /[„"]([^”"]+)[”"]/.exec(name);
   const short = m?.[1]?.trim() ?? name;
   const ordinal = /^([IVX]+)\s+nabór/i.exec(name.trim())?.[1];
-  return ordinal ? `${short} (${ordinal} nabór)` : short;
+  return ordinal
+    ? adaptT(locale)("plan.callOrdinal", { name: short, ordinal })
+    : short;
 }
 
 // ---------------------------------------------------------------------------
 // Sections
 // ---------------------------------------------------------------------------
 
-function section1(ctx: PlanContext): string {
-  const { card, inputs, profile } = ctx;
-  const problems = sentencesOf(card, "problems", 2);
+function section1(c: Ctx): string {
+  const { card, inputs, profile, t } = c;
+  const o = optionLabels(c.locale);
+  const problems = sentencesOf(c, "problems", 2);
   const out = [
-    `Celem usługi jest uruchomienie w gminie ${profile.name} usługi opartej na innowacji „${mdText(card.title)}” z Biblioteki Innowacji Społecznych ROPS w Krakowie. Usługę prowadzi: ${INSTITUTION_LABEL[inputs.institution]}.`,
+    t("plan.s1.intro", {
+      gmina: profile.name,
+      title: mdText(cardTitle(card, c.locale)),
+      institution: o.institution[inputs.institution],
+    }),
     "",
   ];
   if (problems.length) {
-    out.push("Problem, na który odpowiada innowacja (z karty):", "", quoteBlock(problems), "");
+    out.push(t("plan.s1.problems"), "", quoteBlock(c, problems), "");
   }
   if (inputs.needs) {
-    out.push(
-      "Potrzeby opisane przez instytucję:",
-      "",
-      `> ${mdText(inputs.needs)}`,
-      "",
-    );
+    out.push(t("plan.s1.needs"), "", `> ${mdText(inputs.needs)}`, "");
   }
   out.push(
-    `Cel w liczbach: ${TODO} — komu i w jakim czasie usługa ma pomóc${inputs.groupSize ? ` (instytucja planuje objąć usługą ${groupSizeText(inputs.groupSize)})` : ""}.`,
+    inputs.groupSize
+      ? t("plan.s1.goalPlanned", {
+          todo: c.todo,
+          people: people(c, inputs.groupSize),
+        })
+      : t("plan.s1.goal", { todo: c.todo }),
   );
   return out.join("\n");
 }
 
 /** Section 2 — computed on the server from GUS, never by the model. */
-export function section2(ctx: PlanContext): string {
-  const { card, profile: p, gus, inputs } = ctx;
-  const target = sentencesOf(card, "targetGroup", 2);
+function section2Of(c: Ctx): string {
+  const { card, profile: p, gus, inputs, t, locale } = c;
+  const target = sentencesOf(c, "targetGroup", 2);
   const out: string[] = [];
   if (target.length) {
-    out.push("Grupa docelowa według karty innowacji:", "", quoteBlock(target), "");
+    out.push(t("plan.s2.target"), "", quoteBlock(c, target), "");
   }
-  out.push(
-    `Mieszkańcy gminy ${p.name} (${KIND_LABEL[p.kind]}, ${powiatDisplay(p.powiatName)}), stan na 31 grudnia ${p.year}:`,
-    "",
-    "| Wskaźnik | Wartość |",
-    "|---|---|",
-    `| Liczba mieszkańców | ${int(p.population)} |`,
-    `| Osoby w wieku 65 lat i więcej | ${int(p.pop65)} (${pct(p.share65)}% mieszkańców) |`,
-    `| Osoby w wieku 80 lat i więcej | ${int(p.pop80)} (${pct(p.share80)}% mieszkańców; mediana gmin Małopolski: ${pct(p.medianShare80)}%) |`,
+  const change =
     p.popChange10y === null
-      ? `| Zmiana liczby mieszkańców ${gus.baseYear}–${p.year} | brak porównania — gmina zmieniła granice po ${gus.baseYear} r. |`
-      : `| Zmiana liczby mieszkańców ${gus.baseYear}–${p.year} | ${signedPct(p.popChange10y)}${p.popChange10y < 0 ? " — ludność maleje" : ""} |`,
+      ? t("plan.s2.changeNone", { from: String(gus.baseYear) })
+      : p.popChange10y < 0
+        ? t("plan.s2.changeFalling", { change: signedPct(p.popChange10y, locale) })
+        : signedPct(p.popChange10y, locale);
+  out.push(
+    t("plan.s2.residents", {
+      name: p.name,
+      kind: kindLabel(p.kind, locale),
+      powiat: powiatDisplay(p.powiatName, locale),
+      year: String(p.year),
+    }),
     "",
-    `Źródło: ${gus.name}, ${p.year} — [zapytanie do BDL dla tej gminy](${gus.url}), pobrano ${formatDatePl(gus.capturedAt)}.`,
+    ...tableHead(t("plan.s2.colIndicator"), t("plan.s2.colValue")),
+    row(t("plan.s2.population"), int(p.population, locale)),
+    row(
+      t("plan.s2.pop65"),
+      t("plan.s2.pop65Value", {
+        n: int(p.pop65, locale),
+        share: pct(p.share65, locale),
+      }),
+    ),
+    row(
+      t("plan.s2.pop80"),
+      t("plan.s2.pop80Value", {
+        n: int(p.pop80, locale),
+        share: pct(p.share80, locale),
+        median: pct(p.medianShare80, locale),
+      }),
+    ),
+    row(t("plan.s2.change", { from: String(gus.baseYear), to: String(p.year) }), change),
+    "",
+    t("plan.s2.source", {
+      name: gus.name,
+      year: String(p.year),
+      url: gus.url,
+      date: formatDate(gus.capturedAt, locale),
+    }),
     "",
   );
   const seniorsCard = card.mapaAreas.includes("seniors");
   if (inputs.groupSize) {
     out.push(
-      `Skala usługi: instytucja planuje objąć usługą ${groupSizeText(inputs.groupSize)}.${
-        seniorsCard && p.pop65 > 0
-          ? ` To ${pct((inputs.groupSize / p.pop65) * 100)}% mieszkańców gminy w wieku 65+.`
-          : ""
-      }`,
+      seniorsCard && p.pop65 > 0
+        ? t("plan.s2.scaleSeniors", {
+            people: people(c, inputs.groupSize),
+            share: pct((inputs.groupSize / p.pop65) * 100, locale),
+          })
+        : t("plan.s2.scale", { people: people(c, inputs.groupSize) }),
     );
   } else {
-    out.push(
-      `Skala usługi: ${TODO} — ile osób usługa obejmie w pierwszym roku.`,
-    );
+    out.push(t("plan.s2.scaleTodo", { todo: c.todo }));
   }
   if (!seniorsCard) {
-    out.push(
-      "",
-      `Liczba osób z grupy docelowej w gminie: ${TODO} — tabela GUS powyżej opisuje wszystkich mieszkańców; dane o tej grupie ma zwykle ośrodek pomocy społecznej lub lokalna diagnoza.`,
-    );
+    out.push("", t("plan.s2.targetTodo", { todo: c.todo }));
   }
   return out.join("\n");
 }
+export function section2(ctx: PlanContext): string {
+  return section2Of(withT(ctx));
+}
 
-function section3(ctx: PlanContext): string {
-  const { card, profile } = ctx;
+function section3(c: Ctx): string {
+  const { card, profile, t } = c;
   const out: string[] = [];
-  const solution = sentencesOf(card, "solution", 4);
-  const who = sentencesOf(card, "whoCanUse", 2);
-  const works = sentencesOf(card, "doesItWork", 2);
+  const solution = sentencesOf(c, "solution", 4);
+  const who = sentencesOf(c, "whoCanUse", 2);
+  const works = sentencesOf(c, "doesItWork", 2);
   if (solution.length)
-    out.push("Na czym polega rozwiązanie (z karty):", "", quoteBlock(solution), "");
-  if (who.length)
-    out.push("Kto może skorzystać z innowacji:", "", quoteBlock(who), "");
-  if (works.length)
-    out.push("Czy to działa — wyniki opisane w karcie:", "", quoteBlock(works), "");
-  out.push(
-    `Jak dostosować usługę do warunków Twojej instytucji w gminie ${profile.name}: ${TODO} — miejsce, dni i godziny, sposób dotarcia do odbiorców, co zmienić względem opisu w karcie.`,
-  );
+    out.push(t("plan.s3.solution"), "", quoteBlock(c, solution), "");
+  if (who.length) out.push(t("plan.s3.who"), "", quoteBlock(c, who), "");
+  if (works.length) out.push(t("plan.s3.works"), "", quoteBlock(c, works), "");
+  out.push(t("plan.s3.adapt", { gmina: profile.name, todo: c.todo }));
   const materials = [
-    card.folderUrl ? `[folder (PDF)](${card.folderUrl})` : null,
-    card.materialsUrl ? `[materiały do pobrania](${card.materialsUrl})` : null,
-    `[karta w Bibliotece](${card.sourceUrl})`,
+    card.folderUrl ? t("plan.s3.folder", { url: card.folderUrl }) : null,
+    card.materialsUrl ? t("plan.s3.materials", { url: card.materialsUrl }) : null,
+    t("plan.s3.card", { url: card.sourceUrl }),
   ].filter(Boolean);
-  out.push("", `Materiały innowacji: ${materials.join(", ")}.`);
+  out.push("", t("plan.s3.materialsLine", { list: materials.join(", ") }));
   out.push(
     "",
-    `Licencja: ${card.licence ? mdText(card.licence) : `nie podano w karcie — ${TODO} (uzgodnić z autorami)`}.`,
+    card.licence
+      ? t("plan.s3.licence", { licence: mdText(card.licence) })
+      : t("plan.s3.licenceNone", { todo: c.todo }),
   );
   return out.join("\n");
 }
 
-function section4(ctx: PlanContext): string {
-  const { inputs, card, profile } = ctx;
-  const head = ["| Miesiąc | Etap | Co trzeba zrobić |", "|---|---|---|"];
-  const licence = card.licence ? ` (licencja: ${mdText(card.licence)})` : "";
+function section4(c: Ctx): string {
+  const { inputs, card, profile, t } = c;
+  const o = optionLabels(c.locale);
+  const head = tableHead(
+    t("plan.s4.colMonth"),
+    t("plan.s4.colStage"),
+    t("plan.s4.colTodo"),
+  );
+  const licence = card.licence
+    ? ` ${t("plan.s4.licence", { licence: mdText(card.licence) })}`
+    : "";
+  const staff = o.staff[inputs.staff];
+  const gmina = profile.name;
   let rows: string[];
   if (inputs.timeframe === "6") {
     rows = [
-      `| 1 | Przygotowanie i zespół | Kontakt z autorami innowacji i zasady korzystania z materiałów${licence}; koordynator; szkolenie zespołu (${STAFF_LABEL[inputs.staff]}). |`,
-      `| 2 | Rekrutacja odbiorców | Informacja o usłudze w gminie ${profile.name}; zgłoszenia i kwalifikacja. |`,
-      "| 3–5 | Realizacja | Usługa według sekcji 3; co miesiąc spotkanie zespołu i zebranie wskaźników z sekcji 9. |",
-      "| 6 | Ewaluacja i podsumowanie | Ankiety, porównanie z wartościami docelowymi, decyzja o kontynuacji. |",
+      row("1", t("plan.s4.prepTeam"), t("plan.s4.prepTeamTodo", { licence, staff })),
+      row("2", t("plan.s4.recruit"), t("plan.s4.recruitShortTodo", { gmina })),
+      row("3–5", t("plan.s4.deliver"), t("plan.s4.deliverTodo")),
+      row("6", t("plan.s4.evalSummary"), t("plan.s4.evalSummaryTodo")),
     ];
   } else {
     rows = [
-      `| 1 | Przygotowanie | Kontakt z autorami innowacji i zasady korzystania z materiałów${licence}; wyznaczenie koordynatora; uzgodnienia z partnerami. |`,
-      `| 2 | Zespół | Skompletowanie zespołu (${STAFF_LABEL[inputs.staff]}); szkolenie z metody opisanej w karcie. |`,
-      `| 3 | Rekrutacja odbiorców | Informacja o usłudze w gminie ${profile.name}; zgłoszenia i kwalifikacja odbiorców. |`,
-      "| 4–10 | Realizacja | Usługa według sekcji 3; co miesiąc spotkanie zespołu i zebranie wskaźników z sekcji 9. |",
-      "| 11 | Ewaluacja | Ankiety odbiorców i zespołu; porównanie wyników z wartościami docelowymi. |",
-      "| 12 | Podsumowanie | Raport z pilotażu; decyzja o kontynuacji i źródle finansowania. |",
+      row("1", t("plan.s4.prep"), t("plan.s4.prepTodo", { licence })),
+      row("2", t("plan.s4.team"), t("plan.s4.teamTodo", { staff })),
+      row("3", t("plan.s4.recruit"), t("plan.s4.recruitTodo", { gmina })),
+      row("4–10", t("plan.s4.deliver"), t("plan.s4.deliverTodo")),
+      row("11", t("plan.s4.evaluation"), t("plan.s4.evaluationTodo")),
+      row("12", t("plan.s4.summary"), t("plan.s4.summaryTodo")),
     ];
     if (inputs.timeframe === "24") {
-      rows.push(`| 13 i dalej | Utrwalenie | Kontynuacja usługi — ${TODO}. |`);
+      rows.push(
+        row(
+          t("plan.s4.month13"),
+          t("plan.s4.continue"),
+          t("plan.s4.continueTodo", { todo: c.todo }),
+        ),
+      );
     }
   }
-  return [
-    `Harmonogram to propozycja do dopasowania. Data rozpoczęcia: ${TODO}.`,
-    "",
-    ...head,
-    ...rows,
-  ].join("\n");
+  return [t("plan.s4.intro", { todo: c.todo }), "", ...head, ...rows].join("\n");
 }
 
-function section5(ctx: PlanContext): string {
-  const { inputs } = ctx;
+function section5(c: Ctx): string {
+  const { inputs, t } = c;
+  const o = optionLabels(c.locale);
   const out = [
-    `Zespół, którym dysponuje instytucja: ${STAFF_LABEL[inputs.staff]} (deklaracja instytucji).`,
+    t("plan.s5.team", { staff: o.staff[inputs.staff] }),
     "",
-    "| Rola | Zadania | Kompetencje |",
-    "|---|---|---|",
-    "| Koordynator usługi | Harmonogram, kontakt z autorami innowacji i partnerami, sprawozdania | Organizacja pracy, znajomość lokalnych instytucji |",
-    `| Osoby prowadzące usługę | Praca z odbiorcami według metody z karty | ${TODO} — kwalifikacje wymagane przez metodę |`,
-    "| Wsparcie merytoryczne (autorzy innowacji) | Szkolenie zespołu, konsultacje w trakcie pilotażu | Do uzgodnienia z autorami |",
+    ...tableHead(t("plan.s5.colRole"), t("plan.s5.colTasks"), t("plan.s5.colSkills")),
+    row(
+      t("plan.s5.coordinator"),
+      t("plan.s5.coordinatorTasks"),
+      t("plan.s5.coordinatorSkills"),
+    ),
+    row(
+      t("plan.s5.leaders"),
+      t("plan.s5.leadersTasks"),
+      t("plan.s5.leadersSkills", { todo: c.todo }),
+    ),
+    row(t("plan.s5.authors"), t("plan.s5.authorsTasks"), t("plan.s5.authorsSkills")),
   ];
   if (inputs.staff === "1") {
-    out.push(
-      "",
-      "Przy jednej osobie w zespole warto od początku zaplanować zastępstwo i partnera z sekcji 6.",
-    );
+    out.push("", t("plan.s5.onePerson"));
   }
   return out.join("\n");
 }
 
-const AREA_PARTNER_ROLES: Record<MapaArea, string> = {
-  seniors:
-    "Kluby seniora, uniwersytet trzeciego wieku, gminna rada seniorów — jeśli działają w gminie",
-  family:
-    "Szkoły i przedszkola w gminie, poradnia psychologiczno-pedagogiczna",
-  disability:
-    "Organizacje osób z niepełnosprawnościami, warsztaty terapii zajęciowej — jeśli działają w okolicy",
-  health: "Podstawowa opieka zdrowotna w gminie",
-  mental_health:
-    "Podstawowa opieka zdrowotna, centrum zdrowia psychicznego obejmujące gminę — jeśli jest",
-  homelessness: "Placówki dla osób w kryzysie bezdomności, streetworkerzy",
-  poverty: "Powiatowy urząd pracy, podmioty ekonomii społecznej",
-  migrants: "Organizacje wspierające cudzoziemców, szkoły",
-};
+const PARTNER_AREAS: readonly MapaArea[] = [
+  "seniors",
+  "family",
+  "disability",
+  "health",
+  "mental_health",
+  "homelessness",
+  "poverty",
+  "migrants",
+];
 
-function section6(ctx: PlanContext): string {
-  const { card, inputs, profile } = ctx;
-  const authors = card.sections.authors?.trim();
+function section6(c: Ctx): string {
+  const { card, inputs, profile, t, locale } = c;
+  const authors = (
+    (locale === "en" ? card.en?.sections.authors : null) ?? card.sections.authors
+  )?.trim();
   const rows = [
-    "| Partner | Rola w usłudze |",
-    "|---|---|",
-    `| Autorzy innowacji: ${authors ? mdText(authors) : `${TODO} (karta nie podaje autorów)`} | Przekazanie wiedzy i materiałów, szkolenie zespołu, konsultacje — do uzgodnienia |`,
-    "| Regionalny Ośrodek Polityki Społecznej w Krakowie (Małopolski Hub Innowacji Społecznych) | Wsparcie we wdrożeniu, informacja o naborach |",
+    ...tableHead(t("plan.s6.colPartner"), t("plan.s6.colRole")),
+    row(
+      t("plan.s6.authors", {
+        authors: authors
+          ? mdText(authors)
+          : t("plan.s6.authorsNone", { todo: c.todo }),
+      }),
+      t("plan.s6.authorsRole"),
+    ),
+    row(t("plan.s6.rops"), t("plan.s6.ropsRole")),
   ];
   if (inputs.institution !== "ops" && inputs.institution !== "cus") {
-    rows.push(
-      `| Ośrodek pomocy społecznej lub centrum usług społecznych w gminie ${profile.name} | Dotarcie do odbiorców, kierowanie osób do usługi |`,
-    );
+    rows.push(row(t("plan.s6.ops", { gmina: profile.name }), t("plan.s6.opsRole")));
   }
   if (
     inputs.institution !== "pcpr" &&
     (card.mapaAreas.includes("family") || card.mapaAreas.includes("disability"))
   ) {
     rows.push(
-      `| Powiatowe centrum pomocy rodzinie (${powiatDisplay(profile.powiatName)}) lub jednostka pełniąca jego zadania | Wsparcie rodzin i osób z niepełnosprawnościami w powiecie |`,
+      row(
+        t("plan.s6.pcpr", { powiat: powiatDisplay(profile.powiatName, locale) }),
+        t("plan.s6.pcprRole"),
+      ),
     );
   }
   for (const a of card.mapaAreas) {
-    rows.push(`| ${AREA_PARTNER_ROLES[a]} | Informacja o usłudze, wspólna rekrutacja odbiorców |`);
+    if (!PARTNER_AREAS.includes(a)) continue;
+    rows.push(row(t(`plan.s6.area.${a}`), t("plan.s6.areaRole")));
   }
-  return [
-    ...rows,
-    "",
-    `Nazwy lokalnych partnerów i zakres współpracy: ${TODO}.`,
-  ].join("\n");
+  return [...rows, "", t("plan.s6.localTodo", { todo: c.todo })].join("\n");
 }
 
-const BUDGET_SHARES: { label: string; min: number; max: number }[] = [
-  { label: "Wynagrodzenia zespołu realizującego usługę", min: 45, max: 60 },
-  {
-    label: "Szkolenie zespołu, superwizja, konsultacje z autorami innowacji",
-    min: 5,
-    max: 10,
-  },
-  { label: "Materiały, sprzęt i wyposażenie potrzebne do usługi", min: 10, max: 20 },
-  { label: "Dojazdy odbiorców lub zespołu", min: 3, max: 10 },
-  { label: "Informacja o usłudze i rekrutacja odbiorców", min: 2, max: 5 },
-  { label: "Monitoring i ewaluacja", min: 3, max: 5 },
-];
+const BUDGET_SHARES = [
+  { key: "staff", min: 45, max: 60 },
+  { key: "training", min: 5, max: 10 },
+  { key: "materials", min: 10, max: 20 },
+  { key: "travel", min: 3, max: 10 },
+  { key: "info", min: 2, max: 5 },
+  { key: "monitoring", min: 3, max: 5 },
+] as const;
 
 /** Section 7 — ranges only, each „do weryfikacji", from the chosen range. */
-export function section7(ctx: PlanContext): string {
-  const { inputs, profile } = ctx;
+function section7Of(c: Ctx): string {
+  const { inputs, profile, t, locale } = c;
+  const o = optionLabels(locale);
   const b = BUDGET_BOUNDS[inputs.budget];
   const rural = profile.kind !== "miejska";
   const range = (minShare: number, maxShare: number) => {
-    if (b.max === null) return `od ${zl((b.min * minShare) / 100)}`;
-    if (b.min === 0) return `do ${zl((b.max * maxShare) / 100)}`;
-    return `${amount((b.min * minShare) / 100)}–${zl((b.max * maxShare) / 100)}`;
+    if (b.max === null)
+      return t("plan.s7.from", { money: zl((b.min * minShare) / 100, locale) });
+    if (b.min === 0)
+      return t("plan.s7.upTo", { money: zl((b.max * maxShare) / 100, locale) });
+    return t("plan.s7.between", {
+      from: amount((b.min * minShare) / 100, locale),
+      to: amount((b.max * maxShare) / 100, locale),
+    });
   };
   const rows = BUDGET_SHARES.map((s) => {
-    const shares =
-      rural && s.label.startsWith("Dojazdy") ? { min: 5, max: 15 } : s;
-    return `| ${s.label} | ${shares.min}–${shares.max}% | ${range(shares.min, shares.max)} | ${CHECK} |`;
+    const shares = rural && s.key === "travel" ? { min: 5, max: 15 } : s;
+    return row(
+      t(`plan.s7.cat.${s.key}`),
+      `${shares.min}–${shares.max}%`,
+      range(shares.min, shares.max),
+      c.check,
+    );
   });
-  const uw = ctx.funding.find(
-    (c) => c.kind === "usluga-wrazliwa" && c.amountMax,
-  );
+  const uw = c.funding.find((f) => f.kind === "usluga-wrazliwa" && f.amountMax);
   const out = [
-    `Budżet wskazany przez instytucję: ${BUDGET_LABEL[inputs.budget]} (${CHECK}).`,
+    t("plan.s7.chosen", { budget: o.budget[inputs.budget], check: c.check }),
     "",
-    "| Kategoria kosztów | Udział w budżecie | Zakres orientacyjny | Status |",
-    "|---|---|---|---|",
+    ...tableHead(
+      t("plan.s7.colCategory"),
+      t("plan.s7.colShare"),
+      t("plan.s7.colRange"),
+      t("plan.s7.colStatus"),
+    ),
     ...rows,
-    `| Koszty pośrednie i zarządzanie | według regulaminu naboru | ${TODO} | ${CHECK} |`,
+    row(t("plan.s7.cat.indirect"), t("plan.s7.indirectShare"), c.todo, c.check),
     "",
-    "Podział na kategorie to robocze założenie generatora planu, a nie norma ROPS ani wycena. Żadna kwota nie jest ceną rynkową — każdą pozycję trzeba policzyć z lokalnych stawek i regulaminu naboru.",
+    t("plan.s7.note"),
   ];
   if (rural) {
-    out.push(
-      "",
-      "Dla gminy wiejskiej lub miejsko-wiejskiej przyjęto wyższy udział dojazdów (5–15%).",
-    );
+    out.push("", t("plan.s7.rural"));
   }
   if (uw?.amountMax && (b.max === null || b.max > uw.amountMax)) {
-    out.push(
-      "",
-      `Grant w naborze „Usługa Wrażliwa” wynosił do ${zl(uw.amountMax)} — budżet powyżej tej kwoty wymaga dodatkowego źródła finansowania.`,
-    );
+    out.push("", t("plan.s7.uwLimit", { money: zl(uw.amountMax, locale) }));
   }
   return out.join("\n");
 }
+export function section7(ctx: PlanContext): string {
+  return section7Of(withT(ctx));
+}
 
-function section8(ctx: PlanContext): string {
-  const { profile, inputs } = ctx;
+function section8(c: Ctx): string {
+  const { profile, inputs, t, locale } = c;
   const rows = [
-    "| Ryzyko | Jak mu zapobiec |",
-    "|---|---|",
-    "| Mało zgłoszeń odbiorców | Rekrutacja przez instytucje, które już znają odbiorców; informacja prostym językiem; zaproszenie osobiste |",
-    "| Metoda z karty nie pasuje do lokalnych warunków | Krótki test na małej grupie na początku realizacji i korekta razem z autorami innowacji |",
-    "| Odejście osoby z zespołu | Co najmniej dwie osoby przeszkolone w metodzie; spisane procedury |",
-    "| Brak pieniędzy na kontynuację po pilotażu | Rozmowa o finansowaniu od połowy realizacji; wyniki z sekcji 9 jako argument dla gminy |",
-    "| Ochrona danych odbiorców | Minimalny zakres danych, zgody, bezpieczne przechowywanie dokumentów |",
+    ...tableHead(t("plan.s8.colRisk"), t("plan.s8.colPrevent")),
+    row(t("plan.s8.lowUptake"), t("plan.s8.lowUptakePrevent")),
+    row(t("plan.s8.notFit"), t("plan.s8.notFitPrevent")),
+    row(t("plan.s8.staffLeaves"), t("plan.s8.staffLeavesPrevent")),
+    row(t("plan.s8.noMoney"), t("plan.s8.noMoneyPrevent")),
+    row(t("plan.s8.data"), t("plan.s8.dataPrevent")),
   ];
   if (profile.depopulating && profile.popChange10y !== null) {
     rows.push(
-      `| Odbiorcy rozproszeni w gminie, w której ubywa mieszkańców (${signedPct(profile.popChange10y)} w 10 lat) | Usługa w miejscu zamieszkania lub zorganizowany dojazd; łączenie wizyt w jednej okolicy |`,
+      row(
+        t("plan.s8.dispersed", { change: signedPct(profile.popChange10y, locale) }),
+        t("plan.s8.dispersedPrevent"),
+      ),
     );
   }
   if (profile.kind !== "miejska") {
-    rows.push(
-      "| Trudny dojazd do miejsca usługi | Transport dla odbiorców lub usługa mobilna; terminy dopasowane do komunikacji publicznej |",
-    );
+    rows.push(row(t("plan.s8.travel"), t("plan.s8.travelPrevent")));
   }
   if (inputs.staff === "1") {
-    rows.push(
-      "| Jedna osoba w zespole | Partner z sekcji 6 i zastępstwo zaplanowane od początku |",
-    );
+    rows.push(row(t("plan.s8.onePerson"), t("plan.s8.onePersonPrevent")));
   }
   return rows.join("\n");
 }
 
-function section9(ctx: PlanContext): string {
-  const { inputs } = ctx;
+function section9(c: Ctx): string {
+  const { inputs, t } = c;
   return [
-    "| Wskaźnik | Wartość docelowa | Jak mierzyć |",
-    "|---|---|---|",
-    `| Liczba osób objętych usługą | ${inputs.groupSize ? groupSizeText(inputs.groupSize) : TODO} | Rejestr uczestników |`,
-    `| Odsetek odbiorców, którzy ocenili usługę jako pomocną | ${TODO} | Krótka ankieta po zakończeniu udziału |`,
-    `| Liczba osób z zespołu przeszkolonych w metodzie | ${TODO} | Lista szkoleń |`,
-    `| Rezultat właściwy dla tej innowacji (zob. „Czy to działa?” w karcie) | ${TODO} | ${TODO} |`,
-    "| Decyzja o kontynuacji usługi po pilotażu | Tak / nie | Decyzja instytucji lub gminy |",
+    ...tableHead(
+      t("plan.s9.colIndicator"),
+      t("plan.s9.colTarget"),
+      t("plan.s9.colMeasure"),
+    ),
+    row(
+      t("plan.s9.served"),
+      inputs.groupSize ? people(c, inputs.groupSize) : c.todo,
+      t("plan.s9.servedMeasure"),
+    ),
+    row(t("plan.s9.rated"), c.todo, t("plan.s9.ratedMeasure")),
+    row(t("plan.s9.trained"), c.todo, t("plan.s9.trainedMeasure")),
+    row(t("plan.s9.specific"), c.todo, c.todo),
+    row(
+      t("plan.s9.decision"),
+      t("plan.s9.decisionTarget"),
+      t("plan.s9.decisionMeasure"),
+    ),
   ].join("\n");
 }
 
-function callWindow(from: string | null, to: string | null): string {
-  if (!from && !to) return "nie podano";
-  return `${from ? formatDatePl(from) : "?"} – ${to ? formatDatePl(to) : "?"}`;
+function callWindow(c: Ctx, from: string | null, to: string | null): string {
+  if (!from && !to) return c.t("plan.notGiven");
+  return c.t("plan.s10.windowRange", {
+    from: from ? formatDate(from, c.locale) : "?",
+    to: to ? formatDate(to, c.locale) : "?",
+  });
 }
 
 /** Section 10 — the calls exactly as stored in the ROPS calls table. */
-export function section10(ctx: PlanContext): string {
-  const asOf = formatDatePl(ctx.generatedAt);
-  const out = [`Nabory ROPS, stan na ${asOf}:`, ""];
-  if (ctx.funding.length === 0) {
-    out.push(`Brak naborów w bazie. Źródło finansowania: ${TODO}.`);
+function section10Of(c: Ctx): string {
+  const { t, locale } = c;
+  const status = labelsFor(locale).callStatus;
+  const out = [
+    t("plan.s10.asOf", { date: formatDate(c.generatedAt, locale) }),
+    "",
+  ];
+  if (c.funding.length === 0) {
+    out.push(t("plan.s10.none", { todo: c.todo }));
     return out.join("\n");
   }
-  for (const c of ctx.funding) {
-    out.push(`### ${mdText(shortCallName(c.name))}`, "");
-    if (c.program) out.push(`- Program: ${mdText(c.program)}`);
-    if (c.operator) out.push(`- Operator: ${mdText(c.operator)}`);
+  for (const f of c.funding) {
+    const en = locale === "en" ? f.en : null;
+    const program = en?.program ?? f.program;
+    const operator = en?.operator ?? f.operator;
+    const purpose = en?.purpose ?? f.purpose;
+    const own = en?.ownContribution ?? f.ownContribution;
+    const titles = en?.innovationTitles.length
+      ? en.innovationTitles
+      : f.innovationTitles;
+    out.push(`### ${mdText(shortCallName(f.name, locale))}`, "");
+    if (program) out.push(`- ${t("plan.s10.program", { value: mdText(program) })}`);
+    if (operator)
+      out.push(`- ${t("plan.s10.operator", { value: mdText(operator) })}`);
     out.push(
-      `- Kwota grantu: ${c.amountMax ? `do ${zl(c.amountMax)}` : "nie podano"}`,
-      `- Termin naboru: ${callWindow(c.windowFrom, c.windowTo)}`,
-      `- Status: **${CALL_STATUS_LABEL[c.status]}**`,
+      `- ${t("plan.s10.amount", {
+        value: f.amountMax
+          ? t("plan.s7.upTo", { money: zl(f.amountMax, locale) })
+          : t("plan.notGiven"),
+      })}`,
+      `- ${t("plan.s10.window", { value: callWindow(c, f.windowFrom, f.windowTo) })}`,
+      `- ${t("plan.s10.status", { value: status[f.status] })}`,
     );
-    if (c.purpose) out.push(`- Cel naboru (z ogłoszenia): „${mdText(c.purpose)}”`);
-    if (c.ownContribution)
-      out.push(`- Wkład własny (z ogłoszenia): „${mdText(c.ownContribution)}”`);
-    if (c.kind === "usluga-wrazliwa" && c.innovationTitles.length > 0) {
+    if (purpose) out.push(`- ${t("plan.s10.purpose", { value: mdText(purpose) })}`);
+    if (own) out.push(`- ${t("plan.s10.ownContribution", { value: mdText(own) })}`);
+    if (f.kind === "usluga-wrazliwa" && titles.length > 0) {
       out.push(
-        c.includesInnovation
-          ? `- Ta innowacja **była na liście** innowacji tego naboru — ROPS przygotował dla niej Ramowy Plan Wdrożenia.`
-          : `- Tej innowacji **nie było na liście** innowacji tego naboru. Lista: ${c.innovationTitles.map((t) => `„${mdText(t)}”`).join(", ")}.`,
+        `- ${
+          f.includesInnovation
+            ? t("plan.s10.onList")
+            : t("plan.s10.notOnList", {
+                list: titles
+                  .map((x) => t("plan.s10.listItem", { title: mdText(x) }))
+                  .join(", "),
+              })
+        }`,
       );
     }
-    if (c.kind === "iws") {
-      out.push(
-        "- Uwaga: ten rodzaj grantu służy opracowaniu i przetestowaniu innowacji, a nie wdrożeniu gotowej usługi.",
-      );
-    }
-    if (c.sourceUrl) out.push(`- Źródło: [ogłoszenie naboru](${c.sourceUrl})`);
+    if (f.kind === "iws") out.push(`- ${t("plan.s10.iwsNote")}`);
+    if (f.sourceUrl) out.push(`- ${t("plan.s10.source", { url: f.sourceUrl })}`);
     out.push("");
   }
-  const openUw = ctx.funding.filter(
-    (c) => c.kind === "usluga-wrazliwa" && c.status === "open",
+  const openUw = c.funding.filter(
+    (f) => f.kind === "usluga-wrazliwa" && f.status === "open",
   );
   if (openUw.length > 0) {
-    const c = openUw[0]!;
+    const f = openUw[0]!;
     out.push(
-      `**Wniosek:** nabór „${mdText(shortCallName(c.name))}” jest otwarty${c.windowTo ? ` do ${formatDatePl(c.windowTo)}` : ""}${c.innovationTitles.length > 0 && !c.includesInnovation ? ", ale obejmuje tylko innowacje z listy powyżej" : ""}.`,
+      t("plan.s10.conclusionOpen", {
+        name: mdText(shortCallName(f.name, locale)),
+        until: f.windowTo
+          ? t("plan.s10.until", { date: formatDate(f.windowTo, locale) })
+          : "",
+        onlyList:
+          f.innovationTitles.length > 0 && !f.includesInnovation
+            ? t("plan.s10.onlyList")
+            : "",
+      }),
     );
   } else {
-    out.push(
-      `**Wniosek:** żaden nabór na wdrożenie usług („Usługa Wrażliwa”) nie jest teraz otwarty. Źródło finansowania pilotażu: ${TODO} (np. budżet gminy albo kolejny nabór ROPS). O nowych naborach możesz dostać powiadomienie: [Sieć i mentorzy → subskrypcja naborów](/network).`,
-    );
+    out.push(t("plan.s10.conclusionClosed", { todo: c.todo }));
   }
   return out.join("\n");
 }
+export function section10(ctx: PlanContext): string {
+  return section10Of(withT(ctx));
+}
 
-const BUILDERS: Record<SectionNumber, (ctx: PlanContext) => string> = {
+const BUILDERS: Record<SectionNumber, (c: Ctx) => string> = {
   1: section1,
-  2: section2,
+  2: section2Of,
   3: section3,
   4: section4,
   5: section5,
   6: section6,
-  7: section7,
+  7: section7Of,
   8: section8,
   9: section9,
-  10: section10,
+  10: section10Of,
 };
 
 /** Every section with its heading, ready to print. */
 export function templateSections(
   ctx: PlanContext,
 ): Record<SectionNumber, string> {
+  const c = withT(ctx);
+  const title = cardTitle(ctx.card, ctx.locale);
   return Object.fromEntries(
     SECTION_NUMBERS.map((n) => [
       n,
-      `${sectionHeading(n, ctx.card.title)}\n\n${BUILDERS[n](ctx)}\n`,
+      `${sectionHeading(n, title, ctx.locale)}\n\n${BUILDERS[n](c)}\n`,
     ]),
   ) as Record<SectionNumber, string>;
 }
