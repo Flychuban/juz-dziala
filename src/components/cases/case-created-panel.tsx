@@ -1,35 +1,40 @@
 "use client";
 
 import { ArrowRightIcon, CopyIcon, PrinterIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "~/components/ui/button";
+import { api } from "~/trpc/react";
 import { CaseCode, copyText } from "./case-code";
 import { rememberCase } from "./my-cases";
 
 /**
  * Shown by any module right after `createCase()` returns: the big code,
- * „Zapisz lub wydrukuj ten kod", copy, print, the private link and a way into
- * the case. Saves the code on this device. Focus moves to the heading so a
- * screen reader announces the result.
+ * „Zapisz lub wydrukuj ten kod", copy, print, the private link, a way into
+ * the case and „Co dzieje się dalej" (how ROPS is told and how the reply
+ * comes back — only what the system really does). Saves the code on this
+ * device. Focus moves to the heading so a screen reader announces the result.
  *
  *   <CaseCreatedPanel code={res.code} token={res.accessToken} />
  */
 export function CaseCreatedPanel({
   code,
   token,
-  heading = "Sprawa przyjęta",
+  heading,
 }: {
   code: string;
   token: string;
   heading?: string;
 }) {
+  const t = useTranslations("cases.created");
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [saved, setSaved] = useState<boolean | null>(null);
   const [origin, setOrigin] = useState("");
   const [linkStatus, setLinkStatus] = useState("");
-  const privatePath = `/case/${code}?t=${encodeURIComponent(token)}`;
+  const tokenQuery = `?t=${encodeURIComponent(token)}`;
+  const privatePath = `/case/${code}${tokenQuery}`;
 
   useEffect(() => {
     setSaved(rememberCase(code, token));
@@ -48,20 +53,14 @@ export function CaseCreatedPanel({
         tabIndex={-1}
         className="text-2xl font-bold sm:text-3xl"
       >
-        {heading}
+        {heading ?? t("heading")}
       </h2>
-      <p className="mt-2 text-lg">
-        Odpowiemy zwykle w ciągu 2 dni roboczych. Odpowiedź zobaczysz po
-        wpisaniu kodu sprawy w zakładce „Moja sprawa”.
-      </p>
+      <p className="mt-2 text-lg">{t("lead")}</p>
 
       <CaseCode code={code} className="mt-6" />
 
-      <p className="mt-6 text-lg font-semibold">Zapisz lub wydrukuj ten kod.</p>
-      <p className="mt-1">
-        Dzięki niemu sprawdzisz odpowiedź i dopiszesz wiadomość — bez zakładania
-        konta.
-      </p>
+      <p className="mt-6 text-lg font-semibold">{t("keep")}</p>
+      <p className="mt-1">{t("keepWhy")}</p>
 
       <div className="mt-4 flex flex-wrap gap-3">
         <Button
@@ -69,7 +68,7 @@ export function CaseCreatedPanel({
           className="h-auto min-h-12 max-w-full px-5 text-base whitespace-normal"
         >
           <Link href={privatePath}>
-            Przejdź do sprawy
+            {t("open")}
             <ArrowRightIcon aria-hidden="true" />
           </Link>
         </Button>
@@ -78,22 +77,24 @@ export function CaseCreatedPanel({
           variant="outline"
           className="h-auto min-h-12 max-w-full px-5 text-base whitespace-normal"
         >
-          <Link href={`/case/${code}/print`}>
+          <Link href={`/case/${code}/print${tokenQuery}`}>
             <PrinterIcon aria-hidden="true" />
-            Wydrukuj kartkę z kodem
+            {t("print")}
           </Link>
         </Button>
       </div>
 
-      <div className="mt-6">
+      <WhatNext code={code} token={token} />
+
+      <div className="border-hairline mt-8 border-t pt-6">
         <label htmlFor="case-private-link" className="block font-semibold">
-          Twój prywatny link do sprawy
+          {t("privateLink")}
         </label>
         <p
           id="case-private-link-hint"
           className="text-muted-foreground text-sm"
         >
-          Otwiera sprawę bez wpisywania kodu. Nie udostępniaj go innym osobom.
+          {t("privateLinkHint")}
         </p>
         <div className="mt-2 flex flex-col gap-2 sm:flex-row">
           <input
@@ -110,15 +111,11 @@ export function CaseCreatedPanel({
             className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
             onClick={async () => {
               const ok = await copyText(`${origin}${privatePath}`);
-              setLinkStatus(
-                ok
-                  ? "Skopiowano link do schowka."
-                  : "Nie udało się skopiować. Zaznacz link i skopiuj go ręcznie.",
-              );
+              setLinkStatus(ok ? t("linkCopied") : t("linkCopyFailed"));
             }}
           >
             <CopyIcon aria-hidden="true" />
-            Kopiuj link
+            {t("copyLink")}
           </Button>
         </div>
         <p role="status" className="mt-1 text-sm">
@@ -128,11 +125,68 @@ export function CaseCreatedPanel({
 
       {saved !== null && (
         <p className="text-muted-foreground mt-4 text-sm">
-          {saved
-            ? "Kod zapisaliśmy też na tym urządzeniu — znajdziesz go w zakładce „Moja sprawa”."
-            : "Ta przeglądarka nie pozwala zapisać kodu. Zapisz go lub wydrukuj."}
+          {saved ? t("savedOnDevice") : t("notSaved")}
         </p>
       )}
+    </section>
+  );
+}
+
+/**
+ * „Co dzieje się dalej" — sponsor §6: how the administrator is told and how
+ * the reply reaches the author. Channel wording comes from the server
+ * (`cases.whatNext`), so a demo never promises a real e-mail or SMS.
+ */
+function WhatNext({ code, token }: { code: string; token: string }) {
+  const t = useTranslations("cases.created.next");
+  const q = api.cases.whatNext.useQuery(
+    { code, token },
+    { staleTime: Infinity, retry: false },
+  );
+  const d = q.data;
+  const channel = d?.contactPref ?? "none";
+  const note = !d
+    ? null
+    : d.email === "off"
+      ? t("noteOff")
+      : d.email === "demo"
+        ? t("noteDemo")
+        : channel === "sms"
+          ? t("noteSms")
+          : null;
+
+  const steps = [
+    d?.staffEmail ? t("staffWithEmail") : t("staff"),
+    t("ai"),
+    t("reply", { code, channel }),
+  ];
+
+  return (
+    <section
+      aria-labelledby="case-next-heading"
+      className="border-hairline mt-8 border-t pt-6"
+    >
+      <h3 id="case-next-heading" className="text-xl font-bold">
+        {t("heading")}
+      </h3>
+      <ol className="mt-4 flex flex-col gap-4">
+        {steps.map((text, i) => (
+          <li key={i} className="flex gap-3">
+            <span
+              aria-hidden="true"
+              className="border-primary text-primary inline-flex size-8 shrink-0 items-center justify-center rounded-full border-2 font-bold tabular-nums"
+            >
+              {i + 1}
+            </span>
+            <p className="pt-0.5">{text}</p>
+          </li>
+        ))}
+      </ol>
+      {note ? (
+        <p className="border-input mt-4 border-l-4 pl-3 text-[0.9375rem]">
+          {note}
+        </p>
+      ) : null}
     </section>
   );
 }

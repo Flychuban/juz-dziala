@@ -3,7 +3,10 @@ import "server-only";
 import { and, eq, inArray } from "drizzle-orm";
 
 import { env } from "~/env";
-import { CALL_STATUS_LABEL, MAPA_AREA_LABEL } from "~/lib/domain";
+import { formatDate } from "~/components/kit/format";
+import type { Locale } from "~/i18n/config";
+import { translatorFor } from "~/i18n/server";
+import { labelsFor } from "~/lib/domain";
 import { db } from "~/server/db";
 import {
   calls,
@@ -36,8 +39,12 @@ export type FanoutResult = {
   deliveries: SubscriberDelivery[];
 };
 
-const SIGNATURE =
-  "Otrzymujesz tę wiadomość, bo zapisałaś/eś się na powiadomienia w serwisie Już Działa (Małopolski Hub Innowacji Społecznych, ROPS w Krakowie).";
+/**
+ * Subscriptions store no language yet (jd_subscription has no `locale`), so
+ * notices go out in Polish. With a `locale` column, pass it here per row.
+ */
+const LOCALE: Locale = "pl";
+const t = () => translatorFor(LOCALE, "mail");
 
 /**
  * Sends one notice to every active subscriber of any of `topic`. A contact
@@ -62,26 +69,27 @@ export async function deliverToSubscribers(opts: {
 
   const seen = new Set<string>();
   const out: SubscriberDelivery[] = [];
-  const body = `${opts.text.trim()}\n\n—\n${SIGNATURE}`;
+  const body = `${opts.text.trim()}\n\n—\n${t()("subscriptions.signature")}`;
   for (const s of subs) {
     const contact = decrypt(s.contactEnc);
     const key = `${s.channel}:${contact ?? s.id}`;
     if (seen.has(key)) continue;
     seen.add(key);
     if (!contact) {
+      const error = t()("subscriptions.unreadable");
       await db.insert(deliveries).values({
         channel: s.channel,
         toMasked: s.contactMasked,
         subject: opts.subject,
         body,
         status: "failed",
-        error: "Nie udało się odczytać kontaktu.",
+        error,
       });
       out.push({
         channel: s.channel,
         toMasked: s.contactMasked,
         status: "failed",
-        error: "Nie udało się odczytać kontaktu.",
+        error,
       });
       continue;
     }
@@ -120,19 +128,13 @@ export async function deliverToSubscribers(opts: {
 }
 
 const siteUrl = () => env.NEXT_PUBLIC_SITE_URL ?? "";
-const DATE = new Intl.DateTimeFormat("pl-PL", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-  timeZone: "Europe/Warsaw",
-});
 const PLN = new Intl.NumberFormat("pl-PL", {
   style: "currency",
   currency: "PLN",
   maximumFractionDigits: 0,
 });
 const date = (d: string | null) =>
-  d ? DATE.format(new Date(`${d}T12:00:00Z`)) : "[DO UZUPEŁNIENIA]";
+  d ? formatDate(`${d}T12:00:00Z`, LOCALE) : t()("subscriptions.toFill");
 
 /** The subject line of a call notice (also used to find its deliveries). */
 export function callNoticeSubject(
@@ -140,9 +142,12 @@ export function callNoticeSubject(
   kind: "call.published" | "call.changed",
 ) {
   const short = name.length > 90 ? `${name.slice(0, 89).trimEnd()}…` : name;
-  return kind === "call.published"
-    ? `Nowy nabór: ${short}`
-    : `Zmiana w naborze: ${short}`;
+  return t()(
+    kind === "call.published"
+      ? "subscriptions.call.subjectPublished"
+      : "subscriptions.call.subjectChanged",
+    { name: short },
+  );
 }
 
 /** „call.published" / „call.changed" → subscribers of "calls" and of the call's areas. */
@@ -152,24 +157,37 @@ export async function notifyCallSubscribers(
 ): Promise<FanoutResult | null> {
   const [c] = await db.select().from(calls).where(eq(calls.id, callId));
   if (!c) return null;
+  const tt = t();
+  const l = labelsFor(LOCALE);
   const lines = [
-    kind === "call.published"
-      ? "Regionalny Ośrodek Polityki Społecznej w Krakowie ogłasza nabór:"
-      : "Zmieniły się informacje o naborze:",
+    tt(
+      kind === "call.published"
+        ? "subscriptions.call.published"
+        : "subscriptions.call.changed",
+    ),
     "",
     c.name,
-    c.program ? `Program: ${c.program}` : null,
-    c.operator ? `Operator: ${c.operator}` : null,
-    `Status: ${CALL_STATUS_LABEL[c.status]}`,
-    `Termin: od ${date(c.windowFrom)} do ${date(c.windowTo)}`,
-    c.amountMax ? `Maksymalna kwota: ${PLN.format(c.amountMax)}` : null,
+    c.program ? tt("subscriptions.call.program", { v: c.program }) : null,
+    c.operator ? tt("subscriptions.call.operator", { v: c.operator }) : null,
+    tt("subscriptions.call.status", { v: l.callStatus[c.status] }),
+    tt("subscriptions.call.window", {
+      from: date(c.windowFrom),
+      to: date(c.windowTo),
+    }),
+    c.amountMax
+      ? tt("subscriptions.call.amount", { v: PLN.format(c.amountMax) })
+      : null,
     c.areas.length
-      ? `Obszary: ${c.areas.map((a) => MAPA_AREA_LABEL[a]).join(", ")}`
+      ? tt("subscriptions.areas", {
+          v: c.areas.map((a) => l.area[a]).join(", "),
+        })
       : null,
     "",
-    c.sourceUrl ? `Szczegóły i dokumenty: ${c.sourceUrl}` : null,
-    siteUrl() ? `Serwis Już Działa: ${siteUrl()}` : null,
-  ].filter((l): l is string => l !== null);
+    c.sourceUrl
+      ? tt("subscriptions.call.details", { url: c.sourceUrl })
+      : null,
+    siteUrl() ? tt("subscriptions.site", { url: siteUrl() }) : null,
+  ].filter((x): x is string => x !== null);
   return deliverToSubscribers({
     topic: ["calls", ...c.areas.map((a) => `area:${a}`)],
     subject: callNoticeSubject(c.name, kind),
@@ -189,14 +207,18 @@ export async function notifyInnovationSubscribers(
   const link = siteUrl()
     ? `${siteUrl()}/library/${i.slug}`
     : `/library/${i.slug}`;
+  const tt = t();
+  const l = labelsFor(LOCALE);
   return deliverToSubscribers({
     topic: i.mapaAreas.map((a) => `area:${a}`),
-    subject: `Nowe rozwiązanie w Bibliotece: ${i.title}`,
+    subject: tt("subscriptions.innovation.subject", { title: i.title }),
     text: [
-      `W Bibliotece Innowacji Społecznych jest nowe rozwiązanie: ${i.title}.`,
-      `Obszary: ${i.mapaAreas.map((a) => MAPA_AREA_LABEL[a]).join(", ")}`,
+      tt("subscriptions.innovation.intro", { title: i.title }),
+      tt("subscriptions.areas", {
+        v: i.mapaAreas.map((a) => l.area[a]).join(", "),
+      }),
       "",
-      `Przeczytaj kartę: ${link}`,
+      tt("subscriptions.innovation.read", { url: link }),
     ].join("\n"),
   });
 }

@@ -1,1 +1,89 @@
-{}
+{
+  "common": {
+    "greeting": "Hello,",
+    "team": "ROPS Kraków",
+    "autoFooter": "—\nThis message was sent automatically. Please don't reply to it.\nReply in your case thread on the {site} website."
+  },
+  "receipt": {
+    "subject": "We have received your case {code}",
+    "thanks": "thank you. Your case („{kind}”) has been received.",
+    "code": "Case code: {code}",
+    "where": "The ROPS team has been notified. You'll see the reply here:",
+    "privateLink": "This is your private link: it opens your case and lets you reply in the thread. Please don't share it with anyone.",
+    "orCode": "You can also go to {url} and enter your case code.",
+    "keepCode": "Keep this code — you'll need it to check the reply.",
+    "sms": "{site}: we have received your case. Code: {code}. Check the reply at {url}"
+  },
+  "reply": {
+    "subject": "A reply in your case {code}",
+    "intro": "there is a new reply in your case {code} from: {from}.",
+    "thread": "The whole thread:",
+    "howToReply": "To reply, open the private link from the message confirming we received your case.",
+    "sms": "{site}: new reply in case {code}. See: {url}"
+  },
+  "staffNewCase": {
+    "subject": "[{site}] New case: {kind} — {code}",
+    "intro": "A new case in the Hub inbox.",
+    "kind": "Type: {kind}",
+    "title": "Title: {title}",
+    "who": "Submitted by: {role}{onBehalf, select, yes { (on behalf of someone else)} other {}}",
+    "contact": "Preferred contact: {pref}",
+    "english": "Author's language: English — please reply in English.",
+    "open": "Open the case in the panel:",
+    "ai": "The initial AI assessment will appear in the panel within a minute or so (if AI is available)."
+  },
+  "callback": {
+    "receipt": "The author asks for a phone call ({contact}). Call to confirm the case has been received.",
+    "reply": "The author chose a phone call ({contact}). Call and pass on the reply from {when}.",
+    "noContact": "number in the contact details",
+    "english": "The author uses the service in English."
+  },
+  "delivery": {
+    "demo": "Demo mode: message saved, not sent.",
+    "noTransport": "No e-mail configured (RESEND_API_KEY + MAIL_FROM or SMTP_URL).",
+    "noAddress": "No address.",
+    "noNumber": "No number."
+  },
+  "notifications": {
+    "staff": {
+      "newCase": "New case: {kind}",
+      "triaged": "Initial assessment ready: {code}",
+      "assigned": "A case has been assigned to you: {kind}",
+      "authorMessage": "New message from the author: {code}",
+      "note": "Internal note: {code}",
+      "expertReplied": "An expert replied: {code}"
+    },
+    "author": {
+      "receivedTitle": "Case received",
+      "receivedBody": "The ROPS team has been notified. The reply will appear on your case page.",
+      "triagedTitle": "We're reading your case",
+      "triagedBody": "The reply will appear on your case page.",
+      "status": "Case status: {status}",
+      "newReply": "New reply from: {from}"
+    }
+  },
+  "subscriptions": {
+    "signature": "You are receiving this message because you signed up for notifications on Już Działa (Małopolska Social Innovation Hub, ROPS Kraków).",
+    "unreadable": "Couldn't read the contact.",
+    "toFill": "[TO BE COMPLETED]",
+    "areas": "Areas: {v}",
+    "site": "Już Działa: {url}",
+    "call": {
+      "subjectPublished": "New grant call: {name}",
+      "subjectChanged": "Change to a grant call: {name}",
+      "published": "The Regional Social Policy Centre in Kraków announces a grant call:",
+      "changed": "The information about this grant call has changed:",
+      "program": "Programme: {v}",
+      "operator": "Run by: {v}",
+      "status": "Status: {v}",
+      "window": "Dates: from {from} to {to}",
+      "amount": "Maximum amount: {v}",
+      "details": "Details and documents: {url}"
+    },
+    "innovation": {
+      "subject": "New solution in the Library: {title}",
+      "intro": "There is a new solution in the Social Innovation Library: {title}.",
+      "read": "Read the card: {url}"
+    }
+  }
+}

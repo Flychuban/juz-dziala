@@ -1,8 +1,10 @@
 "use client";
 
 import { CopyIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 
+import { spellCode } from "~/components/kit";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 
@@ -25,15 +27,18 @@ export function CaseCode({
   className?: string;
   showCopy?: boolean;
 }) {
+  const t = useTranslations("cases.code");
+  const locale = useLocale();
   const [status, setStatus] = useState("");
-  // Screen readers spell it out character by character.
-  const spelled = code.replaceAll("-", " – ").split("").join(" ");
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <p className="text-muted-foreground text-sm font-semibold">Kod sprawy</p>
+      <p className="text-muted-foreground text-sm font-semibold">
+        {t("label")}
+      </p>
       <p className="font-mono text-[clamp(1.75rem,9vw,3rem)] leading-tight font-bold tracking-wider">
         <span aria-hidden="true">{code}</span>
-        <span className="sr-only">{spelled}</span>
+        {/* Screen readers hear it spelled character by character. */}
+        <span className="sr-only">{spellCode(code, locale)}</span>
       </p>
       {showCopy && (
         <div className="flex flex-wrap items-center gap-3" data-no-print>
@@ -43,15 +48,11 @@ export function CaseCode({
             className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
             onClick={async () => {
               const ok = await copyText(code);
-              setStatus(
-                ok
-                  ? "Skopiowano kod do schowka."
-                  : "Nie udało się skopiować. Zaznacz kod i skopiuj go ręcznie.",
-              );
+              setStatus(ok ? t("copied") : t("copyFailed"));
             }}
           >
             <CopyIcon aria-hidden="true" />
-            Kopiuj kod
+            {t("copy")}
           </Button>
           <p role="status" className="text-sm">
             {status}

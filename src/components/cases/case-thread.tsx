@@ -1,9 +1,9 @@
 import { EyeOffIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import type { MessageAuthorKind } from "~/lib/domain";
 import { ReadAloud } from "~/components/kit";
 import { cn } from "~/lib/utils";
-import { RESIDENT_TEAM_NAME } from "~/server/cases/types";
 import { fmtDateTime } from "./format";
 
 export type ThreadMessage = {
@@ -15,7 +15,7 @@ export type ThreadMessage = {
   visibleToAuthor?: boolean;
 };
 
-const TEAM = "Zespół Hubu ROPS";
+type T = ReturnType<typeof useTranslations<"cases.thread">>;
 
 /**
  * Plain text with its line breaks. Modules sometimes post a Markdown summary
@@ -39,16 +39,18 @@ function MessageBody({ text }: { text: string }) {
   );
 }
 
-function who(m: ThreadMessage, viewer: "author" | "staff"): string {
+function who(m: ThreadMessage, viewer: "author" | "staff", t: T): string {
   switch (m.authorKind) {
     case "author":
-      return viewer === "author" ? "Ty" : "Autor sprawy";
+      return viewer === "author" ? t("you") : t("author");
     case "rops":
-      return viewer === "author" ? RESIDENT_TEAM_NAME : (m.authorName ?? TEAM);
+      return viewer === "author"
+        ? t("residentTeam")
+        : (m.authorName ?? t("staffTeam"));
     case "expert":
-      return m.authorName ?? "Ekspert Hubu";
+      return m.authorName ?? t("expert");
     case "system":
-      return viewer === "author" ? "Informacja" : "System";
+      return viewer === "author" ? t("info") : t("system");
   }
 }
 
@@ -67,8 +69,10 @@ export function CaseThread({
   /** „Czytaj na głos" under every ROPS/expert message. */
   readAloud?: boolean;
 }) {
+  const t = useTranslations("cases.thread");
+  const locale = useLocale();
   if (!messages.length) {
-    return <p className="text-muted-foreground">Brak wiadomości.</p>;
+    return <p className="text-muted-foreground">{t("empty")}</p>;
   }
   return (
     <ol className="flex flex-col gap-4">
@@ -95,11 +99,11 @@ export function CaseThread({
           >
             <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
               <p className="font-semibold">
-                {who(m, viewer)}
+                {who(m, viewer, t)}
                 {viewer === "staff" && m.authorKind === "author" && (
                   <span className="text-muted-foreground font-normal">
                     {" "}
-                    (mieszkaniec lub instytucja)
+                    {t("authorHint")}
                   </span>
                 )}
               </p>
@@ -107,13 +111,13 @@ export function CaseThread({
                 dateTime={new Date(m.createdAt).toISOString()}
                 className="text-muted-foreground text-sm"
               >
-                {fmtDateTime(m.createdAt)}
+                {fmtDateTime(m.createdAt, locale)}
               </time>
             </div>
             {internal && (
               <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold">
                 <EyeOffIcon aria-hidden="true" className="size-4" />
-                Notatka wewnętrzna — autor jej nie widzi
+                {t("internal")}
               </p>
             )}
             <MessageBody text={m.body} />
@@ -121,8 +125,8 @@ export function CaseThread({
               (m.authorKind === "rops" || m.authorKind === "expert") && (
                 <div className="mt-2" data-no-print>
                   <ReadAloud
-                    text={`${who(m, viewer)}: ${m.body.replace(/^#{1,6}\s+/gmu, "")}`}
-                    label="Czytaj odpowiedź na głos"
+                    text={`${who(m, viewer, t)}: ${m.body.replace(/^#{1,6}\s+/gmu, "")}`}
+                    label={t("readAloud")}
                   />
                 </div>
               )}

@@ -60,11 +60,26 @@ const storedPlanSchema = z.object({
   submittedAt: z.string().optional(),
 });
 
+/** Keys of the plan's detail rows; the UI names them (messages `cases.plan.detail.*`). */
+export type PlanDetailKey =
+  | "innovation"
+  | "gmina"
+  | "institution"
+  | "staff"
+  | "budget"
+  | "timeframe"
+  | "groupSize"
+  | "needs";
+
 export type PlanPayload = {
   markdown: string;
-  /** „Asystent AI" or „szablon (bez AI)". */
-  modeLabel: string | null;
-  details: { label: string; value: string }[];
+  /** How the plan was written: with the AI assistant or from the template. */
+  mode: "ai" | "template" | null;
+  /**
+   * `value` is the Polish text as stored/labelled; `option` is the raw answer
+   * (e.g. "ops", "50-200") so the UI can name it in the reader's language.
+   */
+  details: { key: PlanDetailKey; value: string; option?: string }[];
   ramowyPlan: { callName: string; sourceUrl: string | null } | null;
   submittedAt: string | null;
 };
@@ -77,28 +92,30 @@ function planPayload(raw: unknown): PlanPayload | null {
   if (!p.success) return null;
   const d = p.data;
   const i = d.inputs ?? {};
-  const rows: [string, string | null | undefined][] = [
-    ["Innowacja", d.innovationTitle],
-    ["Gmina", d.gminaName],
-    ["Instytucja", label<Institution>(INSTITUTION_LABEL, i.institution)],
-    ["Zespół", label<StaffRange>(STAFF_LABEL, i.staff)],
-    ["Budżet (do weryfikacji)", label<BudgetRange>(BUDGET_LABEL, i.budget)],
-    ["Czas realizacji", label<Timeframe>(TIMEFRAME_LABEL, i.timeframe)],
+  const rows: [PlanDetailKey, string | null | undefined, string?][] = [
+    ["innovation", d.innovationTitle],
+    ["gmina", d.gminaName],
     [
-      "Planowana liczba odbiorców",
-      i.groupSize != null ? String(i.groupSize) : null,
+      "institution",
+      label<Institution>(INSTITUTION_LABEL, i.institution),
+      i.institution,
     ],
-    ["Potrzeby instytucji", i.needs],
+    ["staff", label<StaffRange>(STAFF_LABEL, i.staff), i.staff],
+    ["budget", label<BudgetRange>(BUDGET_LABEL, i.budget), i.budget],
+    [
+      "timeframe",
+      label<Timeframe>(TIMEFRAME_LABEL, i.timeframe),
+      i.timeframe,
+    ],
+    ["groupSize", i.groupSize != null ? String(i.groupSize) : null],
+    ["needs", i.needs],
   ];
   return {
     markdown: d.markdown,
-    modeLabel:
-      d.mode === "ai"
-        ? "z pomocą Asystenta AI"
-        : d.mode
-          ? "z szablonu (bez AI)"
-          : null,
-    details: rows.flatMap(([l, v]) => (v ? [{ label: l, value: v }] : [])),
+    mode: d.mode === "ai" ? "ai" : d.mode ? "template" : null,
+    details: rows.flatMap(([key, value, option]) =>
+      value ? [{ key, value, ...(option ? { option } : {}) }] : [],
+    ),
     ramowyPlan: d.ramowyPlan
       ? {
           callName: d.ramowyPlan.callName,
@@ -207,7 +224,10 @@ export type CasePayloads = {
   innovation: {
     id: string;
     slug: string;
+    /** In the reader's language when the card has a translation. */
     title: string;
+    /** Language of `title` (wrap in lang="pl" when it differs from the page). */
+    titleLang: "pl" | "en";
     sourceUrl: string;
     capturedAt: Date;
   } | null;
@@ -217,9 +237,13 @@ export type CasePayloads = {
 
 export async function casePayloads(
   c: CaseRow,
-  /** Staff also get the filled Canvas and the submitted application fields. */
-  opts: { staff: boolean },
+  /**
+   * Staff also get the filled Canvas and the submitted application fields.
+   * `locale` is the reader's language (default "pl").
+   */
+  opts: { staff: boolean; locale?: "pl" | "en" },
 ): Promise<CasePayloads> {
+  const english = opts.locale === "en";
   const [idea, innovation, call] = await Promise.all([
     c.kind === "idea" ? ideaPayload(c, opts.staff) : null,
     c.innovationId
@@ -228,12 +252,20 @@ export async function casePayloads(
             id: innovations.id,
             slug: innovations.slug,
             title: innovations.title,
+            en: innovations.en,
             sourceUrl: innovations.sourceUrl,
             capturedAt: innovations.capturedAt,
           })
           .from(innovations)
           .where(eq(innovations.id, c.innovationId))
-          .then((r) => r[0] ?? null)
+          .then((r) => {
+            const row = r[0];
+            if (!row) return null;
+            const { en, ...rest } = row;
+            return english && en?.title
+              ? { ...rest, title: en.title, titleLang: "en" as const }
+              : { ...rest, titleLang: "pl" as const };
+          })
       : null,
     c.callId
       ? db

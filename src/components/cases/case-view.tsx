@@ -1,86 +1,120 @@
 "use client";
 
+import { keepPreviousData } from "@tanstack/react-query";
 import { PrinterIcon, SendIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { useEasyMode } from "~/components/kit";
-import { RESIDENT_KIND_LABEL, RESIDENT_TEAM_NAME } from "~/server/cases/types";
 import { api } from "~/trpc/react";
 import { CaseCode } from "./case-code";
 import { IdeaSection, InnovationSection, PlanSection } from "./case-modules";
 import { CaseThread } from "./case-thread";
 import { fmtDate } from "./format";
-import { markSeen, rememberCase } from "./my-cases";
-import { STEP_LABEL, StatusTimeline } from "./status-timeline";
+import { markSeen, readMyCases, rememberCase } from "./my-cases";
+import { StatusTimeline } from "./status-timeline";
+
+/** Errors that will not go away by asking again (and must not count as more guesses). */
+const FINAL = new Set(["NOT_FOUND", "TOO_MANY_REQUESTS", "FORBIDDEN"]);
 
 /**
  * The author's case page: code, status, timeline, the two-way thread and a
- * reply box. Polls every 5 s and announces a new reply through aria-live.
+ * reply box. Polls every 5 s (stops on an error, so a wrong code is counted
+ * once) and announces a new reply through aria-live. Reading needs only the
+ * code; replying needs the private-link token — from the URL or saved on this
+ * device.
  */
 export function CaseView({ code, token }: { code: string; token?: string }) {
+  const t = useTranslations("cases.view");
+  const tc = useTranslations("cases");
+  const locale = useLocale();
+  // The private link opened on this device before (saved in localStorage).
+  const [savedToken, setSavedToken] = useState<string | undefined>();
+  useEffect(() => {
+    if (!token) setSavedToken(readMyCases().find((c) => c.code === code)?.token);
+  }, [code, token]);
+  const key = token ?? savedToken;
+
   const q = api.cases.get.useQuery(
-    { code, token },
+    { code, token: key },
     {
-      refetchInterval: 5000,
-      retry: (n, err) => err.data?.code !== "NOT_FOUND" && n < 2,
+      refetchInterval: (query) =>
+        query.state.status === "error" ? false : 5000,
+      retry: (n, err) => !FINAL.has(err.data?.code ?? "") && n < 2,
+      placeholderData: keepPreviousData,
     },
   );
   const easy = useEasyMode();
   const [announce, setAnnounce] = useState("");
   const staffSeen = useRef<number | null>(null);
-  const remembered = useRef(false);
+  /** What this device last saved for the case ("" = the code alone). */
+  const remembered = useRef<string | null>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const focused = useRef(false);
+
+  // Move focus to the page heading once it is on screen (case or error).
+  useEffect(() => {
+    if (q.isPending || focused.current) return;
+    focused.current = true;
+    heading.current?.focus();
+  }, [q.isPending]);
 
   useEffect(() => {
     if (!q.data) return;
-    if (!remembered.current) {
-      remembered.current = true;
-      rememberCase(code, q.data.privateLink ? token : undefined);
+    const save = q.data.privateLink ? (key ?? "") : "";
+    if (remembered.current !== save) {
+      remembered.current = save;
+      rememberCase(code, save || undefined);
     }
     const staff = q.data.messages.filter((m) => m.from === "staff");
     if (staffSeen.current !== null && staff.length > staffSeen.current) {
       const last = staff[staff.length - 1];
       setAnnounce(
-        `Nowa odpowiedź od: ${
-          last?.authorKind === "expert" && last.authorName
-            ? last.authorName
-            : RESIDENT_TEAM_NAME
-        }.`,
+        t("newReply", {
+          from:
+            last?.authorKind === "expert" && last.authorName
+              ? last.authorName
+              : tc("thread.residentTeam"),
+        }),
       );
     }
     staffSeen.current = staff.length;
     markSeen(code);
-  }, [q.data, code, token]);
+  }, [q.data, code, key, t, tc]);
 
   if (q.isPending) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10 [overflow-wrap:anywhere]">
         <p role="status" className="text-lg">
-          Wczytuję sprawę {code}…
+          {t("loading", { code })}
         </p>
       </div>
     );
   }
-  if (q.error) {
+  if (q.error && !q.data) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10 [overflow-wrap:anywhere]">
-        <h1 className="text-3xl font-bold">Nie możemy otworzyć tej sprawy</h1>
+        <h1 ref={heading} tabIndex={-1} className="text-3xl font-bold">
+          {t("cannotOpen")}
+        </h1>
         <p role="alert" className="mt-3 text-lg">
-          {q.error.data?.code === "NOT_FOUND" ||
-          q.error.data?.code === "TOO_MANY_REQUESTS"
+          {FINAL.has(q.error.data?.code ?? "")
             ? q.error.message
-            : "Wystąpił błąd. Spróbuj odświeżyć stronę za chwilę."}
+            : t("genericError")}
         </p>
         <Button asChild className="mt-6 min-h-12 px-5 text-base">
-          <Link href="/case">Wpisz kod jeszcze raz</Link>
+          <Link href="/case">{t("tryAgain")}</Link>
         </Button>
       </div>
     );
   }
 
   const c = q.data;
+  const ownToken = c.privateLink ? key : undefined;
+  const otherLang = c.locale !== locale ? c.locale : undefined;
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 [overflow-wrap:anywhere] print:max-w-none print:p-0">
       {easy && (
@@ -88,21 +122,28 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
           className="border-hairline bg-surface mb-4 rounded-md border p-3"
           data-no-print
         >
-          Ta strona nie ma jeszcze wersji łatwej — zobacz{" "}
-          <Link href="/easy-read">Tekst łatwy do czytania</Link>.
+          {t.rich("noEasy", {
+            link: (chunks) => <Link href="/easy-read">{chunks}</Link>,
+          })}
         </p>
       )}
       <p className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
-        Moja sprawa
+        {t("eyebrow")}
       </p>
-      <h1 className="mt-1 text-3xl font-bold break-words">{c.title}</h1>
+      <h1
+        ref={heading}
+        tabIndex={-1}
+        className="mt-1 text-3xl font-bold break-words"
+      >
+        {c.title}
+      </h1>
       <dl className="mt-3 grid gap-x-6 gap-y-1 sm:grid-cols-[auto_1fr]">
-        <dt className="text-muted-foreground">Rodzaj</dt>
-        <dd className="font-semibold">{RESIDENT_KIND_LABEL[c.kind]}</dd>
-        <dt className="text-muted-foreground">Status</dt>
-        <dd className="font-semibold">{STEP_LABEL[c.status]}</dd>
-        <dt className="text-muted-foreground">Zgłoszona</dt>
-        <dd>{fmtDate(c.createdAt)}</dd>
+        <dt className="text-muted-foreground">{t("kind")}</dt>
+        <dd className="font-semibold">{tc(`kind.${c.kind}`)}</dd>
+        <dt className="text-muted-foreground">{t("status")}</dt>
+        <dd className="font-semibold">{tc(`status.${c.status}`)}</dd>
+        <dt className="text-muted-foreground">{t("created")}</dt>
+        <dd>{fmtDate(c.createdAt, locale)}</dd>
       </dl>
 
       <div className="border-hairline mt-6 rounded-lg border p-5">
@@ -113,9 +154,11 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
             variant="outline"
             className="h-auto min-h-12 max-w-full px-4 text-base whitespace-normal"
           >
-            <Link href={`/case/${c.code}/print`}>
+            <Link
+              href={`/case/${c.code}/print${ownToken ? `?t=${encodeURIComponent(ownToken)}` : ""}`}
+            >
               <PrinterIcon aria-hidden="true" />
-              Wydrukuj kartkę z kodem
+              {t("printSheet")}
             </Link>
           </Button>
         </div>
@@ -123,14 +166,14 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
 
       <section aria-labelledby="timeline-heading" className="mt-8">
         <h2 id="timeline-heading" className="text-2xl font-bold">
-          Etapy sprawy
+          {t("stages")}
         </h2>
         <StatusTimeline steps={c.timeline} className="mt-3" />
       </section>
 
       {c.plan && (
         <div className="mt-8">
-          <PlanSection plan={c.plan} code={c.code} />
+          <PlanSection plan={c.plan} code={c.code} contentLang={otherLang} />
         </div>
       )}
       {c.idea && (
@@ -140,7 +183,7 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
             call={c.call}
             code={c.code}
             viewer="author"
-            token={c.privateLink ? token : undefined}
+            token={ownToken}
           />
         </div>
       )}
@@ -157,22 +200,21 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
       {!c.plan && !c.idea && (
         <details className="border-hairline mt-8 rounded-md border p-4">
           <summary className="min-h-12 cursor-pointer py-2 font-semibold">
-            Twoje zgłoszenie
+            {t("yourRequest")}
           </summary>
           <p className="mt-2 whitespace-pre-wrap">{c.body}</p>
           <p className="text-muted-foreground mt-3 text-sm">
-            Numery telefonów, adresy e-mail i numery PESEL ukryliśmy, zanim
-            zapisaliśmy zgłoszenie.
+            {t("redacted")}
           </p>
         </details>
       )}
 
       <section aria-labelledby="thread-heading" className="mt-8">
         <h2 id="thread-heading" className="text-2xl font-bold">
-          Rozmowa z ROPS
+          {t("thread")}
         </h2>
         <p className="text-muted-foreground mt-1" data-no-print>
-          Strona sprawdza nowe odpowiedzi co kilka sekund.
+          {t("polling")}
         </p>
         <div className="mt-4">
           <CaseThread
@@ -186,18 +228,22 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
         </p>
       </section>
 
-      <AuthorReply code={c.code} onSent={() => q.refetch()} />
+      <AuthorReply code={c.code} token={ownToken} onSent={() => q.refetch()} />
     </div>
   );
 }
 
 function AuthorReply({
   code,
+  token,
   onSent,
 }: {
   code: string;
+  /** The private-link token; without it the author can only read. */
+  token?: string;
   onSent: () => Promise<unknown>;
 }) {
+  const t = useTranslations("cases.reply");
   const [body, setBody] = useState("");
   const [error, setError] = useState("");
   const [done, setDone] = useState("");
@@ -211,79 +257,87 @@ function AuthorReply({
       data-no-print
     >
       <h2 id="reply-heading" className="text-2xl font-bold">
-        Napisz do ROPS
+        {t("heading")}
       </h2>
-      <form
-        noValidate
-        className="mt-3 flex flex-col gap-3"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setDone("");
-          if (body.trim().length < 2) {
-            setError("Napisz wiadomość — co najmniej 2 znaki.");
-            ref.current?.focus();
-            return;
-          }
-          try {
-            const r = await reply.mutateAsync({ code, body });
-            setBody("");
-            setError("");
-            setDone("Wiadomość wysłana. ROPS dostał powiadomienie.");
-            await onSent();
-            document.getElementById(`msg-${r.id}`)?.focus();
-          } catch (err) {
-            setError(
-              err instanceof Error
-                ? err.message
-                : "Nie udało się wysłać wiadomości. Spróbuj ponownie.",
-            );
-            ref.current?.focus();
-          }
-        }}
-      >
-        <label htmlFor="author-reply" className="font-semibold">
-          Twoja wiadomość
-        </label>
-        <p id="author-reply-hint" className="text-muted-foreground text-sm">
-          Nie wpisuj numeru PESEL ani adresu. Numery telefonów i adresy e-mail
-          ukryjemy automatycznie.
-        </p>
-        <Textarea
-          ref={ref}
-          id="author-reply"
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          rows={5}
-          maxLength={4000}
-          aria-describedby={
-            error ? "author-reply-hint author-reply-error" : "author-reply-hint"
-          }
-          aria-invalid={error ? true : undefined}
-          className="min-h-32 text-base"
-        />
-        {error && (
-          <p
-            id="author-reply-error"
-            role="alert"
-            className="text-destructive font-semibold"
-          >
-            {error}
-          </p>
-        )}
-        <div>
-          <Button
-            type="submit"
-            disabled={reply.isPending}
-            className="h-auto min-h-12 max-w-full px-5 text-base whitespace-normal"
-          >
-            <SendIcon aria-hidden="true" />
-            {reply.isPending ? "Wysyłam…" : "Wyślij wiadomość"}
-          </Button>
+      {!token ? (
+        <div className="mt-3 flex flex-col gap-2">
+          <p>{t("needLink")}</p>
+          <p className="text-muted-foreground">{t("needLinkWhere")}</p>
         </div>
-        <p role="status" className="font-semibold">
-          {done}
-        </p>
-      </form>
+      ) : (
+        <form
+          noValidate
+          className="mt-3 flex flex-col gap-3"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setDone("");
+            if (body.trim().length < 2) {
+              setError(t("tooShort"));
+              ref.current?.focus();
+              return;
+            }
+            try {
+              const r = await reply.mutateAsync({ code, token, body });
+              setBody("");
+              setError("");
+              setDone(t("sent"));
+              await onSent();
+              document.getElementById(`msg-${r.id}`)?.focus();
+            } catch (err) {
+              const msg = err instanceof Error ? err.message : "";
+              // Validation errors arrive as JSON; show a plain sentence instead.
+              setError(
+                msg && !msg.startsWith("[") && !msg.startsWith("{")
+                  ? msg
+                  : t("failed"),
+              );
+              ref.current?.focus();
+            }
+          }}
+        >
+          <label htmlFor="author-reply" className="font-semibold">
+            {t("label")}
+          </label>
+          <p id="author-reply-hint" className="text-muted-foreground text-sm">
+            {t("hint")}
+          </p>
+          <Textarea
+            ref={ref}
+            id="author-reply"
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={5}
+            maxLength={4000}
+            aria-describedby={
+              error ? "author-reply-hint author-reply-error" : "author-reply-hint"
+            }
+            aria-invalid={error ? true : undefined}
+            className="min-h-32 text-base"
+          />
+          {error && (
+            <p
+              id="author-reply-error"
+              role="alert"
+              className="text-destructive font-semibold"
+            >
+              {error}
+            </p>
+          )}
+          <div>
+            <Button
+              type="submit"
+              disabled={reply.isPending}
+              className="h-auto min-h-12 max-w-full px-5 text-base whitespace-normal"
+            >
+              <SendIcon aria-hidden="true" />
+              {reply.isPending ? t("sending") : t("send")}
+            </Button>
+          </div>
+          <p role="status" className="font-semibold">
+            {done}
+          </p>
+        </form>
+      )}
     </section>
   );
 }

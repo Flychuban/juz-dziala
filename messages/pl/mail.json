@@ -1,1 +1,89 @@
-{}
+{
+  "common": {
+    "greeting": "Dzień dobry,",
+    "team": "ROPS Kraków",
+    "autoFooter": "—\nTa wiadomość została wysłana automatycznie. Nie odpowiadaj na nią.\nOdpowiedz w wątku sprawy na stronie {site}."
+  },
+  "receipt": {
+    "subject": "Przyjęliśmy Twoją sprawę {code}",
+    "thanks": "dziękujemy. Twoja sprawa („{kind}”) została przyjęta.",
+    "code": "Kod sprawy: {code}",
+    "where": "Zespół ROPS dostał powiadomienie. Odpowiedź zobaczysz tutaj:",
+    "privateLink": "To Twój prywatny link: otwiera sprawę i pozwala odpisać w wątku. Nie przekazuj go innym osobom.",
+    "orCode": "Możesz też wejść na {url} i wpisać kod sprawy.",
+    "keepCode": "Zachowaj ten kod — dzięki niemu sprawdzisz odpowiedź.",
+    "sms": "{site}: przyjęliśmy Twoją sprawę. Kod: {code}. Odpowiedź sprawdzisz na {url}"
+  },
+  "reply": {
+    "subject": "Odpowiedź w Twojej sprawie {code}",
+    "intro": "w Twojej sprawie {code} jest nowa odpowiedź od: {from}.",
+    "thread": "Cały wątek:",
+    "howToReply": "Aby odpisać, otwórz prywatny link z wiadomości potwierdzającej przyjęcie sprawy.",
+    "sms": "{site}: nowa odpowiedź w sprawie {code}. Sprawdź: {url}"
+  },
+  "staffNewCase": {
+    "subject": "[{site}] Nowa sprawa: {kind} — {code}",
+    "intro": "Nowa sprawa w skrzynce Hubu.",
+    "kind": "Rodzaj: {kind}",
+    "title": "Tytuł: {title}",
+    "who": "Kto zgłasza: {role}{onBehalf, select, yes { (w imieniu innej osoby)} other {}}",
+    "contact": "Preferowany kontakt: {pref}",
+    "english": "Język autora: angielski — odpowiedz po angielsku.",
+    "open": "Otwórz sprawę w panelu:",
+    "ai": "Wstępna ocena AI pojawi się w panelu w ciągu kilkudziesięciu sekund (jeśli AI jest dostępne)."
+  },
+  "callback": {
+    "receipt": "Autor prosi o kontakt telefoniczny ({contact}). Zadzwoń, aby potwierdzić przyjęcie sprawy.",
+    "reply": "Autor wybrał kontakt telefoniczny ({contact}). Zadzwoń i przekaż odpowiedź z {when}.",
+    "noContact": "numer w danych kontaktowych",
+    "english": "Autor korzysta z serwisu po angielsku."
+  },
+  "delivery": {
+    "demo": "Tryb demonstracyjny: wiadomość zapisana, nie wysłana.",
+    "noTransport": "Brak skonfigurowanej poczty (RESEND_API_KEY + MAIL_FROM lub SMTP_URL).",
+    "noAddress": "Brak adresu.",
+    "noNumber": "Brak numeru."
+  },
+  "notifications": {
+    "staff": {
+      "newCase": "Nowa sprawa: {kind}",
+      "triaged": "Wstępna ocena gotowa: {code}",
+      "assigned": "Przydzielono Ci sprawę: {kind}",
+      "authorMessage": "Nowa wiadomość od autora: {code}",
+      "note": "Notatka wewnętrzna: {code}",
+      "expertReplied": "Ekspert odpowiedział: {code}"
+    },
+    "author": {
+      "receivedTitle": "Sprawa przyjęta",
+      "receivedBody": "Zespół ROPS dostał powiadomienie. Odpowiedź pojawi się na stronie sprawy.",
+      "triagedTitle": "Czytamy Twoją sprawę",
+      "triagedBody": "Odpowiedź pojawi się na stronie sprawy.",
+      "status": "Status sprawy: {status}",
+      "newReply": "Nowa odpowiedź od: {from}"
+    }
+  },
+  "subscriptions": {
+    "signature": "Otrzymujesz tę wiadomość, bo zapisałaś/eś się na powiadomienia w serwisie Już Działa (Małopolski Hub Innowacji Społecznych, ROPS w Krakowie).",
+    "unreadable": "Nie udało się odczytać kontaktu.",
+    "toFill": "[DO UZUPEŁNIENIA]",
+    "areas": "Obszary: {v}",
+    "site": "Serwis Już Działa: {url}",
+    "call": {
+      "subjectPublished": "Nowy nabór: {name}",
+      "subjectChanged": "Zmiana w naborze: {name}",
+      "published": "Regionalny Ośrodek Polityki Społecznej w Krakowie ogłasza nabór:",
+      "changed": "Zmieniły się informacje o naborze:",
+      "program": "Program: {v}",
+      "operator": "Operator: {v}",
+      "status": "Status: {v}",
+      "window": "Termin: od {from} do {to}",
+      "amount": "Maksymalna kwota: {v}",
+      "details": "Szczegóły i dokumenty: {url}"
+    },
+    "innovation": {
+      "subject": "Nowe rozwiązanie w Bibliotece: {title}",
+      "intro": "W Bibliotece Innowacji Społecznych jest nowe rozwiązanie: {title}.",
+      "read": "Przeczytaj kartę: {url}"
+    }
+  }
+}

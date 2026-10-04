@@ -6,6 +6,7 @@
  */
 import { z } from "zod";
 
+import { LOCALES } from "~/i18n/config";
 import {
   authorRoleSchema,
   caseKindSchema,
@@ -51,6 +52,12 @@ export const createCaseInputSchema = z
     plan: z.unknown().optional(),
     rating: z.number().int().min(1).max(5).optional(),
     isSample: z.boolean().optional(),
+    /**
+     * The author's language ("pl" | "en"; default "pl"). Everything the case
+     * sends or writes for its author — receipt, system notes, reply e-mails —
+     * uses it. Callers pass `ctx.locale`.
+     */
+    locale: z.enum(LOCALES).optional(),
   })
   .superRefine((v, ctx) => {
     if (v.contactPref === "email") {
