@@ -64,6 +64,8 @@ function latestEvals(): { pl: EvalRun[]; en: EvalRun[] } {
     try {
       const run = JSON.parse(readFileSync(join(dir, f), "utf8")) as EvalRun;
       if (!run.matcher || !run.summary) continue;
+      // English runs are recorded as "ai-en" / "keyword-en"; the language is the bucket.
+      run.matcher = run.matcher.replace(/-en$/, "");
       const bucket = isEnglishRun(f, run) ? newest.en : newest.pl;
       const prev = bucket.get(run.matcher);
       if (!prev || prev.startedAt < run.startedAt) bucket.set(run.matcher, run);
