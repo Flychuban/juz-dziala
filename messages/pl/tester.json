@@ -1,1 +1,143 @@
-{}
+{
+  "meta": {
+    "title": "Testuj innowacje",
+    "description": "Zgłoś się do testowania nowych rozwiązań społecznych albo oceń te, które znasz."
+  },
+  "page": {
+    "eyebrow": "Tester innowacji",
+    "title": "Testuj innowacje",
+    "lead": "Nowe rozwiązania społeczne trzeba sprawdzić w prawdziwym życiu. Zgłoś się do testów albo oceń rozwiązanie, które już znasz — Twoja opinia trafi do zespołu ROPS.",
+    "signUpTitle": "Chcę testować",
+    "rateTitle": "Oceń rozwiązanie",
+    "source": "Biblioteka Innowacji Społecznych ROPS Kraków",
+    "notOpen": "To rozwiązanie nie ma teraz otwartego naboru testerów. Zgłoś się — zespół ROPS odezwie się, gdy testy ruszą.",
+    "count": "{count, plural, one {# rozwiązanie} few {# rozwiązania} many {# rozwiązań} other {# rozwiązania}}",
+    "notFound": {
+      "title": "Nie znaleźliśmy tego rozwiązania",
+      "body": "Może adres jest niepełny. Wybierz rozwiązanie z listy.",
+      "toList": "Zobacz listę rozwiązań"
+    },
+    "choose": {
+      "heading": "Co chcesz zrobić?",
+      "signUp": "Chcę testować",
+      "signUpHint": "Zgłoś się — sprawdzisz rozwiązanie w praktyce i powiesz, co działa.",
+      "rate": "Oceń rozwiązanie",
+      "rateHint": "Znasz je? Daj ocenę od 1 do 5 i napisz, co poprawić.",
+      "card": "Przeczytaj całą kartę rozwiązania w Bibliotece"
+    },
+    "open": {
+      "heading": "Rozwiązania, które szukają testerów",
+      "body": "ROPS otworzył testy tych rozwiązań. Zgłoś się — zespół odezwie się z terminem i szczegółami.",
+      "emptyTitle": "Teraz żadne rozwiązanie nie ma otwartych testów",
+      "emptyBody": "Poniżej są kandydaci do testów — możesz zgłosić chęć testowania albo je ocenić."
+    },
+    "candidates": {
+      "heading": "Kandydaci do testów",
+      "note": "Te rozwiązania ROPS wybrał do upowszechniania, ale nie mają teraz otwartego naboru testerów. Możesz zgłosić chęć testowania albo je ocenić — zespół ROPS odezwie się, gdy testy ruszą."
+    },
+    "none": {
+      "title": "Brak rozwiązań do testowania",
+      "body": "Zajrzyj do Biblioteki — każde rozwiązanie możesz ocenić z jego karty.",
+      "toLibrary": "Przejdź do Biblioteki"
+    }
+  },
+  "card": {
+    "open": "Szuka testerów",
+    "badge": "Wybrana do upowszechniania",
+    "signUp": "Chcę testować",
+    "signUpAria": "Chcę testować: {title}",
+    "rate": "Oceń",
+    "rateAria": "Oceń: {title}"
+  },
+  "rating": {
+    "1": "Bardzo słabo",
+    "2": "Słabo",
+    "3": "Średnio",
+    "4": "Dobrze",
+    "5": "Bardzo dobrze"
+  },
+  "forms": {
+    "notSent": "Nie wysłano:",
+    "restored": "Przywróciliśmy odpowiedzi zapisane na tym urządzeniu (bez danych kontaktowych)."
+  },
+  "signUp": {
+    "created": "Zgłoszenie do testów przyjęte",
+    "finish": "Zgłaszam się do testów",
+    "who": {
+      "title": "Kim jesteś?",
+      "description": "Zgłaszasz chęć testowania:",
+      "legend": "Zgłaszam się jako",
+      "note": "Dlaczego chcesz testować?",
+      "noteHint": "Np. „Opiekuję się mamą z demencją, chętnie sprawdzę to w domu”."
+    },
+    "where": {
+      "title": "Gdzie mieszkasz lub działasz?"
+    },
+    "contact": {
+      "title": "Jak mamy się z Tobą skontaktować?",
+      "description": "Zespół ROPS odezwie się, gdy testy ruszą.",
+      "legend": "Sposób kontaktu"
+    },
+    "errors": {
+      "gmina": "Wybierz gminę w wybranym powiecie albo „— nie wybieram —”."
+    }
+  },
+  "rate": {
+    "created": "Dziękujemy za opinię",
+    "finish": "Wyślij opinię",
+    "legend": "Twoja ocena (od 1 do 5)",
+    "title": "Jak oceniasz „{title}”?",
+    "errors": {
+      "rating": "Wybierz ocenę od 1 do 5."
+    },
+    "works": {
+      "title": "Co działa?",
+      "label": "Co działa dobrze?",
+      "hint": "Co było pomocne, łatwe, przydatne?"
+    },
+    "improve": {
+      "title": "Co poprawić?",
+      "label": "Co trzeba poprawić?",
+      "hint": "Co przeszkadzało, było trudne albo nie działało?"
+    },
+    "idea": {
+      "title": "Twój pomysł na ulepszenie",
+      "label": "Co można zrobić lepiej?",
+      "hint": "Każdy pomysł się liczy.",
+      "contact": "Czy mamy się z Tobą skontaktować?"
+    }
+  },
+  "summary": {
+    "loading": "Wczytujemy opinie testerów…",
+    "error": "Nie udało się wczytać opinii: {message}",
+    "heading": "Opinie testerów",
+    "count": "Opinii:",
+    "average": "średnia ocena",
+    "signUps": "zgłoszeń do testów:",
+    "themes": "Tematy (pogrupowane przez AI)",
+    "kind": {
+      "works": "Co działa",
+      "improve": "Co poprawić",
+      "idea": "Pomysły na ulepszenie"
+    },
+    "opinions": "Opinie: {codes}",
+    "aiUnavailable": "Asystent AI chwilowo niedostępny — poniżej wszystkie opinie.",
+    "all": "Wszystkie opinie ({count})",
+    "none": "Nikt jeszcze nie ocenił tej innowacji."
+  },
+  "server": {
+    "notFound": "Nie znaleźliśmy tej innowacji w Bibliotece."
+  },
+  "caseBody": {
+    "signUp": "Chcę testować rozwiązanie „{title}”.",
+    "signUpTitle": "Zgłoszenie do testów: {title}",
+    "author": "Zgłasza: {role}{onBehalf, select, yes { (w imieniu innej osoby lub grupy)} other {}}.",
+    "gmina": "Gmina: {place}.",
+    "note": "Od siebie: {text}",
+    "rating": "Ocena: {rating}/5 — {label}",
+    "rateTitle": "Opinia ({rating}/5): {title}",
+    "works": "Co działa: {text}",
+    "improve": "Co poprawić: {text}",
+    "suggestion": "Pomysł na ulepszenie: {text}"
+  }
+}

@@ -2,7 +2,9 @@ import "server-only";
 
 import { and, eq, inArray } from "drizzle-orm";
 
-import { CALL_STATUS_LABEL, MAPA_AREA_LABEL, SITE } from "~/lib/domain";
+import { formatDate } from "~/components/kit/format";
+import { translatorFor } from "~/i18n/server";
+import { labelsFor } from "~/lib/domain";
 import { db } from "~/server/db";
 import { calls, cases, innovations, notifications, subscriptions } from "~/server/db/schema";
 import { decrypt } from "~/server/lib/crypto";
@@ -28,10 +30,16 @@ export type IdeasFanoutEvent =
   | { type: "innovation.published"; innovationId: string }
   | { type: "idea.similarFound"; caseId: string; innovationId: string };
 
-const SIGNATURE = `Zespół Hubu ROPS\n${SITE.hub}\n${SITE.owner}`;
-const UNSUBSCRIBE = "Nie chcesz tych powiadomień? Odpowiedz na tę wiadomość albo napisz do ROPS — usuniemy Twój adres.";
+/**
+ * Subscriptions store no language, so mail to subscribers is Polish (the
+ * default); the author's in-app note carries both languages.
+ */
+const MAIL_LOCALE = "pl" as const;
 
 async function deliver(topic: string, mail: { subject: string; text: string }, sms: string): Promise<number> {
+  const t = translatorFor(MAIL_LOCALE, "ideas");
+  const site = labelsFor(MAIL_LOCALE).site;
+  const footer = `${t("fanout.unsubscribe")}\n\n${t("fanout.signature", { hub: site.hub, owner: site.owner })}`;
   const subs = await db
     .select()
     .from(subscriptions)
@@ -40,7 +48,7 @@ async function deliver(topic: string, mail: { subject: string; text: string }, s
   for (const s of subs) {
     const to = decrypt(s.contactEnc);
     if (!to) continue;
-    if (s.channel === "email") await sendMail({ to, subject: mail.subject, text: `${mail.text}\n\n${UNSUBSCRIBE}\n\n${SIGNATURE}` });
+    if (s.channel === "email") await sendMail({ to, subject: mail.subject, text: `${mail.text}\n\n${footer}` });
     else await simulateSms({ to, text: sms });
     n++;
   }
@@ -50,15 +58,18 @@ async function deliver(topic: string, mail: { subject: string; text: string }, s
 async function onCall(callId: string, changed: boolean) {
   const [c] = await db.select().from(calls).where(eq(calls.id, callId));
   if (!c || (c.status !== "open" && c.status !== "demo")) return;
-  const dates = c.windowTo ? ` Nabór trwa do ${new Date(c.windowTo).toLocaleDateString("pl-PL", { dateStyle: "long" })}.` : "";
+  const tr = translatorFor(MAIL_LOCALE, "ideas");
+  const t = (k: "until" | "subject" | "text" | "links" | "sms", v: Record<string, string>) => tr(`fanout.call.${k}`, v);
+  const kind = changed ? "changed" : "new";
+  const dates = c.windowTo ? ` ${t("until", { date: formatDate(c.windowTo, MAIL_LOCALE) })}` : "";
   const link = `${siteUrl()}/network#nabory`;
   await deliver(
     "calls",
     {
-      subject: `${changed ? "Zmiana w naborze" : "Nowy nabór"}: ${c.name}`,
-      text: `${changed ? "Zmieniły się informacje o naborze" : "ROPS ogłosił nabór"} „${c.name}” (${CALL_STATUS_LABEL[c.status]}).${dates}\n\nSzczegóły: ${c.sourceUrl ?? link}\nWszystkie nabory: ${link}`,
+      subject: t("subject", { kind, name: c.name }),
+      text: `${t("text", { kind, name: c.name, status: labelsFor(MAIL_LOCALE).callStatus[c.status] })}${dates}\n\n${t("links", { details: c.sourceUrl ?? link, all: link })}`,
     },
-    `Już Działa: ${changed ? "zmiana w naborze" : "nowy nabór"} „${c.name.slice(0, 60)}”. ${link}`,
+    t("sms", { kind, name: c.name.slice(0, 60), link }),
   );
 }
 
@@ -68,15 +79,18 @@ async function onInnovation(innovationId: string) {
     .from(innovations)
     .where(and(eq(innovations.id, innovationId), eq(innovations.status, "published")));
   if (!i) return;
+  const tr = translatorFor(MAIL_LOCALE, "ideas");
+  const t = (k: "subject" | "text" | "sms", v: Record<string, string>) => tr(`fanout.innovation.${k}`, v);
   const link = `${siteUrl()}/library/${i.slug}`;
   for (const area of i.areas) {
+    const areaLabel = labelsFor(MAIL_LOCALE).area[area];
     await deliver(
       `area:${area}`,
       {
-        subject: `Nowe rozwiązanie w obszarze „${MAPA_AREA_LABEL[area]}”: ${i.title}`,
-        text: `W Bibliotece Innowacji Społecznych pojawiło się rozwiązanie „${i.title}” w obszarze „${MAPA_AREA_LABEL[area]}”.\n\nZobacz: ${link}`,
+        subject: t("subject", { area: areaLabel, title: i.title }),
+        text: t("text", { area: areaLabel, title: i.title, link }),
       },
-      `Już Działa: nowe rozwiązanie „${i.title.slice(0, 60)}”. ${link}`,
+      t("sms", { title: i.title.slice(0, 60), link }),
     );
   }
 }
@@ -84,16 +98,19 @@ async function onInnovation(innovationId: string) {
 async function onSimilarFound(caseId: string, innovationId: string) {
   const [c] = await db.select({ id: cases.id, code: cases.code }).from(cases).where(eq(cases.id, caseId));
   const [i] = await db
-    .select({ title: innovations.title, slug: innovations.slug })
+    .select({ title: innovations.title, slug: innovations.slug, en: innovations.en })
     .from(innovations)
     .where(inArray(innovations.id, [innovationId]));
   if (!c || !i) return;
+  const pl = translatorFor("pl", "ideas");
+  const en = translatorFor("en", "ideas");
   await db.insert(notifications).values({
     recipient: `case:${c.id}`,
     caseId: c.id,
     kind: "idea.similarFound",
-    title: `Podobne rozwiązanie już działa: ${i.title}`,
-    body: "Może warto skontaktować się z jego autorami albo rozwinąć je razem?",
+    title: pl("fanout.similar.title", { title: i.title }),
+    body: pl("fanout.similar.body"),
+    en: { title: en("fanout.similar.title", { title: i.en?.title ?? i.title }), body: en("fanout.similar.body") },
     href: `/library/${i.slug}`,
   });
 }

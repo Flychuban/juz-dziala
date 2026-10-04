@@ -1,19 +1,20 @@
 import { type Metadata } from "next";
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowRightIcon, FolderOpenIcon } from "lucide-react";
 
-import { formatDatePl, PageHeader, SourceLine } from "~/components/kit";
+import { formatDate, PageHeader, SourceLine } from "~/components/kit";
 import { CanvasEditor } from "~/components/ideas/canvas-editor";
 import { IdeaNotFound } from "~/components/ideas/idea-not-found";
 import { Button } from "~/components/ui/button";
 import { canvasFromIdea } from "~/server/ideas/canvas-def";
-import { applicationCall, loadCanvasDef } from "~/server/ideas/data";
+import { applicationCall, loadCanvasView } from "~/server/ideas/data";
 import { loadIdeaForPage, tokenParam, withToken } from "~/server/ideas/page-load";
 
-export const metadata: Metadata = {
-  title: "Canvas innowacji społecznej",
-  description: "Rozpisz pomysł na trzech arkuszach Social Innovation Canvas INNO AGH i wydrukuj go.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("ideas.meta");
+  return { title: t("canvasTitle"), description: t("canvasDescription") };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -24,11 +25,17 @@ export default async function Page({
   params: Promise<{ code: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const [{ code: raw }, sp] = await Promise.all([params, searchParams]);
+  const [{ code: raw }, sp, locale, t, tc] = await Promise.all([
+    params,
+    searchParams,
+    getLocale(),
+    getTranslations("ideas.canvasPage"),
+    getTranslations("ideas.canvas"),
+  ]);
   const token = tokenParam(sp);
-  const [loaded, def, call] = await Promise.all([loadIdeaForPage(raw, token), loadCanvasDef(), applicationCall()]);
-  if (!loaded.ok) return <IdeaNotFound title="Canvas innowacji społecznej" message={loaded.message} />;
-  if (!def) return <IdeaNotFound title="Canvas innowacji społecznej" message="Canvas jest chwilowo niedostępny. Spróbuj później." />;
+  const [loaded, def, call] = await Promise.all([loadIdeaForPage(raw, token), loadCanvasView(locale), applicationCall()]);
+  if (!loaded.ok) return <IdeaNotFound title={t("title")} message={loaded.message} />;
+  if (!def) return <IdeaNotFound title={t("title")} message={tc("unavailable")} />;
 
   const { data, code } = loaded;
   const initial = data.canvas ?? canvasFromIdea({ ...data.idea, stage: data.idea.stage ?? undefined });
@@ -37,30 +44,29 @@ export default async function Page({
     <>
       <PageHeader
         className="print:hidden"
-        eyebrow="Kreator pomysłów · Canvas"
-        title="Canvas innowacji społecznej"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         lead={
           <p>
-            Pomysł „{data.idea.title}” (sprawa {code}). Trzy arkusze pomagają przemyśleć problem, odbiorców, koszty, partnerów i wpływ.
-            {data.canvas ? " Wczytaliśmy Twój zapisany Canvas." : " Część pól wypełniliśmy z Twojej fiszki — sprawdź je."}
+            {t("lead", { title: data.idea.title, code })} {data.canvas ? t("loaded") : t("prefilled")}
           </p>
         }
         breadcrumbs={[
-          { label: "Mam pomysł", href: "/ideas/new" },
-          { label: `Sprawa ${code}`, href: withToken(`/case/${code}`, token) },
+          { label: t("crumbIdeas"), href: "/ideas/new" },
+          { label: t("crumbCase", { code }), href: withToken(`/case/${code}`, token) },
         ]}
       >
         <div className="mt-6 flex flex-wrap gap-3 print:hidden">
           <Button asChild variant="outline">
             <Link href={withToken(`/case/${code}`, token)}>
               <FolderOpenIcon aria-hidden="true" />
-              Wróć do sprawy
+              {t("backToCase")}
             </Link>
           </Button>
           {call ? (
             <Button asChild variant="secondary">
               <Link href={withToken(`/ideas/${code}/application`, token)}>
-                Przygotuj szkic wniosku
+                {t("toApplication")}
                 <ArrowRightIcon aria-hidden="true" />
               </Link>
             </Button>
@@ -68,9 +74,9 @@ export default async function Page({
         </div>
         <SourceLine
           className="mt-6"
-          source={`Social Innovation Canvas — INNO AGH, wersja ${def.source.version ?? "—"} z ${formatDatePl(def.source.versionDate)}, na podstawie Social Innovation Canvas The New Global School`}
+          source={tc("source", { version: def.source.version ?? "—", date: formatDate(def.source.versionDate, locale) })}
           href={def.source.url}
-          detail="pytania zapisaliśmy w formie „Ty”"
+          detail={locale === "en" ? null : tc("sourceDetail")}
           date={def.source.capturedAt}
         />
       </PageHeader>

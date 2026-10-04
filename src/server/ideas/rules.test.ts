@@ -2,17 +2,27 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { APPLICANT_TEXT, DECLARATIONS_TEXT, draftToFields, gapsLine, templateDraft, templateValue, unverifiedNumbers, type DraftSource } from "./application-rules";
-import { canvasForReader } from "./canvas-copy";
+import { createTranslator } from "next-intl";
+
+import { MESSAGES } from "~/i18n/messages";
+import { countGaps, draftToFields, DRAFT_FAILED_MARKER, splitFailure, unverifiedNumbers } from "./application-rules";
+import { fixedTexts, templateDraft, templateValue, type DraftSource } from "./application-template";
+import { canvasForEnglishReader, canvasForReader } from "./canvas-copy";
 import { finalizeAssist } from "./assist-rules";
-import { canvasFromIdea, canvasToText, sanitizeCanvas, type CanvasDef } from "./canvas-def";
+import { canvasFromIdea, canvasToText, impactLabel, optionValue, pickLabel, sanitizeCanvas, type CanvasDef } from "./canvas-def";
 import { normalizeSubscriptionContact, questionTitle } from "./network-rules";
-import { contactProblem, GAP, subscriptionTopicSchema } from "./schema";
+import { contactProblem, contactProblemKey, GAP, GAP_EN, subscriptionTopicSchema } from "./schema";
+import { finalizeSketch, SKETCH_H, SKETCH_MAX_SHAPES, SKETCH_W } from "./sketch-rules";
 import { pickSimilar } from "./similar-rules";
 
 const root = join(import.meta.dirname, "..", "..", "..");
 const canvasDef = JSON.parse(readFileSync(join(root, "data", "canvas.json"), "utf8")) as CanvasDef;
-const iws = (JSON.parse(readFileSync(join(root, "data", "calls.json"), "utf8")) as { id: string; formFields: { key: string; label: string; hint: string | null }[]; criteria: { key: string; label: string; max: number; minToPass: number | null }[]; minScore: number }[]).find((c) => c.id === "demo-iws")!;
+type CallJson = { id: string; status: string; amountMax: number | null; window: { from: string | null; to: string | null }; formFields: { key: string; label: string; hint: string | null }[]; criteria: { key: string; label: string; max: number; minToPass: number | null }[]; minScore: number };
+const calls = JSON.parse(readFileSync(join(root, "data", "calls.json"), "utf8")) as CallJson[];
+const callsEn = JSON.parse(readFileSync(join(root, "data", "calls.en.json"), "utf8")) as CallJson[];
+const iws = calls.find((c) => c.id === "demo-iws")!;
+const uw = calls.find((c) => c.id === "demo-usluga-wrazliwa")!;
+const canvasEnDef = JSON.parse(readFileSync(join(root, "data", "canvas.en.json"), "utf8")) as CanvasDef;
 
 describe("pickSimilar — „to już istnieje”", () => {
   it("lists cards sharing most of the idea's words", () => {
@@ -77,8 +87,8 @@ describe("application draft", () => {
 
   it("copies only the author's words and marks every other field as a gap", () => {
     expect(templateValue(fields.find((f) => f.key === "title")!, src)).toBe("Wspólne zakupy");
-    expect(templateValue(fields.find((f) => f.key === "applicant")!, src)).toBe(APPLICANT_TEXT);
-    expect(templateValue(fields.find((f) => f.key === "declarations")!, src)).toBe(DECLARATIONS_TEXT);
+    expect(templateValue(fields.find((f) => f.key === "applicant")!, src)).toBe(`${GAP} — te dane wpiszesz w formularzu elektronicznym naboru.`);
+    expect(templateValue(fields.find((f) => f.key === "declarations")!, src)).toBe(fixedTexts("pl").declarations);
     expect(templateValue(fields.find((f) => f.key === "grantAmount")!, src)).toContain(GAP);
     expect(templateValue(fields.find((f) => f.key === "problemDiagnosis")!, src)).toContain("Daleko do sklepu, 12 km.");
   });
@@ -168,11 +178,141 @@ describe("canvas worded for one reader („Ty”)", () => {
   });
 });
 
-describe("gapsLine", () => {
-  it("uses the right Polish form", () => {
-    expect(gapsLine(1)).toBe("Szkic gotowy. Luki „[DO UZUPEŁNIENIA]” zostały w 1 polu — uzupełnij je przed wysłaniem.");
-    expect(gapsLine(3)).toContain("w 3 polach");
-    expect(gapsLine(12)).toContain("w 12 polach");
-    expect(gapsLine(0)).toMatch(/Wszystkie pola są wypełnione/);
+describe("plurals in the generator and the forms", () => {
+  const pl = createTranslator({ locale: "pl", messages: MESSAGES.pl, namespace: "ideas" });
+  const en = createTranslator({ locale: "en", messages: MESSAGES.en, namespace: "ideas" });
+  it("names the gaps with the right Polish form (locative: 1 polu, N polach)", () => {
+    expect(pl("application.edit.gaps", { count: 1, gap: GAP })).toBe("Szkic gotowy. Luki „[DO UZUPEŁNIENIA]” zostały w 1 polu — uzupełnij je przed wysłaniem.");
+    expect(pl("application.edit.gaps", { count: 3, gap: GAP })).toContain("w 3 polach");
+    expect(pl("application.edit.gaps", { count: 12, gap: GAP })).toContain("w 12 polach");
+    expect(en("application.edit.gaps", { count: 1, gap: GAP_EN })).toContain("in 1 field ");
+  });
+  it("never says „Zostało 3 pól” or „Zostało 2 znaków”", () => {
+    expect(pl("application.sent.gaps", { count: 3 })).toMatch(/^Zostały 3 pola do uzupełnienia/);
+    expect(pl("application.sent.gaps", { count: 5 })).toMatch(/^Zostało 5 pól/);
+    expect(pl("application.sent.gaps", { count: 1 })).toMatch(/^Zostało 1 pole/);
+    expect(pl("form.charsLeft", { count: 2 })).toBe("Zostały 2 znaki.");
+    expect(pl("form.charsLeft", { count: 1 })).toBe("Został 1 znak.");
+    expect(pl("form.charsLeft", { count: 12 })).toBe("Zostało 12 znaków.");
+    expect(pl("form.charsLeft", { count: 22 })).toBe("Zostały 22 znaki.");
+  });
+  it("summarises the duplicate check in one short line", () => {
+    expect(pl("similar.found", { count: 3 })).toBe("Znaleźliśmy 3 podobne rozwiązania.");
+    expect(pl("similar.found", { count: 5 })).toBe("Znaleźliśmy 5 podobnych rozwiązań.");
+    expect(en("similar.found", { count: 0 })).toBe("We found no similar solution in the library.");
+  });
+});
+
+describe("the application follows the chosen call", () => {
+  const src: DraftSource = {
+    title: "Wspólne zakupy",
+    description: "Sąsiedzi robią zakupy dla seniorów.",
+    targetGroup: "Seniorzy z małych wsi",
+    areas: ["seniors"],
+    stage: "idea",
+    canvasNotes: { blockers: "Sklep we wsi." },
+    canvasPicks: { fixedCosts: ["czynsz / przestrzeń"], mainUser: ["seniorzy"] },
+    similar: ["Mobilne centrum pomocy dla osób starszych"],
+  };
+  it("adds a second demo call with the sections of a Ramowy Plan Wdrożenia and its own criteria", () => {
+    expect(uw.status).toBe("demo");
+    expect(uw.window).toEqual({ from: null, to: null });
+    expect(uw.formFields.map((f) => f.key)).toEqual([
+      "serviceGoal", "targetGroup", "scope", "schedule", "staff", "partners", "budget", "risks", "indicators", "innovation",
+    ]);
+    expect(uw.criteria.map((c) => c.key)).not.toEqual(iws.criteria.map((c) => c.key));
+    // The cap is the one already published for Usługa Wrażliwa, not a new figure.
+    expect(uw.amountMax).toBe(calls.find((c) => c.id === "usluga-wrazliwa-2")!.amountMax);
+  });
+  it("has an English twin with the same keys", () => {
+    const twin = callsEn.find((c) => c.id === uw.id)!;
+    expect(twin.formFields.map((f) => f.key)).toEqual(uw.formFields.map((f) => f.key));
+    expect(twin.criteria.map((c) => c.key)).toEqual(uw.criteria.map((c) => c.key));
+  });
+  it("fills that call's fields from the author's own words only", () => {
+    const md = templateDraft(uw.formFields, src);
+    const parsed = draftToFields(md, uw.formFields);
+    expect(parsed.map((f) => f.key)).toEqual(uw.formFields.map((f) => f.key));
+    expect(parsed.find((f) => f.key === "serviceGoal")?.value).toContain("Sąsiedzi robią zakupy dla seniorów.");
+    expect(parsed.find((f) => f.key === "budget")?.value).toContain("czynsz / przestrzeń");
+    expect(parsed.find((f) => f.key === "risks")?.value).toContain("Sklep we wsi.");
+    expect(parsed.find((f) => f.key === "innovation")?.value).toContain("Mobilne centrum pomocy");
+    expect(parsed.find((f) => f.key === "indicators")?.value).toContain(GAP);
+    expect(countGaps(parsed)).toBe(uw.formFields.length);
+  });
+  it("writes the English template with the English gap marker and English option labels", () => {
+    const view = canvasForEnglishReader(canvasForReader(canvasDef), canvasEnDef);
+    const label = (k: string, v: string) => pickLabel(view, k, v);
+    const field = { key: "budget", label: "Budget (an estimate to be checked)", hint: null };
+    const value = templateValue(field, src, "en", label);
+    expect(value).toContain(GAP_EN);
+    expect(value).toContain("rent / space");
+    expect(value).not.toContain(GAP);
+    expect(countGaps([{ key: "budget", label: "Budget", value }])).toBe(1);
+  });
+});
+
+describe("a broken-off AI draft is never filled in", () => {
+  it("detects the failure marker and drops it", () => {
+    expect(splitFailure(`## Cel usługi\n\nTekst\n\n${DRAFT_FAILED_MARKER}`)).toEqual({ text: "## Cel usługi\n\nTekst", failed: true });
+    expect(splitFailure("## Cel usługi\n\nTekst")).toEqual({ text: "## Cel usługi\n\nTekst", failed: false });
+  });
+});
+
+describe("canvas in English", () => {
+  const view = canvasForEnglishReader(canvasForReader(canvasDef), canvasEnDef);
+  it("shows English labels but keeps the Polish values, so saved canvases stay valid", () => {
+    const intensity = view.sheets[0]!.sections[0]!.fields.find((f) => f.key === "intensity")!;
+    expect(intensity.options[0]!.label).toBe("A very serious problem");
+    expect(optionValue(intensity.options[0]!)).toBe("Bardzo poważny problem");
+    const picked = { notes: {}, picks: { intensity: [optionValue(intensity.options[0]!)] } };
+    expect(sanitizeCanvas(canvasForReader(canvasDef), picked)).toEqual(picked);
+    expect(impactLabel(view, "Społeczność")).toBe("Community");
+  });
+  it("translates the option labels the English file left in Polish", () => {
+    const labels = view.sheets.flatMap((s) => s.sections.flatMap((x) => x.fields.flatMap((f) => f.options.map((o) => o.label))));
+    expect(labels.filter((l) => /[ąćęłńóśźż]/i.test(l) || ["dzieci", "lekarz", "webinary", "inne"].includes(l))).toEqual([]);
+  });
+});
+
+describe("the sketch is data, checked before drawing", () => {
+  const base = { w: null, h: null, r: null, x2: null, y2: null, fill: null, label: null };
+  it("clamps every number to the canvas, keeps the palette and drops unknown kinds", () => {
+    const s = finalizeSketch({
+      title: "Przenośna łazienka",
+      altText: "Szkic przedstawia łazienkę.",
+      shapes: [
+        { ...base, kind: "rect", x: -50, y: 20, w: 9000, h: 100, fill: "purple", label: "Łazienka" },
+        { ...base, kind: "circle", x: 200, y: 150, r: 999, fill: "BLUE" },
+        { ...base, kind: "arrow", x: 10, y: 10, x2: 1e9, y2: 20 },
+        { ...base, kind: "script", x: 1, y: 1, label: "<script>" },
+        { ...base, kind: "text", x: 100, y: 100, label: "<b>Hej</b>" },
+        { ...base, kind: "line", x: Number.NaN, y: 1, x2: 2, y2: 2 },
+      ],
+    })!;
+    expect(s.shapes.map((x) => x.kind)).toEqual(["rect", "circle", "arrow", "text"]);
+    const [rect, circle, arrow, text] = s.shapes;
+    expect(rect).toMatchObject({ x: 0, w: SKETCH_W, fill: "white" });
+    expect(circle).toMatchObject({ fill: "blue", r: 150 });
+    expect(arrow).toMatchObject({ x2: SKETCH_W });
+    expect(text?.kind === "text" && text.label).toBe("b Hej /b");
+    for (const sh of s.shapes) {
+      expect(sh.x).toBeGreaterThanOrEqual(0);
+      expect(sh.y).toBeLessThanOrEqual(SKETCH_H);
+    }
+  });
+  it("draws at most the shape limit and refuses an empty or unlabelled scene", () => {
+    const many = Array.from({ length: 40 }, (_, i) => ({ ...base, kind: "circle", x: 50 + i, y: 50, r: 10 }));
+    expect(finalizeSketch({ title: "T", altText: "A", shapes: many })!.shapes).toHaveLength(SKETCH_MAX_SHAPES);
+    expect(finalizeSketch({ title: "T", altText: "A", shapes: [] })).toBeNull();
+    expect(finalizeSketch({ title: "", altText: "A", shapes: many })).toBeNull();
+  });
+});
+
+describe("contacts in both languages", () => {
+  it("returns a key the screens translate", () => {
+    expect(contactProblemKey("email", "zly")).toBe("email");
+    expect(contactProblemKey("phone", "12")).toBe("phone");
+    expect(contactProblemKey("sms", "600 100 200")).toBeNull();
   });
 });

@@ -1,11 +1,12 @@
 import "server-only";
 
+import type { Locale } from "~/i18n/config";
 import { aiStructured, userData } from "~/server/ai/structured";
 import { IDEA_ASSIST_SYSTEM } from "~/server/ai/prompts/ideas";
 import { MAPA_AREA_LABEL, IDEA_STAGE_LABEL } from "~/lib/domain";
 import { redactPII } from "~/server/domain/redact";
 import { assistOutputSchema, finalizeAssist, type AssistResult } from "./assist-rules";
-import { scoringCall } from "./data";
+import { localizeCall, scoringCall } from "./data";
 import type { IdeaAssistData } from "./schema";
 
 export type AssistResponse =
@@ -18,8 +19,10 @@ export type AssistResponse =
  * Text is redacted before it leaves the server; the criteria come from the
  * call in the database, not from the prompt.
  */
-export async function assistIdea(input: IdeaAssistData): Promise<AssistResponse> {
+export async function assistIdea(input: IdeaAssistData, locale: Locale = "pl"): Promise<AssistResponse> {
   const call = await scoringCall();
+  // Criteria names shown to the author come in the author's language.
+  const shown = call ? localizeCall(call, locale) : null;
   const criteriaText = call
     ? call.criteria
         .map((c) => `- ${c.key} — ${c.label} (0–${c.max} pkt${c.minToPass != null ? `, minimum ${c.minToPass}` : ""}): ${c.description ?? ""}`)
@@ -47,6 +50,7 @@ export async function assistIdea(input: IdeaAssistData): Promise<AssistResponse>
     schema: assistOutputSchema,
     system: [{ text: IDEA_ASSIST_SYSTEM, cache: true }],
     user,
+    locale,
     effort: "low",
     maxTokens: 4000,
     timeoutMs: 40_000,
@@ -56,9 +60,9 @@ export async function assistIdea(input: IdeaAssistData): Promise<AssistResponse>
     ok: true,
     result: finalizeAssist(res.data, {
       id: call?.id ?? "",
-      criteria: call?.criteria.map((c) => ({ key: c.key, label: c.label, max: c.max, minToPass: c.minToPass ?? null })) ?? [],
+      criteria: shown?.criteria.map((c) => ({ key: c.key, label: c.label, max: c.max, minToPass: c.minToPass ?? null })) ?? [],
       minScore: call?.minScore ?? null,
     }),
-    criteriaSource: call ? { callId: call.id, name: call.name } : null,
+    criteriaSource: shown ? { callId: shown.id, name: shown.name } : null,
   };
 }

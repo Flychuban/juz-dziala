@@ -5,7 +5,12 @@
 import type { IdeaStage, MapaArea } from "~/lib/domain";
 import type { CanvasValues } from "./schema";
 
-export type CanvasOption = { label: string; description: string | null };
+export type CanvasOption = {
+  label: string;
+  description: string | null;
+  /** The stored value when it differs from the label shown (English view: the Polish label). */
+  value?: string;
+};
 export type CanvasField = {
   key: string;
   label: string;
@@ -33,10 +38,29 @@ export type CanvasDef = {
     capturedAt: string;
   };
   sheets: CanvasSheet[];
+  /** Display names of IMPACT_DIMENSIONS (English view); the Polish names otherwise. */
+  impactLabels?: Partial<Record<ImpactDimension, string>>;
 };
 
 /** The three impact dimensions of sheet 3 (the matrix rows are the options). */
 export const IMPACT_DIMENSIONS = ["Osoba", "Społeczność", "Środowisko"] as const;
+export type ImpactDimension = (typeof IMPACT_DIMENSIONS)[number];
+
+/** The value an option is saved as (its Polish label). */
+export const optionValue = (o: CanvasOption) => o.value ?? o.label;
+
+/** Display name of an impact dimension in this view of the canvas. */
+export const impactLabel = (def: CanvasDef, dim: ImpactDimension) => def.impactLabels?.[dim] ?? dim;
+
+/** The label shown for a saved value of `fieldKey` (unknown values pass through). */
+export function pickLabel(def: CanvasDef, fieldKey: string, value: string): string {
+  const key = fieldKey.split(".")[0];
+  for (const sheet of def.sheets)
+    for (const section of sheet.sections)
+      for (const f of section.fields)
+        if (f.key === key) return f.options.find((o) => optionValue(o) === value)?.label ?? value;
+  return value;
+}
 
 /** Key of a section's free-notes box. */
 export const notesKey = (sheet: string, section: string) => `${sheet}.${section}`;

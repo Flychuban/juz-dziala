@@ -1,21 +1,28 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { PrinterIcon, SaveIcon } from "lucide-react";
 
-import { formatDatePl } from "~/components/kit";
+import { formatDate } from "~/components/kit";
 import { Button } from "~/components/ui/button";
+import { INTL_LOCALE, TIME_ZONE } from "~/i18n/config";
 import {
   IMPACT_DIMENSIONS,
+  impactLabel,
   notesKey,
+  optionValue,
+  pickLabel,
   type CanvasDef,
   type CanvasField,
   type CanvasSection,
 } from "~/server/ideas/canvas-def";
 import type { CanvasValues } from "~/server/ideas/schema";
 import { api } from "~/trpc/react";
-import { errorText, safeStorage } from "./client-utils";
+import { CANVAS_PRINT_CSS } from "./canvas-print";
+import { safeStorage, useErrorText } from "./client-utils";
 import { CheckCards, ChoiceCards, TextAreaField } from "./form";
+import { usePrivateToken } from "./use-private-token";
 
 /** „PROBLEM" → „Problem": all-caps labels are hard to read and spelled out by screen readers. */
 export function sentenceCase(label: string): string {
@@ -24,26 +31,29 @@ export function sentenceCase(label: string): string {
   return lower.charAt(0).toLocaleUpperCase("pl-PL") + lower.slice(1);
 }
 
-function sheetHeading(def: CanvasDef, i: number) {
-  return `Arkusz ${i + 1} z ${def.sheets.length}`;
+/** The impact matrix questions are „Osoba — Jak zmienia…"; split them per dimension. */
+function dimensionQuestion(field: CanvasField, dimLabel: string): string | undefined {
+  return field.questions.find((q) => q.startsWith(dimLabel))?.replace(/^[^—]+—\s*/, "");
 }
 
-/** The impact matrix questions are „Osoba — Jak zmienia…"; split them per dimension. */
-function dimensionQuestion(field: CanvasField, dim: string): string | undefined {
-  return field.questions.find((q) => q.startsWith(dim))?.replace(/^[^—]+—\s*/, "");
-}
+const choices = (field: CanvasField) =>
+  field.options.map((o) => ({ value: optionValue(o), label: o.label, description: o.description }));
 
 function FieldEditor({
+  def,
   field,
   values,
   onNotes,
   onPicks,
 }: {
+  def: CanvasDef;
   field: CanvasField;
   values: CanvasValues;
   onNotes: (key: string, v: string) => void;
   onPicks: (key: string, v: string[]) => void;
 }) {
+  const t = useTranslations("ideas.canvas");
+  const locale = useLocale();
   const hint =
     field.prompt || field.questions.length ? (
       <>
@@ -63,7 +73,7 @@ function FieldEditor({
       <div>
         <p className="text-lg font-semibold">{field.label}</p>
         <p className="text-muted-foreground">
-          {field.prompt ?? "Przy każdym partnerze dopisz, jaki ma status:"} {field.options.map((o) => o.label.toLocaleLowerCase("pl-PL")).join(", ")}.
+          {field.prompt ?? t("partnerStatus")} {field.options.map((o) => o.label.toLocaleLowerCase(INTL_LOCALE[locale === "en" ? "en" : "pl"])).join(", ")}.
         </p>
       </div>
     );
@@ -88,14 +98,14 @@ function FieldEditor({
           legend={field.label}
           hint={hint}
           name={field.key}
-          options={field.options.map((o) => ({ value: o.label, label: o.label, description: o.description }))}
+          options={choices(field)}
           value={values.picks[field.key]?.[0] ?? null}
           onChange={(v) => onPicks(field.key, [v])}
           columns={2}
         />
         {values.picks[field.key]?.length ? (
           <Button type="button" variant="link" className="w-fit px-0" onClick={() => onPicks(field.key, [])}>
-            Wyczyść wybór: {field.label}
+            {t("clear", { label: field.label })}
           </Button>
         ) : null}
       </div>
@@ -106,7 +116,7 @@ function FieldEditor({
       <CheckCards
         legend={field.label}
         hint={hint}
-        options={field.options.map((o) => ({ value: o.label, label: o.label, description: o.description }))}
+        options={choices(field)}
         values={values.picks[field.key] ?? []}
         onChange={(v) => onPicks(field.key, v)}
       />
@@ -117,13 +127,14 @@ function FieldEditor({
       {field.prompt ? <p className="text-muted-foreground">{field.prompt}</p> : null}
       {IMPACT_DIMENSIONS.map((dim) => {
         const key = `${field.key}.${dim}`;
+        const label = impactLabel(def, dim);
         return (
           <ChoiceCards
             key={dim}
-            legend={`Wpływ — ${dim}`}
-            hint={dimensionQuestion(field, dim)}
+            legend={t("impact", { dimension: label })}
+            hint={dimensionQuestion(field, label)}
             name={key}
-            options={field.options.map((o) => ({ value: o.label, label: o.label, description: o.description }))}
+            options={choices(field)}
             value={values.picks[key]?.[0] ?? null}
             onChange={(v) => onPicks(key, [v])}
             columns={2}
@@ -135,33 +146,36 @@ function FieldEditor({
 }
 
 function SectionEditor({
+  def,
   sheetKey,
   section,
   values,
   onNotes,
   onPicks,
 }: {
+  def: CanvasDef;
   sheetKey: string;
   section: CanvasSection;
   values: CanvasValues;
   onNotes: (key: string, v: string) => void;
   onPicks: (key: string, v: string[]) => void;
 }) {
+  const t = useTranslations("ideas.canvas");
   const label = sentenceCase(section.label);
   const nk = notesKey(sheetKey, section.key);
   return (
-    <section aria-labelledby={`canvas-${nk}`} className="border-hairline rounded-lg border p-5 md:p-6">
+    <section aria-labelledby={`canvas-${nk}`} className="border-hairline border-t pt-6">
       <h3 id={`canvas-${nk}`} className="font-display text-2xl font-bold">
         {label}
       </h3>
       {section.prompt ? <p className="mt-2">{section.prompt}</p> : null}
       <div className="mt-5 flex flex-col gap-8">
         {section.fields.map((f) => (
-          <FieldEditor key={f.key} field={f} values={values} onNotes={onNotes} onPicks={onPicks} />
+          <FieldEditor key={f.key} def={def} field={f} values={values} onNotes={onNotes} onPicks={onPicks} />
         ))}
         <TextAreaField
-          label={`Notatki: ${label}`}
-          hint="Dopisz własnymi słowami to, czego nie ma w opcjach powyżej."
+          label={t("notes", { label })}
+          hint={t("notesHint")}
           value={values.notes[nk] ?? ""}
           onChange={(v) => onNotes(nk, v)}
           maxLength={4000}
@@ -173,29 +187,41 @@ function SectionEditor({
   );
 }
 
+/** The source credit printed under every sheet. */
+export function useCanvasCredit(def: CanvasDef): string {
+  const t = useTranslations("ideas.canvas");
+  const locale = useLocale();
+  return t("credit", {
+    publisher: def.source.publisher.split(" (")[0] ?? def.source.publisher,
+    version: def.source.version ?? "—",
+    date: formatDate(def.source.versionDate, locale),
+    basedOn: def.source.basedOn,
+  });
+}
+
 /** Static A4 rendering of the filled canvas — only in print. */
 function CanvasPrint({ def, values, code, title }: { def: CanvasDef; values: CanvasValues; code: string; title: string }) {
-  const credit = `Canvas: ${def.source.publisher.split(" (")[0]}, wersja ${def.source.version ?? "—"}, ${formatDatePl(def.source.versionDate) || ""}. ${def.source.basedOn}`;
+  const t = useTranslations("ideas.canvas");
+  const credit = useCanvasCredit(def);
   return (
     <div className="hidden print:block">
       {def.sheets.map((sheet) => (
         <section key={sheet.key} className="canvas-print-sheet">
-          <p className="text-sm">
-            Sprawa {code} · {title}
-          </p>
+          <p className="text-sm">{t("printHeader", { code, title })}</p>
           <h2 className="mb-2 text-xl font-bold">{sheet.title}</h2>
           <div className="grid grid-cols-3 gap-2">
             {sheet.sections.map((section) => {
               const lines: string[] = [];
               const note = values.notes[notesKey(sheet.key, section.key)];
+              const shown = (key: string, picked: string[]) => picked.map((v) => pickLabel(def, key, v)).join(", ");
               for (const f of section.fields) {
                 if (f.kind === "text" && values.notes[f.key]) lines.push(`${f.label}: ${values.notes[f.key]}`);
                 if ((f.kind === "single" || f.kind === "multi") && values.picks[f.key]?.length)
-                  lines.push(`${f.label}: ${values.picks[f.key]!.join(", ")}`);
+                  lines.push(`${f.label}: ${shown(f.key, values.picks[f.key]!)}`);
                 if (f.kind === "matrix")
                   for (const d of IMPACT_DIMENSIONS) {
                     const p = values.picks[`${f.key}.${d}`];
-                    if (p?.length) lines.push(`${d}: ${p.join(", ")}`);
+                    if (p?.length) lines.push(`${impactLabel(def, d)}: ${shown(f.key, p)}`);
                   }
               }
               if (note) lines.push(note);
@@ -211,7 +237,7 @@ function CanvasPrint({ def, values, code, title }: { def: CanvasDef; values: Can
                       ))}
                     </ul>
                   ) : (
-                    <p className="mt-1 italic">(nie wypełniono)</p>
+                    <p className="mt-1 italic">{t("empty")}</p>
                   )}
                 </div>
               );
@@ -224,16 +250,28 @@ function CanvasPrint({ def, values, code, title }: { def: CanvasDef; values: Can
   );
 }
 
+/** Status placeholder: the restore message depends on whether this page can save. */
+const RESTORED = "\u0000restored";
+
+
+/**
+ * The sticky toolbar covers the bottom of the screen; keep a focused field
+ * above it (tall on phones, where its buttons wrap onto two rows).
+ */
+const STICKY_CSS =
+  "@media screen { html { scroll-padding-bottom: 13rem; } .canvas-form :is(input, textarea, select, button, a, summary) { scroll-margin-bottom: 13rem; } } @media screen and (min-width: 640px) { html { scroll-padding-bottom: 7rem; } .canvas-form :is(input, textarea, select, button, a, summary) { scroll-margin-bottom: 7rem; } }";
+
 /**
  * The INNO AGH Social Innovation Canvas, interactive: every section of the
  * three sheets with its own prompt, options and a notes box. Autosaved on this
- * device; „Zapisz Canvas" stores it on the case. Printing gives one A4 sheet
- * per canvas sheet.
+ * device; „Zapisz Canvas" stores it on the case (needs the private link —
+ * opened with the code alone, the canvas can be filled and printed but not
+ * saved). Printing gives one A4 sheet per canvas sheet.
  */
 export function CanvasEditor({
   def,
   code,
-  token,
+  token: tokenFromUrl,
   title,
   initial,
 }: {
@@ -243,6 +281,11 @@ export function CanvasEditor({
   title: string;
   initial: CanvasValues;
 }) {
+  const t = useTranslations("ideas.canvas");
+  const locale = useLocale();
+  const errorText = useErrorText();
+  const { token, ready } = usePrivateToken(code, tokenFromUrl);
+  const canSave = !!token;
   const storageKey = `jd_canvas_${code}`;
   const [values, setValues] = useState<CanvasValues>(initial);
   const [status, setStatus] = useState<string>("");
@@ -255,7 +298,7 @@ export function CanvasEditor({
     if (local?.values) {
       setValues(local.values);
       setDirty(true);
-      setStatus("Przywróciliśmy niezapisane zmiany z tego urządzenia. Kliknij „Zapisz Canvas”, żeby zapisać je w sprawie.");
+      setStatus(RESTORED);
     }
     loaded.current = true;
   }, [storageKey]);
@@ -274,43 +317,56 @@ export function CanvasEditor({
   };
 
   async function onSave() {
-    setStatus("Zapisujemy…");
+    setStatus(t("saving"));
     try {
       const res = await save.mutateAsync({ code, token, canvas: values });
       safeStorage.remove(storageKey);
       setDirty(false);
-      setStatus(`Zapisano w sprawie ${code} o ${new Date(res.savedAt).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}.`);
+      const time = new Intl.DateTimeFormat(INTL_LOCALE[locale === "en" ? "en" : "pl"], {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: TIME_ZONE,
+      }).format(new Date(res.savedAt));
+      setStatus(t("saved", { code, time }));
     } catch (e) {
-      setStatus(`Nie zapisano: ${errorText(e)} Zmiany zostały na tym urządzeniu.`);
+      setStatus(t("notSaved", { error: errorText(e) }));
     }
   }
 
   const toolbar = (
     <div className="border-hairline bg-background sticky bottom-0 z-10 flex flex-wrap items-center gap-3 border-t py-4 print:hidden">
-      <Button type="button" onClick={() => void onSave()} disabled={save.isPending}>
-        <SaveIcon aria-hidden="true" />
-        {save.isPending ? "Zapisujemy…" : "Zapisz Canvas"}
-      </Button>
-      <Button type="button" variant="outline" onClick={() => window.print()}>
+      {canSave ? (
+        <Button type="button" onClick={() => void onSave()} disabled={save.isPending}>
+          <SaveIcon aria-hidden="true" />
+          {save.isPending ? t("saving") : t("save")}
+        </Button>
+      ) : null}
+      <Button type="button" variant={canSave ? "outline" : "default"} onClick={() => window.print()}>
         <PrinterIcon aria-hidden="true" />
-        Drukuj (3 strony A4)
+        {t("print")}
       </Button>
       <p role="status" aria-live="polite" className="min-w-0 flex-1 basis-60">
-        {status || (dirty ? "Masz niezapisane zmiany (są bezpieczne na tym urządzeniu)." : "")}
+        {status === RESTORED ? (canSave ? t("restored") : t("restoredReadOnly")) : status || (dirty ? t("unsaved") : "")}
       </p>
     </div>
   );
 
   return (
     <>
-      <style>{`@media print { @page { size: A4 landscape; margin: 10mm; } .canvas-print-sheet { break-after: page; } .canvas-print-sheet:last-child { break-after: auto; } }`}</style>
-      <form noValidate onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-12 print:hidden">
-        <nav aria-label="Arkusze Canvasu">
+      <style>{`${CANVAS_PRINT_CSS} ${STICKY_CSS}`}</style>
+      {ready && !canSave ? (
+        <div role="note" className="border-hairline mb-8 border-l-4 py-1 pl-4 print:hidden">
+          <p className="font-semibold">{t("readOnly.title")}</p>
+          <p className="mt-1">{t("readOnly.body")}</p>
+        </div>
+      ) : null}
+      <form noValidate onSubmit={(e) => e.preventDefault()} className="canvas-form flex flex-col gap-12 print:hidden">
+        <nav aria-label={t("sheetsNav")}>
           <ol className="flex flex-wrap gap-3">
             {def.sheets.map((s, i) => (
               <li key={s.key}>
                 <a href={`#${s.key}`} className="border-input hover:bg-surface inline-flex min-h-12 items-center rounded-md border-2 px-4 font-semibold">
-                  {sheetHeading(def, i)}: {s.sections.map((x) => sentenceCase(x.label)).join(", ")}
+                  {t("sheetLink", { n: i + 1, total: def.sheets.length, sections: s.sections.map((x) => sentenceCase(x.label)).join(", ") })}
                 </a>
               </li>
             ))}
@@ -321,9 +377,17 @@ export function CanvasEditor({
             <h2 id={`${sheet.key}-h`} className="font-display text-3xl font-bold">
               {sheet.title}
             </h2>
-            <div className="mt-6 flex flex-col gap-6">
+            <div className="mt-6 flex flex-col gap-10">
               {sheet.sections.map((section) => (
-                <SectionEditor key={section.key} sheetKey={sheet.key} section={section} values={values} onNotes={onNotes} onPicks={onPicks} />
+                <SectionEditor
+                  key={section.key}
+                  def={def}
+                  sheetKey={sheet.key}
+                  section={section}
+                  values={values}
+                  onNotes={onNotes}
+                  onPicks={onPicks}
+                />
               ))}
             </div>
           </section>

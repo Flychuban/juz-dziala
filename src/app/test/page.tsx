@@ -1,18 +1,19 @@
 import { type Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { FlaskConicalIcon, SearchXIcon, StarIcon } from "lucide-react";
 
-import { AreaTag, countPl, EmptyState, PageHeader, SourceLine } from "~/components/kit";
+import { AreaTag, EmptyState, PageHeader, SourceLine } from "~/components/kit";
 import { RateWizard, TestSignUpWizard } from "~/components/tests/tester-forms";
 import { TestableCard } from "~/components/tests/testable-card";
 import { Button } from "~/components/ui/button";
 import { gminaOptions } from "~/server/ideas/data";
 import { api } from "~/trpc/server";
 
-export const metadata: Metadata = {
-  title: "Testuj innowacje",
-  description: "Zgłoś się do testowania nowych rozwiązań społecznych albo oceń te, które znasz.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("tester.meta");
+  return { title: t("title"), description: t("description") };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ function one(v: string | string[] | undefined) {
 }
 
 export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const sp = await searchParams;
+  const [sp, t] = await Promise.all([searchParams, getTranslations("tester.page")]);
   const slug = one(sp.innovation)?.slice(0, 200);
   const mode = one(sp.mode);
 
@@ -33,15 +34,15 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
     if (!inn) {
       return (
         <>
-          <PageHeader eyebrow="Tester innowacji" title="Testuj innowacje" breadcrumbs={[{ label: "Testuj innowacje", href: "/test" }]} />
+          <PageHeader eyebrow={t("eyebrow")} title={t("title")} breadcrumbs={[{ label: t("title"), href: "/test" }]} />
           <div className="mx-auto max-w-4xl px-4 py-10">
             <EmptyState
               icon={<SearchXIcon />}
-              title="Nie znaleźliśmy tego rozwiązania"
-              description={<p>Może adres jest niepełny. Wybierz rozwiązanie z listy.</p>}
+              title={t("notFound.title")}
+              description={<p>{t("notFound.body")}</p>}
               action={
                 <Button asChild>
-                  <Link href="/test">Zobacz listę rozwiązań</Link>
+                  <Link href="/test">{t("notFound.toList")}</Link>
                 </Button>
               }
             />
@@ -49,20 +50,16 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
         </>
       );
     }
+    const lang = inn.lang === "pl" ? "pl" : undefined;
     const back = `/test?innovation=${encodeURIComponent(inn.slug)}`;
+    const innovation = { id: inn.id, title: inn.title, lang: inn.lang };
     return (
       <>
         <PageHeader
-          eyebrow="Tester innowacji"
-          title={mode === "signup" ? "Chcę testować" : mode === "rate" ? "Oceń rozwiązanie" : inn.title}
-          lead={
-            mode === "signup" || mode === "rate" ? (
-              <p>„{inn.title}”</p>
-            ) : (
-              <p>{inn.summary}</p>
-            )
-          }
-          breadcrumbs={[{ label: "Testuj innowacje", href: "/test" }]}
+          eyebrow={t("eyebrow")}
+          title={mode === "signup" ? t("signUpTitle") : mode === "rate" ? t("rateTitle") : <span lang={lang}>{inn.title}</span>}
+          lead={mode === "signup" || mode === "rate" ? <p lang={lang}>„{inn.title}”</p> : <p lang={lang}>{inn.summary}</p>}
+          breadcrumbs={[{ label: t("title"), href: "/test" }]}
           width="narrow"
         >
           <div className="mt-4 flex flex-wrap gap-2">
@@ -70,24 +67,24 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
               <AreaTag key={a} area={a} />
             ))}
           </div>
-          <SourceLine className="mt-4" source="Biblioteka Innowacji Społecznych ROPS Kraków" href={inn.sourceUrl} date={inn.capturedAt} />
+          <SourceLine className="mt-4" source={t("source")} href={inn.sourceUrl} date={inn.capturedAt} />
         </PageHeader>
         <div className="mx-auto max-w-4xl px-4 py-10 md:py-12">
           {mode === "signup" ? (
             <>
               {!inn.testingOpen ? (
-                <p role="note" className="border-hairline bg-surface mb-8 rounded-md border border-l-4 p-4">
-                  To rozwiązanie nie ma teraz otwartego naboru testerów. Zgłoś się — zespół ROPS odezwie się, gdy testy ruszą.
+                <p role="note" className="border-hairline mb-8 border-l-4 py-1 pl-4">
+                  {t("notOpen")}
                 </p>
               ) : null}
-              <TestSignUpWizard innovation={{ id: inn.id, title: inn.title }} gminas={gminas} powiaty={powiaty} backHref={back} />
+              <TestSignUpWizard innovation={innovation} gminas={gminas} powiaty={powiaty} backHref={back} />
             </>
           ) : mode === "rate" ? (
-            <RateWizard innovation={{ id: inn.id, title: inn.title }} backHref={back} />
+            <RateWizard innovation={innovation} backHref={back} />
           ) : (
             <section aria-labelledby="choose-h" className="flex flex-col gap-6">
               <h2 id="choose-h" className="font-display text-2xl font-bold">
-                Co chcesz zrobić?
+                {t("choose.heading")}
               </h2>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Link
@@ -96,21 +93,21 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
                 >
                   <span className="flex items-center gap-2 text-xl font-bold">
                     <FlaskConicalIcon aria-hidden="true" className="size-6" />
-                    Chcę testować
+                    {t("choose.signUp")}
                   </span>
-                  <span>Zgłoś się — sprawdzisz rozwiązanie w praktyce i powiesz, co działa.</span>
+                  <span>{t("choose.signUpHint")}</span>
                 </Link>
                 <Link href={`${back}&mode=rate`} className="border-input hover:bg-surface flex min-h-24 flex-col gap-2 rounded-lg border-2 p-5">
                   <span className="flex items-center gap-2 text-xl font-bold">
                     <StarIcon aria-hidden="true" className="size-6" />
-                    Oceń rozwiązanie
+                    {t("choose.rate")}
                   </span>
-                  <span>Znasz je? Daj ocenę od 1 do 5 i napisz, co poprawić.</span>
+                  <span>{t("choose.rateHint")}</span>
                 </Link>
               </div>
               <p>
                 <Link href={`/library/${inn.slug}`} className="text-primary font-semibold underline underline-offset-4">
-                  Przeczytaj całą kartę rozwiązania w Bibliotece
+                  {t("choose.card")}
                 </Link>
               </p>
             </section>
@@ -123,25 +120,16 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
   const list = await api.tests.list();
   return (
     <>
-      <PageHeader
-        eyebrow="Tester innowacji"
-        title="Testuj innowacje"
-        lead={
-          <p>
-            Nowe rozwiązania społeczne trzeba sprawdzić w prawdziwym życiu. Zgłoś się do testów albo oceń rozwiązanie, które już znasz — Twoja opinia trafi do
-            zespołu ROPS i autorów.
-          </p>
-        }
-      />
+      <PageHeader eyebrow={t("eyebrow")} title={t("title")} lead={<p>{t("lead")}</p>} />
       <div className="mx-auto flex max-w-6xl flex-col gap-14 px-4 py-10 md:py-12">
         <section aria-labelledby="open-h">
           <h2 id="open-h" className="font-display text-2xl font-bold">
-            Rozwiązania, które szukają testerów
+            {t("open.heading")}
           </h2>
           {list.open.length ? (
             <>
-              <p className="mt-2 max-w-prose">ROPS otworzył testy tych rozwiązań. Zgłoś się — zespół odezwie się z terminem i szczegółami.</p>
-              <p className="text-muted-foreground mt-2">{countPl(list.open.length, "rozwiązanie", "rozwiązania", "rozwiązań")}</p>
+              <p className="mt-2 max-w-prose">{t("open.body")}</p>
+              <p className="text-muted-foreground mt-2">{t("count", { count: list.open.length })}</p>
               <ul className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {list.open.map((i) => (
                   <li key={i.id}>
@@ -154,8 +142,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
             <EmptyState
               className="mt-6"
               icon={<FlaskConicalIcon />}
-              title="Teraz żadne rozwiązanie nie ma otwartych testów"
-              description={<p>Poniżej są kandydaci do testów — możesz zgłosić chęć testowania albo je ocenić.</p>}
+              title={t("open.emptyTitle")}
+              description={<p>{t("open.emptyBody")}</p>}
             />
           )}
         </section>
@@ -163,13 +151,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
         {list.candidates.length ? (
           <section aria-labelledby="candidates-h">
             <h2 id="candidates-h" className="font-display text-2xl font-bold">
-              Kandydaci do testów
+              {t("candidates.heading")}
             </h2>
-            <p role="note" className="border-hairline bg-surface mt-4 max-w-prose rounded-md border border-l-4 p-4">
-              Te rozwiązania ROPS wybrał do upowszechniania, ale nie mają teraz otwartego naboru testerów. Możesz zgłosić chęć testowania albo je ocenić —
-              zespół ROPS odezwie się, gdy testy ruszą.
+            <p role="note" className="border-hairline mt-4 max-w-prose border-l-4 py-1 pl-4">
+              {t("candidates.note")}
             </p>
-            <p className="text-muted-foreground mt-4">{countPl(list.candidates.length, "rozwiązanie", "rozwiązania", "rozwiązań")}</p>
+            <p className="text-muted-foreground mt-4">{t("count", { count: list.candidates.length })}</p>
             <ul className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {list.candidates.map((i) => (
                 <li key={i.id}>
@@ -183,16 +170,16 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
         {!list.open.length && !list.candidates.length ? (
           <EmptyState
             icon={<FlaskConicalIcon />}
-            title="Brak rozwiązań do testowania"
-            description={<p>Zajrzyj do Biblioteki — każde rozwiązanie możesz ocenić z jego karty.</p>}
+            title={t("none.title")}
+            description={<p>{t("none.body")}</p>}
             action={
               <Button asChild>
-                <Link href="/library">Przejdź do Biblioteki</Link>
+                <Link href="/library">{t("none.toLibrary")}</Link>
               </Button>
             }
           />
         ) : null}
-        <SourceLine source="Biblioteka Innowacji Społecznych ROPS Kraków" href={LIBRARY_URL} />
+        <SourceLine source={t("source")} href={LIBRARY_URL} />
       </div>
     </>
   );

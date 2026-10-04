@@ -1,1 +1,438 @@
-{}
+{
+  "meta": {
+    "newTitle": "Mam pomysł",
+    "newDescription": "Opisz pomysł na innowację społeczną: sprawdzimy, czy coś podobnego już działa, i pomożemy go dopracować.",
+    "canvasTitle": "Canvas innowacji społecznej",
+    "canvasDescription": "Rozpisz pomysł na trzech arkuszach Social Innovation Canvas INNO AGH i wydrukuj go.",
+    "applicationTitle": "Generator wniosku",
+    "applicationDescription": "Szkic wniosku o grant na innowację społeczną, przygotowany z Twojej fiszki i Canvasu.",
+    "blankTitle": "Pusty Canvas do wydruku",
+    "blankDescription": "Trzy arkusze Social Innovation Canvas INNO AGH z pytaniami — do wydrukowania i wypełnienia na kartce."
+  },
+  "new": {
+    "eyebrow": "Kreator pomysłów",
+    "title": "Mam pomysł",
+    "lead": "Opisz pomysł na innowację społeczną w czterech krokach. Sprawdzimy, czy coś podobnego już działa w Małopolsce, a asystent pomoże go dopracować. Pomysł trafi do zespołu ROPS jako sprawa z kodem.",
+    "home": "Strona główna"
+  },
+  "form": {
+    "optional": "(nieobowiązkowe)",
+    "charsLeft": "{count, plural, one {Został # znak.} few {Zostały # znaki.} many {Zostało # znaków.} other {Zostało # znaku.}}",
+    "charsMax": "Maksymalnie {count, plural, one {# znak} few {# znaki} many {# znaków} other {# znaku}}."
+  },
+  "errors": {
+    "generic": "Nie udało się wysłać. Sprawdź pola formularza i spróbuj ponownie.",
+    "network": "Brak połączenia z serwerem. Sprawdź internet i spróbuj ponownie — Twoje odpowiedzi są zapisane."
+  },
+  "people": {
+    "gmina": "Twoja gmina",
+    "gminaHint": "Dzięki temu ROPS zobaczy, gdzie w Małopolsce jest potrzeba. Nie podajemy adresu.",
+    "powiat": "Powiat",
+    "gminaShort": "Gmina",
+    "noChoice": "— nie wybieram —",
+    "pickGmina": "— wybierz gminę —",
+    "pickPowiatFirst": "— najpierw wybierz powiat —",
+    "gminaWithKind": "{name} (gmina {kind, select, urban {miejska} rural {wiejska} mixed {miejsko-wiejska} other {}})",
+    "gminaFull": "{name} (gmina {kind, select, urban {miejska} rural {wiejska} mixed {miejsko-wiejska} other {}}, {powiat})",
+    "gminaFromList": "Wybierz gminę z listy.",
+    "who": "Kim jesteś?",
+    "onBehalf": "Zgłaszam w imieniu innej osoby lub grupy",
+    "onBehalfHint": "Na przykład w imieniu mamy, sąsiada albo podopiecznych.",
+    "contact": "Jak mamy się z Tobą kontaktować?",
+    "contactHint": "Zaszyfrujemy go i pokażemy tylko w skróconej formie. Odpowiedź zobaczysz też po kodzie sprawy.",
+    "email": "Adres e-mail",
+    "phone": "Numer telefonu",
+    "contactError": {
+      "email": "Podaj adres e-mail, np. imie@przyklad.pl.",
+      "phone": "Podaj numer telefonu — 9 cyfr, np. 600 100 200."
+    }
+  },
+  "access": {
+    "notIdea": "Ta sprawa nie jest pomysłem — Canvas i wniosek są dostępne tylko dla pomysłów.",
+    "wrongToken": "Ten link prywatny jest nieprawidłowy. Otwórz sprawę samym kodem albo z linku, który dostałeś.",
+    "needsToken": "Zmiany zapisze tylko autor pomysłu. Otwórz tę stronę z prywatnego linku, który dostałaś/eś po wysłaniu pomysłu."
+  },
+  "notFound": {
+    "eyebrow": "Kreator pomysłów",
+    "crumb": "Mam pomysł",
+    "title": "Nie możemy otworzyć tego pomysłu",
+    "enterCode": "Wpisz kod sprawy",
+    "newIdea": "Zgłoś nowy pomysł",
+    "badCode": "To nie wygląda na kod sprawy. Kod ma postać JD-XXXX-XXXX.",
+    "missing": "Nie znaleźliśmy sprawy o tym kodzie. Sprawdź kod i spróbuj ponownie."
+  },
+  "whatHappens": {
+    "heading": "Co dzieje się z Twoim pomysłem",
+    "step1": "Zespół ROPS dostaje powiadomienie (dzwonek + e-mail).",
+    "step2": "Asystent AI porządkuje zgłoszenie, a człowiek czyta i odpowiada.",
+    "step3": "Odpowiedź zobaczysz pod kodem pomysłu i dostaniesz wybranym kanałem."
+  },
+  "wizard": {
+    "heading": "Fiszka pomysłu",
+    "restored": "Przywróciliśmy szkic zapisany na tym urządzeniu.",
+    "startOver": "Zacznij od nowa",
+    "finish": "Wyślij pomysł do ROPS",
+    "autosave": "Szkic zapisuje się automatycznie na tym urządzeniu — bez danych kontaktowych. Nie zakładasz konta.",
+    "asideLabel": "Pomoc przy pomyśle",
+    "assistantLink": "Zobacz podpowiedzi asystenta",
+    "notSent": "Nie wysłano:",
+    "created": "Pomysł przyjęty",
+    "what": {
+      "title": "Na czym polega Twój pomysł?",
+      "description": "Napisz własnymi słowami. Nie musi być idealnie — możesz to później poprawić.",
+      "name": "Nazwa pomysłu",
+      "nameHint": "Krótko, np. „Wspólne zakupy dla seniorów z naszej wsi”.",
+      "text": "Opis pomysłu",
+      "textHint": "Co chcesz zrobić? Jak to będzie działać? Jaki problem rozwiązuje?"
+    },
+    "who": {
+      "title": "Komu pomaga?",
+      "description": "Opisz osoby, którym pomysł ma pomóc, i wybierz obszary Mapy Wyzwań Społecznych.",
+      "target": "Komu ma pomóc?",
+      "targetHint": "Np. „samotnym seniorom z małych miejscowości, którzy rzadko wychodzą z domu”.",
+      "areas": "Obszary Mapy Wyzwań Społecznych",
+      "areasHint": "Zaznacz jeden lub kilka. Asystent AI może podpowiedzieć, które pasują."
+    },
+    "stage": {
+      "title": "Na jakim etapie jest?",
+      "legend": "Etap pomysłu"
+    },
+    "where": {
+      "title": "Gdzie i kto?",
+      "description": "Ostatni krok. Kontakt i gmina są nieobowiązkowe — odpowiedź zobaczysz też po kodzie sprawy.",
+      "gmina": "Gmina, w której chcesz działać",
+      "who": "Kto zgłasza pomysł?"
+    },
+    "errors": {
+      "title": "Nazwij pomysł — co najmniej 3 znaki.",
+      "description": "Opisz pomysł w co najmniej dwóch zdaniach.",
+      "targetGroup": "Napisz, komu pomysł ma pomóc.",
+      "stage": "Wybierz etap — to pomoże dobrać wsparcie.",
+      "gmina": "Wybierz gminę w wybranym powiecie albo „— nie wybieram —”.",
+      "goBackWhat": "Wróć do kroku 1 i uzupełnij nazwę oraz opis pomysłu.",
+      "goBackWho": "Wróć do kroku 2 i napisz, komu pomysł ma pomóc.",
+      "goBackStage": "Wróć do kroku 3 i wybierz etap pomysłu.",
+      "incomplete": "Uzupełnij fiszkę."
+    },
+    "intro": {
+      "heading": "Co Cię czeka",
+      "step1": "Opis pomysłu",
+      "step2": "Komu pomaga — tu sprawdzimy, czy coś podobnego już istnieje, i włączymy asystenta AI",
+      "step3": "Etap",
+      "step4": "Gdzie i kto",
+      "after": "Potem dostaniesz kod sprawy, a ROPS odpowie zwykle w ciągu 2 dni roboczych.",
+      "blankCanvas": "Wolisz najpierw pomyśleć na kartce? Wydrukuj pusty Canvas innowacji"
+    },
+    "similarAfter": {
+      "heading": "Podobne rozwiązania już istnieją",
+      "body": "Zespół ROPS zobaczy je przy Twoim pomyśle. Może warto skontaktować się z ich autorami?"
+    },
+    "next": {
+      "heading": "Co dalej?",
+      "canvas": "Rozpisz pomysł na Canvasie innowacji",
+      "canvasHint": "Trzy arkusze INNO AGH: problem, odbiorcy, koszty, partnerzy i wpływ.",
+      "application": "Przygotuj szkic wniosku o grant",
+      "applicationHint": "Pola formularza naboru wypełnione z Twojej fiszki."
+    }
+  },
+  "similar": {
+    "heading": "Czy to już istnieje?",
+    "idle": "Gdy opiszesz pomysł, porównamy go z Biblioteką Innowacji Społecznych.",
+    "checking": "Sprawdzamy Bibliotekę…",
+    "error": "Nie udało się teraz sprawdzić Biblioteki. Możesz kontynuować.",
+    "found": "{count, plural, =0 {Nie znaleźliśmy w Bibliotece podobnego rozwiązania.} one {Znaleźliśmy 1 podobne rozwiązanie.} few {Znaleźliśmy # podobne rozwiązania.} many {Znaleźliśmy # podobnych rozwiązań.} other {Znaleźliśmy # podobnego rozwiązania.}}",
+    "noneHint": "To dobry znak dla nowego pomysłu.",
+    "joinAuthors": "Może dołączysz do ich autorów zamiast zaczynać od zera?",
+    "authors": "Autorzy: {names}",
+    "source": "Biblioteka Innowacji Społecznych ROPS Kraków",
+    "sourceDetail": "porównanie słów, bez AI"
+  },
+  "assistant": {
+    "heading": "Asystent AI",
+    "intro": "Zada pytania, które pomogą dopracować pomysł, podsunie nietuzinkowe warianty, oceni go wstępnie według kryteriów naboru i narysuje szkic. Nie musisz z niego korzystać.",
+    "ask": "Poproś o podpowiedzi",
+    "askAgain": "Zapytaj ponownie",
+    "thinking": "Asystent myśli… (do 30 sekund)",
+    "needDescription": "Najpierw opisz pomysł w kroku 1 (co najmniej dwa zdania).",
+    "unavailable": "Asystent AI chwilowo niedostępny",
+    "noAnswer": "Asystent nie odpowiedział",
+    "continueWithout": "Możesz dokończyć zgłoszenie bez niego — pomysł przeczyta zespół ROPS.",
+    "resultHeading": "Podpowiedzi asystenta",
+    "stale": "Zmieniłaś/eś fiszkę od ostatniej podpowiedzi. Kliknij „Zapytaj ponownie”, żeby ocena dotyczyła aktualnej wersji.",
+    "questions": "Pytania, które warto sobie zadać",
+    "angles": "Nietuzinkowe warianty",
+    "areas": "Pasuje do obszarów Mapy Wyzwań",
+    "areaChosen": "Ten obszar jest już wybrany.",
+    "addArea": "Dodaj obszar „{area}”",
+    "aiNote": "Podpowiedzi przygotowała sztuczna inteligencja na podstawie Twojej fiszki. Sprawdź je — mogą się mylić."
+  },
+  "sketch": {
+    "heading": "Szkic pomysłu",
+    "intro": "Asystent narysuje prosty schemat Twojego pomysłu — np. wynalazku, miejsca albo przebiegu usługi. Przyda się, gdy będziesz pokazywać pomysł innym.",
+    "draw": "Narysuj szkic pomysłu",
+    "again": "Narysuj nowy szkic",
+    "drawing": "Rysujemy… (do 30 sekund)",
+    "unavailable": "Asystent AI jest chwilowo niedostępny, więc teraz nie narysujemy szkicu. Możesz dokończyć zgłoszenie bez niego.",
+    "failed": "Nie udało się narysować szkicu. Spróbuj ponownie za chwilę.",
+    "disclaimer": "Szkic przygotowany automatycznie — tylko poglądowy.",
+    "describe": "Opis szkicu słowami",
+    "print": "Drukuj szkic"
+  },
+  "selfScore": {
+    "heading": "Wstępna samoocena (nie jest oceną ROPS)",
+    "intro": "Kryteria oceny merytorycznej: każde od 0 do 10 punktów.",
+    "introCall": "Kryteria oceny merytorycznej naboru „{name}”: każde od 0 do 10 punktów.",
+    "points": "{score} / {max} pkt",
+    "minimum": "Minimum w tym kryterium: {min} pkt — {met, select, yes {spełnione} other {niespełnione}}.",
+    "improve": "Co poprawić:",
+    "total": "Razem:",
+    "totalMinimum": "minimum to {min} pkt.",
+    "meets": "Wstępnie spełnia minimum.",
+    "below": "Wstępnie poniżej minimum — zobacz, co poprawić.",
+    "source": "Kryteria: {name}",
+    "sourceFallback": "nabór ROPS",
+    "manual": "Oceń sam(a): kryteria naboru „{name}”",
+    "manualItem": "{label} (0–{max} pkt):",
+    "manualItemMin": "{label} (0–{max} pkt, minimum {min}):",
+    "manualMinimum": "Minimum łącznie: {min} pkt na {total}."
+  },
+  "canvas": {
+    "unavailable": "Canvas jest chwilowo niedostępny. Spróbuj później.",
+    "partnerStatus": "Przy każdym partnerze dopisz, jaki ma status:",
+    "clear": "Wyczyść wybór: {label}",
+    "impact": "Wpływ — {dimension}",
+    "notes": "Notatki: {label}",
+    "notesHint": "Dopisz własnymi słowami to, czego nie ma w opcjach powyżej.",
+    "credit": "Canvas: {publisher}, wersja {version}, {date}. {basedOn}",
+    "printHeader": "Sprawa {code} · {title}",
+    "empty": "(nie wypełniono)",
+    "restored": "Przywróciliśmy niezapisane zmiany z tego urządzenia. Kliknij „Zapisz Canvas”, żeby zapisać je w sprawie.",
+    "restoredReadOnly": "Przywróciliśmy niezapisane zmiany z tego urządzenia.",
+    "saving": "Zapisujemy…",
+    "saved": "Zapisano w sprawie {code} o {time}.",
+    "notSaved": "Nie zapisano: {error} Zmiany zostały na tym urządzeniu.",
+    "save": "Zapisz Canvas",
+    "print": "Drukuj (3 strony A4)",
+    "unsaved": "Masz niezapisane zmiany (są bezpieczne na tym urządzeniu).",
+    "sheetsNav": "Arkusze Canvasu",
+    "sheetLink": "Arkusz {n} z {total}: {sections}",
+    "readOnly": {
+      "title": "Ten Canvas otworzyłaś/eś samym kodem sprawy",
+      "body": "Możesz go wypełniać i drukować, a zmiany zostaną na tym urządzeniu. Zapisać je w sprawie może tylko autor pomysłu — otwórz Canvas z prywatnego linku, który dostałaś/eś po wysłaniu pomysłu."
+    },
+    "source": "Social Innovation Canvas — INNO AGH, wersja {version} z {date}, na podstawie Social Innovation Canvas The New Global School",
+    "sourceDetail": "pytania zapisaliśmy w formie „Ty”",
+    "blankNotes": "Notatki"
+  },
+  "canvasPage": {
+    "eyebrow": "Kreator pomysłów · Canvas",
+    "title": "Canvas innowacji społecznej",
+    "lead": "Pomysł „{title}” (sprawa {code}). Trzy arkusze pomagają przemyśleć problem, odbiorców, koszty, partnerów i wpływ.",
+    "loaded": "Wczytaliśmy Twój zapisany Canvas.",
+    "prefilled": "Część pól wypełniliśmy z Twojej fiszki — sprawdź je.",
+    "crumbIdeas": "Mam pomysł",
+    "crumbCase": "Sprawa {code}",
+    "backToCase": "Wróć do sprawy",
+    "toApplication": "Przygotuj szkic wniosku"
+  },
+  "blank": {
+    "eyebrow": "Kreator pomysłów · Canvas",
+    "title": "Pusty Canvas innowacji społecznej",
+    "lead": "Trzy arkusze Social Innovation Canvas z pytaniami, które pomagają przemyśleć problem, odbiorców, koszty, partnerów i wpływ. Wydrukuj je i wypełnij na kartce — sam(a) albo z zespołem. Niczego nie musisz wysyłać.",
+    "crumb": "Mam pomysł",
+    "print": "Drukuj (3 strony A4)",
+    "toWizard": "Zgłoś pomysł przez stronę"
+  },
+  "applicationPage": {
+    "eyebrow": "Kreator pomysłów · Wniosek",
+    "title": "Generator wniosku",
+    "lead": "Pomysł „{title}” (sprawa {code}). Przygotujemy szkic wniosku o grant z tego, co już napisałaś/eś — resztę uzupełnisz sam(a).",
+    "crumbIdeas": "Mam pomysł",
+    "crumbCase": "Sprawa {code}",
+    "canvasEdit": "Popraw Canvas",
+    "canvasFirst": "Najpierw wypełnij Canvas (lepszy szkic)",
+    "noCall": {
+      "title": "Teraz nie trwa żaden nabór",
+      "body": "Generator wniosku działa tylko w czasie otwartego naboru. Zapisz się na powiadomienia — damy znać, gdy ROPS ogłosi nowy.",
+      "notify": "Powiadom mnie o naborach"
+    },
+    "polishOnly": {
+      "title": "Wnioski do ROPS składa się po polsku",
+      "body": "Szkic możesz przygotować w innym języku, ale formularz naboru wypełnia się po polsku.",
+      "switch": "Przełącz stronę na polski"
+    },
+    "pick": {
+      "heading": "Wybierz nabór",
+      "body": "{count, plural, one {Trwa # nabór, do którego} few {Trwają # nabory, do których} many {Trwa # naborów, do których} other {Trwa # naboru, do których}} możesz przygotować wniosek. Każdy ma własny formularz i kryteria oceny — szkic dopasujemy do wybranego.",
+      "legend": "Nabór, do którego piszesz wniosek",
+      "who": "Kto może złożyć wniosek: {who}",
+      "submit": "Pokaż ten nabór"
+    },
+    "window": {
+      "until": "Nabór trwa do {date}.",
+      "demo": "Nabór przykładowy — bez terminu.",
+      "none": "Termin podaje ogłoszenie naboru."
+    },
+    "who": {
+      "iws": "osoby fizyczne, organizacje, instytucje publiczne i grupy nieformalne",
+      "uslugaWrazliwa": "OPS, CUS, PCPR i organizacje pozarządowe z Małopolski"
+    },
+    "demoNote": {
+      "iws": "To nabór demonstracyjny na potrzeby prototypu. Pola formularza i kryteria oceny skopiowaliśmy z naboru „Inkubator Włączenia Społecznego 2.0” (ROPS Kraków, FERS, Działanie 5.1).",
+      "uslugaWrazliwa": "To nabór demonstracyjny na potrzeby prototypu, wzorowany na projekcie „Usługa Wrażliwa” (ROPS Kraków). Pola formularza odpowiadają sekcjom Ramowego Planu Wdrożenia, a kryteria oceny są przykładowe. Nie jest to nabór ogłoszony przez ROPS.",
+      "other": "To nabór demonstracyjny na potrzeby prototypu."
+    },
+    "fields": "Pola formularza ({count})",
+    "criteria": "Jak oceniane są wnioski ({count, plural, one {# kryterium} few {# kryteria} many {# kryteriów} other {# kryterium}})",
+    "criterion": "{label} (0–{max} pkt):",
+    "criteriaSample": "Kryteria przykładowe — przygotowane na potrzeby prototypu, nie pochodzą z karty oceny ROPS.",
+    "source": {
+      "iws": "Wzór formularza aplikacyjnego IWS 2.0 (zał. 3 do ogłoszenia), ROPS Kraków",
+      "uslugaWrazliwa": "Projekt „Usługa Wrażliwa”: II nabór wniosków, ROPS Kraków",
+      "uslugaWrazliwaDetail": "pola według sekcji Ramowego Planu Wdrożenia"
+    }
+  },
+  "application": {
+    "failedGeneric": "Nie udało się przygotować szkicu.",
+    "gen": {
+      "heading": "Szkic wniosku",
+      "body": "Wypełnimy pola formularza na podstawie Twojej fiszki i Canvasu. Tego, czego tam nie ma — kwot, terminów, partnerów — nie wymyślamy: w tych miejscach zobaczysz „{gap}”.",
+      "start": "Przygotuj szkic wniosku",
+      "writing": "Piszemy szkic…",
+      "empty": "Wypełnię sam(a) od zera",
+      "wait": "Piszemy szkic — to może potrwać do minuty."
+    },
+    "failed": {
+      "heading": "Szkic nie jest gotowy",
+      "body": "Asystent AI przerwał pisanie, więc niczego nie wpisaliśmy do formularza. Spróbuj ponownie albo przygotuj szkic bez AI — z Twojej fiszki i Canvasu.",
+      "retry": "Spróbuj ponownie",
+      "template": "Przygotuj szkic bez AI"
+    },
+    "edit": {
+      "heading": "Sprawdź i popraw wniosek",
+      "restored": "Przywróciliśmy szkic zapisany na tym urządzeniu.",
+      "sentBefore": "Wysłałaś/eś ten wniosek {date}. Możesz go poprawić i wysłać ponownie.",
+      "templateTitle": "Asystent AI chwilowo niedostępny",
+      "templateBody": "Przygotowaliśmy szablon z Twojej fiszki i Canvasu. Uzupełnij pola oznaczone „{gap}”.",
+      "aiNote": "Szkic napisała sztuczna inteligencja na podstawie Twoich danych. Przeczytaj go uważnie przed wysłaniem.",
+      "gapsNone": "Szkic gotowy. Wszystkie pola są wypełnione — przeczytaj je jeszcze raz przed wysłaniem.",
+      "gaps": "Szkic gotowy. Luki „{gap}” zostały w {count, plural, one {# polu} other {# polach}} — uzupełnij je przed wysłaniem.",
+      "flaggedTitle": "Do weryfikacji: liczby, których nie ma w Twojej fiszce",
+      "flaggedBody": "{numbers} — sprawdź, skąd się wzięły, i popraw albo usuń je przed wysłaniem.",
+      "preview": "Podgląd całego wniosku",
+      "notSent": "Nie wysłano:",
+      "send": "Wyślij wniosek do ROPS",
+      "sending": "Wysyłanie…",
+      "redo": "Przygotuj szkic od nowa",
+      "notTheCall": "Wysłanie przekazuje szkic zespołowi ROPS w Twojej sprawie. To nie jest złożenie wniosku w naborze — wniosek składasz w formularzu elektronicznym naboru."
+    },
+    "redo": {
+      "question": "Nowy szkic zastąpi wszystko, co jest teraz w polach — także Twoje poprawki. Przygotować go od nowa?",
+      "confirm": "Tak, przygotuj od nowa",
+      "cancel": "Nie, zostaw moje zmiany"
+    },
+    "readOnly": {
+      "title": "Wniosek otworzyłaś/eś samym kodem sprawy",
+      "body": "Możesz przygotować i poprawić szkic, ale wysłać go do ROPS może tylko autor pomysłu — otwórz tę stronę z prywatnego linku, który dostałaś/eś po wysłaniu pomysłu."
+    },
+    "sent": {
+      "heading": "Wniosek wysłany do ROPS",
+      "body": "Treść wniosku jest w wątku sprawy {code}.",
+      "gaps": "{count, plural, one {Zostało # pole do uzupełnienia} few {Zostały # pola do uzupełnienia} many {Zostało # pól do uzupełnienia} other {Zostało # pola do uzupełnienia}} — zespół ROPS pomoże Ci je dokończyć.",
+      "toCase": "Przejdź do sprawy",
+      "edit": "Popraw wniosek"
+    },
+    "server": {
+      "noCode": "Brak kodu sprawy albo naboru.",
+      "noCall": "Ten nabór nie przyjmuje teraz wniosków. Wybierz inny nabór albo odśwież stronę.",
+      "failed": "Nie udało się przygotować szkicu. Spróbuj ponownie.",
+      "callClosed": "Ten nabór nie przyjmuje już wniosków.",
+      "empty": "Wniosek jest pusty — uzupełnij przynajmniej jedno pole.",
+      "message": "Wysyłam wniosek do naboru „{name}”{demo, select, yes { (nabór przykładowy — demo)} other {}}.",
+      "messageGaps": "Pola do uzupełnienia: {count}.",
+      "messageComplete": "Wszystkie pola są wypełnione."
+    }
+  },
+  "template": {
+    "applicant": "{gap} — te dane wpiszesz w formularzu elektronicznym naboru.",
+    "declarations": "Oświadczenia składasz w formularzu elektronicznym naboru.",
+    "stage": "Etap: {stage}.",
+    "areas": "Obszary Mapy Wyzwań Społecznych: {areas}.",
+    "missing": {
+      "title": "nazwa innowacji",
+      "description": "opis innowacji",
+      "recipients": "odbiorcy innowacji",
+      "problemDiagnosis": "dane statystyczne i źródła diagnozy",
+      "change": "jak innowacja zmieni sytuację odbiorców",
+      "futureVision": "możliwość zastosowania na większą skalę i w innych miejscach",
+      "actionPlan": "działania, terminy i koszty: okres przygotowawczy do 3 miesięcy, dwie fazy testu łącznie do 9 miesięcy",
+      "grantAmount": "kwota grantu w zł — suma kosztów z planu działania",
+      "team": "kto realizuje projekt i jakie ma doświadczenie",
+      "serviceGoal": "cel usługi: jaki problem rozwiąże i co zmieni dla odbiorców",
+      "targetGroup": "liczba osób objętych wsparciem i skąd ją znasz",
+      "scope": "formy wsparcia, miejsce i częstotliwość usługi",
+      "schedule": "etapy z orientacyjnymi miesiącami: przygotowanie, uruchomienie, świadczenie usługi, podsumowanie",
+      "staff": "kto świadczy usługę, jakie ma kwalifikacje, ile etatów lub godzin",
+      "partners": "partnerzy i rola każdego z nich",
+      "budget": "główne koszty i ich szacunek w zł — do weryfikacji przez ROPS",
+      "risks": "ryzyka i sposoby zapobiegania im",
+      "indicators": "wskaźniki i sposób ich pomiaru",
+      "innovation": "nazwa innowacji z Biblioteki Innowacji Społecznych i powód wyboru"
+    },
+    "canvas": {
+      "problem": "Problem",
+      "intensity": "Intensywność",
+      "frequency": "Częstotliwość",
+      "scale": "Skala problemu",
+      "emotional": "Wartość emocjonalna",
+      "functional": "Wartość funkcjonalna",
+      "impactPerson": "Wpływ na osobę",
+      "impactCommunity": "Wpływ na społeczność",
+      "impactEnvironment": "Wpływ na środowisko",
+      "impactNotes": "Notatki o wpływie",
+      "incomeScaling": "Skalowanie dochodu",
+      "additional": "Kanały dodatkowe",
+      "reach": "Jak dotrzeć do odbiorców",
+      "readiness": "Gotowość do wdrożenia",
+      "fixedCosts": "Stałe koszty",
+      "variableCosts": "Zmienne koszty",
+      "supporters": "Kto wspiera zmianę",
+      "mainUser": "Główny użytkownik",
+      "solution": "Rozwiązanie",
+      "direct": "Kanały bezpośrednie",
+      "intermediaries": "Kanały pośrednie",
+      "cheaper": "Partnerzy, którzy obniżą koszty",
+      "betterValue": "Partnerzy, którzy wzmocnią wartość",
+      "partnersNotes": "Notatki o partnerach",
+      "blockers": "Kto może utrudniać zmianę",
+      "similar": "Podobne rozwiązania w Bibliotece"
+    }
+  },
+  "caseBody": {
+    "targetGroup": "Komu pomaga: {text}",
+    "stage": "Etap: {stage}",
+    "areas": "Obszary: {areas}",
+    "author": "Zgłasza: {role}{onBehalf, select, yes { (w imieniu innej osoby lub grupy)} other {}}",
+    "similar": "Podobne w Bibliotece: {titles}"
+  },
+  "fanout": {
+    "unsubscribe": "Nie chcesz tych powiadomień? Odpowiedz na tę wiadomość albo napisz do ROPS — usuniemy Twój adres.",
+    "signature": "Zespół Hubu ROPS\n{hub}\n{owner}",
+    "call": {
+      "until": "Nabór trwa do {date}.",
+      "subject": "{kind, select, changed {Zmiana w naborze} other {Nowy nabór}}: {name}",
+      "text": "{kind, select, changed {Zmieniły się informacje o naborze} other {ROPS ogłosił nabór}} „{name}” ({status}).",
+      "links": "Szczegóły: {details}\nWszystkie nabory: {all}",
+      "sms": "Już Działa: {kind, select, changed {zmiana w naborze} other {nowy nabór}} „{name}”. {link}"
+    },
+    "innovation": {
+      "subject": "Nowe rozwiązanie w obszarze „{area}”: {title}",
+      "text": "W Bibliotece Innowacji Społecznych pojawiło się rozwiązanie „{title}” w obszarze „{area}”.\n\nZobacz: {link}",
+      "sms": "Już Działa: nowe rozwiązanie „{title}”. {link}"
+    },
+    "similar": {
+      "title": "Podobne rozwiązanie już działa: {title}",
+      "body": "Może warto skontaktować się z jego autorami albo rozwinąć je razem?"
+    }
+  }
+}

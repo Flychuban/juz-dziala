@@ -2,28 +2,31 @@ import { eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { AUTHOR_ROLE_LABEL, IDEA_STAGE_LABEL, MAPA_AREA_LABEL } from "~/lib/domain";
+import { translatorFor } from "~/i18n/server";
+import { labelsFor } from "~/lib/domain";
+import { AI_STREAM_LINES } from "~/server/ai/structured";
 import { createTRPCRouter, publicProcedure, rateLimit } from "~/server/api/trpc";
-import { addMessage, createCase } from "~/server/cases";
+import { addMessage } from "~/server/cases";
 import { AUTHOR_NAME } from "~/server/cases/types";
 import { cases } from "~/server/db/schema";
 import { redactPII } from "~/server/domain/redact";
-import { fieldsToMarkdown } from "~/server/ideas/application-rules";
+import { countGaps, fieldsToMarkdown } from "~/server/ideas/application-rules";
 import { assistIdea } from "~/server/ideas/assist";
 import { sanitizeCanvas } from "~/server/ideas/canvas-def";
-import { applicationCall, gminaOptions, isKnownGmina, loadCanvasDef, scoringCall } from "~/server/ideas/data";
+import { contactOrGminaProblem, createCaseInLocale } from "~/server/ideas/case-helpers";
+import { applicationCallById, applicationCalls, gminaOptions, loadCanvasDef, localizeCall, scoringCall } from "~/server/ideas/data";
 import { loadIdeaCase } from "~/server/ideas/idea-case";
 import {
   applicationFieldSchema,
   canvasValuesSchema,
-  contactProblem,
-  GAP,
+  gapFor,
   ideaAssistInputSchema,
   ideaSubmitSchema,
   type SelfScore,
   type StoredIdea,
 } from "~/server/ideas/schema";
-import { findSimilar } from "~/server/ideas/similar";
+import { findSimilar, localizeSimilar } from "~/server/ideas/similar";
+import { sketchIdea } from "~/server/ideas/sketch";
 import { notify } from "~/server/notify";
 
 /**
@@ -35,6 +38,15 @@ import { notify } from "~/server/notify";
 const codeInput = z.object({ code: z.string().trim().min(1).max(40), token: z.string().max(200).optional() });
 
 const redact = (s: string) => redactPII(s).text;
+
+/** Lines the AI wrapper writes instead of text — never stored as an answer. */
+const SENTINELS: string[] = Object.values(AI_STREAM_LINES).flatMap((l) => Object.values(l));
+const withoutSentinels = (v: string) =>
+  v
+    .split("\n")
+    .filter((line) => !SENTINELS.includes(line.trim()))
+    .join("\n")
+    .trim();
 
 /** Recomputes the totals of a self-assessment sent back by the browser. */
 function recheckSelfScore(s: SelfScore | undefined): SelfScore | null {
@@ -53,14 +65,16 @@ function recheckSelfScore(s: SelfScore | undefined): SelfScore | null {
 
 export const ideasRouter = createTRPCRouter({
   /** The IWS 2.0 criteria used by the self-assessment (names shown even without AI). */
-  criteria: publicProcedure.query(async () => {
-    const call = await scoringCall();
-    if (!call) return null;
+  criteria: publicProcedure.query(async ({ ctx }) => {
+    const found = await scoringCall();
+    if (!found) return null;
+    const call = localizeCall(found, ctx.locale);
     return {
       callId: call.id,
       callName: call.name,
       minScore: call.minScore,
       sourceUrl: call.sourceUrl,
+      lang: call.lang,
       items: call.criteria.map((c) => ({
         key: c.key,
         label: c.label,
@@ -74,23 +88,30 @@ export const ideasRouter = createTRPCRouter({
   /** „To już istnieje": keyword duplicate check over the library (no AI). */
   similar: publicProcedure.input(z.object({ text: z.string().max(6000) })).query(async ({ ctx, input }) => {
     await rateLimit(ctx, "ideas.similar", { limit: 120, windowSec: 600 });
-    return findSimilar(redact(input.text));
+    return findSimilar(redact(input.text), 3, ctx.locale);
   }),
 
   /** The AI panel. `{ok:false, reason:"unavailable"}` when there is no API key. */
   assist: publicProcedure.input(ideaAssistInputSchema).mutation(async ({ ctx, input }) => {
     await rateLimit(ctx, "ideas.assist", { limit: 12, windowSec: 600 });
-    return assistIdea(input);
+    return assistIdea(input, ctx.locale);
+  }),
+
+  /** „Narysuj szkic pomysłu": a schematic picture as checked shapes (the page draws it). */
+  sketch: publicProcedure.input(ideaAssistInputSchema).mutation(async ({ ctx, input }) => {
+    await rateLimit(ctx, "ideas.sketch", { limit: 6, windowSec: 600 });
+    return sketchIdea(input, ctx.locale);
   }),
 
   /** Submit the fiszka: opens a Sprawa and reports similar library cards. */
   submit: publicProcedure.input(ideaSubmitSchema).mutation(async ({ ctx, input }) => {
     await rateLimit(ctx, "ideas.submit", { limit: 6, windowSec: 600 });
-    const problem = contactProblem(input.contactPref, input.contact);
+    const problem = await contactOrGminaProblem(ctx.locale, input);
     if (problem) throw new TRPCError({ code: "BAD_REQUEST", message: problem });
-    if (!(await isKnownGmina(input.gminaTeryt))) throw new TRPCError({ code: "BAD_REQUEST", message: "Wybierz gminę z listy." });
 
+    // Stored (and shown to ROPS) with the Polish card titles; returned to the author in their language.
     const similar = await findSimilar(redact(`${input.title}\n${input.description}\n${input.targetGroup}`));
+    const shown = await localizeSimilar(similar, ctx.locale);
     const idea: StoredIdea = {
       title: redact(input.title),
       description: redact(input.description),
@@ -101,33 +122,39 @@ export const ideasRouter = createTRPCRouter({
       similar: similar.map((s) => ({ innovationId: s.innovationId, slug: s.slug, title: s.title })),
       application: null,
     };
+    // The case body is read by the author and ROPS; it is written in the author's language.
+    const t = translatorFor(ctx.locale, "ideas");
+    const labels = labelsFor(ctx.locale);
     const body = [
       input.description,
-      `Komu pomaga: ${input.targetGroup}`,
-      `Etap: ${IDEA_STAGE_LABEL[input.stage]}`,
-      input.areas.length ? `Obszary: ${input.areas.map((a) => MAPA_AREA_LABEL[a]).join(", ")}` : "",
-      `Zgłasza: ${AUTHOR_ROLE_LABEL[input.authorRole]}${input.onBehalf ? " (w imieniu innej osoby lub grupy)" : ""}`,
-      similar.length ? `Podobne w Bibliotece: ${similar.map((s) => s.title).join("; ")}` : "",
+      t("caseBody.targetGroup", { text: input.targetGroup }),
+      t("caseBody.stage", { stage: labels.ideaStage[input.stage] }),
+      input.areas.length ? t("caseBody.areas", { areas: input.areas.map((a) => labels.area[a]).join(", ") }) : "",
+      t("caseBody.author", { role: labels.authorRole[input.authorRole], onBehalf: input.onBehalf ? "yes" : "no" }),
+      similar.length ? t("caseBody.similar", { titles: shown.map((s) => s.title).join("; ") }) : "",
     ]
       .filter(Boolean)
       .join("\n\n");
 
-    const created = await createCase({
-      kind: "idea",
-      title: input.title,
-      body,
-      gminaTeryt: input.gminaTeryt,
-      powiatTeryt: input.gminaTeryt?.slice(0, 4),
-      areas: input.areas,
-      authorRole: input.authorRole,
-      onBehalf: input.onBehalf,
-      contactPref: input.contactPref,
-      contact: input.contact,
-      idea,
-    });
+    const created = await createCaseInLocale(
+      {
+        kind: "idea",
+        title: input.title,
+        body,
+        gminaTeryt: input.gminaTeryt,
+        powiatTeryt: input.gminaTeryt?.slice(0, 4),
+        areas: input.areas,
+        authorRole: input.authorRole,
+        onBehalf: input.onBehalf,
+        contactPref: input.contactPref,
+        contact: input.contact,
+        idea,
+      },
+      ctx.locale,
+    );
     const top = similar[0];
     if (top) await notify({ type: "idea.similarFound", caseId: created.id, innovationId: top.innovationId });
-    return { code: created.code, accessToken: created.accessToken, similar };
+    return { code: created.code, accessToken: created.accessToken, similar: shown };
   }),
 
   /** An idea case for the Canvas and the application pages. Never returns the contact. */
@@ -144,12 +171,12 @@ export const ideasRouter = createTRPCRouter({
     };
   }),
 
-  /** Saves the interactive Canvas on the case (unknown keys and options are dropped). */
+  /** Saves the interactive Canvas on the case (unknown keys and options are dropped). Needs the private link. */
   saveCanvas: publicProcedure.input(codeInput.extend({ canvas: canvasValuesSchema })).mutation(async ({ ctx, input }) => {
     await rateLimit(ctx, "ideas.canvas", { limit: 60, windowSec: 600 });
-    const c = await loadIdeaCase(ctx, input.code, input.token);
+    const c = await loadIdeaCase(ctx, input.code, input.token, { write: true });
     const def = await loadCanvasDef();
-    if (!def) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Canvas jest chwilowo niedostępny." });
+    if (!def) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: translatorFor(ctx.locale, "ideas")("canvas.unavailable") });
     const clean = sanitizeCanvas(def, input.canvas);
     const canvas = {
       notes: Object.fromEntries(Object.entries(clean.notes).map(([k, v]) => [k, redact(v)])),
@@ -160,10 +187,10 @@ export const ideasRouter = createTRPCRouter({
     return { savedAt: now };
   }),
 
-  /** The call an application can be written for now (open, or the demo call). */
-  applicationCall: publicProcedure.query(async () => applicationCall()),
+  /** The calls an application can be written for now (open, then demo), in the reader's language. */
+  applicationCalls: publicProcedure.query(async ({ ctx }) => (await applicationCalls()).map((c) => localizeCall(c, ctx.locale))),
 
-  /** „Wyślij wniosek do ROPS": stores the fields on the case and tells ROPS in the thread. */
+  /** „Wyślij wniosek do ROPS": stores the fields on the case and tells ROPS in the thread. Needs the private link. */
   submitApplication: publicProcedure
     .input(
       codeInput.extend({
@@ -174,20 +201,18 @@ export const ideasRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       await rateLimit(ctx, "ideas.application.submit", { limit: 6, windowSec: 600 });
-      const c = await loadIdeaCase(ctx, input.code, input.token);
-      const call = await applicationCall();
-      if (call?.id !== input.callId) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Ten nabór nie przyjmuje już wniosków." });
-      }
+      const t = translatorFor(ctx.locale, "ideas");
+      const c = await loadIdeaCase(ctx, input.code, input.token, { write: true });
+      const found = await applicationCallById(input.callId);
+      if (!found) throw new TRPCError({ code: "BAD_REQUEST", message: t("application.server.callClosed") });
+      const call = localizeCall(found, ctx.locale);
       const byKey = new Map(input.fields.map((f) => [f.key, f.value]));
       const fields = call.formFields.map((f) => ({
         key: f.key,
         label: f.label,
-        value: redact(byKey.get(f.key)?.trim() ?? ""),
+        value: redact(withoutSentinels(byKey.get(f.key) ?? "")),
       }));
-      if (fields.every((f) => !f.value)) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Wniosek jest pusty — uzupełnij przynajmniej jedno pole." });
-      }
+      if (fields.every((f) => !f.value)) throw new TRPCError({ code: "BAD_REQUEST", message: t("application.server.empty") });
       const application = {
         callId: call.id,
         callName: call.name,
@@ -199,16 +224,17 @@ export const ideasRouter = createTRPCRouter({
         .update(cases)
         .set({ idea: { ...c.idea, application }, callId: call.id, updatedAt: new Date() })
         .where(eq(cases.id, c.row.id));
-      const gaps = fields.filter((f) => !f.value || f.value.includes(GAP)).length;
+      const gaps = countGaps(fields);
+      const gap = gapFor(ctx.locale);
       await addMessage({
         caseId: c.row.id,
         authorKind: "author",
         authorName: AUTHOR_NAME,
         body: [
-          `Wysyłam wniosek do naboru „${call.name}”${call.status === "demo" ? " (nabór przykładowy — demo)" : ""}.`,
-          gaps ? `Pola do uzupełnienia: ${gaps}.` : "Wszystkie pola są wypełnione.",
+          t("application.server.message", { name: call.name, demo: call.status === "demo" ? "yes" : "no" }),
+          gaps ? t("application.server.messageGaps", { count: gaps }) : t("application.server.messageComplete"),
           "",
-          fieldsToMarkdown(fields.map((f) => ({ ...f, value: f.value || GAP }))),
+          fieldsToMarkdown(fields.map((f) => ({ ...f, value: f.value || gap }))),
         ].join("\n"),
       });
       return { ok: true as const, gaps };
