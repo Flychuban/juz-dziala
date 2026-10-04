@@ -27,7 +27,7 @@
     "data:gus": "tsx scripts/fetch-gus.ts",
     "data:geo": "tsx scripts/build-geo.ts",
     "data:translate": "tsx --env-file-if-exists=.env scripts/translate-data.ts",
-    "vercel-build": "drizzle-kit push --force && tsx seed/index.ts && next build"
+    "vercel-build": "drizzle-kit push --force; tsx scripts/migrate.ts && tsx seed/index.ts && next build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
