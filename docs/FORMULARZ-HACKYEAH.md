@@ -1,6 +1,6 @@
 # Formularz „Add Project" na HackYeah 2026 — odpowiedzi do wklejenia
 
-Szkic z 3 października 2026 r. Liczby pochodzą z repozytorium: `data/gminas.json` (GUS BDL, 31 XII 2025), `eval/results/ai-2026-10-03T17-17-15-016Z.json` i `docs/KOSZTY.md`. Zadanie wymaga zgłoszenia po polsku.
+Stan z 4 października 2026 r. Liczby pochodzą z repozytorium: `data/gminas.json` (GUS BDL, 31 XII 2025), `eval/results/ai-2026-10-04T06-22-01-669Z.json` (polski), `eval/results/ai-en-2026-10-04T06-19-13-774Z.json` (angielski) i `docs/KOSZTY.md`. Zadanie wymaga zgłoszenia po polsku.
 
 ## Project Name
 Już Działa — cyfrowe serce Małopolskiego Hubu Innowacji Społecznych
@@ -20,23 +20,38 @@ Ogólny czat AI nie rozwiąże tego problemu. Nie zna kart ROPS, sieci organizac
 Już Działa to platforma ROPS, a nie kolejny czat. Mieszkaniec, organizacja albo gmina opisuje problem własnymi słowami, tekstem lub głosem. Platforma odpowiada wyłącznie na podstawie wiedzy, którą ma tylko ROPS: 114 kart Biblioteki Innowacji Społecznych, Mapy Wyzwań Społecznych, naborów grantowych i sieci organizacji oraz ekspertów.
 
 **Co dostaje użytkownik:**
-- **Natychmiastowe wyniki**, które AI weryfikuje w ok. 6 s. Model może wskazać tylko numery zdań z kart, a serwer wstawia ich dokładny tekst, więc cytat nie może zostać wymyślony. Przy każdym wyniku są źródło i data.
-- **„Twoja ścieżka”:** rozwiązanie → gdzie już działa → kto pomoże → skąd pieniądze.
-- **Uczciwe „nie wiem”:** gdy system nie ma pewności, przekazuje sprawę ekspertowi ROPS.
-- **Jeden przycisk „Poproś ROPS o pomoc”:** bez konta i bez nazwiska. Użytkownik dostaje kod sprawy, a odpowiedź wraca kanałem, który wybrał.
+- **Natychmiastowe wyniki**, które AI weryfikuje w ok. 4 s. Model może wskazać tylko numery zdań z kart, a serwer wstawia ich dokładny tekst, więc cytat nie może zostać wymyślony. Przy każdym wyniku są źródło i data.
+- **„Twoja ścieżka”:** rozwiązanie → kto je prowadzi → kto pomoże → skąd pieniądze.
+- **Uczciwe „nie wiem”:** gdy system nie ma pewności, mówi to wprost i jednym kliknięciem przekazuje opis ekspertowi ROPS.
+- **Jeden przycisk „Poproś ROPS o pomoc”:** bez konta i bez nazwiska. Użytkownik dostaje kod sprawy i widzi, co dzieje się dalej. Odpowiedź wraca na stronę sprawy i kanałem, który wybrał (w prototypie SMS i oddzwonienie są symulowane).
+- **„Szukam partnera”:** gminy, OPS, NGO i szkoły zgłaszają, co oferują i czego szukają, a ROPS kojarzy partnerstwa międzysektorowe.
+- **Polski i angielski:** cały serwis, łącznie z 114 kartami Biblioteki, działa też po angielsku — dla cudzoziemców (obszar Mapy Wyzwań „Integracja cudzoziemców”).
 
 **Co dostaje ROPS:**
 - Jedną „Sprawę” dla wszystkich 7 modułów: potrzeby, pomysłu, pytania, zgłoszenia do testów, opinii i prośby o wdrożenie.
 - Powiadomienie w ciągu kilku sekund, wstępną ocenę AI i szkic odpowiedzi napisany wyłącznie z kart ROPS. Pracownik go poprawia i wysyła.
 - Edycję biblioteki widoczną od razu oraz „Dodaj z dokumentu”, gdzie AI szkicuje kartę z PDF.
-- Trendy na mapie powiatów i „białe plamy”, czyli potrzeby bez gotowego rozwiązania, jako temat następnego naboru.
+- Trendy na mapie powiatów i „białe plamy”, czyli potrzeby bez gotowego rozwiązania, jako temat następnego naboru. Widoczne tylko dla ROPS; gmina po zalogowaniu widzi potrzeby ze swojego powiatu.
+- Kolejkę zdarzeń dla bazy grantowej (`/api/v1/events`) i otwarte API.
 
 **Pozostałe moduły:**
-- **Kreator pomysłów:** fiszka, asystent AI, sprawdzenie, czy podobna innowacja już istnieje, samoocena według kryteriów IWS 2.0, Canvas i generator wniosku.
+- **Kreator pomysłów:**
+  - fiszka i asystent AI;
+  - sprawdzenie, czy podobna innowacja już istnieje;
+  - samoocena według kryteriów IWS 2.0;
+  - „Szkic pomysłu”, czyli wizualizacja przedmiotu;
+  - Canvas;
+  - generator wniosku dopasowany do wybranego naboru.
 - **Tester innowacji.**
 - **Middleman Innowacji:** Ramowy Plan Wdrożenia innowacji jako usługi dla konkretnej gminy, z danymi GUS.
 
-**Dostępność:** WCAG 2.1 AA, tekst 18 px, A+/A−, kontrast, wpisywanie głosem, czytanie na głos, tekst łatwy do czytania (ETR), PJM i jedno pytanie na ekran. Testy axe nie wykazały żadnych naruszeń.
+**Dostępność:**
+- WCAG 2.1 AA: tekst 18 px, A+/A−, kontrast;
+- wpisywanie głosem i czytanie na głos;
+- tekst łatwy do czytania (ETR), PJM;
+- jedno pytanie na ekran.
+
+Testy axe nie wykazały żadnych naruszeń na 20 ekranach (telefon i komputer), także w wersji angielskiej.
 
 ## Challenges
 PARTNER TASK [UMWM]: HubMi.pl
@@ -50,19 +65,23 @@ New Idea. Kod powstał od zera podczas HackYeah 3–4 października 2026 r., a h
 ## What's done so far and goal of your project
 Wszystko powstało podczas HackYeah, od zera, w nowym repozytorium. Wcześniej niczego nie było.
 
-**Gotowe (stan na sobotę wieczór):**
+**Gotowe (stan na niedzielę rano):**
 - Działające demo na https://juz-dziala.vercel.app ze wszystkimi 7 modułami zadania.
 - Matchmaking z weryfikacją AI i cytatami ze źródeł oraz „Twoja ścieżka”.
 - Jedna „Sprawa” z kodem, wątkiem i powiadomieniami dla ROPS.
 - Panel administratora z oceną AI i szkicem odpowiedzi.
-- Zasobnik wiedzy: 114 kart, Kondycja Małopolski na podstawie Mapy Wyzwań i dane GUS dla 182 gmin.
-- Kreator pomysłów, Tester i Middleman z Ramowym Planem Wdrożenia.
+- Zasobnik wiedzy: 114 kart, Kondycja Małopolski na podstawie Mapy Wyzwań i dane GUS dla 183 gmin.
+- Kreator pomysłów (z wnioskiem dopasowanym do naboru i szkicem pomysłu), Tester i Middleman z Ramowym Planem Wdrożenia.
+- „Szukam partnera”, panel gminy i panel eksperta.
+- Cały serwis po polsku i po angielsku.
 
 **Zmierzona trafność** na zamrożonym zestawie 20 przypadków:
 - 100% w top 3 (same słowa kluczowe: 83%);
 - 92% na pierwszym miejscu;
 - 2/2 poprawne odmowy;
 - 0 wycieków danych osobowych.
+
+Po angielsku na tym samym zestawie, przetłumaczonym przed testem: 94% w top 3 i 85% na pierwszym miejscu.
 
 Koszt jednego dopasowania to 0,04 $. AI kosztuje ok. 100 $ miesięcznie przy 2 000 dopasowań.
 
@@ -97,11 +116,17 @@ https://github.com/Flychuban/juz-dziala
 ## Instructions on how to open project
 **Demo bez instalacji:** https://juz-dziala.vercel.app
 
-1. Na stronie głównej wpisz problem, np. „Mama ma 73 lata, owdowiała, mieszka sama pod Limanową, prawie nie wychodzi, myli leki”, albo wybierz przykład i kliknij „Szukaj rozwiązań”. Wyniki ze słów kluczowych pojawiają się od razu, a po ok. 6 s są zweryfikowane przez AI i mają cytat ze źródła.
+1. Na stronie głównej wpisz problem, np. „Mama ma 73 lata, owdowiała, mieszka sama pod Limanową, prawie nie wychodzi, myli leki”, albo kliknij przykład. Wyniki ze słów kluczowych pojawiają się od razu, a po ok. 4 s są zweryfikowane przez AI i mają cytat ze źródła.
 2. Kliknij „Poproś ROPS o pomoc”. Dostaniesz kod sprawy, bez zakładania konta.
 3. W przełączniku „Tryb demonstracyjny” na górze strony wybierz „Pracownik ROPS”. Zobaczysz nową sprawę, wstępną ocenę AI i szkic odpowiedzi. Wyślij odpowiedź, a pojawi się ona w wątku sprawy (`/case/<kod>`).
-4. W tym samym przełączniku wybierz „Gmina”. Otworzy się `/municipality` z profilem gminy: dane GUS i „Zaplanuj usługę” (Ramowy Plan Wdrożenia).
-5. Inne miejsca warte zobaczenia: `/ideas/new` (Kreator pomysłów), `/admin/trends` (trendy i białe plamy) i `/methodology` (jak mierzymy trafność). Przyciski A+ i „Kontrast” są w nagłówku.
+4. W tym samym przełączniku wybierz „Gmina”. Otworzy się `/municipality` z panelem gminy (potrzeby z powiatu) i profilem: dane GUS i „Zaplanuj usługę” (Ramowy Plan Wdrożenia).
+5. Inne miejsca warte zobaczenia:
+   - `/ideas/new`: Kreator pomysłów ze szkicem pomysłu;
+   - `/network#partnerzy`: „Szukam partnera”;
+   - `/admin/trends`: trendy i białe plamy;
+   - `/methodology`: jak mierzymy trafność.
+
+   Przyciski A+, „Kontrast” i „English” są w nagłówku. Wersja angielska: https://juz-dziala.vercel.app/?lang=en
 
 **Lokalnie** (Node.js 22, pnpm, PostgreSQL):
 ```

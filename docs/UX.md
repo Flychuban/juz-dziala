@@ -26,7 +26,7 @@ denser.
 | innovation | **rozwiązanie** (resident screens) / **innowacja** (staff, library) |
 | library | **Biblioteka Innowacji Społecznych** |
 | matching results | „Gotowe rozwiązania dla Ciebie" |
-| path strip | **Twoja ścieżka**: Rozwiązanie → Działa już w → Kto pomoże → Skąd pieniądze |
+| path strip | **Twoja ścieżka**: Rozwiązanie → Kto to prowadzi → Kto pomoże → Skąd pieniądze (a step without data is hidden, never „Brak informacji") |
 | abstain | „Nie mamy pewnego dopasowania" |
 | grant call | **nabór** |
 | implementation plan | **Ramowy Plan Wdrożenia** |
@@ -42,7 +42,7 @@ denser.
 | `/` | I | Describe the problem | H1 „Z czym przychodzisz?"; big textarea with label; „Powiedz" (mic, only if supported); optional gmina picker; example chips; primary „Szukaj rozwiązań"; secondary doors: Mam pomysł · Szukam rozwiązań dla gminy · Chcę testować · Mam kod sprawy |
 | `/match/[id]` | I | Results | Highlighted user terms; 1–3 cards (title, film button, „Pasuje, bo…", quote + source, Twoja ścieżka, „Czytaj na głos", „Tekst łatwy"); „Warto wiedzieć" (fact from Mapa/GUS with source); „Podobne zgłoszenia" (count in powiat); CTA „Poproś ROPS o pomoc"; Drukuj; crisis banner on top when needed |
 | `/library` | II | Biblioteka | Search; filters (obszar Mapy, kategoria, grupa docelowa); cards with film thumbnail, badge „wybrana do upowszechniania" |
-| `/library/[slug]` | II | Card | 6 sections; film; Działa już w; licence + source; „Chcę to wdrożyć" → /adapt; „Testuj / oceń" |
+| `/library/[slug]` | II | Card | 6 sections; film; Kto to prowadzi (authors org + place); licence + source; „Chcę to wdrożyć" → /adapt; „Testuj / oceń" |
 | `/knowledge` | II | Kondycja Małopolski | 8 area tiles → `/knowledge/[area]`: definicja, kluczowe wyzwania, persona, liczby (Polska vs Małopolska labelled), innowacje, raporty |
 | `/learn` | II | Materiały | Cards for raporty, narzędzia (Canvas), filmy, przewodnik „jak powstaje innowacja" |
 | `/ideas/new` | III | Fiszka | 4 steps: Na czym polega? Komu pomaga? Na jakim etapie? Gdzie i kto? + AI panel (pytania, nietuzinkowe pomysły, „to już istnieje", samoocena 5 kryteriów IWS) → submit = sprawa |

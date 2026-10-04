@@ -4,7 +4,7 @@
 
 Prototyp przygotowany na **HackYeah 2026** w ramach wyzwania **HubMI.pl** Regionalnego Ośrodka Polityki Społecznej w Krakowie (ROPS Kraków).
 
-**Wersja demonstracyjna:** https://juz-dziala.vercel.app
+**Wersja demonstracyjna:** https://juz-dziala.vercel.app · **English:** https://juz-dziala.vercel.app/?lang=en
 
 ## Na czym polega
 
@@ -17,9 +17,11 @@ Mieszkaniec, organizacja albo gmina opisuje problem własnymi słowami (tekstem 
 Każde dopasowanie pokazuje:
 - **słowa użytkownika**, które zadecydowały o wyniku;
 - **dosłowny cytat z karty innowacji** ze źródłem i datą (serwer odrzuca cytaty, których nie ma w karcie);
-- **Twoją ścieżkę**: rozwiązanie → gdzie działa → kto pomoże → skąd pieniądze.
+- **Twoją ścieżkę**: rozwiązanie → kto je prowadzi → kto pomoże → skąd pieniądze.
 
-Gdy system nie ma pewności, **nie zgaduje** — przekazuje sprawę ekspertowi ROPS.
+Gdy system nie ma pewności, **nie zgaduje** — mówi „nie wiem” i jednym kliknięciem przekazuje opis ekspertowi ROPS.
+
+**Po polsku i po angielsku.** Polski jest domyślny. Przełącznik „English” (albo link z `?lang=en`) zmienia cały serwis, łącznie z 114 kartami Biblioteki przetłumaczonymi zdanie po zdaniu: cytat pokazuje tłumaczenie razem z polskim oryginałem. Dopasowanie rozumie opisy po angielsku, a odpowiedź ROPS trafia do autora w jego języku. To odpowiedź na obszar Mapy Wyzwań „Integracja cudzoziemców”.
 
 ## Dlaczego to nie jest „kolejny czat"
 
@@ -36,12 +38,12 @@ Gdy system nie ma pewności, **nie zgaduje** — przekazuje sprawę ekspertowi R
 | Moduł | Co robi |
 |---|---|
 | I. Matchmaking społeczny | Opis problemu → natychmiastowe wyniki → weryfikacja przez AI z cytatami → „Poproś ROPS o pomoc" |
-| II. Zasobnik wiedzy | Biblioteka z filmami, Kondycja Małopolski (8 obszarów Mapy Wyzwań), materiały; trendy i białe plamy tylko dla administratora |
-| III. Kreator pomysłów | Fiszka krok po kroku, asystent AI, samoocena wg 5 kryteriów IWS 2.0, Canvas, generator wniosku w trakcie naboru |
+| II. Zasobnik wiedzy | Biblioteka z filmami, Kondycja Małopolski (8 obszarów Mapy Wyzwań + dane GUS dla 183 gmin), materiały; trendy i białe plamy tylko dla administratora |
+| III. Kreator pomysłów | Fiszka krok po kroku, asystent AI, „Szkic pomysłu” (wizualizacja), samoocena wg 5 kryteriów IWS 2.0, Canvas, generator wniosku dopasowany do wybranego naboru |
 | IV. Tester innowacji | Zgłoszenie do testów, ocena, informacja zwrotna, propozycje usprawnień |
-| V. Platforma komunikacji | Jedna „Sprawa" dla każdego zgłoszenia: kod, dwustronny wątek, powiadomienia, mentorzy, subskrypcje naborów |
+| V. Platforma komunikacji | Jedna „Sprawa" dla każdego zgłoszenia: kod, dwustronny wątek, powiadomienia, mentorzy, „Szukam partnera” (partnerstwa międzysektorowe kojarzone przez ROPS), subskrypcje naborów |
 | VI. Panel administratora | Skrzynka z wstępną oceną AI i szkicem odpowiedzi, edycja biblioteki (zmiana widoczna od razu), „Dodaj z dokumentu", nabory |
-| VII. Middleman Innowacji | Ramowy Plan Wdrożenia innowacji jako usługi dla konkretnej instytucji i gminy (dane GUS) |
+| VII. Middleman Innowacji | Ramowy Plan Wdrożenia innowacji jako usługi dla konkretnej instytucji i gminy (dane GUS); gmina po zalogowaniu widzi potrzeby ze swojego powiatu |
 
 ## Dostępność (WCAG 2.1 AA)
 
@@ -65,7 +67,8 @@ W serwisie są też [deklaracja dostępności](https://juz-dziala.vercel.app/acc
   | Czas (mediana) | 2 ms | 4,3 s |
 
   Wyniki są też na stronie [Jak działa dopasowanie](https://juz-dziala.vercel.app/methodology).
-- **Dostępność sprawdzona testami.** axe-core: 0 naruszeń WCAG 2.1 A/AA na 19 ekranach × telefon i komputer; brak przewijania w poziomie przy 320 px (`tests/e2e`).
+- **Dostępność sprawdzona testami.** axe-core: 0 naruszeń WCAG 2.1 A/AA na 20 ekranach × telefon i komputer; brak przewijania w poziomie przy 320 px. Wersja angielska jest sprawdzana tym samym axe oraz testem, który przechodzi każdy ekran i nie dopuszcza nieprzetłumaczonego polskiego tekstu poza fragmentami oznaczonymi `lang="pl"` (`tests/e2e`).
+- **Trafność po angielsku.** Ten sam zestaw 20 przypadków przetłumaczony na angielski przed testem: 94% w top 3, 85% na pierwszym miejscu, 2/2 odmowy, 0 wycieków.
 
 ## Makiety UX/UI
 
@@ -77,7 +80,8 @@ W serwisie są też [deklaracja dostępności](https://juz-dziala.vercel.app/acc
 - PostgreSQL (Neon, Frankfurt) z Drizzle ORM.
 - Vercel (region fra1).
 - AI: Claude (Anthropic) przez jedną warstwę z logowaniem kosztu każdego wywołania.
-- Otwarte API: `/api/v1/innovations`, `/api/v1/calls`. Kolejka zdarzeń gotowa do integracji z innymi systemami Hubu.
+- Otwarte API: `/api/v1/innovations`, `/api/v1/calls` (z wersją angielską). Kolejka zdarzeń dla bazy grantowej i innych systemów Hubu: `/api/v1/events` (klucz w `INTEGRATION_TOKEN`, bez danych osobowych).
+- Dwa języki: next-intl, polski domyślny, angielski w ciasteczku (`?lang=en`); treści kart w `data/*.en.json` (`pnpm data:translate`).
 
 ```bash
 pnpm install
