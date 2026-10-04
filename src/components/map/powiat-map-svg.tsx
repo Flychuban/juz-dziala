@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useTranslations } from "next-intl";
 
 export type MapShape = {
   key: string;
@@ -12,12 +13,10 @@ export type MapShape = {
   href: string | null;
 };
 
-const NUM = new Intl.NumberFormat("pl-PL", { maximumFractionDigits: 1 });
-
-function describe(s: MapShape) {
-  const name = s.name.charAt(0).toUpperCase() + s.name.slice(1);
-  return `${name}: ${s.value === null ? "brak danych" : NUM.format(s.value)}`;
-}
+const NUM: Record<"pl" | "en", Intl.NumberFormat> = {
+  pl: new Intl.NumberFormat("pl-PL", { maximumFractionDigits: 1 }),
+  en: new Intl.NumberFormat("en-GB", { maximumFractionDigits: 1 }),
+};
 
 /**
  * The interactive SVG for PowiatMap (client). Every powiat is focusable
@@ -29,12 +28,20 @@ export function PowiatMapSvg({
   height,
   shapes,
   label,
+  locale = "pl",
 }: {
   width: number;
   height: number;
   shapes: MapShape[];
   label: string;
+  /** Number format of the values; default Polish. */
+  locale?: "pl" | "en";
 }) {
+  const t = useTranslations("municipality.map");
+  const describe = (s: MapShape) => {
+    const name = s.name.charAt(0).toUpperCase() + s.name.slice(1);
+    return `${name}: ${s.value === null ? t("noData") : NUM[locale].format(s.value)}`;
+  };
   const [active, setActive] = useState<string | null>(null);
   const titleId = useId();
   const current = shapes.find((s) => s.key === active) ?? null;
@@ -49,7 +56,7 @@ export function PowiatMapSvg({
         className="h-auto w-full"
         onMouseLeave={() => setActive(null)}
       >
-        <title id={titleId}>{`Mapa: ${label}`}</title>
+        <title id={titleId}>{t("svgTitle", { label })}</title>
         {shapes.map((s) => {
           const path = (
             <path
@@ -126,10 +133,7 @@ export function PowiatMapSvg({
         {current ? (
           <span className="font-semibold">{describe(current)}</span>
         ) : (
-          <span className="text-muted-foreground">
-            Najedź na powiat lub przejdź do niego klawiszem Tab, aby zobaczyć
-            liczbę.
-          </span>
+          <span className="text-muted-foreground">{t("hint")}</span>
         )}
       </figcaption>
     </figure>

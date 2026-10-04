@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { ArrowRightIcon } from "lucide-react";
 
@@ -10,6 +11,7 @@ import { GminaCombobox, type GminaChoice } from "./gmina-combobox";
 /** „Znajdź swoją gminę" → /municipality/[teryt]. */
 export function GminaSearch({ options }: { options: GminaChoice[] }) {
   const router = useRouter();
+  const t = useTranslations("municipality.search");
   const [teryt, setTeryt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -17,12 +19,12 @@ export function GminaSearch({ options }: { options: GminaChoice[] }) {
   return (
     <form
       role="search"
-      aria-label="Profil gminy"
+      aria-label={t("form")}
       noValidate
       onSubmit={(e) => {
         e.preventDefault();
         if (!teryt) {
-          setError("Wybierz gminę z listy podpowiedzi.");
+          setError(t("pick"));
           return;
         }
         setError(null);
@@ -38,12 +40,12 @@ export function GminaSearch({ options }: { options: GminaChoice[] }) {
           setTeryt(t);
           if (t) setError(null);
         }}
-        label="Twoja gmina"
-        description="Wpisz początek nazwy i wybierz gminę z listy."
+        label={t("label")}
+        description={t("hint")}
         error={error}
       />
       <Button type="submit" disabled={busy}>
-        {busy ? "Otwieram profil…" : "Pokaż profil gminy"}
+        {busy ? t("opening") : t("submit")}
         <ArrowRightIcon aria-hidden="true" />
       </Button>
     </form>
