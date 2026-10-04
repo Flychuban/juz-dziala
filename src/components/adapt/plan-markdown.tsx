@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import Markdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -11,7 +13,10 @@ import { cn } from "~/lib/utils";
  * start at h2 inside the page: the plan's own `#` title becomes an h2 and
  * its sections h3, under the page's single h1.
  */
-const components: Components = {
+const makeComponents = (labels: {
+  table: string;
+  newWindow: string;
+}): Components => ({
   h1: ({ children }) => (
     <h2 className="font-display text-2xl leading-tight font-bold tracking-tight md:text-3xl print:text-[18pt]">
       {children}
@@ -49,7 +54,7 @@ const components: Components = {
     // the keyboard can scroll it too (WCAG 2.1.1).
     <div
       role="region"
-      aria-label="Tabela — na wąskim ekranie przewiń w bok"
+      aria-label={labels.table}
       tabIndex={0}
       className="border-hairline mt-4 overflow-x-auto rounded-md border print:overflow-visible"
     >
@@ -79,11 +84,11 @@ const components: Components = {
       className="text-foreground underline decoration-1 underline-offset-4 hover:decoration-2"
     >
       {children}
-      <span className="sr-only"> (otwiera się w nowym oknie)</span>
+      <span className="sr-only"> {labels.newWindow}</span>
     </a>
   ),
   strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-};
+});
 
 export function PlanMarkdown({
   markdown,
@@ -92,6 +97,13 @@ export function PlanMarkdown({
   markdown: string;
   className?: string;
 }) {
+  const t = useTranslations("adapt.markdown");
+  const table = t("table");
+  const newWindow = t("newWindow");
+  const components = useMemo(
+    () => makeComponents({ table, newWindow }),
+    [table, newWindow],
+  );
   return (
     <div className={cn("text-base leading-relaxed", className)}>
       {/* The plan text is client-supplied (the Middleman sends it): untrusted.
