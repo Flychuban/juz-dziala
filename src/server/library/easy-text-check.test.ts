@@ -37,3 +37,32 @@ describe("tidyEasyText", () => {
     );
   });
 });
+
+describe("easyTextProblem in English", () => {
+  const plCard =
+    "Bus dojeżdża do 12 wsi. Koszt 1 500 zł miesięcznie, czyli 1,5 tys. zł.";
+  it("accepts English thousands and decimals that the Polish card states", () => {
+    expect(
+      easyTextProblem(
+        "This is a bus for older people.\nIt goes to 12 villages.\nIt costs 1,500 zloty a month.\nThat is 1.5 thousand.",
+        plCard,
+        "en",
+      ),
+    ).toBeNull();
+  });
+  it("still rejects a number the card does not contain", () => {
+    expect(
+      easyTextProblem(
+        "This is a bus for older people.\nIt goes to 20 villages every week.",
+        plCard,
+        "en",
+      ),
+    ).toMatch(/20/);
+  });
+  it("applies the same length limits", () => {
+    expect(easyTextProblem("A bus.", plCard, "en")).toBe("za krótki");
+    expect(
+      easyTextProblem(Array(200).fill("word").join(" "), plCard, "en"),
+    ).toBe("za długi");
+  });
+});
