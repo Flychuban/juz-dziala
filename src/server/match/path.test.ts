@@ -1,7 +1,18 @@
 import { describe, expect, it } from "vitest";
 
 import { FIXTURE_CARDS } from "~/server/domain/__fixtures__/cards";
-import { buildPath, pickFunding, pickHelpers, type CallRow, type OrgRow, type PersonRow } from "./path";
+import {
+  authorsName,
+  buildPath,
+  pickFunding,
+  pickGeneralFunding,
+  pickListedFunding,
+  pickMentor,
+  pickRunBy,
+  type CallRow,
+  type OrgRow,
+  type PersonRow,
+} from "./path";
 
 const seniors = FIXTURE_CARDS[0]!; // c001, areas: seniors
 const migrants = FIXTURE_CARDS[6]!; // c007, areas: migrants
@@ -46,32 +57,66 @@ const PEOPLE: PersonRow[] = [
   { id: "p2", displayName: "Zespół", role: "rops", title: null, orgName: null, areas: ["migrants"], isSample: true },
 ];
 
-describe("pickHelpers", () => {
-  it("prefers the organisation behind the card", () => {
-    expect(pickHelpers(seniors, ORGS, PEOPLE)).toEqual([
-      { name: "Stowarzyszenie Klucz", kind: "org", detail: "stowarzyszenie", isSample: false, sourceUrl: "https://example.org/c001" },
-    ]);
+describe("pickGeneralFunding / pickListedFunding", () => {
+  it("lists a card's own programme only when the call names it; the general call is separate", () => {
+    expect(pickListedFunding(seniors, CALLS, LISTED)).toMatchObject({ id: "usluga-wrazliwa-2", reason: "listed" });
+    expect(pickListedFunding(migrants, CALLS, LISTED)).toBeNull();
+    expect(pickGeneralFunding(CALLS)).toMatchObject({ id: "demo-iws", reason: "general" });
+    expect(pickGeneralFunding(CALLS.filter((c) => c.id !== "demo-iws"))).toBeNull();
   });
 
-  it("else a mentor or expert for the card's first area, flagged as sample", () => {
-    expect(pickHelpers(migrants, ORGS, PEOPLE)).toEqual([
-      { name: "Piotr Wróbel", kind: "mentor", detail: "Ekspert — cudzoziemcy", isSample: true, sourceUrl: null },
+  it("carries the English call name when there is one", () => {
+    const withEn = CALLS.map((c) => (c.id === "demo-iws" ? { ...c, nameEn: "Sample call (demo)" } : c));
+    expect(pickGeneralFunding(withEn)?.nameEn).toBe("Sample call (demo)");
+    expect(pickGeneralFunding(CALLS)?.nameEn).toBeNull();
+  });
+});
+
+describe("pickRunBy", () => {
+  it("prefers the organisation behind the card, with its type and place when known", () => {
+    expect(pickRunBy(seniors, ORGS)).toEqual([
+      { name: "Stowarzyszenie Klucz", type: "stowarzyszenie", place: null, isSample: false, sourceUrl: "https://example.org/c001", fromCard: false },
     ]);
+    const placed = pickRunBy(seniors, ORGS, [{ innovationId: "c001", place: "Pałecznica", stage: "test", isSample: false, sourceUrl: null }]);
+    expect(placed[0]?.place).toBe("Pałecznica");
+    expect(pickRunBy(seniors, [{ ...ORGS[0]!, place: "Bochnia" }])[0]?.place).toBe("Bochnia");
   });
 
-  it("does not pick a mentor who only shares a later area of the card", () => {
+  it("else the card's own authors line, without the private-persons note", () => {
+    const card = { ...migrants, sections: { ...migrants.sections, authors: "Fundacja Pestka\n(oraz osoby prywatne — dane w źródle)" } };
+    expect(pickRunBy(card, [])).toEqual([
+      { name: "Fundacja Pestka", type: null, place: null, isSample: false, sourceUrl: card.sourceUrl, fromCard: true },
+    ]);
+    expect(authorsName(card)).toBe("Fundacja Pestka");
+  });
+
+  it("else nothing — the step is hidden, never filled in", () => {
+    expect(pickRunBy(migrants, [])).toEqual([]);
+  });
+});
+
+describe("pickMentor", () => {
+  it("a mentor or expert for the card's first area, flagged as sample", () => {
+    expect(pickMentor(migrants, PEOPLE)).toEqual({
+      name: "Piotr Wróbel",
+      role: "expert",
+      title: "Ekspert — cudzoziemcy",
+      areas: ["migrants", "health"],
+      isSample: true,
+    });
+  });
+
+  it("does not pick a mentor who only shares a later area of the card, nor ROPS staff", () => {
     const healthThenSeniors = { ...migrants, mapaAreas: ["health" as const, "seniors" as const] };
     const seniorsMentor: PersonRow = { id: "p3", displayName: "Anna", role: "mentor", title: null, orgName: null, areas: ["seniors"], isSample: true };
-    expect(pickHelpers(healthThenSeniors, [], [seniorsMentor])).toEqual([]);
-  });
-
-  it("else nothing invented: the card's own authors line, or an empty list", () => {
-    expect(pickHelpers(migrants, [], [])).toEqual([]);
+    expect(pickMentor(healthThenSeniors, [seniorsMentor])).toBeNull();
+    expect(pickMentor(migrants, [PEOPLE[1]!])).toBeNull();
+    expect(pickMentor({ ...migrants, mapaAreas: [] }, PEOPLE)).toBeNull();
   });
 });
 
 describe("buildPath", () => {
-  it("keeps sites of this card only and leaves an empty step empty", () => {
+  it("keeps this card's rows only; the general call is not repeated on the card", () => {
     const path = buildPath(seniors, {
       sites: [
         { innovationId: "c001", place: "Pałecznica", stage: "test", isSample: false, sourceUrl: null },
@@ -82,10 +127,11 @@ describe("buildPath", () => {
       calls: CALLS,
       listedIn: LISTED,
     });
-    expect(path.sites.map((s) => s.place)).toEqual(["Pałecznica"]);
-    expect(buildPath(migrants, { sites: [], orgs: [], people: [], calls: [], listedIn: new Map() })).toEqual({
-      sites: [],
-      helpers: [],
+    expect(path.runBy.map((o) => o.place)).toEqual(["Pałecznica"]);
+    expect(path.funding).toMatchObject({ reason: "listed" });
+    expect(buildPath(migrants, { sites: [], orgs: [], people: [], calls: CALLS, listedIn: new Map() })).toEqual({
+      runBy: [],
+      mentor: null,
       funding: null,
     });
   });

@@ -2,12 +2,34 @@
  * Pure matchmaking core: the catalog, the keyword step, the verification of the
  * AI answer and the decision of what the resident sees. No DB, no SDK, no
  * `server-only`, so the same code runs in the server, the eval and the tests.
+ *
+ * Two keyword indexes: the Polish cards as published, and their English
+ * translations (`card.en`). In English mode both run and each card keeps its
+ * best score, so Polish typed on the English site still finds its cards.
  */
+import { createHash } from "node:crypto";
+
+import type { Locale } from "~/i18n/config";
 import { buildCompactIndex } from "~/server/ai/prompts/match";
 import type { AiResult } from "~/server/ai/structured";
-import { buildKeywordIndex, keywordSearch, type KeywordIndex } from "~/server/domain/keywords";
+import { stemEn } from "~/server/domain/english";
+import {
+  buildKeywordIndex,
+  keywordSearch,
+  LOW_CONFIDENCE_THRESHOLD,
+  type KeywordHit,
+  type KeywordIndex,
+  type KeywordResult,
+} from "~/server/domain/keywords";
 import { fold, stem } from "~/server/domain/polish";
-import type { LibraryCard, LibrarySentence, MapaArea, SectionKey } from "~/server/domain/types";
+import {
+  SECTION_KEYS,
+  type LibraryCard,
+  type LibraryCardEn,
+  type LibrarySentence,
+  type MapaArea,
+  type SectionKey,
+} from "~/server/domain/types";
 import { finalizeMatches, sanitizeAreas, type AiMatchOutput, type DropReason } from "~/server/domain/verify";
 
 /** How many keyword hits are stored and offered to the AI as candidates. */
@@ -20,6 +42,8 @@ export type Catalog = {
   byId: Map<string, LibraryCard>;
   bySlug: Map<string, LibraryCard>;
   index: KeywordIndex;
+  /** Over the English translations; cards without a current one are not in it. */
+  indexEn: KeywordIndex;
   compactIndex: string;
 };
 
@@ -30,7 +54,61 @@ export function buildCatalog(cards: readonly LibraryCard[]): Catalog {
     byId: new Map(sorted.map((c) => [c.id, c])),
     bySlug: new Map(sorted.map((c) => [c.slug, c])),
     index: buildKeywordIndex(sorted),
+    indexEn: buildKeywordIndex(sorted, { lang: "en" }),
     compactIndex: buildCompactIndex(sorted),
+  };
+}
+
+/** innovations.en as stored (data/library.en.json): the translation plus the hash of what it was made from. */
+export type StoredCardEn = LibraryCardEn & { sourceSha: string; badge?: string | null; translatedAt?: string };
+
+/**
+ * sha256 of the Polish title and sections a translation was made from — the
+ * same recipe as scripts/translate-data.ts, with the sections in their
+ * canonical order (a jsonb column does not keep key order).
+ */
+export function cardSourceSha(card: Pick<LibraryCard, "title" | "sections">): string {
+  const sections = Object.fromEntries(SECTION_KEYS.map((k) => [k, card.sections[k]]));
+  return createHash("sha256").update(JSON.stringify(sections) + card.title).digest("hex");
+}
+
+/**
+ * The English translation when it is current: made from this very text
+ * (sourceSha) and covering every sentence id. Otherwise null, and the page
+ * shows the Polish original (lang="pl").
+ */
+export function currentEnglish(
+  card: Pick<LibraryCard, "title" | "sections" | "sentences">,
+  en: StoredCardEn | null | undefined,
+): LibraryCardEn | null {
+  if (!en || typeof en !== "object" || !en.sentences || !en.sections) return null;
+  if (en.sourceSha !== cardSourceSha(card)) return null;
+  if (!card.sentences.every((s) => typeof en.sentences[s.id] === "string" && en.sentences[s.id]!.trim())) return null;
+  return {
+    title: en.title,
+    sections: en.sections,
+    sentences: en.sentences,
+    keywords: en.keywords ?? [],
+    categoryLabels: en.categoryLabels ?? [],
+  };
+}
+
+/** Attaches data/library.en.json (id → StoredCardEn) to cards read from data/library.json (eval, scripts). */
+export function withEnglish(cards: readonly LibraryCard[], enById: Readonly<Record<string, StoredCardEn>>): LibraryCard[] {
+  return cards.map((c) => ({ ...c, en: currentEnglish(c, enById[c.id]) }));
+}
+
+/** The card's text in the language shown: English when a current translation exists, else Polish. */
+export function cardText(card: LibraryCard, locale: Locale) {
+  const en = locale === "en" ? (card.en ?? null) : null;
+  const lang: Locale = en ? "en" : "pl";
+  return {
+    lang,
+    title: en?.title ?? card.title,
+    categoryLabels: en?.categoryLabels.length ? en.categoryLabels : card.categoryLabels,
+    sections: en?.sections ?? card.sections,
+    /** The English sentence for a Polish sentence id (null in Polish or without a translation). */
+    sentenceEn: (id: string): string | null => en?.sentences[id] ?? null,
   };
 }
 
@@ -54,6 +132,7 @@ export function toLibraryCard(row: {
   sourceUrl: string;
   capturedAt: Date | string;
   sha256: string | null;
+  en?: StoredCardEn | null;
 }): LibraryCard {
   return {
     id: row.id,
@@ -74,6 +153,7 @@ export function toLibraryCard(row: {
     sourceUrl: row.sourceUrl,
     capturedAt: row.capturedAt instanceof Date ? row.capturedAt.toISOString() : row.capturedAt,
     sha256: row.sha256 ?? "",
+    en: currentEnglish(row, row.en),
   };
 }
 
@@ -87,6 +167,8 @@ export type StoredKeywordHit = {
   normScore: number;
   matchedUserTerms: string[];
   matchedCardTerms: string[];
+  /** "en" when the English translation scored best (matchedCardTerms are then English words). */
+  lang?: "en";
 };
 
 export type StoredKeyword = {
@@ -144,15 +226,56 @@ const GENERIC_STEMS = new Set(
     (w) => stem(w),
   ),
 );
+/** The same for English ("person", "problem", "lives"). */
+const GENERIC_STEMS_EN = new Set(
+  ["person", "people", "problem", "help", "need", "needs", "lives", "live", "home", "house", "situation", "life", "time", "day", "year", "years", "old", "thing"].map(
+    (w) => stemEn(w),
+  ),
+);
 
 /** Keeps the words that explain a match; falls back to all of them when only general words matched. */
 export function meaningfulTerms(terms: readonly string[]): string[] {
-  const kept = terms.filter((t) => t.includes(" ") || /\p{N}/u.test(t) || !GENERIC_STEMS.has(stem(t)));
+  const kept = terms.filter(
+    (t) => t.includes(" ") || /\p{N}/u.test(t) || !(GENERIC_STEMS.has(stem(t)) || GENERIC_STEMS_EN.has(stemEn(t))),
+  );
   return kept.length > 0 ? kept : [...terms];
 }
 
-export function runKeyword(catalog: Catalog, redactedQuery: string): StoredKeyword {
-  const r = keywordSearch(catalog.index, catalog.cards, redactedQuery, { limit: CANDIDATES });
+/**
+ * Both indexes, each card at its best score. A card the English translation
+ * scored higher is marked `lang: "en"` (its matched card words are English).
+ */
+function searchBoth(catalog: Catalog, query: string): KeywordResult & { langById: Map<string, "en"> } {
+  const pl = keywordSearch(catalog.index, catalog.cards, query, { limit: CANDIDATES });
+  const en = keywordSearch(catalog.indexEn, catalog.cards, query, { limit: CANDIDATES });
+  const best = new Map<string, KeywordHit>();
+  const langById = new Map<string, "en">();
+  for (const h of pl.results) best.set(h.cardId, h);
+  for (const h of en.results) {
+    const prev = best.get(h.cardId);
+    if (!prev || h.normScore > prev.normScore) {
+      best.set(h.cardId, h);
+      langById.set(h.cardId, "en");
+    }
+  }
+  const results = [...best.values()]
+    .sort((a, b) => b.normScore - a.normScore || b.score - a.score || a.cardId.localeCompare(b.cardId))
+    .slice(0, CANDIDATES);
+  const detectedAreas = [...en.detectedAreas];
+  for (const a of pl.detectedAreas) if (!detectedAreas.includes(a)) detectedAreas.push(a);
+  const top = results[0]?.normScore ?? 0;
+  return { results, detectedAreas, isLowConfidence: top < LOW_CONFIDENCE_THRESHOLD, langById };
+}
+
+/**
+ * The instant keyword step. Polish: the Polish index. English: both indexes
+ * (see searchBoth), so the English site also understands Polish.
+ */
+export function runKeyword(catalog: Catalog, redactedQuery: string, locale: Locale = "pl"): StoredKeyword {
+  const r =
+    locale === "en"
+      ? searchBoth(catalog, redactedQuery)
+      : { ...keywordSearch(catalog.index, catalog.cards, redactedQuery, { limit: CANDIDATES }), langById: new Map<string, "en">() };
   return {
     v: 1,
     hits: r.results.map((h) => ({
@@ -161,6 +284,7 @@ export function runKeyword(catalog: Catalog, redactedQuery: string): StoredKeywo
       normScore: Math.round(h.normScore * 1000) / 1000,
       matchedUserTerms: meaningfulTerms(compactTerms(h.matchedUserTerms)),
       matchedCardTerms: h.matchedCardTerms,
+      ...(r.langById.has(h.cardId) ? { lang: "en" as const } : {}),
     })),
     detectedAreas: r.detectedAreas,
     isLowConfidence: r.isLowConfidence,
@@ -192,12 +316,13 @@ export function verifyAi(
   const allowedCardIds = ctx.keyword.hits.map((h) => h.cardId);
   const keyword = { isLowConfidence: ctx.keyword.isLowConfidence };
   if (!ai.ok) {
+    // A failed call is an error, never an abstention: the AI did not say "nothing fits".
     return {
       v: 1,
       ok: false,
       reason: ai.reason,
       matches: [],
-      abstained: keyword.isLowConfidence,
+      abstained: false,
       fallbackToKeyword: !keyword.isLowConfidence,
       dropped: [],
       areas: [],
@@ -242,14 +367,21 @@ const SECTION_PREFERENCE: SectionKey[] = ["problems", "targetGroup", "solution",
 /**
  * For a keyword result, the card's own sentence that best shows the match: the
  * one containing the most of the matched card words, preferring the problem,
- * target-group and solution sections. Always a real sentence of the card.
+ * target-group and solution sections. Always a real sentence of the card (its
+ * Polish id). With `lang: "en"` the matched words are English and are looked
+ * for in the English translation of each sentence.
  */
-export function pickEvidence(card: LibraryCard, matchedCardTerms: readonly string[]): LibrarySentence | null {
+export function pickEvidence(
+  card: LibraryCard,
+  matchedCardTerms: readonly string[],
+  lang: "pl" | "en" = "pl",
+): LibrarySentence | null {
   const terms = matchedCardTerms.map((t) => fold(t)).filter((t) => t.length >= 3);
+  const english = lang === "en" ? (card.en?.sentences ?? null) : null;
   let best: { s: LibrarySentence; score: number } | null = null;
   for (const s of card.sentences) {
     if (s.section === "authors") continue;
-    const text = fold(s.text);
+    const text = fold(english?.[s.id] ?? s.text);
     const hits = terms.filter((t) => text.includes(t)).length;
     const pref = SECTION_PREFERENCE.indexOf(s.section);
     const score = hits * 10 - (pref === -1 ? 9 : pref);
@@ -263,8 +395,16 @@ export function pickEvidence(card: LibraryCard, matchedCardTerms: readonly strin
   return card.sentences[0] ?? null;
 }
 
-/** „Pasuje, bo napisałaś/eś: „mieszka sama”, „myli leki”." — only the resident's own words. */
-export function keywordWhy(userTerms: readonly string[]): string {
+/**
+ * „Pasuje, bo napisałaś/eś: „mieszka sama”, „myli leki”." — only the resident's
+ * own words. English: "This fits because you wrote: “lives alone”, …".
+ */
+export function keywordWhy(userTerms: readonly string[], locale: Locale = "pl"): string {
+  if (locale === "en") {
+    const terms = userTerms.slice(0, 4).map((t) => `“${t}”`);
+    if (terms.length === 0) return "This matches words from your description.";
+    return `This fits because you wrote: ${terms.join(", ")}.`;
+  }
   const terms = userTerms.slice(0, 4).map((t) => `„${t}”`);
   if (terms.length === 0) return "Pasuje do słów z Twojego opisu.";
   return `Pasuje, bo napisałaś/eś: ${terms.join(", ")}.`;
@@ -302,17 +442,17 @@ function sectionOf(card: LibraryCard, sentenceId: string): SectionKey {
   return card.sentences.find((s) => s.id === sentenceId)?.section ?? "solution";
 }
 
-function keywordResults(catalog: Catalog, keyword: StoredKeyword): ResultCore[] {
+function keywordResults(catalog: Catalog, keyword: StoredKeyword, locale: Locale): ResultCore[] {
   const out: ResultCore[] = [];
   for (const h of keyword.hits) {
     if (out.length >= SHOWN) break;
     const card = catalog.byId.get(h.cardId);
     if (!card) continue;
-    const ev = pickEvidence(card, h.matchedCardTerms);
+    const ev = pickEvidence(card, h.matchedCardTerms, h.lang ?? "pl");
     out.push({
       cardId: card.id,
       verified: false,
-      why: keywordWhy(h.matchedUserTerms),
+      why: keywordWhy(h.matchedUserTerms, locale),
       userTerms: h.matchedUserTerms.slice(0, 6),
       evidence: ev ? [{ id: ev.id, text: ev.text, section: ev.section }] : [],
       firstStep: null,
@@ -325,7 +465,10 @@ function keywordResults(catalog: Catalog, keyword: StoredKeyword): ResultCore[] 
 /**
  * Decides what the page shows from what is stored. `aiAvailable` is false when
  * the server has no API key: then the keyword result is final, and a weak one
- * is an abstention.
+ * is an abstention. A failed AI call is never an abstention: the page says the
+ * check failed, offers to try again, and shows the keyword list only when it is
+ * confident. `locale` is the language of the words the server writes itself
+ * (the keyword „Pasuje, bo…").
  */
 export function decide(
   catalog: Catalog,
@@ -333,6 +476,7 @@ export function decide(
   ai: StoredAi | null,
   aiAvailable: boolean,
   storedAreas: MapaArea[],
+  locale: Locale = "pl",
 ): Decision {
   const areas = ai && ai.areas.length > 0 ? ai.areas : storedAreas;
   if (ai) {
@@ -354,21 +498,24 @@ export function decide(
       }
       if (results.length > 0) return { stage: "verified", results, note: null, areas };
     }
-    return {
-      stage: "keyword",
-      results: keywordResults(catalog, keyword),
-      note: ai.ok ? "ai_no_better" : "ai_error",
-      areas,
-    };
+    if (!ai.ok) {
+      return {
+        stage: "keyword",
+        results: keyword.isLowConfidence ? [] : keywordResults(catalog, keyword, locale),
+        note: "ai_error",
+        areas,
+      };
+    }
+    return { stage: "keyword", results: keywordResults(catalog, keyword, locale), note: "ai_no_better", areas };
   }
   if (!aiAvailable) {
     if (keyword.isLowConfidence) return { stage: "abstained", results: [], note: "ai_unavailable", areas };
-    return { stage: "keyword", results: keywordResults(catalog, keyword), note: "ai_unavailable", areas };
+    return { stage: "keyword", results: keywordResults(catalog, keyword, locale), note: "ai_unavailable", areas };
   }
   // AI pending: a weak keyword list is not worth showing while we wait.
   return {
     stage: "preliminary",
-    results: keyword.isLowConfidence ? [] : keywordResults(catalog, keyword),
+    results: keyword.isLowConfidence ? [] : keywordResults(catalog, keyword, locale),
     note: null,
     areas,
   };

@@ -5,25 +5,32 @@ import { and, arrayOverlaps, gte, inArray, ne, sql } from "drizzle-orm";
 import type { Db } from "~/server/db";
 import { calls, innovationSites, matchRuns, orgs, people } from "~/server/db/schema";
 import type { LibraryCard, MapaArea } from "~/server/domain/types";
-import { callInnovations } from "./data-files";
-import { buildPath, type Path } from "./path";
+import { callInnovations, gminaByTeryt } from "./data-files";
+import { buildPath, pickGeneralFunding, type Path, type PathFunding } from "./path";
 
-export type { Path, PathFunding, PathHelper, PathSite } from "./path";
+export type { Path, PathFunding, PathMentor, PathRunBy } from "./path";
 
-/** Reads the rows behind „Twoja ścieżka" for the shown cards, in four parallel queries. */
-export async function loadPaths(db: Db, cards: readonly LibraryCard[]): Promise<Map<string, Path>> {
-  const out = new Map<string, Path>();
-  if (cards.length === 0) return out;
+/**
+ * Reads the rows behind „Twoja ścieżka" for the shown cards, in four parallel
+ * queries, plus the one general grant call shown under all results.
+ */
+export async function loadPaths(
+  db: Db,
+  cards: readonly LibraryCard[],
+): Promise<{ paths: Map<string, Path>; general: PathFunding | null }> {
+  const paths = new Map<string, Path>();
   const ids = cards.map((c) => c.id);
   const [siteRows, orgRows, callRows, peopleRows] = await Promise.all([
-    db.select().from(innovationSites).where(inArray(innovationSites.innovationId, ids)),
-    db.select().from(orgs).where(arrayOverlaps(orgs.innovationIds, ids)),
+    ids.length > 0 ? db.select().from(innovationSites).where(inArray(innovationSites.innovationId, ids)) : [],
+    ids.length > 0 ? db.select().from(orgs).where(arrayOverlaps(orgs.innovationIds, ids)) : [],
     db.select().from(calls),
-    db.select().from(people).where(inArray(people.role, ["mentor", "expert"])),
+    ids.length > 0 ? db.select().from(people).where(inArray(people.role, ["mentor", "expert"])) : [],
   ]);
-  const rows = { sites: siteRows, orgs: orgRows, people: peopleRows, calls: callRows, listedIn: callInnovations() };
-  for (const card of cards) out.set(card.id, buildPath(card, rows));
-  return out;
+  const callRowsEn = callRows.map((c) => ({ ...c, nameEn: c.en?.name ?? null }));
+  const orgRowsPlaced = orgRows.map((o) => ({ ...o, place: gminaByTeryt(o.gminaTeryt)?.name ?? null }));
+  const rows = { sites: siteRows, orgs: orgRowsPlaced, people: peopleRows, calls: callRowsEn, listedIn: callInnovations() };
+  for (const card of cards) paths.set(card.id, buildPath(card, rows));
+  return { paths, general: pickGeneralFunding(callRowsEn) };
 }
 
 export type Similar = {
