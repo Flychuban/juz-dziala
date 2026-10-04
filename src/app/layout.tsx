@@ -36,6 +36,16 @@ const redhat = Red_Hat_Display({
 /** Applies saved A+/contrast preferences before paint (no flash). Storage may be blocked. */
 const prefsScript = `try{var d=document.documentElement;var t=localStorage.getItem("jd_text_size");if(t)d.dataset.textSize=t;var c=localStorage.getItem("jd_contrast");if(c)d.dataset.contrast=c;var e=localStorage.getItem("jd_easy");if(e)d.dataset.easy=e;}catch(_){}`;
 
+/**
+ * Browser translation (Chrome „Przetłumacz", Edge, Safari) swaps text nodes for <font>
+ * wrappers. When React later removes or moves a node it no longer owns, removeChild /
+ * insertBefore throw and the whole page turns into „Application error" — it happened on
+ * /match the moment AI verification replaced the preliminary results. Tolerate the
+ * mismatch (facebook/react#11538) so the site keeps working for residents who read it
+ * translated, instead of blocking translation for them.
+ */
+const translateGuardScript = `(function(){if(typeof Node!=="function"||!Node.prototype)return;var rm=Node.prototype.removeChild;Node.prototype.removeChild=function(c){if(c&&c.parentNode!==this){if(c.parentNode)rm.call(c.parentNode,c);return c;}return rm.apply(this,arguments);};var ins=Node.prototype.insertBefore;Node.prototype.insertBefore=function(n,r){if(r&&r.parentNode!==this)return ins.call(this,n,null);return ins.apply(this,arguments);};})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -46,6 +56,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <script dangerouslySetInnerHTML={{ __html: translateGuardScript }} />
         <script dangerouslySetInnerHTML={{ __html: prefsScript }} />
       </head>
       <body className="flex min-h-dvh flex-col">
