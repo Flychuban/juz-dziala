@@ -1,0 +1,955 @@
+{
+  "source": {
+    "title": "Social Challenges Map (Mapa Wyzwań Społecznych)",
+    "url": "https://rops.krakow.pl/mpliki/IS/IWS_20/za._nr_2._Mapa_Wyzwa_Spoecznych.pdf",
+    "publisher": "ROPS Kraków",
+    "date": "2024-11",
+    "capturedAt": "2026-10-03T15:36:04.394Z",
+    "sha256": "bc99f6e99656176bd87b1aa976f39691128d4b554bfc98ff5f2a157e217513e5",
+    "note": "National data. Map prepared by the Regional Social Policy Centre in Kraków (ROPS) (Social Innovation Department) for the project „Inkubator Włączenia Społecznego 2.0” (FERS, Measure 5.1). The personas are fictional."
+  },
+  "areas": [
+    {
+      "key": "family",
+      "label": "Family and foster care",
+      "definition": "The family, as the basic form of community life, is given certain roles. Fulfilling these roles properly is the foundation of a healthy, developing society. Families may sometimes have difficulties caring for and raising their children. In such cases, support is given through a system of planned activities. The aim is to restore the family's ability to care for and raise their children.\n\nOne form of this support is foster care. It is provided when the biological parents cannot care for and raise the child. Its purpose is to give the child safety, emotional support and proper conditions to live and develop.",
+      "analysis": [
+        "Available statistics show that in 2023 the number of children in foster care rose by 3.5% compared with 2022.",
+        "The process of moving foster care away from institutions is being slowed down because there are not enough foster families to meet the need.",
+        "The effectiveness of support for children and families varies across local government areas. This is because not all forms of support for foster families set out in the law are available, and because cooperation between county (powiat) and municipality (gmina) institutions is not good enough.",
+        "Contrary to the law, children under the age of 10 are also placed in institutional foster care facilities. In addition, these facilities often have more children than the regulations allow.",
+        "Many children in the foster care system are older children, children from large groups of siblings, or children with a disability certificate or a chronic illness."
+      ],
+      "keyChallengesIntro": null,
+      "keyChallenges": [
+        "Developing family foster care by increasing the number of candidates who are approved to become foster families.",
+        "Priorities for family foster care.",
+        "Introducing solutions that improve cooperation between counties (powiat) in running the foster care system.",
+        "Taking all possible steps to keep siblings together when they are placed in foster care.",
+        "Working to avoid keeping children in foster care longer than necessary, and to move children whose legal situation has been settled to their long-term form of care as quickly as possible.",
+        "Ensuring that the adoption system works consistently, because the lack of common quality requirements and criteria for carrying out tasks means that adoption practice differs significantly between individual centres."
+      ],
+      "persona": {
+        "name": "Ania and Staś",
+        "age": null,
+        "description": "Siblings from a dysfunctional family\nAnia has Down syndrome, Staś is hard of hearing\nAnia is 7 years old and Staś is 12\nThey are usually distrustful and withdrawn\nThey have been placed with many foster families and in many care and education institutions",
+        "goals": [
+          "Placing the children in family-based foster care without having to separate them",
+          "Providing specialist support in response to their disability-related needs",
+          "Strengthening their social skills and their ability to build relationships with other people"
+        ],
+        "challenges": [
+          "Both children have disabilities",
+          "The difficult experiences the children carry with them from their family environment",
+          "Lack of stability in where the siblings live"
+        ],
+        "motivations": [
+          "To have a „real” family, parents who will take care of us.",
+          "Not to be separated – to grow up together, in the same place.",
+          "To make new friends and be accepted by other children our age"
+        ]
+      },
+      "personas": [
+        {
+          "name": "Ania and Staś",
+          "age": null,
+          "description": "Siblings from a dysfunctional family\nAnia has Down syndrome, Staś is hard of hearing\nAnia is 7 years old and Staś is 12\nThey are usually distrustful and withdrawn\nThey have been placed with many foster families and in many care and education institutions",
+          "goals": [
+            "Placing the children in family-based foster care without having to separate them",
+            "Providing specialist support in response to their disability-related needs",
+            "Strengthening their social skills and their ability to build relationships with other people"
+          ],
+          "challenges": [
+            "Both children have disabilities",
+            "The difficult experiences the children carry with them from their family environment",
+            "Lack of stability in where the siblings live"
+          ],
+          "motivations": [
+            "To have a „real” family, parents who will take care of us.",
+            "Not to be separated – to grow up together, in the same place.",
+            "To make new friends and be accepted by other children our age"
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "value": "3,5%",
+          "label": "Increase in the number of children in foster care in 2023 compared with 2022",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 4
+        }
+      ],
+      "reports": [
+        {
+          "title": "Foster care in 2023 (Statistics Poland – Główny Urząd Statystyczny)",
+          "url": "https://stat.gov.pl/download/gfx/portalinformacyjny/pl/defaultaktualnosci/6000/1/8/1/piecza_zastepcza_w_2023_r..pdf",
+          "page": 7
+        },
+        {
+          "title": "Support for the foster care system in the deinstitutionalisation process. Information on the results of an audit by the Supreme Audit Office (NIK)",
+          "url": "https://www.nik.gov.pl/kontrole/P/22/031/",
+          "page": 7
+        }
+      ],
+      "pages": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "key": "homelessness",
+      "label": "Homelessness",
+      "definition": "Experiencing homelessness is the most glaring, visible and brutal form of social exclusion.\n\nThere is no single accepted definition of homelessness. The term homelessness is used, among other things, to describe the situation of people who at a given time do not have, and cannot provide for themselves through their own efforts, a shelter that they could regard as their own and that would meet the minimum conditions for it to be considered a dwelling. In turn, according to the „Act on Social Assistance”, a homeless person is a person who does not live in a dwelling within the meaning of the regulations on the protection of tenants' rights and the municipal housing stock and is not registered for permanent residence within the meaning of the regulations on population records, as well as a person who does not live in a dwelling and is registered for permanent residence in a dwelling where it is not possible to live.\n\nHomelessness is a social phenomenon that results from many coexisting and overlapping causes. The most common of these are: unemployment, poverty, addiction, domestic violence, debt, evictions, family breakdown, mental disorders, personality disorders and a disrupted socialisation process. It is very rare for only one factor to be the cause of a particular person's homelessness.",
+      "analysis": [],
+      "keyChallengesIntro": null,
+      "keyChallenges": [
+        "the number of young homeless people (aged 0–25) is growing",
+        "the „invisibility” and „uncountability” of young homeless people – they often wear fashionable clothes, wear careful make-up and spend time on sofas in cafés and shopping centres, giving the impression of being carefree young people,",
+        "the need to treat the experience of homelessness among young adults and teenagers separately – being under 18 causes formal and legal problems, which means that homeless teenagers have little chance of receiving institutional support,",
+        "institutional helplessness in the face of the needs of young people who increasingly turn to night shelters and homeless shelters – there is no support offer adapted to this group of beneficiaries,",
+        "a gap in the transfer of help between institutions in the case of young homeless people who previously lived in care and education institutions (children's homes),",
+        "the „familylessness” of young homeless people – a lack of conditions for forming strong emotional and social bonds while growing up, as well as the loss of these bonds in early adulthood (e.g. due to the young person's addiction)."
+      ],
+      "persona": {
+        "name": "Kuba",
+        "age": 22,
+        "description": "Lives in Warsaw\nIs 22 years old (former resident of a care and education institution)\nShows symptoms of addiction to psychoactive substances\nHad the opportunity to live in supported housing, but did not keep it",
+        "goals": [
+          "Securing shelter and food for the next few days",
+          "Access to electricity (he has a phone, which he uses to stay in touch with friends he sometimes stays with in turn)",
+          "Keeping a neat appearance so that nobody \"notices\" anything"
+        ],
+        "challenges": [
+          "Finding a place to sleep for the next few days",
+          "No contact with people who could support him on his way \"to adulthood\""
+        ],
+        "motivations": [
+          "\"So that nobody sees that I have no home. Because I'm not homeless, am I!\"",
+          "\"I want to do something with my life so I don't end up like my parents\""
+        ]
+      },
+      "personas": [
+        {
+          "name": "Kuba",
+          "age": 22,
+          "description": "He is staying in Warszawa\nHe is 22 years old (a former resident of a children's care home)\nHe shows symptoms of addiction to psychoactive substances\nHe had the chance to live in a supported flat, but did not keep it",
+          "goals": [
+            "Securing shelter and food for the next few days",
+            "Access to electricity (he has a phone, which he uses to stay in touch with friends he sometimes stays with in turn)",
+            "Keeping a neat appearance so that nobody \"notices\" anything"
+          ],
+          "challenges": [
+            "Finding a place to sleep for the next few days",
+            "No contact with people who could support him on his way \"to adulthood\""
+          ],
+          "motivations": [
+            "\"So that nobody sees that I have no home. Because I'm not homeless, am I!\"",
+            "\"I want to do something with my life so I don't end up like my parents\""
+          ]
+        }
+      ],
+      "figures": [],
+      "reports": [
+        {
+          "title": "Homelessness among young people and young adults in Poland. 2023 report. Fundacja „Po Drugie”",
+          "url": "https://podrugie.pl/dodaj-mnie-raport-z-projektu/",
+          "page": 11
+        },
+        {
+          "title": "Information on the audit results of the Supreme Audit Office (Najwyższa Izba Kontroli) \"Activation and support measures for homeless people\", 2020",
+          "url": "https://www.nik.gov.pl/kontrole/P/18/096/",
+          "page": 11
+        },
+        {
+          "title": "Report on homeless people, 2010",
+          "url": "https://open.icm.edu.pl/items/edfec420-329f-4b2c-874c-2a6c28f99f3a",
+          "page": 11
+        },
+        {
+          "title": "Assessment of the situation of people experiencing homelessness in the Capital City of Warszawa, 2022. Office for Social Assistance and Projects of the City of Warszawa (Biuro Pomocy i Projektów Społecznych Urzędu m.st. Warszawy)",
+          "url": "https://wsparcie.um.warszawa.pl/problematyka-bezdomnosci-w-warszawie",
+          "page": 11
+        }
+      ],
+      "pages": [
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "key": "disability",
+      "label": "Disability",
+      "definition": "Disability is a lasting change in how the human body normally functions. It is a long-term impairment of the body's abilities. It significantly reduces the ability to work and to live independently. It can be present from birth, or it can result from an accident or illness.\n\nYou can be born with a disability, you can become a person with a disability, and you can develop a disability in later life. A lack of full ability affects a large part of society, in different ways and at different stages of life. It directly affects people with disabilities as well as the people around them.\n\nDifficult access to education, both at school and in higher education, and to courses and specialist training, leads to limits in finding work, developing a career, pursuing one's interests and building a network of social contacts.\n\nAt the end of 2023, the employment rate of people with disabilities aged 16–64 was 30.1%.",
+      "analysis": [
+        "People with disabilities are a very diverse group with different life needs and different motivations. The difficulties people with disabilities face in daily life have many dimensions. They are not limited to medical aspects, but also include economic, legal, communication, social, educational and technological factors.",
+        "According to the results of the 2021 National Population and Housing Census, the total number of people with disabilities as at 31 March 2021 was 5.4 million, which was 14.3% of the country's population, compared with 12.2% in 2011 and 14.3% in 2002. Men made up 45.1% of people with disabilities, and women 54.9%.",
+        "People with disabilities consider their most important needs to be housing, ways of spending free time, access to rehabilitation, work and information (PFRON survey, 2024). They also say that their most unmet needs relate to access to information.",
+        "A key area that requires new solutions and the improvement of existing ones is the transition from education to adulthood, and support in the labour market."
+      ],
+      "keyChallengesIntro": null,
+      "keyChallenges": [
+        "Improving access to the labour market.",
+        "Difficulty in gaining an education that allows for an independent life and career development.",
+        "Building independent social relationships and friendships.",
+        "Emotional support.",
+        "Technical and infrastructure support, accessibility.",
+        "The ability to travel independently and to use services without assistance.",
+        "Access to appropriate medical care, physiotherapy, medication and help with everyday activities (if necessary).",
+        "Developing interests.",
+        "Adapting homes and their fittings to the needs and functional limitations of people with disabilities."
+      ],
+      "persona": {
+        "name": "Krystian",
+        "age": 38,
+        "description": "Lives alone in a small town (his parents live nearby)\nIs 38 years old\nWorks remotely as a data operator, uses a computer with eye control, operates a smart home\nHas quadriplegia, does not speak",
+        "goals": [
+          "To carry out everyday activities without being a “burden” to other people",
+          "To make friends and build a social life",
+          "To keep learning and develop professionally,",
+          "To gain recognition"
+        ],
+        "challenges": [
+          "Loneliness, lack of friends",
+          "Self-care – getting dressed, leaving the house",
+          "Keeping his body in reasonably good health"
+        ],
+        "motivations": [
+          "“To have something more in life than just work”",
+          "To leave the house whenever he wants, go somewhere, experience something",
+          "To make his own decisions, to “speak for himself”"
+        ]
+      },
+      "personas": [
+        {
+          "name": "Krystian",
+          "age": 38,
+          "description": "Lives alone in a small town (his parents live nearby)\nIs 38 years old\nWorks remotely as a data operator, uses a computer with eye control, operates a smart home\nHas quadriplegia, does not speak",
+          "goals": [
+            "To carry out everyday activities without being a “burden” to other people",
+            "To make friends and build a social life",
+            "To keep learning and develop professionally,",
+            "To gain recognition"
+          ],
+          "challenges": [
+            "Loneliness, lack of friends",
+            "Self-care – getting dressed, leaving the house",
+            "Keeping his body in reasonably good health"
+          ],
+          "motivations": [
+            "“To have something more in life than just work”",
+            "To leave the house whenever he wants, go somewhere, experience something",
+            "To make his own decisions, to “speak for himself”"
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "value": "30,1%",
+          "label": "Employment rate of people with disabilities aged 16–64 (end of 2023)",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 12
+        },
+        {
+          "value": "5.4 million",
+          "label": "Total number of people with disabilities (National Census 2021, as of 31 March 2021)",
+          "scope": "Polska",
+          "year": "2021",
+          "page": 13
+        },
+        {
+          "value": "14,3%",
+          "label": "Share of people with disabilities in the country’s population (National Census 2021)",
+          "scope": "Polska",
+          "year": "2021",
+          "page": 13
+        },
+        {
+          "value": "12,2%",
+          "label": "Share of people with disabilities in the country’s population in 2011",
+          "scope": "Polska",
+          "year": "2011",
+          "page": 13
+        },
+        {
+          "value": "14,3%",
+          "label": "Share of people with disabilities in the country’s population in 2002",
+          "scope": "Polska",
+          "year": "2002",
+          "page": 13
+        },
+        {
+          "value": "45,1%",
+          "label": "Share of men among people with disabilities (National Census 2021)",
+          "scope": "Polska",
+          "year": "2021",
+          "page": 13
+        },
+        {
+          "value": "54,9%",
+          "label": "Share of women among people with disabilities (National Census 2021)",
+          "scope": "Polska",
+          "year": "2021",
+          "page": 13
+        }
+      ],
+      "reports": [
+        {
+          "title": "Strategia na rzecz Osób z Niepełnosprawnościami 2021-2030 (Strategy for People with Disabilities 2021–2030), MONITOR POLSKI 2021, item 218",
+          "url": "https://niepelnosprawni.gov.pl/p,170,strategia-na-rzecz-osob-z-niepelnosprawnosciami-2021-2030",
+          "page": 16
+        },
+        {
+          "title": "Konwencja o prawach osób niepełnosprawnych. Poradnik RPO (Convention on the Rights of Persons with Disabilities. Ombudsman’s Guide). Rzecznik Praw Obywatelskich (Commissioner for Human Rights), Warsaw 2013",
+          "url": "https://bip.brpo.gov.pl/sites/default/files/BIULETYN%20RPO%20%E2%80%93%20Materia%C5%82y%20nr%2082%20KPON.pdf",
+          "page": 16
+        },
+        {
+          "title": "E-podręcznik dostępny dla wszystkich. Poradnik dla twórców elektronicznych materiałów edukacyjnych (An e-textbook accessible to everyone. A guide for creators of electronic educational materials). Fundacja Instytut Rozwoju Regionalnego, 2013",
+          "url": "https://www.power.gov.pl/media/13591/e_podrecznik_dostepny_dla_wszystkich.pdf",
+          "page": 16
+        },
+        {
+          "title": "Projektowanie bez barier - wytyczne (Barrier-free design – guidelines), Stowarzyszenie Przyjaciół Integracji",
+          "url": "https://www.power.gov.pl/media/13910/projektowanie_zus.pdf",
+          "page": 16
+        },
+        {
+          "title": "Sami-Dzielni! Nowe standardy mieszkalnictwa wspomaganego dla osób z niepełnosprawnościami sprzężonymi (New standards of supported housing for people with multiple disabilities) 2023",
+          "url": "https://rops.krakow.pl/dzial-publikacje/sami-dzielni-nowe-standardy-mieszkalnictwa-wspomaganego-dla-osob-z-niepelnosprawnosciami-sprzezonymi-2023-1",
+          "page": 16
+        }
+      ],
+      "pages": [
+        12,
+        13,
+        14,
+        15,
+        16
+      ]
+    },
+    {
+      "key": "poverty",
+      "label": "Poverty",
+      "definition": "In 2023, extreme poverty in Poland affected 6.6% of households, an increase of 2 percentage points compared with the previous year.\n\nThe groups most often affected by extreme poverty include, in particular, people receiving social benefits, farmers and people living in rural areas, especially rural areas outside large urban areas.\n\nIn 2023, the poverty thresholds for single-person households were PLN 776 for statutory poverty, PLN 1,092 for relative poverty and PLN 913 for extreme poverty.\n\nNearly 78% of poor people using free food aid said that their economic situation had got worse over the last year. More than 53% of respondents said that their money was not enough to meet their basic needs (Federation of Polish Food Banks survey, 2023).",
+      "analysis": [
+        "Economic poverty affects people in Poland to different degrees depending on their social group. In 2023, the rate of extreme poverty was lowest among self-employed people, affecting only 3.8%. Among retired people it was 5.9%, and among employees 6.4%. The problem also affected 8.4% of people receiving disability or survivors' pensions and 14.1% of farmers. The highest level of poverty was recorded among people living on other non-earned sources of income, where extreme poverty affected as many as 17.9% of this group. All of the above figures increased compared with 2022.",
+        "Poland also has the phenomenon of the working poor. Poor people are often not unemployed – they work in low-paid jobs and usually have low qualifications and only basic education.",
+        "According to Statistics Poland (GUS), in 2023, on average one in eight people with at most lower secondary education lived in extreme poverty (12.8%). Among people with higher education, the rate was the lowest – 3.5%.",
+        "One in five people in Poland aged 25–55 cannot afford to invest in themselves and does not improve the skills that could lead to better-paid work (Report on Poverty 2023, Szlachetna Paczka).",
+        "The share of people expressing fear of poverty recorded in 2023 was the highest since 2015, at as much as 30%."
+      ],
+      "keyChallengesIntro": "Carrying out activities for different groups:",
+      "keyChallenges": [
+        "child poverty – e.g. good-quality early childhood care and education services (nurseries, preschools) that improve the chances of children from low-income families doing better at school and in adult life",
+        "poverty among older people",
+        "poverty among people with disabilities",
+        "poverty among working people (e.g. farmers working small plots of land)",
+        "poverty among unemployed and homeless people – e.g. social employment (vocational and social reintegration and supported employment) and social cooperatives of poor unemployed people",
+        "poverty among refugees from Ukraine",
+        "energy poverty",
+        "hunger and malnutrition"
+      ],
+      "persona": {
+        "name": "Tomek",
+        "age": 60,
+        "description": "Lives in Silesia\nIs 60 years old\nUntil recently lived with his mother\nHas a technical education, worked on a farm\nCurrently receives a farmer's disability pension, does not work",
+        "goals": [
+          "Ensure financial and health security",
+          "Find casual work",
+          "Secure fuel for heating the house"
+        ],
+        "challenges": [
+          "Loneliness, no support network",
+          "Sense of resignation and hopelessness",
+          "Risk of alcoholism"
+        ],
+        "motivations": [
+          "Meeting new people, “to get together and have a cup of tea”",
+          "To be sure “that I will have something to eat and can heat the house in winter”"
+        ]
+      },
+      "personas": [
+        {
+          "name": "Tomek",
+          "age": 60,
+          "description": "Lives in Silesia\nIs 60 years old\nUntil recently lived with his mother\nHas a technical education, worked on a farm\nCurrently receives a farmer's disability pension, does not work",
+          "goals": [
+            "Ensure financial and health security",
+            "Find casual work",
+            "Secure fuel for heating the house"
+          ],
+          "challenges": [
+            "Loneliness, no support network",
+            "Sense of resignation and hopelessness",
+            "Risk of alcoholism"
+          ],
+          "motivations": [
+            "Meeting new people, “to get together and have a cup of tea”",
+            "To be sure “that I will have something to eat and can heat the house in winter”"
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "value": "6,6%",
+          "label": "Households in extreme poverty",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 17
+        },
+        {
+          "value": "2 pp.",
+          "label": "Increase in the percentage of households in extreme poverty compared with the previous year",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 17
+        },
+        {
+          "value": "PLN 776",
+          "label": "Statutory poverty threshold for a 1-person household",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 17
+        },
+        {
+          "value": "PLN 1,092",
+          "label": "Relative poverty threshold for a 1-person household",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 17
+        },
+        {
+          "value": "PLN 913",
+          "label": "Extreme poverty threshold for a 1-person household",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 17
+        },
+        {
+          "value": "nearly 78%",
+          "label": "Poor people receiving free food aid whose financial situation has worsened in the last year (Federation of Polish Food Banks survey)",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 17
+        },
+        {
+          "value": "over 53%",
+          "label": "Respondents who do not have enough money to meet their basic needs (Federation of Polish Food Banks survey)",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 17
+        },
+        {
+          "value": "3,8%",
+          "label": "Extreme poverty rate — self-employed people",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 18
+        },
+        {
+          "value": "5,9%",
+          "label": "Extreme poverty rate — retired people",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 18
+        },
+        {
+          "value": "6,4%",
+          "label": "Extreme poverty rate — employees",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 18
+        },
+        {
+          "value": "8,4%",
+          "label": "Extreme poverty rate — disability pensioners",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 18
+        },
+        {
+          "value": "14,1%",
+          "label": "Extreme poverty rate — farmers",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 18
+        },
+        {
+          "value": "17,9%",
+          "label": "Extreme poverty rate — people living on other non-earned income",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 18
+        },
+        {
+          "value": "12,8%",
+          "label": "Extreme poverty among people with at most lower secondary education (“on average one in eight”)",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 18
+        },
+        {
+          "value": "3,5%",
+          "label": "Extreme poverty among people with higher education",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 18
+        },
+        {
+          "value": "one fifth",
+          "label": "Poles aged 25–55 who cannot invest in themselves and are not improving their skills (Raport o biedzie 2023, Szlachetna Paczka)",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 18
+        },
+        {
+          "value": "30%",
+          "label": "Percentage of people who fear poverty — the highest since 2015",
+          "scope": "Polska",
+          "year": "2023",
+          "page": 18
+        }
+      ],
+      "reports": [
+        {
+          "title": "Poverty Report 2023, Szlachetna Paczka",
+          "url": "https://www.szlachetnapaczka.pl/raport-o-biedzie/",
+          "page": 21
+        },
+        {
+          "title": "POVERTY WATCH 2023: monitoring poverty and social policy against poverty in Poland 2022-2023",
+          "url": "https://www.eapn.org.pl/eapn/uploads/2023/10/poverty_watch_23_v12_10_v2_ost.pdf",
+          "page": 21
+        },
+        {
+          "title": "The extent of economic poverty in Poland in 2023, Statistics Poland (Główny Urząd Statystyczny)",
+          "url": "https://stat.gov.pl/obszary-tematyczne/warunki-zycia/ubostwo-pomoc-spoleczna/zasieg-ubostwa-ekonomicznego-w-polsce-w-2023-roku,14,11.html",
+          "page": 21
+        },
+        {
+          "title": "POVERTY WATCH 2022: monitoring financial poverty and social policy against poverty in Poland 2021-2022.",
+          "url": "https://www.eapn.org.pl/eapn/uploads/2022/10/monitoring_ubostwa_2022_ost.pdf",
+          "page": 21
+        }
+      ],
+      "pages": [
+        17,
+        18,
+        19,
+        20,
+        21
+      ]
+    },
+    {
+      "key": "migrants",
+      "label": "Integration of foreigners",
+      "definition": "The integration of foreigners is part of inclusive policies, that is, policies that offer all residents of municipalities (gminas) equal opportunities to take part in economic, social, cultural and political life.\n\nPolicies for integrating foreigners give everyone, including people who do not speak Polish, equal opportunities to use public services.",
+      "analysis": [
+        "Here, the term “inclusion” does not mean assimilation, but integration as a process that involves many parties and takes place on many levels.",
+        "A model for this kind of integration of foreigners may include:",
+        "1. Participatory design and delivery of activities that include migrants, based on cooperation between local government and various stakeholders, including local community organisations and organisations and groups representing migrants.",
+        "2. Research – planning activities based on evidence, including a needs assessment, the results of research carried out in various other contexts, and evaluation, in cooperation with research centres.",
+        "3. Effective coordination of information sharing and long-term local activities, carried out by a lead unit within the local administration.",
+        "4. Stable funding – the need to secure funding for the work of both the administration itself and the community organisations involved, going beyond the system of temporary funding through projects (which are often relatively short-term, with no guarantee of continuation).",
+        "5. Making sure that all services are adapted to the needs of migrants on an equal basis with other residents, and therefore that migrants are treated equally in access to public services.",
+        "6. Equal access, that is, equal opportunities for migrants in access to public services, which also requires creating targeted programmes designed specifically for migrants, such as Polish language courses for children and adults."
+      ],
+      "keyChallengesIntro": null,
+      "keyChallenges": [
+        "Ensuring that migrants have equal access to social services.",
+        "Tailoring some public services to the needs and problems of migrants (e.g. providing an interpreter, cultural assistance, individual integration programmes).",
+        "Cultural inclusion of foreigners, including school-age children and young people.",
+        "A labour market open to foreigners, offering forms of support that match their qualifications, education, etc. (including, among other things, learning job-specific language and recognition of qualifications gained abroad).",
+        "Integration of migrant children into the Polish education system.",
+        "Changing/strengthening stereotype-free attitudes towards foreigners living in Poland.",
+        "Meeting the mental health needs of foreigners."
+      ],
+      "persona": {
+        "name": "Swietłana",
+        "age": 37,
+        "description": "She comes from Ukraine\nShe is 37 years old\nShe has 2 young children: aged 4 and 9\nHer husband stayed in Ukraine\nShe is a history teacher; in Ukraine she worked at a secondary school\nIn Poland she is looking for work outside her profession",
+        "goals": [
+          "To ensure safety for herself and her family",
+          "To find a job and a place to live",
+          "To secure a place at nursery/school for her children"
+        ],
+        "challenges": [
+          "Renting a flat (landlords are reluctant to rent to a mother with children from Ukraine)",
+          "Cultural adaptation of the children (they do not speak Polish)"
+        ],
+        "motivations": [
+          "Finding her way in Poland, and cultural and social activation and integration",
+          "Strong inner motivation, a wish for change"
+        ]
+      },
+      "personas": [
+        {
+          "name": "Swietłana",
+          "age": 37,
+          "description": "She comes from Ukraine\nShe is 37 years old\nShe has 2 young children: aged 4 and 9\nHer husband stayed in Ukraine\nShe is a history teacher; in Ukraine she worked at a secondary school\nIn Poland she is looking for work outside her profession",
+          "goals": [
+            "To ensure safety for herself and her family",
+            "To find a job and a place to live",
+            "To secure a place at nursery/school for her children"
+          ],
+          "challenges": [
+            "Renting a flat (landlords are reluctant to rent to a mother with children from Ukraine)",
+            "Cultural adaptation of the children (they do not speak Polish)"
+          ],
+          "motivations": [
+            "Finding her way in Poland, and cultural and social activation and integration",
+            "Strong inner motivation, a wish for change"
+          ]
+        }
+      ],
+      "figures": [],
+      "reports": [
+        {
+          "title": "A model of local policy for including migrants in city life. Assumptions and recommendations. Laboratorium Polityk Migracyjnych Miast i Regionów OBM UW, 2023",
+          "url": "https://nomada.info.pl/wp-content/uploads/2023/08/Model_polityki_wlaczania_migrantow_i_migrantek_FIN.pdf",
+          "page": 26
+        },
+        {
+          "title": "Refugees from Ukraine in Poland. Challenges and potential for integration. Monitor Deloitte, 2022",
+          "url": "https://www2.deloitte.com/content/dam/Deloitte/pl/Documents/Reports/pl-Uchodzcy-z-Ukrainy-w-Polsce-Report.pdf",
+          "page": 26
+        },
+        {
+          "title": "White Paper. Challenges of systemic support for refugees at local and national level, 2022.",
+          "url": "https://www.batory.org.pl/wp-content/uploads/2022/06/Okragly_stol_Biala-ksiega_www_S.pdf",
+          "page": 26
+        },
+        {
+          "title": "Poles and Ukrainians - challenges of refugee integration, 2023. Polski Instytut Ekonomiczny",
+          "url": "https://pie.net.pl/wp-content/uploads/2023/05/Wyzwania-integracji-.pdf",
+          "page": 26
+        }
+      ],
+      "pages": [
+        22,
+        23,
+        24,
+        25,
+        26
+      ]
+    },
+    {
+      "key": "health",
+      "label": "Health",
+      "definition": "In today's world, full of challenges related to lifestyle, the environment and social pressure, promoting a healthy lifestyle is becoming more and more important. Health education, access to medical care, disease prevention and promoting a healthy environment are key areas that support the mental and physical health of individuals and of society as a whole.",
+      "analysis": [
+        "Among health problems, coronary heart disease is, and will remain, the biggest challenge for the Polish healthcare system. Action is needed to reverse the upward trend in the incidence, prevalence and mortality of this disease.",
+        "Strokes remain an extremely serious health problem. Apart from being the second most common cause of death, they have a significant impact on physical and mental fitness.",
+        "In the coming years, we expect an increase in the number of new cases and deaths among patients with cancer. At the same time, Alzheimer's disease and other forms of dementia show a significant increase in all key indicators.",
+        "Chronic diseases, such as diabetes and obstructive lung disease, as well as mental illnesses, also remain an ongoing problem.",
+        "The pandemic caused or worsened loneliness, which mainly affects older people who live alone. Because of many illnesses or disabilities, or fear of the outside world, they do not leave their homes. Isolation can lead to problems with attention and memory, fatigue or even mental illness.",
+        "Smoking and a poor diet are among the main causes of the rising mortality rate in Poland."
+      ],
+      "keyChallengesIntro": "Improving the health of society is a complex task that requires taking many factors into account. The main challenges in this area include:",
+      "keyChallenges": [
+        "Raising awareness and education about a healthy lifestyle, disease prevention and the importance of a healthy diet and physical activity.",
+        "Ensuring equal access to high-quality healthcare for all groups in society.",
+        "Adapting healthcare systems to the growing number of older people, with particular focus on long-term care.",
+        "Health promotion among young people: investing in the health of children and young people to build a healthy future for society.",
+        "Mental health awareness: Raising awareness of the importance of mental health and tackling the stigma associated with mental health problems."
+      ],
+      "persona": {
+        "name": "Stanisław",
+        "age": 56,
+        "description": "Aged 56\nWorks full-time and cares for his sick mother\nNeglects his own health because of his busy lifestyle\nStruggles with obesity and heart disease\nSocially withdrawn",
+        "goals": [
+          "Balance between private life and caring for his mother",
+          "More energy and vitality, and better health",
+          "Stronger social relationships"
+        ],
+        "challenges": [
+          "Physical and emotional challenges of daily care for a dependent person",
+          "Worry about feeling unwell and growing health problems"
+        ],
+        "motivations": [
+          "Keeping his mother safe and providing her with daily care",
+          "Finding a moment to do something for himself or to meet someone",
+          "Wanting to break out of the routine of duties"
+        ]
+      },
+      "personas": [
+        {
+          "name": "Stanisław",
+          "age": 56,
+          "description": "He is 56 years old\nHe works full-time and cares for his sick mother\nBecause of his busy lifestyle, he neglects his own health\nHe struggles with obesity and heart disease\nHe is socially withdrawn",
+          "goals": [
+            "A balance between private life and caring for his mother",
+            "More energy and vitality, and better health",
+            "Stronger social relationships"
+          ],
+          "challenges": [
+            "The physical and emotional challenges of daily care for a dependent person",
+            "Worry about feeling unwell and growing health problems"
+          ],
+          "motivations": [
+            "Keeping his mother safe and providing her with daily care",
+            "Finding a moment to do something for himself or to meet someone",
+            "Wanting to break out of the routine of duties"
+          ]
+        }
+      ],
+      "figures": [],
+      "reports": [
+        {
+          "title": "Loneliness Report 2021. The first year of the pandemic. Szlachetna Paczka",
+          "url": "https://www.szlachetnapaczka.pl/raport-o-samotnosci/",
+          "page": 31
+        },
+        {
+          "title": "Health Needs Maps – Baza Analiz Systemowych i Wdrożeniowych 2021",
+          "url": "https://dziennikmz.mz.gov.pl/legalact/2021/69/",
+          "page": 31
+        },
+        {
+          "title": "State of Health in the EU Poland. Country Health Profile 2023",
+          "url": "https://www.oecd.org/pl/publications/polska-profil-systemu-ochrony-zdrowia-2023_b12d3d03-pl.html",
+          "page": 31
+        }
+      ],
+      "pages": [
+        27,
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "key": "mental_health",
+      "label": "Mental health",
+      "definition": "A person's wellbeing includes emotional, mental and social balance. A person in good mental health is able to cope with stress, maintain satisfying relationships with others and make effective decisions.\n\nMental health does not only mean the absence of mental illness. It is also a condition for feeling well, personal growth and the ability to adapt to changes in life.",
+      "analysis": [
+        "Young Poles of school age increasingly struggle with a lack of interest and general motivation to act, and they also report problems with self-acceptance.",
+        "Worrying data show an increase in suicide attempts among children and young people. A large number of them also talk about taking their own life or have suicidal thoughts.",
+        "It has been shown that excessive use of electronic devices and the Internet by children and young people can have a real effect on depression, as well as on eating problems and how they see their own bodies.",
+        "One phenomenon that currently affects, on average, one in three young Poles is FOMO (fear of missing out): anxiety about being disconnected from the internet and the feeling that they might miss something.",
+        "One of the long-term effects of the coronavirus pandemic is mental health problems among both young people and adults.",
+        "The level of funding for mental health care in Poland is very low (about 3% of National Health Fund (NFZ) spending).",
+        "Stress factors in the workplace have a negative effect on the mental health of most employees. Some employers take steps that only reduce their employees' mental strain on the surface (for example, relaxation areas or extra days off), but these steps do not aim to remove or reduce the key causes of stress.",
+        "Mental health problems may be more common in Poland than reported, because of low awareness, social stigma and poor access to services."
+      ],
+      "keyChallengesIntro": "Preventing mental health problems among people in our country, and taking effective action to reduce them, should be done by:",
+      "keyChallenges": [
+        "Doing more to develop health education, including mental health education, especially among children, young people and older people.",
+        "Strengthening parenting skills so that parents can correctly recognise and respond to signs that their children may have mental health problems.",
+        "Changing how the mental health care system in Poland works – moving from institutional care to community-based care.",
+        "Reducing the stigma faced by people with mental health problems, which strongly discourages them from seeking specialist help and may make such problems worse."
+      ],
+      "persona": {
+        "name": "Mateusz",
+        "age": 17,
+        "description": "He is 17 years old\nHe goes to secondary school in a big city\nHe spends most of his free time online on the computer\nHe recently broke up with his first girlfriend, which hit him hard\nHe feels empty and sometimes has periods of depression",
+        "goals": [
+          "Achieving goals outside the virtual world",
+          "Finding support when going through difficult emotions",
+          "Breaking out of isolation, a sense of belonging to a group"
+        ],
+        "challenges": [
+          "Little contact with peers, a feeling of being an outsider",
+          "Too much time spent on the computer",
+          "Difficulty understanding and coping with emotions, low motivation to act"
+        ],
+        "motivations": [
+          "A sense of satisfaction and of being important",
+          "Wanting to be accepted, finding a \"kindred spirit\"",
+          "A sense of safety when the sky is falling in"
+        ]
+      },
+      "personas": [
+        {
+          "name": "Mateusz",
+          "age": 17,
+          "description": "He is 17 years old\nHe goes to secondary school in a big city\nHe spends most of his free time online on the computer\nHe recently broke up with his first girlfriend, which hit him hard\nHe feels empty and sometimes has periods of depression",
+          "goals": [
+            "Achieving goals outside the virtual world",
+            "Finding support when emotions are hard to cope with",
+            "Breaking out of isolation, a sense of belonging to a group"
+          ],
+          "challenges": [
+            "Few contacts with peers, a sense of alienation",
+            "Spending too much time in front of the computer",
+            "Difficulty understanding and coping with emotions, reduced motivation to act"
+          ],
+          "motivations": [
+            "A sense of satisfaction and of being important",
+            "Wanting to be accepted, finding a \"kindred spirit\"",
+            "A sense of safety when the sky is falling in"
+          ]
+        },
+        {
+          "name": "Karina",
+          "age": 41,
+          "description": "Lives in a big city\nIs 41 years old\nHas struggled with mental health problems for years and was recently diagnosed with bipolar disorder\nIs in long-term treatment and under the care of a psychiatrist\nIs now returning to the job market",
+          "goals": [
+            "Finding stable employment",
+            "Providing support with getting back into work and preparing to enter the job market",
+            "Tailoring specific activities to personal abilities"
+          ],
+          "challenges": [
+            "Finding her feet again after returning from hospital",
+            "A sense of alienation and shame about the diagnosis",
+            "Loss of energy and motivation, fear of social rejection",
+            "Risk of unemployment and of another mental health crisis"
+          ],
+          "motivations": [
+            "Returning to \"normality\" and social life",
+            "Coping with a new challenge: finding and starting a job",
+            "Rebuilding belief in her own abilities"
+          ]
+        }
+      ],
+      "figures": [
+        {
+          "value": "on average, one in three",
+          "label": "Young Poles affected by FOMO (fear of being disconnected from the internet)",
+          "scope": "Polska",
+          "year": null,
+          "page": 33
+        },
+        {
+          "value": "approx. 3%",
+          "label": "Share of mental health care in National Health Fund (NFZ) spending",
+          "scope": "Polska",
+          "year": null,
+          "page": 34
+        }
+      ],
+      "reports": [
+        {
+          "title": "Pomiędzy pandemią COVID-19 a wojną w Ukrainie. Diagnoza stanu polskiego społeczeństwa (Between the COVID-19 pandemic and the war in Ukraine. A diagnosis of the state of Polish society), Kraków 2022",
+          "url": "http://fundacjaprofuturo.pl/wp-content/uploads/2023/04/Pomi%C4%99dzy-pandemi%C4%85-COVID-19-a-wojn%C4%85-w-Ukrainie-Diagonoza.2022-ebook.pdf",
+          "page": 38
+        },
+        {
+          "title": "Raport z badania kondycji psychicznej młodzieży 2022 (Report on a study of young people's mental health 2022)",
+          "url": "https://rep.up.krakow.pl/xmlui/bitstream/handle/11716/13321/Solecki%20-%20Raport%20z%20badania%20kondycji%20psychicznej%20m%c5%82odzierzy.pdf?sequence=1&isAllowed=y",
+          "page": 38
+        },
+        {
+          "title": "Młode głowy. Otwarcie o zdrowiu psychicznym (Young minds. Openly about mental health). Fundacja UNAWEZA, 2023",
+          "url": "https://mlodeglowy.pl/wp-content/uploads/2023/04/MLODE-GLOWY.-Otwarcie-o-zdrowiu-psychicznym_-Raport-final.pdf",
+          "page": 38
+        },
+        {
+          "title": "Poland: Country Health Profile 2023, State of Health in the EU",
+          "url": "https://www.oecd.org/pl/publications/2023/12/poland-country-health-profile-2023_80434439.html",
+          "page": 38
+        },
+        {
+          "title": "People at Work 2022: A Global Workforce View",
+          "url": "https://pl.adp.com/baza-wiedzy-hr/insights/people-at-work-2022-a-global-workforce-view.aspx",
+          "page": 38
+        }
+      ],
+      "pages": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ]
+    },
+    {
+      "key": "seniors",
+      "label": "Older people",
+      "definition": "The social situation of older people often reflects current social and civic challenges. Today we face the task of adapting to an ageing population, which requires effective action in health and care services, as well as support in ensuring a dignified old age.\n\nOlder people should be able to be a full and active part of society, and their right to live safely, free from discrimination, isolation and neglect, and as independently as possible, should be guaranteed.",
+      "analysis": [
+        "According to the latest research, the biggest problems for which older people expect help and support are: health, loneliness, finances and the need for digital skills.",
+        "The ongoing ageing of society in Poland and in other countries will have negative effects not only for older people, but will also affect the overall development of the country.",
+        "A large number of older people still live in buildings with architectural barriers. This is particularly difficult for people who live alone, which is mainly typical of urban areas.",
+        "A habit that carries great risk, especially for older people, is polypharmacy, i.e. taking many medicines and supplements at the same time, which can lead to interactions between them and side effects.",
+        "Loneliness, which is still a problem affecting older people as a social group, is to some extent linked to their financial situation (the worse the financial situation, the stronger the feeling of loneliness)."
+      ],
+      "keyChallengesIntro": null,
+      "keyChallenges": [
+        "The need to adapt institutions and health services to the needs of an ageing society, including through the use of modern technologies.",
+        "Implementing universal design standards in public spaces and in housing, including in cooperation with the users themselves and organisations working on their behalf, and developing housing for older people.",
+        "Encouraging a responsible attitude among older people towards taking medicines and supplements, and raising awareness of this issue among carers of older people.",
+        "Expanding the range of activities and integration opportunities for older people, taking into account their physical and mental abilities, financial situation and other important factors.",
+        "Developing older people's digital skills, which could help address problems related to health and social relationships.",
+        "Improving access to care services (within municipalities (gminy)), including specialist care services, for people who are alone or live alone, as well as for those who live with family."
+      ],
+      "persona": {
+        "name": "Janina",
+        "age": 73,
+        "description": "Lives alone in a small town\nIs 73 years old\nRecently lost her husband, feels lonely, rarely leaves the house\nStruggles with many health conditions, takes a lot of medicines and supplements",
+        "goals": [
+          "Reducing loneliness and encouraging social activity",
+          "Building a sense of self-worth and usefulness",
+          "A conscious approach to physical and mental health, maintaining health care and monitoring the medicines taken."
+        ],
+        "challenges": [
+          "Loneliness and lack of social integration",
+          "Overuse of medicines and supplements",
+          "Life changes after the loss of a spouse"
+        ],
+        "motivations": [
+          "Finding meaning in life and pleasure in simple things",
+          "Organising everyday life",
+          "Feeling better and getting out to meet people"
+        ]
+      },
+      "personas": [
+        {
+          "name": "Janina",
+          "age": 73,
+          "description": "Lives alone in a small town\nIs 73 years old\nRecently lost her husband, feels lonely, rarely leaves the house\nLives with many health conditions, takes a lot of medicines and supplements",
+          "goals": [
+            "Reducing loneliness and encouraging social activity",
+            "Building a sense of self-worth and usefulness",
+            "A conscious approach to physical and mental health, keeping up with healthcare and monitoring the medicines taken."
+          ],
+          "challenges": [
+            "Loneliness and lack of social integration",
+            "Overuse of medicines and supplements",
+            "Life changes after losing a spouse"
+          ],
+          "motivations": [
+            "Finding meaning in life and pleasure in simple things",
+            "Organising everyday life",
+            "Feeling better and getting out to meet people"
+          ]
+        }
+      ],
+      "figures": [],
+      "reports": [
+        {
+          "title": "Sytuacja osób starszych w Polsce w 2022 r. (The situation of older people in Poland in 2022), Główny Urząd Statystyczny (Statistics Poland)",
+          "url": "https://stat.gov.pl/obszary-tematyczne/osoby-starsze/osoby-starsze/sytuacja-osob-starszych-w-polsce-w-2022-roku,2,5.html",
+          "page": 43
+        },
+        {
+          "title": "Ocena potrzeb w zakresie wsparcia dla Seniorów w Polsce 2023 (Assessment of support needs of older people in Poland 2023). Public opinion survey report. SeniorApp",
+          "url": "https://seniorapp.pl/wp-content/uploads/2023/10/Raport_SeniorApp_2023_19.10.23_small.pdf",
+          "page": 43
+        },
+        {
+          "title": "Wielolekowość seniorów w Polsce, aspekty prawno-społeczne i medyczne (Polypharmacy among older people in Poland: legal, social and medical aspects). Report 2021. FCIS Instytut dla zdrowej i lepszej starości",
+          "url": "https://fundacjafcis.pl/wielolekowosc-seniorow-w-polsce-aspekty-prawno-spoleczne-i-medyczne-raport/",
+          "page": 43
+        }
+      ],
+      "pages": [
+        39,
+        40,
+        41,
+        42,
+        43
+      ]
+    }
+  ]
+}

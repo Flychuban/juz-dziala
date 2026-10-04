@@ -1,0 +1,457 @@
+[
+  {
+    "id": "iws-2-0",
+    "name": "Call for applications for social innovations under the project „Inkubator Włączenia Społecznego 2.0”",
+    "program": "European Funds for Social Development 2021-2027 (FERS), Priority Axis V, Measure 5.1: Social innovations (ESF+)",
+    "operator": "Regional Social Policy Centre in Kraków (ROPS), in partnership with Krakowskie Centrum Innowacyjnych Technologii INNOAGH sp. z o.o.",
+    "amountMax": 120000,
+    "amountAvg": 70000,
+    "currency": "PLN",
+    "window": {
+      "from": "2024-11-13",
+      "to": "2024-12-13"
+    },
+    "status": "closed",
+    "eligibility": [
+      "individuals who live in Poland (within the meaning of the Civil Code) and have full legal capacity",
+      "legal persons (in particular foundations, associations, capital companies and cooperatives, including social cooperatives)",
+      "organisational units that are not legal persons but have legal capacity under the law (in particular general partnerships, limited partnerships and limited joint-stock partnerships)",
+      "public finance sector units",
+      "informal groups of the individuals or entities listed above, represented by one member of the informal group"
+    ],
+    "formFields": [
+      {
+        "key": "title",
+        "label": "Title of the innovation",
+        "hint": "Think about the title. It should be short and clearly linked to what the innovation is about"
+      },
+      {
+        "key": "applicant",
+        "label": "Details of the person or organisation with the idea",
+        "hint": "On the online form, choose from the list: individual, entity or informal group (up to 5 partners and a representative named for day-to-day contact)."
+      },
+      {
+        "key": "description",
+        "label": "Description of the innovation",
+        "hint": "What is the innovation? What type is it, for example a product, an app, a way of working, a technological solution? How can it be briefly defined and described? How does the solution meet the project's goal: supporting social inclusion / preventing social exclusion? How does the solution fit the idea of deinstitutionalisation?"
+      },
+      {
+        "key": "innovativeness",
+        "label": "How innovative the solution is",
+        "hint": "Help us better understand what makes the idea unique. Are similar solutions used in Poland or around the world? How does the proposed project bring new value to solving the problem identified? What makes the project stand out from others carried out in this area?"
+      },
+      {
+        "key": "problemDiagnosis",
+        "label": "Assessment of the problem your innovation responds to",
+        "hint": "What problem does the innovation respond to? Give statistics that show the scale of the problem. What is this assessment based on, for example reports or research? Does the problem you intend to solve match a topic listed in the Social Challenges Map (Mapa Wyzwań Społecznych)? If so, which one?"
+      },
+      {
+        "key": "recipients",
+        "label": "Description of the people the innovation is for",
+        "hint": "Who is your innovation aimed at? What makes this group distinct? What are their needs? Why are these people excluded or at risk of exclusion?"
+      },
+      {
+        "key": "change",
+        "label": "The change the innovation brings",
+        "hint": "How will the proposed solution affect the problem described above? What will it change in the lives of the target group? How will it affect the social inclusion of the people it is aimed at? How will it prevent the process of social exclusion?"
+      },
+      {
+        "key": "futureVision",
+        "label": "Vision for the future of the innovation",
+        "hint": "Does the innovation have the potential to be used in the future on a large scale, for a wide group of recipients? Can the solution developed be extended to other target groups, or used in a different context or place? How? What features of it allow such an extension? Describe how easy the solution is to use and to implement"
+      },
+      {
+        "key": "actionPlan",
+        "label": "Action plan and costs",
+        "hint": "Describe in a few key steps what needs to be done, when and at what cost, to prepare and test the innovation. For each activity: Activity, Completion date, Cost of the activity. Preparation period (may not exceed 3 months) and testing period — Phase I and Phase II of the test (may not exceed 9 months)."
+      },
+      {
+        "key": "grantAmount",
+        "label": "Grant amount requested",
+        "hint": "What is the total grant amount requested? Check it against the partial costs presented in the action plan"
+      },
+      {
+        "key": "team",
+        "label": "Project team and its experience",
+        "hint": "Who will be responsible for carrying out the tasks in the project? What experience do these people, institutions and organisations have in working with the recipients of the innovation, and in planning and implementing social innovations?"
+      },
+      {
+        "key": "declarations",
+        "label": "Declarations",
+        "hint": "Declarations for a natural person or for a representative of an entity, made under penalty of criminal liability (Article 297 § 1 of the Criminal Code)."
+      }
+    ],
+    "criteria": [
+      {
+        "key": "innovativeness",
+        "label": "Innovativeness",
+        "description": "Assessment of the solution in terms of its potential to solve the identified social problems in a new way, or in a way that is significantly changed compared with existing solutions. The innovativeness of the solution is assessed at national level for the given target group. The applicant's task is to describe the proposed approach against the most similar existing solutions in the country.",
+        "cardDescription": "Assessment of the solution in terms of its potential to solve the identified social problems in a new way, or in a way that is significantly changed compared with existing solutions. The innovativeness of the solution is assessed at national level for the given target group.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 5
+      },
+      {
+        "key": "adequacy",
+        "label": "Relevance to the needs of recipients and users",
+        "description": "Are the aims/products of the social innovation relevant to the current assessment of the needs and problems of the target group at national level? To what extent does the social innovation respond to the needs of the target group? To what extent does the social innovation have a chance of contributing to social change, that is, a change in the situation of the target group at national level?",
+        "cardDescription": "Analysis of the aims/products of the social innovation in terms of how well they match the current assessment of the needs and problems of the target group nationwide. How responsive is it to the needs of the users, and what is its potential to contribute to social change, i.e. to changing the situation of the target group nationwide? Does the idea respond to a challenge in line with the Social Challenges Map (Mapa Wyzwań Społecznych)?",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      },
+      {
+        "key": "costEffectiveness",
+        "label": "Cost-effectiveness",
+        "description": "Assessment of the degree of optimisation, the ratio of inputs to planned results, and the balance of potential positive and negative effects of the social innovation.",
+        "cardDescription": "Assessment of the degree of optimisation, the ratio of inputs to planned results, and the balance of potential positive and negative effects of the social innovation; analysis of whether the stated costs (time, money and resources) are reasonable in relation to the planned results.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      },
+      {
+        "key": "universality",
+        "label": "Universality",
+        "description": "Assessment of whether the solution can be used in different places, how easy it is to use, how easy it is to implement, and whether it can be spread and scaled up.",
+        "cardDescription": "Assessment of whether the solution can be used in different places, how easy it is to use, how easy it is to implement, and whether it can be spread and scaled up.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      },
+      {
+        "key": "developmentVision",
+        "label": "Vision for developing the idea in the future",
+        "description": "Assessment of ideas for using the innovation in the future.",
+        "cardDescription": "Assessment of ideas for using the innovation after the incubation stage and testing have been completed.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      }
+    ],
+    "minScore": 21,
+    "innovations": [],
+    "resultsPlanned": "April/May 2025",
+    "applyUrl": "https://www.webankieta.pl/ankieta/1375387/formularz-aplikacyjny-inkubator-wlaczenia-spolecznego-20.html",
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,nabor-aplikacji-wnioskow-na-innowacje-spoleczne-w-ramach-projektu-pn-inkubator-wlaczenia-spolecznego-20",
+    "capturedAt": "2026-10-03T15:41:18.497Z",
+    "notes": "A grant to develop and test a social innovation aimed at people who are socially excluded or at risk of social exclusion; it cannot be an implementation project. Nationwide scope. Maximum amount PLN 120,000 (call for proposals page and the Call for Proposals Notice); average grant value PLN 70,000 according to the project page (https://rops.krakow.pl/realizowane-projekty-i-zadania/inkubator-wlaczenia-spolecznego-20,o-projekcie). No own contribution is required; the grant covers 100% of costs. Duration up to 12 months: a preparation period of up to 3 months, and two testing phases plus refinement totalling up to 9 months; at least 4 testers. An applicant may submit a maximum of 2 applications. Assessment: formal → content → strategic. Part A of the content assessment (5 criteria, 0–10 points each, max. 50): minimum 21 points, including at least 5 points for innovativeness and 4 points for each of the other criteria (Content Assessment Form; Procedures, Chapter IX). Part B (pitching, 3 criteria of 0–5 points each: testing concept, applicant's potential, consistency with the idea of deinstitutionalisation; at least 3 points in each). Applications with at least 32.5 out of 65 points go through to the strategic assessment. Planned decision date: the call for proposals page states \"April/May 2025\", the Call for Proposals Notice states \"March 2025\"."
+  },
+  {
+    "id": "usluga-wrazliwa-1",
+    "name": "Call for proposals for the pilot implementation of social services based on innovative solutions under the project \"Usługa Wrażliwa – upowszechnianie innowacji społecznych w środowiskach lokalnych\"",
+    "program": "Fundusze Europejskie dla Małopolski 2021-2027 (FEM), Measure 6.23 (ESF+)",
+    "operator": "Regional Social Policy Centre in Kraków (ROPS)",
+    "amountMax": 600000,
+    "amountAvg": null,
+    "currency": "PLN",
+    "window": {
+      "from": "2025-12-22",
+      "to": "2026-02-20"
+    },
+    "status": "closed",
+    "eligibility": [
+      "organisations with their registered office or a branch in Małopolska, in particular local government and its organisational units such as social welfare centres (OPS), county family support centres (PCPR), social services centres (CUS), as well as NGOs and social economy entities,",
+      "organisations with at least 3 years' experience in at least one area related to the subject of the solution: working with the target group the innovation is aimed at, providing a similar form of support, or working in the field of innovation,",
+      "organisations that are not excluded from receiving support, in accordance with the Grant Rules, available in the downloadable files."
+    ],
+    "formFields": [],
+    "criteria": [],
+    "minScore": null,
+    "innovations": [
+      {
+        "category": "Kategoria I",
+        "title": "Bez Presji z Depresji",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,bez-presji-z-depresji",
+        "slug": "bez-presji-z-depresji",
+        "cardId": "c005"
+      },
+      {
+        "category": "Kategoria II",
+        "title": "Strażnik (Alarm Ally)",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-sensoryczna,straznik",
+        "slug": "straznik",
+        "cardId": "c087"
+      },
+      {
+        "category": "Kategoria III",
+        "title": "Himalaje Autyzmu",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-zdrowia-i-medycyny,himalaje-autyzmu",
+        "slug": "himalaje-autyzmu",
+        "cardId": "c034"
+      },
+      {
+        "category": "Kategoria IV",
+        "title": "Rodzina Adopcyjna Dorasta",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,rodzina-adopcyjna-dorasta",
+        "slug": "rodzina-adopcyjna-dorasta",
+        "cardId": "c080"
+      },
+      {
+        "category": "Kategoria V",
+        "title": "Głuchy czytelnik w bibliotece",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-z-niepelnosprawnoscia-sensoryczna,gluchy-czytelnik-w-bibliotece",
+        "slug": "gluchy-czytelnik-w-bibliotece",
+        "cardId": "c029"
+      }
+    ],
+    "resultsPlanned": "April 2026",
+    "applyUrl": "https://uw-wniosek.webankieta.pl/",
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,nabor-wnioskow-na-pilotazowe-wdrozenie-uslug-spolecznych-bazujacych-na-innowacyjnych-rozwiazaniach-w-ramach-projektu-usluga-wrazliwa-upowszechnianie-innowacji-spolecznych-w-srodowiskach-lokalnych",
+    "capturedAt": "2026-10-03T15:41:20.699Z",
+    "notes": "A grant for a pilot implementation of an innovative social service in a local community, based on one of the innovations selected by ROPS (Framework Implementation Plans). No own contribution is required; the grant covers 100% of the costs. Depending on the innovation, the support is for: families with children, children and young people, people who need support in daily life and their carers, people with disabilities or with limited mobility, people who live, study or work in the Małopolska region; also social services staff. The website does not give the average grant amount (amountAvg = null). The application fields and assessment criteria are in the PDF files „Wniosek o grant” and „Wzór karty oceny merytorycznej” in the downloads section — they have not been copied here (formFields and criteria are empty, minScore = null). Planned decision date according to the list of calls for proposals (https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne)."
+  },
+  {
+    "id": "usluga-wrazliwa-2",
+    "name": "Second call for proposals for the pilot implementation of social services based on innovative solutions under the project „Usługa Wrażliwa – upowszechnianie innowacji społecznych w środowiskach lokalnych”",
+    "program": "Fundusze Europejskie dla Małopolski 2021-2027 (FEM), Measure 6.23 (ESF+)",
+    "operator": "Regional Social Policy Centre in Kraków (ROPS)",
+    "amountMax": 600000,
+    "amountAvg": null,
+    "currency": "PLN",
+    "window": {
+      "from": "2026-05-27",
+      "to": "2026-06-30"
+    },
+    "status": "closed",
+    "eligibility": [
+      "organisations with their registered office or a branch in Małopolska, in particular local government and its organisational units such as social welfare centres (OPS), county family support centres (PCPR), social services centres (CUS), as well as NGOs and social economy entities,",
+      "organisations with at least 3 years of experience in at least one area related to the solution: working with the target group of the innovation, providing a similar form of support, or working in the area of the innovation,",
+      "organisations that are not excluded from receiving support under the Grant Rules, which are available in the downloads section."
+    ],
+    "formFields": [],
+    "criteria": [],
+    "minScore": null,
+    "innovations": [
+      {
+        "category": "Kategoria I",
+        "title": "Przenośne modularne łazienki",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,przenosne-modularne-lazienki",
+        "slug": "przenosne-modularne-lazienki",
+        "cardId": "c076"
+      },
+      {
+        "category": "Kategoria II",
+        "title": "koMIX życiowy",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-dzieci-mlodziezy-i-rodziny,komix-zyciowy",
+        "slug": "komix-zyciowy",
+        "cardId": "c041"
+      },
+      {
+        "category": "Kategoria III",
+        "title": "Organizator kompleksowej opieki w miejscu zamieszkania",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,organizator-kompleksowej-opieki-w-miejscu-zamieszkania",
+        "slug": "organizator-kompleksowej-opieki-w-miejscu-zamieszkania",
+        "cardId": "c066"
+      },
+      {
+        "category": "Kategoria IV",
+        "title": "Szlakiem ludzi bezdomnych",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-osob-w-kryzysie-bezdomnosci,szlakiem-ludzi-bezdomnych",
+        "slug": "szlakiem-ludzi-bezdomnych",
+        "cardId": "c090"
+      },
+      {
+        "category": "Kategoria V",
+        "title": "Terapeuta przestrzeni",
+        "url": "https://rops.krakow.pl/innowacje-spoleczne/biblioteka-innowacji-spolecznych/dla-seniorow,terapeuta-przestrzeni",
+        "slug": "terapeuta-przestrzeni",
+        "cardId": "c095"
+      }
+    ],
+    "resultsPlanned": "September 2026",
+    "applyUrl": "https://uw-nabor2.webankieta.pl/",
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,ii-nabor-wnioskow-na-pilotazowe-wdrozenie-uslug-spolecznych-bazujacych-na-innowacyjnych-rozwiazaniach-w-ramach-projektu-usluga-wrazliwa-upowszechnianie-innowacji-spolecznych-w-srodowiskach-lokalnych",
+    "capturedAt": "2026-10-03T15:41:19.598Z",
+    "notes": "A grant for a pilot implementation of an innovative social service in a local community, based on one of the innovations identified by ROPS (Framework Implementation Plans). No own contribution is required; the grant covers 100% of costs. Depending on the innovation, the people supported are: families with children, children and young people, people who need support in everyday life and their carers, people with disabilities or with limited mobility, people who live, study or work in the Małopolska region; also social services staff. The page does not give the average grant amount (amountAvg = null). The application fields and assessment criteria are in the PDFs „Wniosek o grant” and „Wzór karty oceny merytorycznej” in the downloads section — they have not been copied here (formFields and criteria empty, minScore = null). Planned results date according to the list of calls for proposals (https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne)."
+  },
+  {
+    "id": "demo-iws",
+    "name": "Sample call for proposals (demo) — grants for social innovation",
+    "program": "European Funds for Social Development 2021-2027 (FERS), Priority Axis V, Measure 5.1: Social innovation (ESF+)",
+    "operator": "Regional Social Policy Centre in Kraków (ROPS), in partnership with Krakowskie Centrum Innowacyjnych Technologii INNOAGH sp. z o.o.",
+    "amountMax": 120000,
+    "amountAvg": 70000,
+    "currency": "PLN",
+    "window": {
+      "from": "2026-10-03",
+      "to": "2026-10-31"
+    },
+    "status": "demo",
+    "eligibility": [
+      "individuals who live in Poland (within the meaning of the Civil Code) and have full legal capacity",
+      "legal entities (in particular foundations, associations, capital companies, cooperatives, including social cooperatives)",
+      "organisational units that are not legal entities but have legal capacity under the law (in particular general partnerships, limited partnerships, limited joint-stock partnerships)",
+      "public finance sector units",
+      "informal groups of the persons or entities listed above, represented by one member of the informal group"
+    ],
+    "formFields": [
+      {
+        "key": "title",
+        "label": "Title of the innovation",
+        "hint": "Think about the title so that it is short and clearly linked to the subject of the innovation"
+      },
+      {
+        "key": "applicant",
+        "label": "Details of the idea's author",
+        "hint": "On the online form, choose from the list: individual, organisation or informal group (up to 5 partners and a representative named as the day-to-day contact)."
+      },
+      {
+        "key": "description",
+        "label": "Description of the innovation",
+        "hint": "What is the innovation? What kind of innovation is it, e.g. a product, an app, a working model, a technological solution? How can it be briefly defined and described? How does the solution meet the project's aim: supporting social inclusion / preventing social exclusion? How does the solution fit the idea of deinstitutionalisation?"
+      },
+      {
+        "key": "innovativeness",
+        "label": "How innovative the solution is",
+        "hint": "Help us better understand what makes the idea unique. Are similar solutions used in Poland or elsewhere in the world? How does the proposed project bring new value to solving the problem you have identified? What makes the project stand out from others carried out in this area?"
+      },
+      {
+        "key": "problemDiagnosis",
+        "label": "Diagnosis of the problem your innovation addresses",
+        "hint": "What problem does the innovation address? Give statistical data showing the scale of the problem. What is this diagnosis based on, for example reports or research? Is the problem you intend to solve in line with a topic listed in the Social Challenges Map (Mapa Wyzwań Społecznych)? If so, which one?"
+      },
+      {
+        "key": "recipients",
+        "label": "Description of the people the innovation is for",
+        "hint": "Who is your innovation for? What makes this group distinctive? What are their needs? Why are these people excluded or at risk of exclusion?"
+      },
+      {
+        "key": "change",
+        "label": "The change the innovation brings",
+        "hint": "How will the proposed solution affect the problem described above? What will it change in the lives of the target group? How will it affect the social inclusion of the people it is for? How will it prevent social exclusion?"
+      },
+      {
+        "key": "futureVision",
+        "label": "Vision for the future of the innovation",
+        "hint": "Does the innovation have the potential to be used on a large scale in the future, for a wide group of people? Could the solution be extended to other target groups, or used in a different context or place? How? What features of the innovation make this possible? Describe how easy the solution is to use and to put into practice"
+      },
+      {
+        "key": "actionPlan",
+        "label": "Action plan and costs",
+        "hint": "Describe in a few key steps what needs to be done, when, and at what cost, to prepare and test the innovation. For each activity, give: Activity, Completion date, Cost of activity. Preparation period (no longer than 3 months) and testing period — Phase I and Phase II of the test (no longer than 9 months)."
+      },
+      {
+        "key": "grantAmount",
+        "label": "Grant amount requested",
+        "hint": "What is the total grant amount you are requesting? Check it against the individual costs shown in the action plan"
+      },
+      {
+        "key": "team",
+        "label": "Project team and its experience",
+        "hint": "Who will be responsible for carrying out the tasks in the project? What experience do these people, institutions or organisations have in working with the people the innovation is for, and in planning and implementing social innovations?"
+      },
+      {
+        "key": "declarations",
+        "label": "Declarations",
+        "hint": "Declarations for an individual or for a representative of an organisation, made under penalty of criminal liability (Article 297 § 1 of the Criminal Code)."
+      }
+    ],
+    "criteria": [
+      {
+        "key": "innovativeness",
+        "label": "Innovativeness",
+        "description": "Assessment of the solution's potential to address the identified social problems in a way that is new or significantly different from existing solutions. The innovativeness of the solution is assessed at national level for the given target group. The applicant's task is to describe the proposed approach against the most similar existing solutions in the country.",
+        "cardDescription": "Assessment of the solution's potential to address the identified social problems in a way that is new or significantly different from existing solutions. The innovativeness of the solution is assessed at national level for the given target group.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 5
+      },
+      {
+        "key": "adequacy",
+        "label": "Relevance to the needs of recipients and users",
+        "description": "Are the aims/products of the social innovation relevant to the current assessment of the needs and problems of the target group at national level? To what extent does the social innovation respond to the needs of the target group? To what extent is the social innovation likely to contribute to social change, i.e. a change in the situation of the target group at national level?",
+        "cardDescription": "Analysis of the aims/products of the social innovation in terms of their relevance to the current assessment of the needs and problems of the target group at national level. The degree to which it responds to recipients' needs and its potential to contribute to social change, i.e. a change in the situation of the target group at national level? Does the idea respond to a challenge in line with the Social Challenges Map (Mapa Wyzwań Społecznych)?",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      },
+      {
+        "key": "costEffectiveness",
+        "label": "Cost-effectiveness",
+        "description": "Assessment of the degree of optimisation, the ratio of inputs to planned results, and the balance of potential positive and negative effects of the social innovation.",
+        "cardDescription": "Assessment of the degree of optimisation, the ratio of inputs to planned results, and the balance of potential positive and negative effects of the social innovation; analysis of whether the stated costs (time, money and resources) are reasonable in relation to the planned results.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      },
+      {
+        "key": "universality",
+        "label": "Universality",
+        "description": "Assessment of whether the solution can be used in different places, how easy it is to use, how easy it is to implement, and whether it can be spread and scaled up.",
+        "cardDescription": "Assessment of whether the solution can be used in different places, how easy it is to use, how easy it is to implement, and whether it can be spread and scaled up.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      },
+      {
+        "key": "developmentVision",
+        "label": "Vision for developing the idea in the future",
+        "description": "Assessment of the ideas for using the innovation in the future.",
+        "cardDescription": "Assessment of the ideas for using the innovation after the incubation stage has ended and it has been tested.",
+        "min": 0,
+        "max": 10,
+        "minToPass": 4
+      }
+    ],
+    "minScore": 21,
+    "innovations": [],
+    "resultsPlanned": null,
+    "applyUrl": null,
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,nabor-aplikacji-wnioskow-na-innowacje-spoleczne-w-ramach-projektu-pn-inkubator-wlaczenia-spolecznego-20",
+    "capturedAt": "2026-10-03T15:41:18.497Z",
+    "notes": "Demonstration call for proposals for the purposes of the prototype. The form fields, assessment criteria, minimum score and amounts were copied from the call for proposals „Inkubator Włączenia Społecznego 2.0” (id iws-2-0); this is not a call for proposals announced by ROPS."
+  },
+  {
+    "id": "mentores-mentorowani",
+    "name": "mentorES — call for Mentees",
+    "program": "mentorES - business support for social enterprises (FERS 2021-2027, Priority IV, Measure 4.13)",
+    "operator": "Regional Social Policy Centre in Kraków (ROPS)",
+    "amountMax": null,
+    "amountAvg": null,
+    "currency": "PLN",
+    "window": {
+      "from": null,
+      "to": null
+    },
+    "status": "open",
+    "eligibility": [
+      "social enterprises",
+      "vocational activity centres"
+    ],
+    "formFields": [],
+    "criteria": [],
+    "minScore": null,
+    "innovations": [],
+    "resultsPlanned": null,
+    "applyUrl": null,
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/mentoring,nabor-na-mentorowanych",
+    "capturedAt": "2026-10-03T15:43:00.152Z",
+    "notes": "Volunteer mentoring for social enterprises and vocational activity centres in Małopolska, provided by company employees; participation is free of charge, this is not a grant (amounts = null). Recruitment: \"call for proposals until mid-November 2026\", meetings until the end of November 2026, in person/online — the website does not give exact dates, so window = null. How to apply: a signed application form sent by e-mail (details on the call for proposals page and at https://es.malopolska.pl/mentoring/o-programie)."
+  },
+  {
+    "id": "mentores-mentorzy",
+    "name": "mentorES — call for Mentors",
+    "program": "mentorES - business support for social enterprises (FERS 2021-2027, Priority IV, Measure 4.13)",
+    "operator": "Regional Social Policy Centre in Kraków (ROPS)",
+    "amountMax": null,
+    "amountAvg": null,
+    "currency": "PLN",
+    "window": {
+      "from": null,
+      "to": null
+    },
+    "status": "open",
+    "eligibility": [
+      "businesses"
+    ],
+    "formFields": [],
+    "criteria": [],
+    "minScore": null,
+    "innovations": [],
+    "resultsPlanned": null,
+    "applyUrl": null,
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/mentoring,nabor-na-mentorow",
+    "capturedAt": "2026-10-03T15:43:01.253Z",
+    "notes": "Volunteer mentoring for social enterprises and vocational activity centres in Małopolska, provided by company employees; participation is free of charge, this is not a grant (amounts = null). Recruitment: \"call for proposals until mid-November 2026\", meetings until the end of November 2026, in person/online — the website does not give exact dates, so window = null. How to apply: a signed application form sent by e-mail (details on the call for proposals page and at https://es.malopolska.pl/mentoring/o-programie)."
+  }
+]

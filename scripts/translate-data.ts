@@ -182,7 +182,7 @@ async function library() {
 /** Keys whose values are never prose: identifiers, links, dates, hashes, enums. */
 const SKIP_KEYS = new Set([
   "key", "id", "url", "href", "sourceUrl", "sha256", "date", "capturedAt", "checkedAt", "versionDate",
-  "version", "status", "currency", "kind", "scope", "unit", "slug", "areas", "innovations", "page", "pages",
+  "version", "status", "currency", "kind", "scope", "unit", "slug", "innovations", "page", "pages",
   "from", "to", "year", "httpStatus", "videoUrl", "icon", "type", "field",
 ]);
 
