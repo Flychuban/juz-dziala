@@ -55,7 +55,7 @@ export function MobileMenu({
 
   return (
     <details ref={ref} className={cn("group", className)}>
-      <summary className="border-input bg-background text-foreground hover:bg-accent group-open:bg-accent inline-flex min-h-12 shrink-0 cursor-pointer list-none items-center gap-2 rounded-md border px-4 font-semibold [&::-webkit-details-marker]:hidden">
+      <summary className="border-input bg-background text-foreground hover:bg-accent group-open:bg-accent inline-flex min-h-12 shrink-0 cursor-pointer list-none items-center gap-2 rounded-md border px-3 font-semibold [&::-webkit-details-marker]:hidden">
         <MenuIcon aria-hidden="true" className="size-5 group-open:hidden" />
         <XIcon aria-hidden="true" className="hidden size-5 group-open:block" />
         {t("menu")}

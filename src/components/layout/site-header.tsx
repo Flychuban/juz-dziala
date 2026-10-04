@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
+import { Suspense } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { EXPERT_NAV, PUBLIC_NAV, resolveNav, STAFF_NAV } from "~/config/nav";
@@ -7,6 +8,7 @@ import { labelsFor } from "~/lib/domain";
 import { STAFF_COOKIE, verifyStaffSession } from "~/server/auth/session";
 import { AccessibilityToolbar } from "./accessibility-toolbar";
 import { DemoRoleSwitcher } from "./demo-role-switcher";
+import { LanguageSwitch } from "./language-switch";
 import { MobileMenu } from "./mobile-menu";
 import { NavLinks } from "./nav-links";
 import { StaffBell } from "./staff-bell";
@@ -47,17 +49,25 @@ export async function SiteHeader() {
       </div>
       <div className="relative mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-2 md:py-3">
         <Link href="/" className="group flex min-w-0 grow basis-0 flex-col no-underline md:grow-0 md:basis-auto">
-          <span className="font-display text-foreground text-2xl leading-tight font-bold tracking-tight" lang="pl">
+          <span className="font-display text-foreground text-2xl leading-tight font-bold tracking-tight whitespace-nowrap max-[359px]:text-xl" lang="pl">
             {L.site.name}
           </span>
-          <span className="text-muted-foreground text-sm">{L.site.hub}</span>
+          <span className="text-muted-foreground text-sm max-[359px]:hidden">{L.site.hub}</span>
         </Link>
         <nav aria-label={t("mainNav")} className="hidden min-w-0 md:block">
           <NavLinks items={nav} layout="row" />
         </nav>
-        <MobileMenu className="md:hidden" items={nav} staffItems={staffNav} staffLabel={staffLabel}>
-          <DemoRoleSwitcher current={staff?.role ?? null} variant="inline" />
-        </MobileMenu>
+        <div className="flex shrink-0 items-center gap-2 md:hidden">
+          <Suspense fallback={null}>
+            <LanguageSwitch
+              compact
+              className="border-input bg-background text-foreground hover:bg-accent inline-flex min-h-12 min-w-12 items-center justify-center rounded-md border px-2 text-sm font-semibold no-underline"
+            />
+          </Suspense>
+          <MobileMenu items={nav} staffItems={staffNav} staffLabel={staffLabel}>
+            <DemoRoleSwitcher current={staff?.role ?? null} variant="inline" />
+          </MobileMenu>
+        </div>
       </div>
       {staff && (
         <div className="border-hairline bg-secondary border-t">

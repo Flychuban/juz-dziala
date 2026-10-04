@@ -24,7 +24,7 @@ function save(key: string, value: string) {
 }
 
 const BTN =
-  "border-input bg-background text-foreground hover:bg-accent inline-flex min-h-12 items-center justify-center rounded-md border px-3 text-sm font-semibold disabled:opacity-50 aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background";
+  "border-input bg-background text-foreground hover:bg-accent inline-flex min-h-12 items-center justify-center rounded-md border px-2 text-sm font-semibold disabled:opacity-50 aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background sm:px-3";
 
 export function AccessibilityToolbar() {
   const t = useTranslations("common.toolbar");
@@ -95,8 +95,9 @@ export function AccessibilityToolbar() {
       >
         {t("easy")}
       </button>
+      {/* From md up the language link sits here; on phones it is next to „Menu" (site-header). */}
       <Suspense fallback={null}>
-        <LanguageSwitch />
+        <LanguageSwitch className="border-input bg-background text-foreground hover:bg-accent hidden min-h-12 items-center justify-center rounded-md border px-3 text-sm font-semibold no-underline md:inline-flex" />
       </Suspense>
     </div>
   );

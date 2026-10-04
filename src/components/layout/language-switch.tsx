@@ -8,7 +8,7 @@ import { usePathname, useSearchParams } from "next/navigation";
  * JavaScript loads. The label is in the target language (lang attribute set),
  * the hint in the current one.
  */
-export function LanguageSwitch({ className }: { className?: string }) {
+export function LanguageSwitch({ className, compact = false }: { className?: string; compact?: boolean }) {
   const locale = useLocale();
   const t = useTranslations("common.lang");
   const pathname = usePathname();
@@ -21,12 +21,13 @@ export function LanguageSwitch({ className }: { className?: string }) {
       hrefLang={to}
       lang={to}
       title={t("switchHint")}
+      aria-label={compact ? `${t("switchLabel")} (${to.toUpperCase()})` : undefined}
       className={
         className ??
         "border-input bg-background text-foreground hover:bg-accent inline-flex min-h-12 items-center justify-center rounded-md border px-3 text-sm font-semibold no-underline"
       }
     >
-      {t("switchLabel")}
+      {compact ? to.toUpperCase() : t("switchLabel")}
     </a>
   );
 }
