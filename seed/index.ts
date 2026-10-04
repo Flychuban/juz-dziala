@@ -7,6 +7,8 @@ import { seedLibrary } from "./library";
 import { cleanTestCases } from "./clean-tests";
 import { seedDemoFlags } from "./demo";
 import { seedEnglish } from "./english";
+import { cleanJunkRuns } from "./clean-junk";
+import { seedSampleCases } from "./sample-cases";
 import { seedCalls, seedNetwork } from "./network";
 import { seedSampleNeeds } from "~/server/admin/sample-needs";
 import { seedSamplePeople } from "~/server/cases/sample-people";
@@ -17,6 +19,8 @@ const steps: { name: string; run: () => Promise<unknown> }[] = [
   { name: "network", run: seedNetwork },
   { name: "english (data/*.en.json)", run: seedEnglish },
   { name: "people (przykładowi mentorzy)", run: seedSamplePeople },
+  { name: "sample cases (przykładowe sprawy)", run: seedSampleCases },
+  { name: "clean junk match runs", run: cleanJunkRuns },
   { name: "needs (przykładowe potrzeby do trendów)", run: seedSampleNeeds },
   { name: "demo flags", run: seedDemoFlags },
   { name: "clean [test] cases", run: cleanTestCases },

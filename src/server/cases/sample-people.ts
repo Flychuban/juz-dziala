@@ -112,32 +112,3 @@ export async function seedSamplePeople(): Promise<void> {
   }
 }
 
-/**
- * English for the fictional people above (shown when the site is in English).
- * The table keeps the Polish seed text; /network swaps it by id.
- */
-export const SAMPLE_PEOPLE_EN: Record<
-  string,
-  { title: string; orgName: string; bio: string }
-> = {
-  "p-mentor-1": {
-    title: "Mentor — older people and respite care",
-    orgName: "Association (sample)",
-    bio: "A sample mentor. Helps municipalities start services for older people and for carers of people with disabilities.",
-  },
-  "p-mentor-2": {
-    title: "Expert — homelessness and poverty",
-    orgName: "Foundation (sample)",
-    bio: "A sample expert. Advises on services for people experiencing homelessness and on routes out of poverty.",
-  },
-  "p-mentor-3": {
-    title: "Mentor — family and mental health",
-    orgName: "Support centre (sample)",
-    bio: "A sample mentor. Supports projects for families, foster care and mental health prevention.",
-  },
-  "p-mentor-4": {
-    title: "Expert — integration of foreigners and health",
-    orgName: "Organisation (sample)",
-    bio: "A sample expert. Advises on integration services and access to health care.",
-  },
-};

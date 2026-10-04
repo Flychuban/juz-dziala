@@ -29,6 +29,8 @@ export const env = createEnv({
     MAIL_ALLOWLIST: z.string().optional(),
     /** Hard ceiling on Claude calls per hour across the whole app (cost protection). */
     AI_HOURLY_LIMIT: z.coerce.number().int().positive().default(400),
+    /** Bearer token for GET /api/v1/events (integration with e.g. the grant database). */
+    INTEGRATION_TOKEN: z.string().min(16).optional(),
   },
   client: {
     NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
@@ -47,6 +49,7 @@ export const env = createEnv({
     DEMO_MODE: process.env.DEMO_MODE,
     MAIL_ALLOWLIST: process.env.MAIL_ALLOWLIST,
     AI_HOURLY_LIMIT: process.env.AI_HOURLY_LIMIT,
+    INTEGRATION_TOKEN: process.env.INTEGRATION_TOKEN,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,

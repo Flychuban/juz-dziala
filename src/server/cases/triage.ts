@@ -32,17 +32,8 @@ import {
   similarCaseCandidates,
   type LibraryCandidate,
 } from "./library-candidates";
-import { REPLY_CLOSING, RESIDENT_TEAM_NAME, type CaseTriage } from "./types";
-
-// TODO(merge): use replyClosing/residentTeamName/caseLocale from ~/server/cases
-// (added on release/en-polish). Local fallbacks with the same behaviour:
-const caseLocale = (v: unknown): Locale => (v === "en" ? "en" : "pl");
-const replyClosing = (locale: Locale) =>
-  locale === "en"
-    ? translatorFor("en", "admin")("triageDraft.closing")
-    : REPLY_CLOSING;
-/** What residents see as the sender: „ROPS Kraków" in both languages. */
-const residentTeamName = (_locale: Locale) => RESIDENT_TEAM_NAME;
+import { caseLocale, replyClosing, residentTeamName } from "./author-text";
+import { RESIDENT_TEAM_NAME, type CaseTriage } from "./types";
 
 /**
  * Triage: a one-sentence summary, Mapa areas, urgency, a powiat guess, a
