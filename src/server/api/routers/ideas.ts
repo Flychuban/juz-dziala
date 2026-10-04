@@ -231,7 +231,11 @@ export const ideasRouter = createTRPCRouter({
         authorKind: "author",
         authorName: AUTHOR_NAME,
         body: [
-          t("application.server.message", { name: call.name, demo: call.status === "demo" ? "yes" : "no" }),
+          t("application.server.message", {
+            name: call.name,
+            // Say „demo" once: the demo calls' names already say it.
+            demo: call.status === "demo" && !/demo/i.test(call.name) ? "yes" : "no",
+          }),
           gaps ? t("application.server.messageGaps", { count: gaps }) : t("application.server.messageComplete"),
           "",
           fieldsToMarkdown(fields.map((f) => ({ ...f, value: f.value || gap }))),

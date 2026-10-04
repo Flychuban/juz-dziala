@@ -5,6 +5,7 @@ import { TRPCClientError } from "@trpc/client";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import enIdeas from "../../../messages/en/ideas.json";
 import plIdeas from "../../../messages/pl/ideas.json";
 
 type ErrorKey = "generic" | "network";
@@ -24,11 +25,29 @@ function messageFor(e: unknown, t: (k: ErrorKey) => string): string {
 }
 
 /**
- * A message for any error thrown by a tRPC call, in Polish. Screens that follow
- * the visitor's language use `useErrorText()` instead.
+ * The page's language, read from <html lang> (it follows the jd_lang cookie).
+ * For plain helpers called from event handlers, where hooks are not available.
+ */
+export function pageLocale(): "pl" | "en" {
+  try {
+    return document.documentElement.lang.toLowerCase().startsWith("en") ? "en" : "pl";
+  } catch {
+    return "pl";
+  }
+}
+
+/** The shared `ideas` messages in the page's language (for non-hook helpers). */
+export function ideasMessages() {
+  return pageLocale() === "en" ? enIdeas : plIdeas;
+}
+
+/**
+ * A message for any error thrown by a tRPC call, in the page's language. Works
+ * outside components (event handlers); inside one, `useErrorText()` does the same.
  */
 export function errorText(e: unknown): string {
-  return messageFor(e, (k) => plIdeas.errors[k]);
+  const m = ideasMessages();
+  return messageFor(e, (k) => m.errors[k]);
 }
 
 /** `errorText` in the visitor's language (server messages arrive already translated). */

@@ -339,7 +339,7 @@ export function SelfScoreView({ score, callName, sourceUrl }: { score: SelfScore
           </li>
         ))}
       </ul>
-      <p className="border-hairline bg-surface mt-3 rounded-md border p-3 text-lg">
+      <p className="border-hairline mt-3 border-t-2 pt-3 text-lg">
         {t("total")} <span className="tabular font-bold">{t("points", { score: score.total, max: score.max })}</span>
         {score.minScore !== null ? <> — {t("totalMinimum", { min: score.minScore })} </> : ". "}
         <span className="font-semibold">{score.meetsMinimum ? t("meets") : t("below")}</span>

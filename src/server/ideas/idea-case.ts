@@ -38,6 +38,7 @@ export async function loadIdeaCase(
   const row = await caseOr404(ctx, code);
   if (row.kind !== "idea") throw new TRPCError({ code: "NOT_FOUND", message: t("access.notIdea") });
   if (token && hashToken(token) !== row.tokenHash) throw new TRPCError({ code: "FORBIDDEN", message: t("access.wrongToken") });
+  // TODO(requireToken): same check as `requireToken` in ~/server/cases/access (agent C); switch to it at merge.
   if (opts.write && !token) throw new TRPCError({ code: "FORBIDDEN", message: t("access.needsToken") });
   const idea = storedIdeaSchema.safeParse(row.idea);
   const canvas = canvasValuesSchema.safeParse(row.canvas);

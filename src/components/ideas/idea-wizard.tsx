@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { ArrowRightIcon, LayoutGridIcon } from "lucide-react";
 
 import { Stepper, type StepperStep } from "~/components/kit";
@@ -59,10 +59,11 @@ type Created = { code: string; accessToken: string; similar: SimilarInnovation[]
 /** The three steps after sending — the same words as the case page (§6 of the brief). */
 export function WhatHappensNext({ headingLevel = "h3" }: { headingLevel?: "h2" | "h3" }) {
   const t = useTranslations("ideas.whatHappens");
+  const id = useId();
   const H = headingLevel;
   return (
-    <section aria-labelledby="what-happens-h" className="border-hairline border-t pt-6">
-      <H id="what-happens-h" className="text-lg font-semibold">
+    <section aria-labelledby={id} className="border-hairline border-t pt-6">
+      <H id={id} className="text-lg font-semibold">
         {t("heading")}
       </H>
       <ol className="mt-2 flex list-decimal flex-col gap-1 pl-6">
@@ -385,7 +386,9 @@ export function IdeaWizard({
               <li>{t("intro.step3")}</li>
               <li>{t("intro.step4")}</li>
             </ol>
-            <p className="mt-3">{t("intro.after")}</p>
+            <div className="mt-4">
+              <WhatHappensNext />
+            </div>
             <p className="border-hairline mt-4 border-t pt-4">
               <Link href="/ideas/canvas" className="text-primary inline-flex min-h-12 items-center font-semibold underline underline-offset-4">
                 {t("intro.blankCanvas")}

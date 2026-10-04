@@ -5,7 +5,8 @@ import { useCallback, useId, useMemo } from "react";
 
 import { useLabels } from "~/i18n/use-labels";
 import { AUTHOR_ROLES, CONTACT_PREFS, type AuthorRole, type ContactPref } from "~/lib/domain";
-import { contactProblem, contactProblemKey, gminaKindKey } from "~/server/ideas/schema";
+import { contactProblemKey, gminaKindKey } from "~/server/ideas/schema";
+import { ideasMessages } from "./client-utils";
 import { CheckLine, ChoiceCards, TextField } from "./form";
 
 /** Gminas and powiats as the server pages pass them (data/gminas.json + powiaty.json). */
@@ -173,9 +174,14 @@ export function ContactFieldset({
   );
 }
 
-/** Polish validation message for the contact step, or null. Screens with a language use `useContactError()`. */
+/**
+ * The contact step's validation message in the page's language, or null.
+ * Works outside components; inside one, `useContactError()` does the same.
+ */
 export function contactError(v: ContactValue): string | null {
-  return v.contactPref === "none" ? null : contactProblem(v.contactPref, v.contact);
+  if (v.contactPref === "none") return null;
+  const k = contactProblemKey(v.contactPref, v.contact);
+  return k ? ideasMessages().people.contactError[k] : null;
 }
 
 /** The contact step's validation message in the visitor's language, or null. */

@@ -5,10 +5,10 @@ import { translatorFor } from "~/i18n/server";
 import { IDEA_APPLICATION_SYSTEM } from "~/server/ai/prompts/ideas";
 import { AI_STREAM_LINES, aiReady, aiStream, userData } from "~/server/ai/structured";
 import { createTRPCContext, rateLimit } from "~/server/api/trpc";
-import { DRAFT_FAILED_MARKER } from "~/server/ideas/application-rules";
 import { fixedTexts, templateDraft, type DraftSource } from "~/server/ideas/application-template";
 import { canvasToText, pickLabel } from "~/server/ideas/canvas-def";
 import { applicationCallById, loadCanvasDef, loadCanvasView, localizeCall } from "~/server/ideas/data";
+import { markFailure } from "~/server/ideas/draft-stream";
 import { loadIdeaCase } from "~/server/ideas/idea-case";
 import { GAP, GAP_EN } from "~/server/ideas/schema";
 import { IDEA_STAGE_LABEL, MAPA_AREA_LABEL } from "~/lib/domain";
@@ -42,37 +42,8 @@ function text(status: number, message: string) {
   return new Response(message, { status, headers: { "Content-Type": "text/plain; charset=utf-8" } });
 }
 
+/** The lines aiStream writes instead of a document (both languages). */
 const FAILURE_LINES: string[] = Object.values(AI_STREAM_LINES).flatMap((l) => Object.values(l));
-const HOLD_BACK = Math.max(...FAILURE_LINES.map((l) => l.length)) + 4;
-
-/**
- * Passes the model's text through, holding back a short tail: if the stream
- * ends with one of aiStream's failure lines, that line is replaced by the
- * marker the page understands. Nothing else is changed.
- */
-function markFailure(source: ReadableStream<Uint8Array>): ReadableStream<Uint8Array> {
-  const dec = new TextDecoder();
-  const enc = new TextEncoder();
-  let tail = "";
-  return source.pipeThrough(
-    new TransformStream<Uint8Array, Uint8Array>({
-      transform(chunk, controller) {
-        tail += dec.decode(chunk, { stream: true });
-        if (tail.length > HOLD_BACK) {
-          controller.enqueue(enc.encode(tail.slice(0, tail.length - HOLD_BACK)));
-          tail = tail.slice(tail.length - HOLD_BACK);
-        }
-      },
-      flush(controller) {
-        tail += dec.decode();
-        const trimmed = tail.trimEnd();
-        const failed = FAILURE_LINES.find((l) => trimmed.endsWith(l));
-        if (failed) tail = `${trimmed.slice(0, trimmed.length - failed.length).trimEnd()}\n\n${DRAFT_FAILED_MARKER}`;
-        controller.enqueue(enc.encode(tail));
-      },
-    }),
-  );
-}
 
 export async function POST(req: Request) {
   const ctx = await createTRPCContext({ headers: req.headers });
@@ -171,7 +142,7 @@ export async function POST(req: Request) {
       maxTokens: 6000,
       deadlineMs: DEADLINE_MS,
     });
-    return new Response(markFailure(stream), { headers: { ...headers, "X-Draft-Source": "ai" } });
+    return new Response(markFailure(stream, FAILURE_LINES), { headers: { ...headers, "X-Draft-Source": "ai" } });
   } catch (e) {
     if (e instanceof TRPCError) {
       const status = e.code === "NOT_FOUND" ? 404 : e.code === "FORBIDDEN" ? 403 : e.code === "TOO_MANY_REQUESTS" ? 429 : 400;

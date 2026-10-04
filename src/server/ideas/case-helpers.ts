@@ -29,6 +29,7 @@ export async function contactOrGminaProblem(
  * in the language they used either way.
  */
 export async function createCaseInLocale(input: CreateCaseInput, locale: Locale) {
+  // TODO(locale): once createCase's input has `locale`, pass `{ ...input, locale }` directly and drop the update below.
   const withLocale: CreateCaseInput & { locale: Locale } = { ...input, locale };
   const created = await createCase(withLocale);
   if (locale !== "pl") await db.update(cases).set({ locale }).where(eq(cases.id, created.id));

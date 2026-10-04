@@ -8,6 +8,7 @@ import { MESSAGES } from "~/i18n/messages";
 import { countGaps, draftToFields, DRAFT_FAILED_MARKER, splitFailure, unverifiedNumbers } from "./application-rules";
 import { fixedTexts, templateDraft, templateValue, type DraftSource } from "./application-template";
 import { canvasForEnglishReader, canvasForReader } from "./canvas-copy";
+import { markFailure } from "./draft-stream";
 import { finalizeAssist } from "./assist-rules";
 import { canvasFromIdea, canvasToText, impactLabel, optionValue, pickLabel, sanitizeCanvas, type CanvasDef } from "./canvas-def";
 import { normalizeSubscriptionContact, questionTitle } from "./network-rules";
@@ -252,7 +253,29 @@ describe("the application follows the chosen call", () => {
   });
 });
 
+async function pipe(chunks: string[], lines: string[]) {
+  const enc = new TextEncoder();
+  const src = new ReadableStream<Uint8Array>({
+    start(c) {
+      for (const ch of chunks) c.enqueue(enc.encode(ch));
+      c.close();
+    },
+  });
+  return new Response(markFailure(src, lines)).text();
+}
+
 describe("a broken-off AI draft is never filled in", () => {
+  const lines = ["_Wystąpił błąd generowania. Spróbuj ponownie._", "_The AI assistant is temporarily unavailable._"];
+  it("replaces a trailing failure line with the marker, even when it arrives in pieces", async () => {
+    const out = await pipe(["## Cel usługi\n\nTekst", "\n\n_Wystąpił błąd gen", "erowania. Spróbuj ponownie._"], lines);
+    expect(splitFailure(out)).toEqual({ text: "## Cel usługi\n\nTekst", failed: true });
+    expect(out).not.toContain(lines[0]);
+  });
+  it("turns an „unavailable” answer into a failure, and leaves a good draft untouched", async () => {
+    expect(splitFailure(await pipe([lines[1]!], lines)).failed).toBe(true);
+    const good = "## Aim\n\n" + "x".repeat(500);
+    expect(await pipe([good.slice(0, 100), good.slice(100)], lines)).toBe(good);
+  });
   it("detects the failure marker and drops it", () => {
     expect(splitFailure(`## Cel usługi\n\nTekst\n\n${DRAFT_FAILED_MARKER}`)).toEqual({ text: "## Cel usługi\n\nTekst", failed: true });
     expect(splitFailure("## Cel usługi\n\nTekst")).toEqual({ text: "## Cel usługi\n\nTekst", failed: false });
