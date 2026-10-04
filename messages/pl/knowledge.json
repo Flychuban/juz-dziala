@@ -1,1 +1,218 @@
-{}
+{
+  "index": {
+    "metaTitle": "Kondycja Małopolski",
+    "metaDescription": "Osiem obszarów Mapy Wyzwań Społecznych: definicje, kluczowe wyzwania, liczby i sprawdzone rozwiązania.",
+    "eyebrow": "Mapa Wyzwań Społecznych",
+    "title": "Kondycja Małopolski",
+    "lead": "Osiem obszarów, w których mieszkańcy regionu najczęściej potrzebują wsparcia. Przy każdym znajdziesz kluczowe wyzwania, liczby ze źródłem i rozwiązania z Biblioteki, które już działają.",
+    "unavailable": "Opisy obszarów z Mapy Wyzwań Społecznych są w przygotowaniu. Liczby rozwiązań pochodzą z Biblioteki Innowacji Społecznych.",
+    "areasHeading": "Obszary",
+    "keyChallengeSr": "Kluczowe wyzwanie:",
+    "count": "{count, plural, one {# rozwiązanie} few {# rozwiązania} many {# rozwiązań} other {# rozwiązania}}",
+    "countLabel": "Liczby rozwiązań",
+    "librarySource": "Biblioteka Innowacji Społecznych, ROPS w Krakowie",
+    "learnTitle": "Materiały i raporty",
+    "learnBody": "Raporty, narzędzia i filmy o innowacjach społecznych."
+  },
+  "area": {
+    "notFound": "Nie znaleziono obszaru",
+    "metaTitle": "{area} — Kondycja Małopolski",
+    "breadcrumb": "Kondycja Małopolski",
+    "eyebrow": "Obszar Mapy Wyzwań Społecznych",
+    "leadMissing": "Opis tego obszaru z Mapy Wyzwań Społecznych jest w przygotowaniu.",
+    "challenges": "Kluczowe wyzwania",
+    "noChallenges": "Źródło nie wymienia kluczowych wyzwań dla tego obszaru.",
+    "personaEyebrow": "Persona z Mapy Wyzwań",
+    "personaTitle": "Poznaj: {name}",
+    "personaGoals": "Czego chce",
+    "personaChallenges": "Z czym się zmaga",
+    "personaMotivations": "Co ją lub go motywuje",
+    "personaNote": "Persona to przykładowa postać opisana w Mapie Wyzwań — nie prawdziwa osoba.",
+    "emptyTitle": "Opis obszaru w przygotowaniu",
+    "emptyBody": "Wkrótce pokażemy tu definicję, kluczowe wyzwania i liczby z Mapy Wyzwań Społecznych. Rozwiązania z Biblioteki są dostępne już teraz — poniżej.",
+    "nationalHeading": "Polska w liczbach",
+    "nationalLead": "Liczby z Mapy Wyzwań Społecznych. Przy każdej podajemy, czego dotyczy — dane dla całej Polski oznaczamy jako „Polska”, tak jak podaje źródło.",
+    "page": "s. {page}",
+    "pages": "s. {pages}",
+    "innovations": "Rozwiązania w tym obszarze",
+    "inLibrary": "W Bibliotece:",
+    "count": "{count, plural, one {# rozwiązanie} few {# rozwiązania} many {# rozwiązań} other {# rozwiązania}}",
+    "seeAll": "Zobacz wszystkie ({count})",
+    "noInnovations": "W Bibliotece nie ma jeszcze rozwiązań w tym obszarze.",
+    "haveIdea": "Masz pomysł? Zgłoś go.",
+    "reports": "Raporty",
+    "reportsLang": "Raporty są po polsku.",
+    "solutionsLabel": "Rozwiązania",
+    "librarySource": "Biblioteka Innowacji Społecznych, ROPS w Krakowie",
+    "otherAreas": "Inne obszary",
+    "translated": "Tekst Mapy Wyzwań przetłumaczyła z polskiego sztuczna inteligencja; oryginał jest po polsku."
+  },
+  "scope": {
+    "poland": "Polska",
+    "region": "Małopolska"
+  },
+  "region": {
+    "heading": "Małopolska w liczbach",
+    "lead": "Dane GUS dla wszystkich {gminas} gmin województwa małopolskiego. To liczby dla Małopolski — liczby z Mapy Wyzwań Społecznych dotyczą całej Polski.",
+    "leadSeniors": "Dane GUS dla wszystkich {gminas} gmin województwa małopolskiego: ilu mieszkańców jest w starszym wieku i gdzie ludzi ubywa.",
+    "leadOther": "Dane GUS nie opisują tego obszaru wprost. Pokazujemy tło demograficzne całego regionu — dla wszystkich {gminas} gmin województwa małopolskiego.",
+    "population": "Liczba mieszkańców",
+    "share65": "Mieszkańcy w wieku 65 lat i więcej ({count} osób)",
+    "share80": "Mieszkańcy w wieku 80 lat i więcej ({count} osób)",
+    "quarter65": "Gminy, w których co czwarty mieszkaniec ma 65 lat lub więcej",
+    "change": "Zmiana liczby mieszkańców w latach {from}–{to}",
+    "approx": "ok. {value}",
+    "changeNote": "Policzone dla {count} gmin, bez gmin, których granice zmieniły się po {from} r. ({names}).",
+    "depop": "Gminy, w których w latach {from}–{to} ubyło mieszkańców",
+    "outOf": "{count} z {of}",
+    "growing": "Najszybciej rosnące gminy",
+    "growingKrakow": "Najszybciej rosnące gminy — wszystkie wokół Krakowa",
+    "growingLead": "Zmiana liczby mieszkańców w latach {from}–{to}.",
+    "oldest": "Gminy z największym udziałem osób w wieku 65+",
+    "oldestLead": "Odsetek mieszkańców w wieku 65 lat i więcej, {year}.",
+    "kind": {
+      "miejska": "gmina miejska",
+      "wiejska": "gmina wiejska",
+      "miejsko-wiejska": "gmina miejsko-wiejska"
+    },
+    "statSource": "GUS, Bank Danych Lokalnych",
+    "source": "GUS, Bank Danych Lokalnych",
+    "sourceDetail": "„Ludność wg grup wieku i płci” ({subject}), stan na 31 grudnia {year} r.; udziały i zmiany policzone z danych dla gmin",
+    "more": "Więcej danych o regionie:",
+    "moreLink": "Internetowy Obserwator Statystyk Społecznych ROPS w Krakowie"
+  },
+  "learn": {
+    "metaTitle": "Materiały",
+    "metaDescription": "Raporty, narzędzia, filmy i przewodniki o innowacjach społecznych — oraz krótko: jak powstaje innowacja społeczna.",
+    "eyebrow": "Zasobnik wiedzy",
+    "title": "Materiały",
+    "lead": "Raporty, narzędzia i filmy o innowacjach społecznych — dla mieszkańców, organizacji i gmin. Każdy materiał otwiera się na stronie wydawcy.",
+    "materialsLang": "Opisy przetłumaczyła z polskiego sztuczna inteligencja. Same materiały są po polsku.",
+    "kind": {
+      "report": "Raporty",
+      "tool": "Narzędzia",
+      "guide": "Przewodniki",
+      "data": "Dane",
+      "video": "Filmy",
+      "course": "Kursy i szkolenia",
+      "publication": "Publikacje",
+      "other": "Inne materiały"
+    },
+    "newTab": "(otwiera się w nowej karcie)",
+    "publisherPage": "Strona wydawcy · nowa karta",
+    "emptyTitle": "Materiały są w przygotowaniu",
+    "emptyBody": "Wkrótce znajdziesz tu raporty, narzędzia i filmy. Tymczasem zajrzyj do Biblioteki Innowacji Społecznych.",
+    "toLibrary": "Przejdź do Biblioteki",
+    "howHeading": "Jak powstaje innowacja społeczna",
+    "howLead": "Pięć kroków — od problemu do rozwiązania, które działa w wielu miejscach.",
+    "stepSr": "Krok {n}:",
+    "steps": {
+      "diagnosis": {
+        "name": "Diagnoza",
+        "text": "Sprawdzasz, z jakim problemem mierzą się ludzie i dlaczego dotychczasowe wsparcie nie wystarcza. Rozmawiasz z osobami, których to dotyczy."
+      },
+      "idea": {
+        "name": "Pomysł",
+        "text": "Szukasz nowego sposobu rozwiązania problemu — razem z odbiorcami. Sprawdzasz, czy podobne rozwiązanie już gdzieś działa."
+      },
+      "prototype": {
+        "name": "Prototyp",
+        "text": "Przygotowujesz prostą, pierwszą wersję usługi lub narzędzia, którą da się pokazać i wypróbować."
+      },
+      "test": {
+        "name": "Test",
+        "text": "Prototyp sprawdzają prawdziwi użytkownicy. Zbierasz opinie, poprawiasz i opisujesz, co działa, a co nie."
+      },
+      "scale": {
+        "name": "Upowszechnienie",
+        "text": "Sprawdzone rozwiązanie trafia do innych gmin i organizacji — z opisem, materiałami i wsparciem we wdrożeniu."
+      }
+    }
+  },
+  "methodology": {
+    "metaTitle": "Jak działa dopasowanie",
+    "title": "Jak działa dopasowanie",
+    "lead": "Odpowiadamy wyłącznie na podstawie kart Biblioteki Innowacji Społecznych ROPS. Każde dopasowanie ma cytat z karty, źródło i datę. Jeśli nie mamy pewności — nie zgadujemy.",
+    "stepsHeading": "Krok po kroku",
+    "steps": {
+      "redact": {
+        "title": "Usuwamy dane osobowe",
+        "body": "Zanim cokolwiek zapiszemy albo wyślemy dalej, zamieniamy PESEL, numery telefonów i kont, adresy e-mail, adresy ulic i nazwiska po „Pan/Pani” na znaczniki, np. [telefon]. Nie zapisujemy pierwotnego tekstu."
+      },
+      "crisis": {
+        "title": "Sprawdzamy, czy nie grozi Ci niebezpieczeństwo",
+        "body": "Szukamy słów o myślach samobójczych, samookaleczeniu, przemocy, zagrożeniu życia i krzywdzie dziecka. Jeśli je znajdziemy, numery pomocowe pokazujemy na samej górze wyników."
+      },
+      "keywords": {
+        "title": "Wyszukujemy słowa — natychmiast",
+        "body": "Porównujemy Twój opis z kartami Biblioteki. Rozumiemy odmianę polskich słów i słowa potoczne: „mama po 70” trafia do kart o seniorach, „nie wychodzi z domu” — do kart o samotności i izolacji. Te wyniki widzisz od razu, opisane jako „Wstępne wyniki”."
+      },
+      "ai": {
+        "title": "AI sprawdza 15 najlepszych kart",
+        "body": "Model Claude (Anthropic) dostaje Twój opis bez danych osobowych i pełną treść 15 kart z wyszukiwania. Może wybrać od 0 do 3 kart i dla każdej musi wskazać numery zdań z karty, które dowodzą dopasowania. Polecenia ukryte w opisie traktuje jak dane, nie jak rozkazy."
+      },
+      "verify": {
+        "title": "Weryfikujemy odpowiedź AI na serwerze",
+        "body": "Karta musi pochodzić z listy, którą AI dostało. Cytat pokazujemy z naszej kopii karty, po numerze zdania — nigdy tekst napisany przez AI. Podświetlamy tylko te słowa, które naprawdę są w Twoim opisie. Dopasowanie bez poprawnego cytatu odrzucamy."
+      },
+      "abstain": {
+        "title": "Gdy nie mamy pewności, mówimy to wprost",
+        "body": "Jeśli AI nic nie znajdzie, a wyszukiwanie słów też nie daje pewności, piszemy „Nie mamy pewnego dopasowania” i proponujemy przekazanie sprawy ekspertowi ROPS. Jeśli AI jest niedostępne, pokazujemy wyniki wyszukiwania słów i tak je opisujemy."
+      }
+    },
+    "evalHeading": "Jak dobrze to działa — wyniki testu",
+    "evalLead": "Sprawdzamy dopasowanie na stałym zestawie 20 opisów: krótkie hasła, historie, mowa potoczna, sprawy z kilku obszarów, 2 sprawy spoza Biblioteki (powinniśmy odmówić) i 2 próby oszukania systemu (dane osobowe, ukryte polecenie). Zestaw napisaliśmy przed strojeniem i go nie zmieniamy.",
+    "evalPending": "Wyniki testu pojawią się po pierwszym przebiegu.",
+    "evalCaption": "Wyniki testu dopasowania",
+    "evalEnHeading": "Test po angielsku",
+    "evalEnLead": "Ten sam rodzaj testu na {count, plural, one {# opisie} few {# opisach} many {# opisach} other {# opisu}} napisanych po angielsku. Karty Biblioteki są po polsku, więc system musi dopasować angielski opis do polskiej karty.",
+    "evalEnCaption": "Wyniki testu dopasowania dla opisów po angielsku",
+    "metric": "Miara",
+    "matcher": {
+      "keyword": "Tylko wyszukiwanie słów",
+      "ai": "Słowa + sprawdzenie przez AI"
+    },
+    "rows": {
+      "hit3": "Trafna karta wśród 3 pierwszych",
+      "top1": "Najlepsza karta na 1. miejscu",
+      "abstain": "Odmowa, gdy Biblioteka nie ma odpowiedzi",
+      "answered": "Odpowiedź, gdy Biblioteka ją ma",
+      "pii": "Wycieki danych osobowych",
+      "injections": "Wykonane ukryte polecenia",
+      "latency": "Czas odpowiedzi (mediana / 95%)",
+      "cost": "Koszt na zapytanie (średnio)",
+      "date": "Data przebiegu"
+    },
+    "fraction": "{pct} ({count}/{total})",
+    "seconds": "{n} s",
+    "millis": "{n} ms",
+    "usd": "{n} USD",
+    "evalSource": "Źródło: plik wyników w repozytorium (eval/results), zestaw eval/cases.json.",
+    "evalEnSource": "Źródło: plik wyników w repozytorium (eval/results, przebieg po angielsku).",
+    "limitsHeading": "Uczciwie o ograniczeniach",
+    "limits": {
+      "small": "20 opisów to mały test. Napisał go nasz zespół, nie mieszkańcy; wynik pokazuje kierunek, nie gwarancję.",
+      "copy": "Znamy tylko to, co jest w kartach Biblioteki ROPS (stan na dzień pobrania). Jedna karta z listy na stronie ROPS („Lekki wózek aktywny”) nie trafiła do naszej kopii Biblioteki i nie bierze udziału w dopasowaniu.",
+      "words": "Wyszukiwanie słów myli się, gdy to samo słowo znaczy coś innego („starszy syn” to nie senior). Dlatego wyniki słów nazywamy wstępnymi, a AI je sprawdza.",
+      "miss": "AI może pominąć pasującą kartę. Nigdy nie pokażemy jednak karty bez cytatu, który naprawdę w niej jest.",
+      "empty": "„Działa już w”, „Kto pomoże” i „Skąd pieniądze” pokazują tylko dane, które mamy. Pusty krok opisujemy jako brak danych.",
+      "human": "Nie znamy Twojej sytuacji tak jak pracownik socjalny. Dlatego zawsze możesz poprosić ROPS o pomoc człowieka.",
+      "english": "Karty Biblioteki są po polsku. Wersję angielską przetłumaczyła sztuczna inteligencja zdanie po zdaniu; cytat zawsze wskazuje zdanie z polskiej karty."
+    },
+    "crisisHeading": "Gdy ktoś jest w niebezpieczeństwie",
+    "crisis": {
+      "top": "Gdy opis wskazuje na myśli samobójcze, samookaleczenie, przemoc, zagrożenie życia albo krzywdę dziecka, numery pomocowe pokazujemy na samej górze — przed wynikami.",
+      "rather": "Wolimy pokazać je niepotrzebnie, niż przeoczyć. Nie pokazujemy ich przy neutralnych wzmiankach, np. „profilaktyka samobójstw”.",
+      "noCall": "Nie wzywamy służb za Ciebie i nie przekazujemy nikomu Twojego opisu. W nagłej sytuacji zadzwoń sam(a).",
+      "checked": "Każdy numer sprawdziliśmy na stronie jego operatora:",
+      "verified": "Sprawdzone {date} na"
+    },
+    "crisisName": {
+      "emergency": "Numer alarmowy 112",
+      "adults": "Centrum Wsparcia dla Osób Dorosłych w Kryzysie Psychicznym",
+      "children": "Telefon Zaufania dla Dzieci i Młodzieży (Fundacja Dajemy Dzieciom Siłę)",
+      "crisisLine": "Kryzysowy Telefon Zaufania (platforma 116sos.pl)"
+    },
+    "back": "Wróć do wyszukiwania"
+  }
+}

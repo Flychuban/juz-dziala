@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { parseCallInnovations, parseGminas, parseKnowledge, powiatOf } from "./data-files";
+import {
+  englishDecimals,
+  englishKnowledgeJson,
+  englishScope,
+  knowledgeFactsFor,
+  parseCallInnovations,
+  parseGminas,
+  parseKnowledge,
+  powiatOf,
+} from "./data-files";
 
 describe("parseKnowledge", () => {
   const source = { title: "Mapa Wyzwań Społecznych Małopolski", url: "https://example.org/mapa.pdf" };
@@ -119,5 +128,30 @@ describe("parseGminas", () => {
   it("returns an empty list for anything else", () => {
     expect(parseGminas(null)).toEqual([]);
     expect(parseGminas({ other: [] })).toEqual([]);
+  });
+});
+
+describe("English knowledge", () => {
+  it("writes decimals and scopes the English way, keeping thousands commas", () => {
+    expect(englishDecimals("3,5%")).toBe("3.5%");
+    expect(englishDecimals("PLN 1,092")).toBe("PLN 1,092");
+    expect(englishScope("Polska")).toBe("Poland");
+  });
+  it("builds English fact text from knowledge.en.json", () => {
+    const facts = parseKnowledge(
+      englishKnowledgeJson({
+        source: { title: "Social Challenges Map", url: "https://example.org/mapa.pdf" },
+        areas: [{ key: "family", label: "Family", figures: [{ value: "3,5%", label: "Increase", scope: "Polska", year: "2023" }] }],
+      }),
+    );
+    expect(facts.get("family")?.text).toBe("Increase: 3.5% (Poland, 2023)");
+  });
+  it("falls back to the Polish fact, marked as Polish, where English is missing", () => {
+    const en = knowledgeFactsFor("en");
+    const pl = knowledgeFactsFor("pl");
+    for (const [area, fact] of pl) {
+      expect(fact.lang).toBe("pl");
+      expect(en.get(area)).toBeDefined();
+    }
   });
 });

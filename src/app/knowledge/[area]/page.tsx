@@ -1,11 +1,11 @@
 import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, LanguagesIcon } from "lucide-react";
+import { getLocale, getTranslations } from "next-intl/server";
 import { cache } from "react";
 
 import {
-  countPl,
   EmptyState,
   ExternalLink,
   InnovationCard,
@@ -15,12 +15,13 @@ import {
 } from "~/components/kit";
 import { Button } from "~/components/ui/button";
 import {
-  MAPA_AREA_LABEL,
+  labelsFor,
   MAPA_AREAS,
   mapaAreaSchema,
   type MapaArea,
 } from "~/lib/domain";
 import { api } from "~/trpc/server";
+import { RegionFiguresBlock } from "../_components/region-figures";
 
 type Params = Promise<{ area: string }>;
 
@@ -31,10 +32,14 @@ export async function generateMetadata({
 }: {
   params: Params;
 }): Promise<Metadata> {
+  const [t, locale] = await Promise.all([
+    getTranslations("knowledge.area"),
+    getLocale(),
+  ]);
   const parsed = mapaAreaSchema.safeParse((await params).area);
-  if (!parsed.success) return { title: "Nie znaleziono obszaru" };
+  if (!parsed.success) return { title: t("notFound") };
   return {
-    title: `${MAPA_AREA_LABEL[parsed.data]} — Kondycja Małopolski`,
+    title: t("metaTitle", { area: labelsFor(locale).area[parsed.data] }),
   };
 }
 
@@ -63,30 +68,53 @@ export default async function KnowledgeAreaPage({
   const parsed = mapaAreaSchema.safeParse((await params).area);
   if (!parsed.success) notFound();
   const key = parsed.data;
-  const { area, source, innovations, label } = await getArea(key);
+  const [{ area, source, innovations, label, region }, t, ts, locale] =
+    await Promise.all([
+      getArea(key),
+      getTranslations("knowledge.area"),
+      getTranslations("knowledge.scope"),
+      getLocale(),
+    ]);
+  const labels = labelsFor(locale);
 
   const sourceName = source?.name ?? "Mapa Wyzwań Społecznych";
   const pages = area ? pageRanges(area.pages) : "";
   const figures = area?.figures ?? [];
   const persona = area?.persona;
   const others = MAPA_AREAS.filter((a) => a !== key);
+  /** lang="pl" on Mapa text an English reader gets untranslated (WCAG 3.1.2). */
+  const contentLang = locale === "en" && area?.lang === "pl" ? "pl" : undefined;
+  const scopeLabel = (s: string | null | undefined) => {
+    const v = s?.trim() ? s.trim() : "Polska";
+    if (v === "Polska" || v === "Poland") return ts("poland");
+    if (v === "Małopolska") return ts("region");
+    return v;
+  };
 
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ label: "Kondycja Małopolski", href: "/knowledge" }]}
-        eyebrow="Obszar Mapy Wyzwań Społecznych"
+        breadcrumbs={[{ label: t("breadcrumb"), href: "/knowledge" }]}
+        eyebrow={t("eyebrow")}
         title={area?.label ?? label}
         lead={
           area?.definition ? (
-            <p>{area.definition}</p>
+            <p lang={contentLang}>{area.definition}</p>
           ) : (
-            <p>
-              Opis tego obszaru z Mapy Wyzwań Społecznych jest w przygotowaniu.
-            </p>
+            <p>{t("leadMissing")}</p>
           )
         }
-      />
+      >
+        {locale === "en" && area?.lang === "en" ? (
+          <p className="text-foreground/85 flex max-w-[68ch] items-start gap-2 text-base">
+            <LanguagesIcon
+              aria-hidden="true"
+              className="text-primary mt-1 size-5 shrink-0"
+            />
+            <span>{t("translated")}</span>
+          </p>
+        ) : null}
+      </PageHeader>
 
       <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
         {area ? (
@@ -96,10 +124,10 @@ export default async function KnowledgeAreaPage({
                 id="challenges-heading"
                 className="font-display text-2xl leading-tight font-bold tracking-tight md:text-3xl"
               >
-                Kluczowe wyzwania
+                {t("challenges")}
               </h2>
               {area.keyChallenges.length > 0 ? (
-                <ol className="mt-6 max-w-[68ch] space-y-4">
+                <ol className="mt-6 max-w-[68ch] space-y-4" lang={contentLang}>
                   {area.keyChallenges.map((c, i) => (
                     <li key={i} className="flex gap-4">
                       <span
@@ -114,7 +142,7 @@ export default async function KnowledgeAreaPage({
                 </ol>
               ) : (
                 <p className="text-muted-foreground mt-4">
-                  Źródło nie wymienia kluczowych wyzwań dla tego obszaru.
+                  {t("noChallenges")}
                 </p>
               )}
             </section>
@@ -125,23 +153,25 @@ export default async function KnowledgeAreaPage({
                 className="border-hairline bg-surface self-start rounded-lg border p-6"
               >
                 <p className="text-muted-foreground text-sm font-bold tracking-wide">
-                  Persona z Mapy Wyzwań
+                  {t("personaEyebrow")}
                 </p>
                 <h2
                   id="persona-heading"
                   className="font-display mt-1 text-2xl font-bold tracking-tight"
                 >
-                  Poznaj: {persona.name}
+                  {t("personaTitle", { name: persona.name })}
                   {persona.age ? `, ${persona.age}` : ""}
                 </h2>
                 {persona.description ? (
-                  <p className="mt-3 text-base">{persona.description}</p>
+                  <p className="mt-3 text-base" lang={contentLang}>
+                    {persona.description}
+                  </p>
                 ) : null}
                 {(
                   [
-                    ["Czego chce", persona.goals],
-                    ["Z czym się zmaga", persona.challenges],
-                    ["Co ją lub go motywuje", persona.motivations],
+                    [t("personaGoals"), persona.goals],
+                    [t("personaChallenges"), persona.challenges],
+                    [t("personaMotivations"), persona.motivations],
                   ] as const
                 ).map(([title, list]) =>
                   list.length > 0 ? (
@@ -150,7 +180,10 @@ export default async function KnowledgeAreaPage({
                       className="border-hairline mt-5 border-t pt-4"
                     >
                       <h3 className="text-base font-bold">{title}</h3>
-                      <ul className="marker:text-primary mt-2 list-disc space-y-1 pl-5 text-base">
+                      <ul
+                        className="marker:text-primary mt-2 list-disc space-y-1 pl-5 text-base"
+                        lang={contentLang}
+                      >
                         {list.map((x, i) => (
                           <li key={i}>{x}</li>
                         ))}
@@ -159,24 +192,25 @@ export default async function KnowledgeAreaPage({
                   ) : null,
                 )}
                 <p className="text-muted-foreground mt-5 text-sm">
-                  Persona to przykładowa postać opisana w Mapie Wyzwań — nie
-                  prawdziwa osoba.
+                  {t("personaNote")}
                 </p>
               </section>
             ) : null}
           </div>
         ) : (
           <EmptyState
-            title="Opis obszaru w przygotowaniu"
-            description={
-              <p>
-                Wkrótce pokażemy tu definicję, kluczowe wyzwania i liczby z Mapy
-                Wyzwań Społecznych. Rozwiązania z Biblioteki są dostępne już
-                teraz — poniżej.
-              </p>
-            }
+            title={t("emptyTitle")}
+            description={<p>{t("emptyBody")}</p>}
           />
         )}
+
+        {region ? (
+          <RegionFiguresBlock
+            data={region}
+            variant={key === "seniors" ? "seniors" : "other"}
+            className="mt-14"
+          />
+        ) : null}
 
         {figures.length > 0 ? (
           <section
@@ -187,21 +221,27 @@ export default async function KnowledgeAreaPage({
               id="figures-heading"
               className="font-display text-2xl leading-tight font-bold tracking-tight md:text-3xl"
             >
-              Liczby
+              {t("nationalHeading")}
             </h2>
             <p className="text-foreground/85 mt-2 max-w-[68ch]">
-              Przy każdej liczbie podajemy, czego dotyczy — dane dla całej
-              Polski oznaczamy jako „Polska”, tak jak podaje źródło.
+              {t("nationalLead")}
             </p>
-            <ul className="mt-8 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+            <ul
+              className="mt-8 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
+              lang={contentLang}
+            >
               {figures.map((f, i) => (
                 <li key={i}>
                   <Stat
                     value={f.value}
                     label={f.label}
-                    scope={f.scope?.trim() ?? "Polska"}
+                    scope={scopeLabel(f.scope)}
                     year={f.year}
-                    source={f.page ? `${sourceName}, s. ${f.page}` : sourceName}
+                    source={
+                      f.page
+                        ? `${sourceName}, ${t("page", { page: String(f.page) })}`
+                        : sourceName
+                    }
                     sourceHref={source?.url}
                   />
                 </li>
@@ -220,24 +260,19 @@ export default async function KnowledgeAreaPage({
                 id="innovations-heading"
                 className="font-display text-2xl leading-tight font-bold tracking-tight md:text-3xl"
               >
-                Rozwiązania w tym obszarze
+                {t("innovations")}
               </h2>
               <p className="text-foreground/85 mt-2">
-                W Bibliotece:{" "}
+                {t("inLibrary")}{" "}
                 <span className="tabular font-semibold">
-                  {countPl(
-                    innovations.length,
-                    "rozwiązanie",
-                    "rozwiązania",
-                    "rozwiązań",
-                  )}
+                  {t("count", { count: innovations.length })}
                 </span>
               </p>
             </div>
             {innovations.length > SHOWN ? (
               <Button asChild variant="secondary">
                 <Link href={`/library?area=${key}`}>
-                  Zobacz wszystkie ({innovations.length})
+                  {t("seeAll", { count: innovations.length })}
                   <ArrowRightIcon aria-hidden="true" />
                 </Link>
               </Button>
@@ -246,19 +281,24 @@ export default async function KnowledgeAreaPage({
           {innovations.length > 0 ? (
             <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {innovations.slice(0, SHOWN).map((item) => (
-                <li key={item.id}>
+                <li
+                  key={item.id}
+                  lang={
+                    locale === "en" && item.lang === "pl" ? "pl" : undefined
+                  }
+                >
                   <InnovationCard item={item} headingLevel="h3" />
                 </li>
               ))}
             </ul>
           ) : (
             <p className="text-foreground/85 mt-4">
-              W Bibliotece nie ma jeszcze rozwiązań w tym obszarze.{" "}
+              {t("noInnovations")}{" "}
               <Link
                 href="/ideas/new"
                 className="font-semibold underline underline-offset-4"
               >
-                Masz pomysł? Zgłoś go.
+                {t("haveIdea")}
               </Link>
             </p>
           )}
@@ -273,9 +313,12 @@ export default async function KnowledgeAreaPage({
               id="reports-heading"
               className="font-display text-2xl leading-tight font-bold tracking-tight"
             >
-              Raporty
+              {t("reports")}
             </h2>
-            <ul className="mt-4 max-w-[68ch] space-y-2">
+            {locale === "en" ? (
+              <p className="text-foreground/85 mt-2">{t("reportsLang")}</p>
+            ) : null}
+            <ul className="mt-4 max-w-[68ch] space-y-2" lang={contentLang}>
               {area.reports.map((r, i) => (
                 <li key={i}>
                   {r.url ? (
@@ -299,29 +342,35 @@ export default async function KnowledgeAreaPage({
             <SourceLine
               source={sourceName}
               href={source?.url}
-              detail={pages ? `s. ${pages}` : null}
+              detail={
+                pages
+                  ? /[–,]/.test(pages)
+                    ? t("pages", { pages })
+                    : t("page", { page: pages })
+                  : null
+              }
               date={source?.date}
             />
           ) : null}
           <SourceLine
-            label="Rozwiązania"
-            source="Biblioteka Innowacji Społecznych, ROPS w Krakowie"
+            label={t("solutionsLabel")}
+            source={t("librarySource")}
             href={`/library?area=${key}`}
           />
         </div>
 
         <nav aria-labelledby="other-areas" className="mt-12">
           <h2 id="other-areas" className="font-display text-xl font-bold">
-            Inne obszary
+            {t("otherAreas")}
           </h2>
           <ul className="mt-3 flex flex-wrap gap-2">
             {others.map((a) => (
               <li key={a}>
                 <Link
                   href={`/knowledge/${a}`}
-                  className="border-input hover:bg-surface inline-flex min-h-11 max-w-full items-center rounded-md border px-3 text-[0.9375rem] font-semibold no-underline [overflow-wrap:anywhere]"
+                  className="border-input hover:bg-surface inline-flex min-h-11 max-w-full items-center rounded-md border px-3 text-[0.9375rem] font-semibold [overflow-wrap:anywhere] no-underline"
                 >
-                  {MAPA_AREA_LABEL[a]}
+                  {labels.area[a]}
                 </Link>
               </li>
             ))}
