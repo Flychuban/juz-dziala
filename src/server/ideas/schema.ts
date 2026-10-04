@@ -18,13 +18,28 @@ export const ideaStageSchema = z.enum(IDEA_STAGES);
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-/** Polish-message check of a contact against its preference (mirrors createCase). */
-export function contactProblem(pref: ContactPref, contact: string | undefined): string | null {
+/** What is wrong with a contact for its preference (mirrors createCase), or null. */
+export function contactProblemKey(pref: ContactPref, contact: string | undefined): "email" | "phone" | null {
   const c = contact?.trim() ?? "";
-  if (pref === "email" && !EMAIL_RE.test(c)) return "Podaj adres e-mail, np. imie@przyklad.pl.";
-  if ((pref === "sms" || pref === "phone") && c.replace(/\D/g, "").length < 9)
-    return "Podaj numer telefonu — 9 cyfr, np. 600 100 200.";
+  if (pref === "email" && !EMAIL_RE.test(c)) return "email";
+  if ((pref === "sms" || pref === "phone") && c.replace(/\D/g, "").length < 9) return "phone";
   return null;
+}
+
+/**
+ * Polish-message check of a contact against its preference (mirrors createCase).
+ * Screens in English use `contactProblemKey` with the `ideas.people.contactError` messages.
+ */
+export function contactProblem(pref: ContactPref, contact: string | undefined): string | null {
+  const k = contactProblemKey(pref, contact);
+  if (k === "email") return "Podaj adres e-mail, np. imie@przyklad.pl.";
+  if (k === "phone") return "Podaj numer telefonu — 9 cyfr, np. 600 100 200.";
+  return null;
+}
+
+/** GUS gmina kind („miejska" …) as a message key: urban | rural | mixed. */
+export function gminaKindKey(kind: string): "urban" | "rural" | "mixed" | "other" {
+  return kind === "miejska" ? "urban" : kind === "wiejska" ? "rural" : kind === "miejsko-wiejska" ? "mixed" : "other";
 }
 
 export const gminaTerytSchema = z.string().regex(/^12\d{5}$/, "Wybierz gminę z listy.");
@@ -133,6 +148,8 @@ export type SimilarInnovation = {
   summary: string;
   authors: string | null;
   normScore: number;
+  /** Language of title and summary (English when the card is translated and the reader asked for it). */
+  lang?: "pl" | "en";
 };
 
 // ------------------------------------------------------------------ III. canvas
@@ -156,6 +173,10 @@ export const applicationFieldSchema = z.object({
 export type ApplicationField = z.infer<typeof applicationFieldSchema>;
 
 export const GAP = "[DO UZUPEŁNIENIA]";
+/** The gap marker of a draft written in English. Both count as gaps everywhere. */
+export const GAP_EN = "[TO BE COMPLETED]";
+export const gapFor = (locale: string) => (locale === "en" ? GAP_EN : GAP);
+export const hasGap = (value: string) => !value.trim() || value.includes(GAP) || value.includes(GAP_EN);
 
 // ------------------------------------------------------------------ IV. tester
 

@@ -1,1 +1,143 @@
-{}
+{
+  "meta": {
+    "title": "Test innovations",
+    "description": "Sign up to test new social solutions, or rate the ones you know."
+  },
+  "page": {
+    "eyebrow": "Innovation tester",
+    "title": "Test innovations",
+    "lead": "New social solutions need to be tried out in real life. Sign up to test one, or rate a solution you already know — your opinion goes to the ROPS team.",
+    "signUpTitle": "I want to test it",
+    "rateTitle": "Rate this solution",
+    "source": "Biblioteka Innowacji Społecznych, ROPS Kraków",
+    "notOpen": "This solution has no open call for testers right now. Sign up anyway — the ROPS team will get in touch when testing starts.",
+    "count": "{count, plural, one {# solution} other {# solutions}}",
+    "notFound": {
+      "title": "We couldn’t find this solution",
+      "body": "The address may be incomplete. Please choose a solution from the list.",
+      "toList": "See the list of solutions"
+    },
+    "choose": {
+      "heading": "What would you like to do?",
+      "signUp": "I want to test it",
+      "signUpHint": "Sign up — you’ll try the solution in practice and tell us what works.",
+      "rate": "Rate this solution",
+      "rateHint": "Do you know it? Give it a score from 1 to 5 and tell us what to improve.",
+      "card": "Read the full description in the library"
+    },
+    "open": {
+      "heading": "Solutions looking for testers",
+      "body": "ROPS has opened testing for these solutions. Sign up — the team will get in touch with dates and details.",
+      "emptyTitle": "No solution is open for testing right now",
+      "emptyBody": "Below are candidates for testing — you can sign up to test them or rate them."
+    },
+    "candidates": {
+      "heading": "Candidates for testing",
+      "note": "ROPS has chosen these solutions for wider use, but they have no open call for testers right now. You can sign up to test them or rate them — the ROPS team will get in touch when testing starts."
+    },
+    "none": {
+      "title": "No solutions to test",
+      "body": "Have a look in the library — you can rate any solution from its page.",
+      "toLibrary": "Go to the library"
+    }
+  },
+  "card": {
+    "open": "Looking for testers",
+    "badge": "Chosen for wider use",
+    "signUp": "I want to test it",
+    "signUpAria": "I want to test: {title}",
+    "rate": "Rate",
+    "rateAria": "Rate: {title}"
+  },
+  "rating": {
+    "1": "Very poor",
+    "2": "Poor",
+    "3": "Average",
+    "4": "Good",
+    "5": "Very good"
+  },
+  "forms": {
+    "notSent": "Not sent:",
+    "restored": "We restored the answers saved on this device (without your contact details)."
+  },
+  "signUp": {
+    "created": "Testing sign-up received",
+    "finish": "Sign me up for testing",
+    "who": {
+      "title": "Who are you?",
+      "description": "You are signing up to test:",
+      "legend": "I’m signing up as",
+      "note": "Why do you want to test it?",
+      "noteHint": "For example „I look after my mum, who has dementia, and I’d be glad to try it at home”."
+    },
+    "where": {
+      "title": "Where do you live or work?"
+    },
+    "contact": {
+      "title": "How should we contact you?",
+      "description": "The ROPS team will get in touch when testing starts.",
+      "legend": "How to contact you"
+    },
+    "errors": {
+      "gmina": "Choose a municipality in the county you picked, or „— I’d rather not say —”."
+    }
+  },
+  "rate": {
+    "created": "Thank you for your opinion",
+    "finish": "Send my opinion",
+    "legend": "Your score (from 1 to 5)",
+    "title": "How would you rate „{title}”?",
+    "errors": {
+      "rating": "Please choose a score from 1 to 5."
+    },
+    "works": {
+      "title": "What works?",
+      "label": "What works well?",
+      "hint": "What was helpful, easy or useful?"
+    },
+    "improve": {
+      "title": "What should be improved?",
+      "label": "What needs improving?",
+      "hint": "What got in the way, was difficult or didn’t work?"
+    },
+    "idea": {
+      "title": "Your idea for improving it",
+      "label": "What could be done better?",
+      "hint": "Every idea counts.",
+      "contact": "Should we contact you?"
+    }
+  },
+  "summary": {
+    "loading": "Loading testers’ opinions…",
+    "error": "Could not load the opinions: {message}",
+    "heading": "Testers’ opinions",
+    "count": "Opinions:",
+    "average": "average score",
+    "signUps": "testing sign-ups:",
+    "themes": "Themes (grouped by AI)",
+    "kind": {
+      "works": "What works",
+      "improve": "What to improve",
+      "idea": "Ideas for improvement"
+    },
+    "opinions": "Opinions: {codes}",
+    "aiUnavailable": "The AI assistant is temporarily unavailable — all opinions are listed below.",
+    "all": "All opinions ({count})",
+    "none": "Nobody has rated this innovation yet."
+  },
+  "server": {
+    "notFound": "We couldn’t find this innovation in the library."
+  },
+  "caseBody": {
+    "signUp": "I want to test the solution „{title}”.",
+    "signUpTitle": "Testing sign-up: {title}",
+    "author": "Sent by: {role}{onBehalf, select, yes { (on behalf of another person or a group)} other {}}.",
+    "gmina": "Municipality: {place}.",
+    "note": "In my own words: {text}",
+    "rating": "Score: {rating}/5 — {label}",
+    "rateTitle": "Opinion ({rating}/5): {title}",
+    "works": "What works: {text}",
+    "improve": "What to improve: {text}",
+    "suggestion": "Idea for improvement: {text}"
+  }
+}

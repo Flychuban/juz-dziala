@@ -453,5 +453,130 @@
     "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/mentoring,nabor-na-mentorow",
     "capturedAt": "2026-10-03T15:43:01.253Z",
     "notes": "Wolontaryjny mentoring dla małopolskich przedsiębiorstw społecznych i zakładów aktywności zawodowej, prowadzony przez pracowników firm; udział bezpłatny, to nie jest grant (kwoty = null). Rekrutacja: „nabór do połowy listopada 2026 r.”, spotkania do końca listopada 2026 r., stacjonarnie/online — strona nie podaje dokładnych dat, więc window = null. Zgłoszenie: podpisany formularz zgłoszeniowy przesłany e-mailem (szczegóły na stronie naboru i https://es.malopolska.pl/mentoring/o-programie)."
+  },
+  {
+    "id": "demo-usluga-wrazliwa",
+    "name": "Usługa Wrażliwa — nabór przykładowy (demo)",
+    "program": "Fundusze Europejskie dla Małopolski 2021-2027 (FEM), Działanie 6.23 (EFS+)",
+    "operator": "Regionalny Ośrodek Polityki Społecznej w Krakowie",
+    "amountMax": 600000,
+    "amountAvg": null,
+    "currency": "PLN",
+    "window": {
+      "from": null,
+      "to": null
+    },
+    "status": "demo",
+    "eligibility": [
+      "ośrodki pomocy społecznej (OPS) i centra usług społecznych (CUS) z Małopolski",
+      "powiatowe centra pomocy rodzinie (PCPR) z Małopolski",
+      "organizacje pozarządowe (NGO) i podmioty ekonomii społecznej mające siedzibę lub oddział w Małopolsce"
+    ],
+    "formFields": [
+      {
+        "key": "serviceGoal",
+        "label": "Cel usługi",
+        "hint": "Jaki problem w Twojej społeczności rozwiąże usługa? Co ma się zmienić dla jej odbiorców?"
+      },
+      {
+        "key": "targetGroup",
+        "label": "Grupa docelowa i jej liczebność",
+        "hint": "Kto skorzysta z usługi? Ile osób planujesz objąć wsparciem i skąd znasz tę liczbę?"
+      },
+      {
+        "key": "scope",
+        "label": "Zakres usługi",
+        "hint": "Jakie formy wsparcia obejmie usługa? Gdzie, jak często i przez kogo będzie świadczona?"
+      },
+      {
+        "key": "schedule",
+        "label": "Etapy i harmonogram",
+        "hint": "Rozpisz kolejne etapy — przygotowanie, uruchomienie, świadczenie usługi, podsumowanie — z orientacyjnymi miesiącami."
+      },
+      {
+        "key": "staff",
+        "label": "Kadra",
+        "hint": "Kto będzie świadczył usługę? Jakie kwalifikacje i doświadczenie mają te osoby? Ile etatów lub godzin pracy przewidujesz?"
+      },
+      {
+        "key": "partners",
+        "label": "Partnerzy",
+        "hint": "Z kim współpracujesz przy usłudze (np. gmina, szkoła, organizacja, placówka zdrowia)? Jaka jest rola każdego partnera?"
+      },
+      {
+        "key": "budget",
+        "label": "Budżet (szacunek do weryfikacji)",
+        "hint": "Główne kategorie kosztów i ich szacunek. Kwoty sprawdzi ROPS przy ocenie wniosku — nie muszą być ostateczne."
+      },
+      {
+        "key": "risks",
+        "label": "Ryzyka",
+        "hint": "Co może pójść nie tak (np. mało chętnych, brak kadry, opóźnienia) i jak temu zapobiegniesz?"
+      },
+      {
+        "key": "indicators",
+        "label": "Wskaźniki",
+        "hint": "Po czym poznasz, że usługa działa? Podaj wskaźniki (np. liczbę osób objętych wsparciem) i sposób ich pomiaru."
+      },
+      {
+        "key": "innovation",
+        "label": "Wybrana innowacja z Biblioteki",
+        "hint": "Którą innowację z Biblioteki Innowacji Społecznych (wraz z jej Ramowym Planem Wdrożenia) chcesz wdrożyć u siebie i dlaczego właśnie ją?"
+      }
+    ],
+    "criteria": [
+      {
+        "key": "localNeed",
+        "label": "Odpowiedź na potrzeby lokalnej społeczności",
+        "description": "Czy wniosek pokazuje, jaki problem występuje w tej społeczności, kogo dotyczy i dlaczego usługa jest tu potrzebna?",
+        "cardDescription": null,
+        "min": 0,
+        "max": 10,
+        "minToPass": null
+      },
+      {
+        "key": "planFit",
+        "label": "Zgodność z Ramowym Planem Wdrożenia innowacji",
+        "description": "Czy usługa wiernie wdraża wybraną innowację z Biblioteki, a zmiany względem jej Ramowego Planu Wdrożenia są uzasadnione?",
+        "cardDescription": null,
+        "min": 0,
+        "max": 10,
+        "minToPass": null
+      },
+      {
+        "key": "feasibility",
+        "label": "Wykonalność: kadra, partnerzy i harmonogram",
+        "description": "Czy kadra, partnerzy i etapy pozwalają realnie uruchomić i prowadzić usługę w planowanym czasie?",
+        "cardDescription": null,
+        "min": 0,
+        "max": 10,
+        "minToPass": null
+      },
+      {
+        "key": "budgetSense",
+        "label": "Racjonalność budżetu",
+        "description": "Czy szacowane koszty wynikają z zakresu usługi i są adekwatne do liczby odbiorców?",
+        "cardDescription": null,
+        "min": 0,
+        "max": 10,
+        "minToPass": null
+      },
+      {
+        "key": "sustainability",
+        "label": "Trwałość i ryzyka",
+        "description": "Czy wniosek opisuje ryzyka, sposoby im zapobiegania i to, co stanie się z usługą po zakończeniu grantu?",
+        "cardDescription": null,
+        "min": 0,
+        "max": 10,
+        "minToPass": null
+      }
+    ],
+    "minScore": null,
+    "innovations": [],
+    "resultsPlanned": null,
+    "applyUrl": null,
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,ii-nabor-wnioskow-na-pilotazowe-wdrozenie-uslug-spolecznych-bazujacych-na-innowacyjnych-rozwiazaniach-w-ramach-projektu-usluga-wrazliwa-upowszechnianie-innowacji-spolecznych-w-srodowiskach-lokalnych",
+    "capturedAt": "2026-10-04T08:00:00.000Z",
+    "notes": "Nabór demonstracyjny na potrzeby prototypu, wzorowany na projekcie „Usługa Wrażliwa – upowszechnianie innowacji społecznych w środowiskach lokalnych” (ROPS Kraków, FEM, Działanie 6.23). Pola formularza odpowiadają sekcjom Ramowego Planu Wdrożenia. Kryteria oceny są przykładowe — przygotowane na potrzeby prototypu, nie pochodzą z karty oceny ROPS. Kwota maksymalna (amountMax) jak w II naborze Usługi Wrażliwej (id usluga-wrazliwa-2); terminów nie podajemy (window = null). Nie jest to nabór ogłoszony przez ROPS."
   }
 ]

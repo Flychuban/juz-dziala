@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useId } from "react";
 
 import { Input } from "~/components/ui/input";
@@ -10,8 +11,15 @@ import { cn } from "~/lib/utils";
  * Form building blocks for the resident forms of modules III–V: big choice
  * cards (native radios/checkboxes inside ≥ 48 px labels — the state is the
  * control itself, never colour alone), labelled text fields with a hint and a
- * character counter. Every control has a visible label.
+ * character counter. Every control has a visible label. Words come from the
+ * `ideas.form` messages, so the same blocks work in both languages.
  */
+
+/** „(nieobowiązkowe)" after a label. */
+function Optional() {
+  const t = useTranslations("ideas.form");
+  return <span className="text-muted-foreground font-normal"> {t("optional")}</span>;
+}
 
 export type Choice<T extends string> = { value: T; label: string; description?: string | null };
 
@@ -46,7 +54,7 @@ export function ChoiceCards<T extends string>({
     <fieldset aria-describedby={hint ? hintId : undefined} className="min-w-0">
       <legend className={cn("mb-2 text-lg font-semibold", legendClassName)}>
         {legend}
-        {optional ? <span className="text-muted-foreground font-normal"> (nieobowiązkowe)</span> : null}
+        {optional ? <Optional /> : null}
       </legend>
       {hint ? (
         <div id={hintId} className="text-muted-foreground mb-3">
@@ -102,7 +110,7 @@ export function CheckCards<T extends string>({
     <fieldset aria-describedby={hint ? hintId : undefined} className="min-w-0">
       <legend className={cn("mb-2 text-lg font-semibold", legendClassName)}>
         {legend}
-        {optional ? <span className="text-muted-foreground font-normal"> (nieobowiązkowe)</span> : null}
+        {optional ? <Optional /> : null}
       </legend>
       {hint ? (
         <div id={hintId} className="text-muted-foreground mb-3">
@@ -182,7 +190,7 @@ export function TextField({
     <div className={cn("flex flex-col gap-2", className)}>
       <label htmlFor={id} className="text-lg font-semibold">
         {label}
-        {required ? null : <span className="text-muted-foreground font-normal"> (nieobowiązkowe)</span>}
+        {required ? null : <Optional />}
       </label>
       {hint ? (
         <div id={`${id}-hint`} className="text-muted-foreground">
@@ -204,7 +212,7 @@ export function TextField({
   );
 }
 
-/** Labelled textarea with a hint and a „zostało N znaków" counter. */
+/** Labelled textarea with a hint and a „zostało N znaków" counter (ICU plural). */
 export function TextAreaField({
   label,
   hint,
@@ -227,12 +235,13 @@ export function TextAreaField({
   className?: string;
 }) {
   const id = useId();
+  const t = useTranslations("ideas.form");
   const left = maxLength - value.length;
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <label htmlFor={id} className={cn("text-lg font-semibold", labelClassName)}>
         {label}
-        {required ? null : <span className="text-muted-foreground font-normal"> (nieobowiązkowe)</span>}
+        {required ? null : <Optional />}
       </label>
       {hint ? (
         <div id={`${id}-hint`} className="text-muted-foreground">
@@ -249,7 +258,7 @@ export function TextAreaField({
         className="text-lg"
       />
       <p id={`${id}-count`} className="text-muted-foreground tabular text-sm">
-        {left < 200 ? `Zostało ${left} znaków.` : `Maksymalnie ${maxLength} znaków.`}
+        {left < 200 ? t("charsLeft", { count: left }) : t("charsMax", { count: maxLength })}
       </p>
     </div>
   );

@@ -6,10 +6,11 @@ import path from "node:path";
 import { inArray } from "drizzle-orm";
 import { z } from "zod";
 
+import type { Locale } from "~/i18n/config";
 import { db } from "~/server/db";
-import { calls } from "~/server/db/schema";
+import { calls, type CallEn } from "~/server/db/schema";
 import type { CanvasDef } from "./canvas-def";
-import { canvasForReader } from "./canvas-copy";
+import { canvasForEnglishReader, canvasForReader } from "./canvas-copy";
 
 /**
  * Reference data for the Kreator / Tester / Sieć modules: gminas (GUS + PRG,
@@ -94,6 +95,10 @@ const canvasSchema = z.object({
 });
 
 let canvasCache: CanvasDef | null = null;
+/**
+ * The canvas in Polish — the definition saved values are checked against
+ * (option labels are the stored values). Use `loadCanvasView` for display.
+ */
 export async function loadCanvasDef(): Promise<CanvasDef | null> {
   if (canvasCache) return canvasCache;
   const r = canvasSchema.safeParse(await readJson("canvas.json"));
@@ -101,6 +106,23 @@ export async function loadCanvasDef(): Promise<CanvasDef | null> {
   // Worded for one reader („Ty"); see canvas-copy.ts.
   canvasCache = canvasForReader(r.data);
   return canvasCache;
+}
+
+let canvasEnCache: CanvasDef | null = null;
+/**
+ * The canvas as a reader sees it. In English: the texts of data/canvas.en.json
+ * (same keys, same option order), while every option keeps its Polish label as
+ * its `value`, so a canvas filled in English is stored exactly like a Polish
+ * one. Falls back to Polish when the English file is missing or does not match.
+ */
+export async function loadCanvasView(locale: Locale): Promise<CanvasDef | null> {
+  const pl = await loadCanvasDef();
+  if (!pl || locale !== "en") return pl;
+  if (canvasEnCache) return canvasEnCache;
+  const r = canvasSchema.safeParse(await readJson("canvas.en.json"));
+  if (!r.success) return pl;
+  canvasEnCache = canvasForEnglishReader(pl, r.data);
+  return canvasEnCache;
 }
 
 // ------------------------------------------------------------------ calls
@@ -134,6 +156,8 @@ export type CallInfo = {
   minScore: number | null;
   sourceUrl: string | null;
   notes: string | null;
+  /** English version of the prose (data/calls.en.json); null until translated. */
+  en: CallEn | null;
 };
 
 function toCallInfo(row: typeof calls.$inferSelect): CallInfo {
@@ -155,6 +179,37 @@ function toCallInfo(row: typeof calls.$inferSelect): CallInfo {
     minScore: row.minScore,
     sourceUrl: row.sourceUrl,
     notes: row.notes,
+    en: row.en ?? null,
+  };
+}
+
+/**
+ * A call in the reader's language: names, eligibility, form fields and
+ * criteria from `calls.en` (matched by key), Polish where no translation
+ * exists. `lang` says which language the prose is in (for `lang="pl"`).
+ */
+export type LocalizedCall = CallInfo & { lang: Locale };
+export function localizeCall(call: CallInfo, locale: Locale): LocalizedCall {
+  const en = locale === "en" ? call.en : null;
+  if (!en) return { ...call, lang: "pl" };
+  const field = new Map(en.formFields.map((f) => [f.key, f]));
+  const crit = new Map(en.criteria.map((c) => [c.key, c]));
+  return {
+    ...call,
+    name: en.name || call.name,
+    program: en.program ?? call.program,
+    operator: en.operator ?? call.operator,
+    eligibility: en.eligibility.length ? en.eligibility : call.eligibility,
+    formFields: call.formFields.map((f) => {
+      const t = field.get(f.key);
+      return t ? { key: f.key, label: t.label, hint: t.hint ?? null } : f;
+    }),
+    criteria: call.criteria.map((c) => {
+      const t = crit.get(c.key);
+      return t ? { ...c, label: t.label, description: t.description ?? c.description } : c;
+    }),
+    notes: en.notes ?? call.notes,
+    lang: "en",
   };
 }
 
@@ -167,12 +222,22 @@ export async function openCalls(): Promise<CallInfo[]> {
 }
 
 /**
- * The call a resident's application is written for: an open or demo call that
- * publishes its form (formFields). Real open calls win over the demo one.
+ * The calls a resident's application can be written for: open or demo calls
+ * that publish their form (formFields). Real open calls come before demo ones.
  */
-export async function applicationCall(): Promise<CallInfo | null> {
+export async function applicationCalls(): Promise<CallInfo[]> {
   const open = (await openCalls()).filter((c) => c.formFields.length > 0);
-  return open.find((c) => c.status === "open") ?? open.find((c) => c.status === "demo") ?? null;
+  return [...open.filter((c) => c.status === "open"), ...open.filter((c) => c.status === "demo")];
+}
+
+/** The first call an application can be written for (real open calls first). */
+export async function applicationCall(): Promise<CallInfo | null> {
+  return (await applicationCalls())[0] ?? null;
+}
+
+/** One of `applicationCalls()` by id, or null when it no longer takes applications. */
+export async function applicationCallById(id: string): Promise<CallInfo | null> {
+  return (await applicationCalls()).find((c) => c.id === id) ?? null;
 }
 
 /**

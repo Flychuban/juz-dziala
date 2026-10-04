@@ -1,1 +1,437 @@
-{}
+{
+  "meta": {
+    "newTitle": "I have an idea",
+    "newDescription": "Describe your idea for a social innovation: we will check whether something similar already works and help you develop it.",
+    "canvasTitle": "Social innovation canvas",
+    "canvasDescription": "Work through your idea on the three sheets of the INNO AGH Social Innovation Canvas and print it.",
+    "applicationTitle": "Application draft",
+    "applicationDescription": "A draft grant application for a social innovation, prepared from your idea card and canvas.",
+    "blankTitle": "Blank canvas to print",
+    "blankDescription": "The three sheets of the INNO AGH Social Innovation Canvas with all the questions — to print and fill in on paper."
+  },
+  "new": {
+    "eyebrow": "Idea builder",
+    "title": "I have an idea",
+    "lead": "Describe your idea for a social innovation in four steps. We will check whether something similar already works in Małopolska, and the assistant will help you develop it. Your idea goes to the ROPS team as a case with a code.",
+    "home": "Home"
+  },
+  "form": {
+    "optional": "(optional)",
+    "charsLeft": "{count, plural, one {# character left.} other {# characters left.}}",
+    "charsMax": "Up to {count, plural, one {# character} other {# characters}}."
+  },
+  "errors": {
+    "generic": "This could not be sent. Please check the form and try again.",
+    "network": "No connection to the server. Check your internet and try again — your answers are saved."
+  },
+  "people": {
+    "gmina": "Your municipality",
+    "gminaHint": "This shows ROPS where in Małopolska the need is. We never ask for your address.",
+    "powiat": "County",
+    "gminaShort": "Municipality",
+    "noChoice": "— I’d rather not say —",
+    "pickGmina": "— choose a municipality —",
+    "pickPowiatFirst": "— choose a county first —",
+    "gminaWithKind": "{name} ({kind, select, urban {urban municipality} rural {rural municipality} mixed {urban-rural municipality} other {municipality}})",
+    "gminaFull": "{name} ({kind, select, urban {urban municipality} rural {rural municipality} mixed {urban-rural municipality} other {municipality}}, {powiat})",
+    "gminaFromList": "Please choose a municipality from the list.",
+    "who": "Who are you?",
+    "onBehalf": "I’m writing on behalf of another person or a group",
+    "onBehalfHint": "For example for your mum, a neighbour or the people you support.",
+    "contact": "How should we contact you?",
+    "contactHint": "We encrypt it and only ever show part of it. You can also see the reply with your case code.",
+    "email": "Email address",
+    "phone": "Phone number",
+    "contactError": {
+      "email": "Please enter an email address, for example name@example.com.",
+      "phone": "Please enter a phone number — 9 digits, for example 600 100 200."
+    }
+  },
+  "access": {
+    "notIdea": "This case is not an idea — the canvas and the application are only for ideas.",
+    "wrongToken": "This private link is not valid. Open the case with its code alone, or with the link you were given.",
+    "needsToken": "Only the person who sent the idea can save changes. Open this page from the private link you got when you sent your idea."
+  },
+  "notFound": {
+    "eyebrow": "Idea builder",
+    "crumb": "I have an idea",
+    "title": "We can’t open this idea",
+    "enterCode": "Enter a case code",
+    "newIdea": "Send a new idea",
+    "badCode": "This doesn’t look like a case code. A code looks like JD-XXXX-XXXX.",
+    "missing": "We couldn’t find a case with this code. Please check the code and try again."
+  },
+  "whatHappens": {
+    "heading": "What happens to your idea",
+    "step1": "The ROPS team gets a notification (the bell and an email).",
+    "step2": "The AI assistant sorts your submission, and a person reads it and replies.",
+    "step3": "You will see the reply under your idea’s code, and we will also send it the way you chose."
+  },
+  "wizard": {
+    "heading": "Idea card",
+    "restored": "We restored a draft saved on this device.",
+    "startOver": "Start again",
+    "finish": "Send my idea to ROPS",
+    "autosave": "Your draft is saved automatically on this device — without your contact details. You don’t need an account.",
+    "asideLabel": "Help with your idea",
+    "assistantLink": "See the assistant’s suggestions",
+    "notSent": "Not sent:",
+    "created": "Idea received",
+    "what": {
+      "title": "What is your idea?",
+      "description": "Use your own words. It doesn’t have to be perfect — you can change it later.",
+      "name": "Name of your idea",
+      "nameHint": "Keep it short, for example „Shared shopping for older people in our village”.",
+      "text": "Description of your idea",
+      "textHint": "What do you want to do? How will it work? What problem does it solve?"
+    },
+    "who": {
+      "title": "Who does it help?",
+      "description": "Describe the people your idea is meant to help, and choose the areas of the Mapa Wyzwań Społecznych (Social Challenges Map).",
+      "target": "Who should it help?",
+      "targetHint": "For example „older people living alone in small villages who rarely leave home”.",
+      "areas": "Areas of the Mapa Wyzwań Społecznych",
+      "areasHint": "Tick one or more. The AI assistant can suggest which ones fit."
+    },
+    "stage": {
+      "title": "What stage is it at?",
+      "legend": "Stage of your idea"
+    },
+    "where": {
+      "title": "Where, and who is sending it?",
+      "description": "Last step. Your contact details and municipality are optional — you can also see the reply with your case code.",
+      "gmina": "The municipality where you want to act",
+      "who": "Who is sending the idea?"
+    },
+    "errors": {
+      "title": "Please give your idea a name — at least 3 characters.",
+      "description": "Please describe your idea in at least two sentences.",
+      "targetGroup": "Please write who your idea should help.",
+      "stage": "Please choose a stage — it helps us find the right support.",
+      "gmina": "Choose a municipality in the county you picked, or „— I’d rather not say —”.",
+      "goBackWhat": "Go back to step 1 and fill in the name and description of your idea.",
+      "goBackWho": "Go back to step 2 and write who your idea should help.",
+      "goBackStage": "Go back to step 3 and choose the stage of your idea.",
+      "incomplete": "Please complete the idea card."
+    },
+    "intro": {
+      "heading": "What to expect",
+      "step1": "Describe your idea",
+      "step2": "Who it helps — here we check whether something similar already exists and switch on the AI assistant",
+      "step3": "Stage",
+      "step4": "Where, and who is sending it",
+      "blankCanvas": "Prefer to think it through on paper first? Print a blank innovation canvas"
+    },
+    "similarAfter": {
+      "heading": "Similar solutions already exist",
+      "body": "The ROPS team will see them next to your idea. Maybe it’s worth getting in touch with their authors?"
+    },
+    "next": {
+      "heading": "What next?",
+      "canvas": "Work through your idea on the innovation canvas",
+      "canvasHint": "Three INNO AGH sheets: the problem, the people, costs, partners and impact.",
+      "application": "Prepare a draft grant application",
+      "applicationHint": "The call’s form fields, filled in from your idea card."
+    }
+  },
+  "similar": {
+    "heading": "Does this already exist?",
+    "idle": "Once you describe your idea, we’ll compare it with the Biblioteka Innowacji Społecznych (Social Innovation Library).",
+    "checking": "Checking the library…",
+    "error": "We couldn’t check the library just now. You can carry on.",
+    "found": "{count, plural, =0 {We found no similar solution in the library.} one {We found 1 similar solution.} other {We found # similar solutions.}}",
+    "noneHint": "That’s a good sign for a new idea.",
+    "joinAuthors": "Maybe you could join their authors instead of starting from scratch?",
+    "authors": "Authors: {names}",
+    "source": "Biblioteka Innowacji Społecznych, ROPS Kraków",
+    "sourceDetail": "word comparison, no AI"
+  },
+  "assistant": {
+    "heading": "AI assistant",
+    "intro": "It asks questions that help you develop your idea, suggests unusual variations, gives a first assessment against the call’s criteria and draws a sketch. You don’t have to use it.",
+    "ask": "Ask for suggestions",
+    "askAgain": "Ask again",
+    "thinking": "The assistant is thinking… (up to 30 seconds)",
+    "needDescription": "First describe your idea in step 1 (at least two sentences).",
+    "unavailable": "The AI assistant is temporarily unavailable",
+    "noAnswer": "The assistant didn’t answer",
+    "continueWithout": "You can finish without it — the ROPS team will read your idea.",
+    "resultHeading": "The assistant’s suggestions",
+    "stale": "You have changed your idea card since the last suggestions. Select „Ask again” so the assessment matches the current version.",
+    "questions": "Questions worth asking yourself",
+    "angles": "Unusual variations",
+    "areas": "Fits these areas of the Social Challenges Map",
+    "areaChosen": "This area is already chosen.",
+    "addArea": "Add the area „{area}”",
+    "aiNote": "These suggestions were prepared by artificial intelligence from your idea card. Please check them — they may be wrong."
+  },
+  "sketch": {
+    "heading": "Sketch of your idea",
+    "intro": "The assistant draws a simple diagram of your idea — for example an invention, a place or how a service works. It helps when you show your idea to others.",
+    "draw": "Draw a sketch of my idea",
+    "again": "Draw a new sketch",
+    "drawing": "Drawing… (up to 30 seconds)",
+    "unavailable": "The AI assistant is temporarily unavailable, so we can’t draw a sketch right now. You can finish without it.",
+    "failed": "We couldn’t draw the sketch. Please try again in a moment.",
+    "disclaimer": "Sketch prepared automatically — for illustration only.",
+    "describe": "The sketch described in words",
+    "print": "Print the sketch"
+  },
+  "selfScore": {
+    "heading": "First self-assessment (not a ROPS assessment)",
+    "intro": "Merit criteria: each is scored from 0 to 10 points.",
+    "introCall": "Merit criteria of the call „{name}”: each is scored from 0 to 10 points.",
+    "points": "{score} / {max} pts",
+    "minimum": "Minimum for this criterion: {min} pts — {met, select, yes {met} other {not met}}.",
+    "improve": "What to improve:",
+    "total": "Total:",
+    "totalMinimum": "the minimum is {min} pts.",
+    "meets": "Looks like it meets the minimum.",
+    "below": "Looks below the minimum — see what to improve.",
+    "source": "Criteria: {name}",
+    "sourceFallback": "ROPS call",
+    "manual": "Assess it yourself: criteria of the call „{name}”",
+    "manualItem": "{label} (0–{max} pts):",
+    "manualItemMin": "{label} (0–{max} pts, minimum {min}):",
+    "manualMinimum": "Minimum in total: {min} out of {total} pts."
+  },
+  "canvas": {
+    "unavailable": "The canvas is temporarily unavailable. Please try again later.",
+    "partnerStatus": "Next to each partner, add their status:",
+    "clear": "Clear the choice: {label}",
+    "impact": "Impact — {dimension}",
+    "notes": "Notes: {label}",
+    "notesHint": "Add in your own words anything the options above don’t cover.",
+    "credit": "Canvas: {publisher}, version {version}, {date}. {basedOn}",
+    "printHeader": "Case {code} · {title}",
+    "empty": "(not filled in)",
+    "restored": "We restored unsaved changes from this device. Select „Save canvas” to save them to your case.",
+    "restoredReadOnly": "We restored unsaved changes from this device.",
+    "saving": "Saving…",
+    "saved": "Saved to case {code} at {time}.",
+    "notSaved": "Not saved: {error} Your changes are still on this device.",
+    "save": "Save canvas",
+    "print": "Print (3 A4 pages)",
+    "unsaved": "You have unsaved changes (they are safe on this device).",
+    "sheetsNav": "Canvas sheets",
+    "sheetLink": "Sheet {n} of {total}: {sections}",
+    "readOnly": {
+      "title": "You opened this canvas with the case code alone",
+      "body": "You can fill it in and print it, and your changes stay on this device. Only the person who sent the idea can save them to the case — open the canvas from the private link you got when you sent your idea."
+    },
+    "source": "Social Innovation Canvas — INNO AGH, version {version} of {date}, based on the Social Innovation Canvas by The New Global School",
+    "sourceDetail": "questions addressed to one person",
+    "blankNotes": "Notes"
+  },
+  "canvasPage": {
+    "eyebrow": "Idea builder · Canvas",
+    "title": "Social innovation canvas",
+    "lead": "Idea „{title}” (case {code}). Three sheets help you think through the problem, the people, costs, partners and impact.",
+    "loaded": "We loaded your saved canvas.",
+    "prefilled": "We filled in some fields from your idea card — please check them.",
+    "crumbIdeas": "I have an idea",
+    "crumbCase": "Case {code}",
+    "backToCase": "Back to the case",
+    "toApplication": "Prepare an application draft"
+  },
+  "blank": {
+    "eyebrow": "Idea builder · Canvas",
+    "title": "Blank social innovation canvas",
+    "lead": "The three Social Innovation Canvas sheets, with questions that help you think through the problem, the people, costs, partners and impact. Print them and fill them in on paper — on your own or with a team. You don’t need to send anything.",
+    "crumb": "I have an idea",
+    "print": "Print (3 A4 pages)",
+    "toWizard": "Send an idea online"
+  },
+  "applicationPage": {
+    "eyebrow": "Idea builder · Application",
+    "title": "Application draft",
+    "lead": "Idea „{title}” (case {code}). We’ll prepare a draft grant application from what you have already written — you fill in the rest.",
+    "crumbIdeas": "I have an idea",
+    "crumbCase": "Case {code}",
+    "canvasEdit": "Edit the canvas",
+    "canvasFirst": "Fill in the canvas first (better draft)",
+    "noCall": {
+      "title": "No call is open right now",
+      "body": "The application draft only works while a call for applications is open. Sign up for notifications — we’ll let you know when ROPS announces a new one.",
+      "notify": "Tell me about new calls"
+    },
+    "polishOnly": {
+      "title": "Applications to ROPS are submitted in Polish",
+      "body": "You can prepare your draft here in English to think it through, but the call’s own application form must be filled in in Polish. Switch the site to Polish and the assistant will write the draft in Polish.",
+      "switch": "Switch the site to Polish"
+    },
+    "pick": {
+      "heading": "Choose a call",
+      "body": "{count, plural, one {# call is open} other {# calls are open}} that you can prepare an application for. Each has its own form and assessment criteria — we’ll tailor the draft to the one you choose.",
+      "legend": "The call you are writing for",
+      "who": "Who can apply: {who}",
+      "submit": "Show this call"
+    },
+    "window": {
+      "until": "Open until {date}.",
+      "demo": "Sample call — no deadline.",
+      "none": "The call announcement gives the dates."
+    },
+    "who": {
+      "iws": "individuals, organisations, public institutions and informal groups",
+      "uslugaWrazliwa": "social welfare and social services centres (OPS, CUS), county family support centres (PCPR) and NGOs in Małopolska"
+    },
+    "demoNote": {
+      "iws": "This is a demonstration call for the prototype. We copied its form fields and assessment criteria from the „Inkubator Włączenia Społecznego 2.0” call (ROPS Kraków, FERS, Measure 5.1).",
+      "uslugaWrazliwa": "This is a demonstration call for the prototype, modelled on the „Usługa Wrażliwa” project (ROPS Kraków). Its form fields follow the sections of an implementation plan („Ramowy Plan Wdrożenia”), and its assessment criteria are samples. It is not a call announced by ROPS.",
+      "other": "This is a demonstration call for the prototype."
+    },
+    "fields": "Form fields ({count})",
+    "criteria": "How applications are assessed ({count, plural, one {# criterion} other {# criteria}})",
+    "criterion": "{label} (0–{max} pts):",
+    "criteriaSample": "Sample criteria — prepared for the prototype, not taken from ROPS’s assessment form.",
+    "source": {
+      "iws": "IWS 2.0 application form template (attachment 3 to the announcement), ROPS Kraków",
+      "uslugaWrazliwa": "„Usługa Wrażliwa” project: second call for applications, ROPS Kraków",
+      "uslugaWrazliwaDetail": "fields follow the sections of an implementation plan"
+    }
+  },
+  "application": {
+    "failedGeneric": "We couldn’t prepare the draft.",
+    "gen": {
+      "heading": "Application draft",
+      "body": "We’ll fill in the form fields from your idea card and canvas. Anything that isn’t there — amounts, dates, partners — we don’t make up: in those places you’ll see „{gap}”.",
+      "start": "Prepare an application draft",
+      "writing": "Writing the draft…",
+      "empty": "I’ll fill it in myself from scratch",
+      "wait": "Writing the draft — this can take up to a minute."
+    },
+    "failed": {
+      "heading": "The draft isn’t ready",
+      "body": "The AI assistant stopped writing, so we haven’t put anything into the form. Try again, or prepare a draft without AI — from your idea card and canvas.",
+      "retry": "Try again",
+      "template": "Prepare a draft without AI"
+    },
+    "edit": {
+      "heading": "Check and edit your application",
+      "restored": "We restored a draft saved on this device.",
+      "sentBefore": "You sent this application on {date}. You can edit it and send it again.",
+      "templateTitle": "The AI assistant is temporarily unavailable",
+      "templateBody": "We prepared a template from your idea card and canvas. Fill in the fields marked „{gap}”.",
+      "aiNote": "This draft was written by artificial intelligence from your information. Read it carefully before you send it.",
+      "gapsNone": "Draft ready. All fields are filled in — read them through once more before you send.",
+      "gaps": "Draft ready. Gaps marked „{gap}” remain in {count, plural, one {# field} other {# fields}} — fill them in before you send.",
+      "flaggedTitle": "To check: numbers that are not in your idea card",
+      "flaggedBody": "{numbers} — check where they came from, and correct or remove them before you send.",
+      "preview": "Preview the whole application",
+      "notSent": "Not sent:",
+      "send": "Send the application to ROPS",
+      "sending": "Sending…",
+      "redo": "Prepare the draft again",
+      "notTheCall": "Sending passes the draft to the ROPS team in your case. It does not submit an application to the call — you submit that in the call’s online form."
+    },
+    "redo": {
+      "question": "A new draft will replace everything that is in the fields now — including your edits. Prepare it again?",
+      "confirm": "Yes, prepare it again",
+      "cancel": "No, keep my changes"
+    },
+    "readOnly": {
+      "title": "You opened the application with the case code alone",
+      "body": "You can prepare and edit the draft, but only the person who sent the idea can send it to ROPS — open this page from the private link you got when you sent your idea."
+    },
+    "sent": {
+      "heading": "Application sent to ROPS",
+      "body": "The application is in the thread of case {code}.",
+      "gaps": "{count, plural, one {# field still needs filling in} other {# fields still need filling in}} — the ROPS team will help you finish.",
+      "toCase": "Go to the case",
+      "edit": "Edit the application"
+    },
+    "server": {
+      "noCode": "The case code or the call is missing.",
+      "noCall": "This call is not taking applications now. Choose another call or reload the page.",
+      "failed": "We couldn’t prepare the draft. Please try again.",
+      "callClosed": "This call is no longer taking applications.",
+      "empty": "The application is empty — fill in at least one field.",
+      "message": "I’m sending an application to the call „{name}”{demo, select, yes { (sample call — demo)} other {}}.",
+      "messageGaps": "Fields still to fill in: {count}.",
+      "messageComplete": "All fields are filled in."
+    }
+  },
+  "template": {
+    "applicant": "{gap} — you enter these details in the call’s online form.",
+    "declarations": "You make the declarations in the call’s online form.",
+    "stage": "Stage: {stage}.",
+    "areas": "Areas of the Social Challenges Map: {areas}.",
+    "missing": {
+      "title": "name of the innovation",
+      "description": "description of the innovation",
+      "recipients": "who the innovation is for",
+      "problemDiagnosis": "statistics and the sources of the diagnosis",
+      "change": "how the innovation will change the situation of the people it is for",
+      "futureVision": "whether it can be used on a larger scale and in other places",
+      "actionPlan": "activities, dates and costs: preparation of up to 3 months, two test phases of up to 9 months in total",
+      "grantAmount": "grant amount in PLN — the sum of the costs in the action plan",
+      "team": "who runs the project and what experience they have",
+      "serviceGoal": "aim of the service: what problem it solves and what changes for the people who use it",
+      "targetGroup": "how many people the service will support, and how you know",
+      "scope": "kinds of support, where and how often the service runs",
+      "schedule": "stages with approximate months: preparation, launch, running the service, review",
+      "staff": "who provides the service, their qualifications, how many posts or hours",
+      "partners": "partners and the role of each",
+      "budget": "main costs and an estimate in PLN — to be checked by ROPS",
+      "risks": "risks and how you will prevent them",
+      "indicators": "indicators and how you will measure them",
+      "innovation": "name of the innovation from the Biblioteka Innowacji Społecznych and why you chose it"
+    },
+    "canvas": {
+      "problem": "Problem",
+      "intensity": "Intensity",
+      "frequency": "Frequency",
+      "scale": "Scale of the problem",
+      "emotional": "Emotional value",
+      "functional": "Functional value",
+      "impactPerson": "Impact on the person",
+      "impactCommunity": "Impact on the community",
+      "impactEnvironment": "Impact on the environment",
+      "impactNotes": "Notes on impact",
+      "incomeScaling": "Scaling income",
+      "additional": "Additional channels",
+      "reach": "How to reach people",
+      "readiness": "Readiness for implementation",
+      "fixedCosts": "Fixed costs",
+      "variableCosts": "Variable costs",
+      "supporters": "Who supports the change",
+      "mainUser": "Main user",
+      "solution": "Solution",
+      "direct": "Direct channels",
+      "intermediaries": "Indirect channels",
+      "cheaper": "Partners who can lower costs",
+      "betterValue": "Partners who can add value",
+      "partnersNotes": "Notes on partners",
+      "blockers": "Who may hinder the change",
+      "similar": "Similar solutions in the library"
+    }
+  },
+  "caseBody": {
+    "targetGroup": "Who it helps: {text}",
+    "stage": "Stage: {stage}",
+    "areas": "Areas: {areas}",
+    "author": "Sent by: {role}{onBehalf, select, yes { (on behalf of another person or a group)} other {}}",
+    "similar": "Similar in the library: {titles}"
+  },
+  "fanout": {
+    "unsubscribe": "Don’t want these notifications? Reply to this message or write to ROPS — we will remove your address.",
+    "signature": "The ROPS Hub team\n{hub}\n{owner}",
+    "call": {
+      "until": "Open until {date}.",
+      "subject": "{kind, select, changed {Change to a call} other {New call}}: {name}",
+      "text": "{kind, select, changed {The details of the call have changed:} other {ROPS has announced the call}} „{name}” ({status}).",
+      "links": "Details: {details}\nAll calls: {all}",
+      "sms": "Już Działa: {kind, select, changed {change to the call} other {new call}} „{name}”. {link}"
+    },
+    "innovation": {
+      "subject": "New solution in the area „{area}”: {title}",
+      "text": "The solution „{title}” has been added to the Biblioteka Innowacji Społecznych in the area „{area}”.\n\nSee it here: {link}",
+      "sms": "Już Działa: new solution „{title}”. {link}"
+    },
+    "similar": {
+      "title": "A similar solution already works: {title}",
+      "body": "Maybe it’s worth contacting its authors, or developing it together?"
+    }
+  }
+}

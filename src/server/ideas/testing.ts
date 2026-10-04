@@ -3,12 +3,13 @@ import "server-only";
 import { and, eq, isNotNull, or } from "drizzle-orm";
 import { z } from "zod";
 
+import type { Locale } from "~/i18n/config";
 import type { MapaArea } from "~/lib/domain";
 import { FEEDBACK_THEMES_SYSTEM } from "~/server/ai/prompts/ideas-feedback";
 import { aiStructured, userData } from "~/server/ai/structured";
 import { firstSentence } from "~/server/api/routers/library";
 import { db } from "~/server/db";
-import { cases, innovations } from "~/server/db/schema";
+import { cases, innovations, type InnovationEn } from "~/server/db/schema";
 
 /**
  * Module IV — Tester innowacji. Which innovations take testers, and the
@@ -26,6 +27,8 @@ export type TestableInnovation = {
   testingOpen: boolean;
   sourceUrl: string;
   capturedAt: Date;
+  /** Language of title and summary: "pl" when the reader wanted English but there is no translation. */
+  lang: Locale;
 };
 
 const columns = {
@@ -41,6 +44,7 @@ const columns = {
   testingOpen: innovations.testingOpen,
   sourceUrl: innovations.sourceUrl,
   capturedAt: innovations.capturedAt,
+  en: innovations.en,
 };
 
 function toItem(r: {
@@ -56,19 +60,24 @@ function toItem(r: {
   testingOpen: boolean;
   sourceUrl: string;
   capturedAt: Date;
-}): TestableInnovation {
+  en: InnovationEn | null;
+}, locale: Locale): TestableInnovation {
+  const en = locale === "en" ? r.en : null;
+  // English sentences keep the Polish ids, so the same first sentence is chosen.
+  const sentences = en ? r.sentences.map((s) => ({ ...s, text: en.sentences[s.id] ?? s.text })) : r.sentences;
   return {
     id: r.id,
     slug: r.slug,
-    title: r.title,
+    title: en?.title ?? r.title,
     areas: r.mapaAreas,
-    categoryLabels: r.categoryLabels,
-    summary: firstSentence(r.sentences, r.sections),
+    categoryLabels: en?.categoryLabels ?? r.categoryLabels,
+    summary: firstSentence(sentences, en?.sections ?? r.sections),
     videoUrl: r.videoUrl,
     badge: r.badge,
     testingOpen: r.testingOpen,
     sourceUrl: r.sourceUrl,
     capturedAt: r.capturedAt,
+    lang: en ? "en" : "pl",
   };
 }
 
@@ -77,29 +86,29 @@ function toItem(r: {
  * cards ROPS chose for dissemination („wybrana do upowszechniania") follow as
  * candidates, labelled as such on the page.
  */
-export async function testingList(): Promise<{ open: TestableInnovation[]; candidates: TestableInnovation[] }> {
+export async function testingList(locale: Locale = "pl"): Promise<{ open: TestableInnovation[]; candidates: TestableInnovation[] }> {
   const rows = await db
     .select(columns)
     .from(innovations)
     .where(and(eq(innovations.status, "published"), or(eq(innovations.testingOpen, true), isNotNull(innovations.badge))));
-  const items = rows.map(toItem).sort((a, b) => a.title.localeCompare(b.title, "pl"));
+  const items = rows.map((r) => toItem(r, locale)).sort((a, b) => a.title.localeCompare(b.title, locale));
   return { open: items.filter((i) => i.testingOpen), candidates: items.filter((i) => !i.testingOpen) };
 }
 
-export async function testableBySlug(slug: string): Promise<TestableInnovation | null> {
+export async function testableBySlug(slug: string, locale: Locale = "pl"): Promise<TestableInnovation | null> {
   const [row] = await db
     .select(columns)
     .from(innovations)
     .where(and(eq(innovations.slug, slug), eq(innovations.status, "published")));
-  return row ? toItem(row) : null;
+  return row ? toItem(row, locale) : null;
 }
 
-export async function testableById(id: string): Promise<TestableInnovation | null> {
+export async function testableById(id: string, locale: Locale = "pl"): Promise<TestableInnovation | null> {
   const [row] = await db
     .select(columns)
     .from(innovations)
     .where(and(eq(innovations.id, id), eq(innovations.status, "published")));
-  return row ? toItem(row) : null;
+  return row ? toItem(row, locale) : null;
 }
 
 // ------------------------------------------------------------------ staff summary
@@ -125,7 +134,7 @@ export type FeedbackSummary = {
   aiStatus: "ok" | "unavailable" | "failed" | "skipped";
 };
 
-export async function feedbackSummary(innovationId: string): Promise<FeedbackSummary> {
+export async function feedbackSummary(innovationId: string, locale: Locale = "pl"): Promise<FeedbackSummary> {
   const rows = await db
     .select({ code: cases.code, kind: cases.kind, rating: cases.rating, body: cases.bodyRedacted, createdAt: cases.createdAt })
     .from(cases)
@@ -151,6 +160,7 @@ export async function feedbackSummary(innovationId: string): Promise<FeedbackSum
     schema: themesSchema,
     system: [{ text: FEEDBACK_THEMES_SYSTEM, cache: true }],
     user: userData("opinie", sample.map((c, i) => `Opinia ${i + 1}:\n${c.body}`).join("\n\n")),
+    locale,
     effort: "low",
     maxTokens: 2500,
   });

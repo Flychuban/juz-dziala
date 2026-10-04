@@ -1,16 +1,12 @@
 "use client";
 
-import { useId, useMemo } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useCallback, useId, useMemo } from "react";
 
-import {
-  AUTHOR_ROLE_LABEL,
-  AUTHOR_ROLES,
-  CONTACT_PREF_LABEL,
-  CONTACT_PREFS,
-  type AuthorRole,
-  type ContactPref,
-} from "~/lib/domain";
-import { contactProblem } from "~/server/ideas/schema";
+import { useLabels } from "~/i18n/use-labels";
+import { AUTHOR_ROLES, CONTACT_PREFS, type AuthorRole, type ContactPref } from "~/lib/domain";
+import { contactProblemKey, gminaKindKey } from "~/server/ideas/schema";
+import { ideasMessages } from "./client-utils";
 import { CheckLine, ChoiceCards, TextField } from "./form";
 
 /** Gminas and powiats as the server pages pass them (data/gminas.json + powiaty.json). */
@@ -23,13 +19,14 @@ const selectClass =
 /**
  * Two plain selects — powiat, then gmina — rather than one list of 183: easier
  * to scan, and native selects work with every screen reader and on phones.
+ * Place names are Polish proper names (marked lang="pl" in English).
  */
 export function GminaPicker({
   gminas,
   powiaty,
   value,
   onChange,
-  label = "Twoja gmina",
+  label,
 }: {
   gminas: readonly GminaOption[];
   powiaty: readonly PowiatOption[];
@@ -37,6 +34,9 @@ export function GminaPicker({
   onChange: (teryt: string | undefined) => void;
   label?: string;
 }) {
+  const t = useTranslations("ideas.people");
+  const tf = useTranslations("ideas.form");
+  const placeLang = useLocale() === "en" ? "pl" : undefined;
   const pId = useId();
   const gId = useId();
   const current = gminas.find((g) => g.teryt === value);
@@ -46,13 +46,13 @@ export function GminaPicker({
   return (
     <fieldset className="min-w-0">
       <legend className="mb-2 text-lg font-semibold">
-        {label} <span className="text-muted-foreground font-normal">(nieobowiązkowe)</span>
+        {label ?? t("gmina")} <span className="text-muted-foreground font-normal">{tf("optional")}</span>
       </legend>
-      <p className="text-muted-foreground mb-3">Dzięki temu ROPS zobaczy, gdzie w Małopolsce jest potrzeba. Nie podajemy adresu.</p>
+      <p className="text-muted-foreground mb-3">{t("gminaHint")}</p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <label htmlFor={pId} className="font-semibold">
-            Powiat
+            {t("powiat")}
           </label>
           <select
             id={pId}
@@ -60,9 +60,9 @@ export function GminaPicker({
             value={powiat ?? ""}
             onChange={(e) => onChange(e.target.value ? e.target.value : undefined)}
           >
-            <option value="">— nie wybieram —</option>
+            <option value="">{t("noChoice")}</option>
             {powiaty.map((p) => (
-              <option key={p.teryt} value={p.teryt}>
+              <option key={p.teryt} value={p.teryt} lang={placeLang}>
                 {p.name}
               </option>
             ))}
@@ -70,7 +70,7 @@ export function GminaPicker({
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor={gId} className="font-semibold">
-            Gmina
+            {t("gminaShort")}
           </label>
           <select
             id={gId}
@@ -79,10 +79,12 @@ export function GminaPicker({
             disabled={!powiat}
             onChange={(e) => onChange(e.target.value ? e.target.value : powiat)}
           >
-            <option value="">{powiat ? "— wybierz gminę —" : "— najpierw wybierz powiat —"}</option>
+            <option value="">{powiat ? t("pickGmina") : t("pickPowiatFirst")}</option>
             {inPowiat.map((g) => (
-              <option key={g.teryt} value={g.teryt}>
-                {inPowiat.filter((x) => x.name === g.name).length > 1 ? `${g.name} (gmina ${g.kind})` : g.name}
+              <option key={g.teryt} value={g.teryt} lang={placeLang}>
+                {inPowiat.filter((x) => x.name === g.name).length > 1
+                  ? t("gminaWithKind", { name: g.name, kind: gminaKindKey(g.kind) })
+                  : g.name}
               </option>
             ))}
           </select>
@@ -102,25 +104,27 @@ export type WhoFields = { authorRole: AuthorRole; onBehalf: boolean };
 export function WhoFieldset({
   value,
   onChange,
-  legend = "Kim jesteś?",
+  legend,
 }: {
   value: WhoFields;
   onChange: (v: WhoFields) => void;
   legend?: string;
 }) {
+  const t = useTranslations("ideas.people");
+  const labels = useLabels();
   return (
     <div className="flex flex-col gap-4">
       <ChoiceCards
-        legend={legend}
+        legend={legend ?? t("who")}
         name="authorRole"
-        options={AUTHOR_ROLES.map((r) => ({ value: r, label: AUTHOR_ROLE_LABEL[r] }))}
+        options={AUTHOR_ROLES.map((r) => ({ value: r, label: labels.authorRole[r] }))}
         value={value.authorRole}
         onChange={(authorRole) => onChange({ ...value, authorRole })}
         columns={2}
       />
       <CheckLine
-        label="Zgłaszam w imieniu innej osoby lub grupy"
-        description="Na przykład w imieniu mamy, sąsiada albo podopiecznych."
+        label={t("onBehalf")}
+        description={t("onBehalfHint")}
         checked={value.onBehalf}
         onChange={(onBehalf) => onChange({ ...value, onBehalf })}
       />
@@ -133,28 +137,30 @@ export type ContactValue = { contactPref: ContactPref; contact: string };
 export function ContactFieldset({
   value,
   onChange,
-  legend = "Jak mamy się z Tobą kontaktować?",
+  legend,
 }: {
   value: ContactValue;
   onChange: (v: ContactValue) => void;
   legend?: string;
 }) {
+  const t = useTranslations("ideas.people");
+  const labels = useLabels();
   const needs = value.contactPref !== "none";
   return (
     <div className="flex flex-col gap-4">
       <ChoiceCards
-        legend={legend}
-        hint="Zaszyfrujemy go i pokażemy tylko w skróconej formie. Odpowiedź zobaczysz też po kodzie sprawy."
+        legend={legend ?? t("contact")}
+        hint={t("contactHint")}
         optional
         name="contactPref"
-        options={CONTACT_PREFS.map((p) => ({ value: p, label: CONTACT_PREF_LABEL[p] }))}
+        options={CONTACT_PREFS.map((p) => ({ value: p, label: labels.contactPref[p] }))}
         value={value.contactPref}
         onChange={(contactPref) => onChange({ ...value, contactPref })}
         columns={2}
       />
       {needs ? (
         <TextField
-          label={value.contactPref === "email" ? "Adres e-mail" : "Numer telefonu"}
+          label={value.contactPref === "email" ? t("email") : t("phone")}
           type={value.contactPref === "email" ? "email" : "tel"}
           inputMode={value.contactPref === "email" ? "email" : "tel"}
           autoComplete={value.contactPref === "email" ? "email" : "tel"}
@@ -168,7 +174,25 @@ export function ContactFieldset({
   );
 }
 
-/** Polish validation message for the contact step, or null. */
+/**
+ * The contact step's validation message in the page's language, or null.
+ * Works outside components; inside one, `useContactError()` does the same.
+ */
 export function contactError(v: ContactValue): string | null {
-  return v.contactPref === "none" ? null : contactProblem(v.contactPref, v.contact);
+  if (v.contactPref === "none") return null;
+  const k = contactProblemKey(v.contactPref, v.contact);
+  return k ? ideasMessages().people.contactError[k] : null;
+}
+
+/** The contact step's validation message in the visitor's language, or null. */
+export function useContactError(): (v: ContactValue) => string | null {
+  const t = useTranslations("ideas.people.contactError");
+  return useCallback(
+    (v: ContactValue) => {
+      if (v.contactPref === "none") return null;
+      const k = contactProblemKey(v.contactPref, v.contact);
+      return k ? t(k) : null;
+    },
+    [t],
+  );
 }

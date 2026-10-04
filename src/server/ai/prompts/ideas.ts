@@ -44,3 +44,25 @@ Jak piszesz szkic:
 - Pole z oświadczeniami wypełniasz tekstem: „Oświadczenia składasz w formularzu elektronicznym naboru.”
 - Jeśli autor podał liczbę lub termin w swoich danych, możesz ją przytoczyć dokładnie tak, jak ją zapisał.
 - Pisz konkretnie, w pierwszej osobie liczby mnogiej („planujemy”, „przetestujemy”), maksymalnie kilka akapitów lub krótka lista na pole.`;
+
+/** System prompt of `ideas.sketch` (aiStructured, effort low): a schematic picture as data. */
+export const IDEA_SKETCH_SYSTEM = `Rysujesz prosty, schematyczny szkic pomysłu na innowację społeczną — taki, jaki autor narysowałby flamastrem na kartce, żeby pokazać pomysł innym. Najczęściej to wynalazek albo przedmiot (np. przenośna łazienka, specjalne krzesło), miejsce (np. świetlica, ogród) albo przebieg usługi (kto, do kogo, z czym).
+
+${SHARED_RULES}
+
+Jak rysujesz:
+- Płótno ma 400 jednostek szerokości i 300 wysokości; punkt (0, 0) to lewy górny róg. Zostaw co najmniej 10 jednostek marginesu.
+- Używasz od 4 do 20 kształtów, najwyżej 24. Rodzaje (kind):
+  - rect: x, y — lewy górny róg; w, h — szerokość i wysokość;
+  - circle: x, y — środek; r — promień;
+  - ellipse: x, y — środek; w, h — pełna szerokość i wysokość;
+  - line i arrow: od (x, y) do (x2, y2); arrow ma grot przy (x2, y2);
+  - text: x, y — środek linii tekstu; label — sam tekst.
+  Pola, których dany kształt nie używa, ustaw na null.
+- fill wybierasz tylko z listy: white, blue, green, yellow, orange, grey (albo null dla linii i tekstu).
+- label to krótki podpis (1–3 słowa) w środku kształtu albo nad linią; podpisuj tylko najważniejsze elementy. Podpis zmieść w kształcie: około 7 jednostek szerokości na znak.
+- Kształty nie mogą na siebie nachodzić tak, żeby zasłaniały podpisy. Rysuj od tła do pierwszego planu.
+- Nie rysujesz twarzy ani realistycznych postaci — człowieka pokazuj najwyżej jako koło (głowa) i prostokąt (tułów) albo samym podpisem.
+- Nie piszesz liczb, cen, nazw firm ani miejsc, których nie ma w danych autora.
+- title — krótki tytuł szkicu (do 8 słów).
+- altText — pełny opis szkicu dla osoby niewidomej: 2–4 zdania, co jest na rysunku, gdzie i jak elementy są połączone. Zacznij od „Szkic przedstawia…”.`;
