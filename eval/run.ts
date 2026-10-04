@@ -4,14 +4,20 @@
  *   pnpm eval                       # keyword baseline over data/library.json
  *   pnpm eval --matcher=ai          # the AI matcher, once src/server/ai/match-eval-adapter.ts exists
  *   pnpm eval --library=path.json   # another library file
+ *   pnpm eval -- --cases=eval/cases.en.json --matcher=ai --locale=en
+ *                                   # the English site: English cases, card translations
+ *                                   # (data/library.en.json), English redaction and answers
  *
  * Every case text is redacted with redactPII before it reaches the matcher.
- * Results go to eval/results/<matcher>-<ISO timestamp>.json.
+ * Results go to eval/results/<matcher>-<ISO timestamp>.json; an English run is
+ * recorded as matcher "<matcher>-en" (eval/results/<matcher>-en-<ISO>.json), so
+ * it never replaces the Polish result on the methodology page.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { redactPII } from "../src/server/domain/redact";
+import { withEnglish, type StoredCardEn } from "../src/server/match/core";
 import {
   createKeywordMatcher,
   evalSetSchema,
@@ -43,18 +49,18 @@ function arg(name: string): string | undefined {
  * where Matcher = (text) => Promise<{ slugs, abstained, latencyMs, costUsd?, redactedText?, confidence? }>.
  * The text it receives is already redacted.
  */
-async function loadAiMatcher(): Promise<Matcher | null> {
+async function loadAiMatcher(locale: "pl" | "en"): Promise<Matcher | null> {
   const candidates = ["match-eval-adapter.ts", "match-eval-adapter.js", "match-eval-adapter/index.ts"].map((f) =>
     join(ROOT, "src/server/ai", f),
   );
   const file = candidates.find((f) => existsSync(f));
   if (!file) return null;
   const mod = (await import(pathToFileURL(file).href)) as {
-    createMatcher?: () => Matcher | Promise<Matcher>;
+    createMatcher?: (opts: { locale: "pl" | "en" }) => Matcher | Promise<Matcher>;
     matcher?: Matcher;
     default?: Matcher;
   };
-  if (typeof mod.createMatcher === "function") return await mod.createMatcher();
+  if (typeof mod.createMatcher === "function") return await mod.createMatcher({ locale });
   if (typeof mod.matcher === "function") return mod.matcher;
   if (typeof mod.default === "function") return mod.default;
   throw new Error(`${file} exports neither createMatcher, matcher nor a default Matcher`);
@@ -62,6 +68,9 @@ async function loadAiMatcher(): Promise<Matcher | null> {
 
 async function main(): Promise<void> {
   const matcherName = arg("matcher") ?? "keyword";
+  const locale = arg("locale") === "en" ? "en" : "pl";
+  const runName = locale === "en" ? `${matcherName}-en` : matcherName;
+  const libraryEnPath = resolve(ROOT, arg("library-en") ?? "data/library.en.json");
   const casesPath = resolve(ROOT, arg("cases") ?? "eval/cases.json");
   const libraryPath = resolve(ROOT, arg("library") ?? "data/library.json");
   const outDir = resolve(ROOT, arg("out") ?? "eval/results");
@@ -77,7 +86,18 @@ async function main(): Promise<void> {
       console.log("The keyword baseline needs data/library.json (produced by `pnpm data:library`). Nothing to evaluate yet.");
       return;
     }
-    const { cards, invalid } = parseLibrary(JSON.parse(readFileSync(libraryPath, "utf8")));
+    const parsed = parseLibrary(JSON.parse(readFileSync(libraryPath, "utf8")));
+    const invalid = parsed.invalid;
+    let cards = parsed.cards;
+    if (locale === "en") {
+      if (!existsSync(libraryEnPath)) {
+        console.log(`No English library at ${libraryEnPath}. Nothing to evaluate.`);
+        return;
+      }
+      cards = withEnglish(cards, JSON.parse(readFileSync(libraryEnPath, "utf8")) as Record<string, StoredCardEn>);
+      const translated = cards.filter((c) => c.en).length;
+      console.log(`English: ${translated} of ${cards.length} cards have a current translation.`);
+    }
     if (invalid > 0) console.warn(`warning: ${invalid} library entries do not match LibraryCard and were skipped`);
     if (cards.length === 0) {
       console.log(`The library at ${libraryPath} holds no valid cards. Nothing to evaluate.`);
@@ -85,11 +105,11 @@ async function main(): Promise<void> {
     }
     librarySlugs = new Set(cards.map((c) => c.slug));
     libraryCards = cards.length;
-    matcher = createKeywordMatcher(cards);
+    matcher = createKeywordMatcher(cards, { locale });
   } else if (matcherName === "ai") {
     let ai: Matcher | null;
     try {
-      ai = await loadAiMatcher();
+      ai = await loadAiMatcher(locale);
     } catch (e) {
       console.log(`The AI matcher cannot run: ${e instanceof Error ? e.message : String(e)}`);
       return;
@@ -119,7 +139,7 @@ async function main(): Promise<void> {
 
   const startedAt = new Date();
   const results = await runPool(set.cases, CONCURRENCY, async (c) => {
-    const redacted = redactPII(c.text).text;
+    const redacted = redactPII(c.text, locale).text;
     let out: MatcherOutput;
     let error: string | undefined;
     const t0 = performance.now();
@@ -136,12 +156,13 @@ async function main(): Promise<void> {
 
   mkdirSync(outDir, { recursive: true });
   const stamp = startedAt.toISOString().replace(/[:.]/g, "-");
-  const outFile = join(outDir, `${matcherName}-${stamp}.json`);
+  const outFile = join(outDir, `${runName}-${stamp}.json`);
   writeFileSync(
     outFile,
     `${JSON.stringify(
       {
-        matcher: matcherName,
+        matcher: runName,
+        locale,
         startedAt: startedAt.toISOString(),
         finishedAt: new Date().toISOString(),
         casesFile: casesPath,
@@ -156,7 +177,7 @@ async function main(): Promise<void> {
     )}\n`,
   );
 
-  console.log(formatTable(matcherName, results, summary));
+  console.log(formatTable(runName, results, summary));
   if (threshold) {
     console.log(
       `suggested low-confidence threshold on this run: ${threshold.threshold} (balanced abstain accuracy ${(threshold.balancedAccuracy * 100).toFixed(0)}%)`,

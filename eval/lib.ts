@@ -7,6 +7,7 @@ import { z } from "zod";
 import { detectCrisis } from "../src/server/domain/crisis";
 import { buildKeywordIndex, keywordSearch } from "../src/server/domain/keywords";
 import { libraryCardSchema, type LibraryCard } from "../src/server/domain/types";
+import { buildCatalog, runKeyword } from "../src/server/match/core";
 
 export const CASE_KINDS = ["keyword", "story", "colloquial", "multi", "none", "adversarial"] as const;
 
@@ -217,8 +218,14 @@ export function parseLibrary(json: unknown): { cards: LibraryCard[]; invalid: nu
   return { cards, invalid };
 }
 
-/** The keyword-only baseline: `keywords.ts` over the library, abstaining when it is not confident. */
-export function createKeywordMatcher(cards: readonly LibraryCard[]): Matcher {
+/**
+ * The keyword-only baseline: `keywords.ts` over the library, abstaining when it
+ * is not confident. English (`locale: "en"`) runs the production English step
+ * (core.runKeyword: the English and the Polish index, best score per card);
+ * the cards must carry `en` (see core.withEnglish).
+ */
+export function createKeywordMatcher(cards: readonly LibraryCard[], { locale = "pl" }: { locale?: "pl" | "en" } = {}): Matcher {
+  if (locale === "en") return createEnglishKeywordMatcher(cards);
   const index = buildKeywordIndex(cards);
   const slugById = new Map(cards.map((c) => [c.id, c.slug]));
   return async (text) => {
@@ -234,6 +241,24 @@ export function createKeywordMatcher(cards: readonly LibraryCard[]): Matcher {
       latencyMs,
       costUsd: 0,
       confidence: r.results[0]?.normScore ?? 0,
+    };
+  };
+}
+
+function createEnglishKeywordMatcher(cards: readonly LibraryCard[]): Matcher {
+  const catalog = buildCatalog(cards);
+  return async (text) => {
+    const t0 = performance.now();
+    const keyword = runKeyword(catalog, text, "en");
+    return {
+      slugs: keyword.hits.flatMap((h) => {
+        const slug = catalog.byId.get(h.cardId)?.slug;
+        return slug ? [slug] : [];
+      }),
+      abstained: keyword.isLowConfidence,
+      latencyMs: performance.now() - t0,
+      costUsd: 0,
+      confidence: keyword.hits[0]?.normScore ?? 0,
     };
   };
 }
