@@ -453,5 +453,130 @@
     "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/mentoring,nabor-na-mentorow",
     "capturedAt": "2026-10-03T15:43:01.253Z",
     "notes": "Volunteer mentoring for social enterprises and vocational activity centres in Małopolska, provided by company employees; participation is free of charge, this is not a grant (amounts = null). Recruitment: \"call for proposals until mid-November 2026\", meetings until the end of November 2026, in person/online — the website does not give exact dates, so window = null. How to apply: a signed application form sent by e-mail (details on the call for proposals page and at https://es.malopolska.pl/mentoring/o-programie)."
+  },
+  {
+    "id": "demo-usluga-wrazliwa",
+    "name": "„Usługa Wrażliwa” — sample call (demo)",
+    "program": "European Funds for Małopolska 2021-2027 (FEM), Measure 6.23 (ESF+)",
+    "operator": "Regional Social Policy Centre in Kraków (ROPS)",
+    "amountMax": 600000,
+    "amountAvg": null,
+    "currency": "PLN",
+    "window": {
+      "from": null,
+      "to": null
+    },
+    "status": "demo",
+    "eligibility": [
+      "social welfare centres (OPS) and social services centres (CUS) in Małopolska",
+      "county family support centres (PCPR) in Małopolska",
+      "non-governmental organisations (NGOs) and social economy entities with a registered office or branch in Małopolska"
+    ],
+    "formFields": [
+      {
+        "key": "serviceGoal",
+        "label": "Aim of the service",
+        "hint": "What problem in your community will the service solve? What should change for the people who use it?"
+      },
+      {
+        "key": "targetGroup",
+        "label": "Target group and its size",
+        "hint": "Who will use the service? How many people do you plan to support, and how do you know that number?"
+      },
+      {
+        "key": "scope",
+        "label": "Scope of the service",
+        "hint": "What kinds of support will the service include? Where, how often and by whom will it be provided?"
+      },
+      {
+        "key": "schedule",
+        "label": "Stages and timetable",
+        "hint": "List the stages — preparation, launch, running the service, review — with approximate months."
+      },
+      {
+        "key": "staff",
+        "label": "Staff",
+        "hint": "Who will provide the service? What qualifications and experience do they have? How many posts or working hours do you expect?"
+      },
+      {
+        "key": "partners",
+        "label": "Partners",
+        "hint": "Who are you working with on the service (for example the municipality, a school, an organisation, a health centre)? What is each partner's role?"
+      },
+      {
+        "key": "budget",
+        "label": "Budget (an estimate to be checked)",
+        "hint": "The main cost categories and your estimate for each. ROPS checks the amounts when assessing the application — they do not have to be final."
+      },
+      {
+        "key": "risks",
+        "label": "Risks",
+        "hint": "What could go wrong (for example too few participants, no staff, delays) and how will you prevent it?"
+      },
+      {
+        "key": "indicators",
+        "label": "Indicators",
+        "hint": "How will you know the service works? Give indicators (for example the number of people supported) and how you will measure them."
+      },
+      {
+        "key": "innovation",
+        "label": "Chosen innovation from the Library",
+        "hint": "Which innovation from the Biblioteka Innowacji Społecznych (with its implementation plan, „Ramowy Plan Wdrożenia”) do you want to put into practice, and why this one?"
+      }
+    ],
+    "criteria": [
+      {
+        "key": "localNeed",
+        "label": "Response to the local community's needs",
+        "description": "Does the application show what problem exists in this community, who it affects and why the service is needed here?",
+        "cardDescription": null,
+        "min": 0,
+        "max": 10,
+        "minToPass": null
+      },
+      {
+        "key": "planFit",
+        "label": "Fit with the innovation's implementation plan",
+        "description": "Does the service faithfully put the chosen Library innovation into practice, and are any changes to its implementation plan justified?",
+        "cardDescription": null,
+        "min": 0,
+        "max": 10,
+        "minToPass": null
+      },
+      {
+        "key": "feasibility",
+        "label": "Feasibility: staff, partners and timetable",
+        "description": "Do the staff, partners and stages make it realistic to launch and run the service in the planned time?",
+        "cardDescription": null,
+        "min": 0,
+        "max": 10,
+        "minToPass": null
+      },
+      {
+        "key": "budgetSense",
+        "label": "A sensible budget",
+        "description": "Do the estimated costs follow from the scope of the service and match the number of people it supports?",
+        "cardDescription": null,
+        "min": 0,
+        "max": 10,
+        "minToPass": null
+      },
+      {
+        "key": "sustainability",
+        "label": "Sustainability and risks",
+        "description": "Does the application describe the risks, how to prevent them, and what happens to the service after the grant ends?",
+        "cardDescription": null,
+        "min": 0,
+        "max": 10,
+        "minToPass": null
+      }
+    ],
+    "minScore": null,
+    "innovations": [],
+    "resultsPlanned": null,
+    "applyUrl": null,
+    "sourceUrl": "https://rops.krakow.pl/nabory-szkolenia-granty-dotacje-wizyty-studyjne-studia-specjalizacje-superwizje/granty-na-innowacje-spoleczne,ii-nabor-wnioskow-na-pilotazowe-wdrozenie-uslug-spolecznych-bazujacych-na-innowacyjnych-rozwiazaniach-w-ramach-projektu-usluga-wrazliwa-upowszechnianie-innowacji-spolecznych-w-srodowiskach-lokalnych",
+    "capturedAt": "2026-10-04T08:00:00.000Z",
+    "notes": "A demonstration call for the prototype, modelled on the „Usługa Wrażliwa” project (ROPS Kraków, FEM, Measure 6.23). The form fields follow the sections of an implementation plan („Ramowy Plan Wdrożenia”). The assessment criteria are samples prepared for the prototype — they do not come from ROPS's assessment form. The maximum amount is the same as in the second „Usługa Wrażliwa” call; no dates are given. This is not a call announced by ROPS."
   }
 ]
