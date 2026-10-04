@@ -1,9 +1,15 @@
 import { asc, eq } from "drizzle-orm";
 import { type NextRequest } from "next/server";
 
-import { mapaAreaSchema, SITE } from "~/lib/domain";
+import {
+  MAPA_AREA_LABEL,
+  MAPA_AREA_LABEL_EN,
+  mapaAreaSchema,
+  SITE,
+} from "~/lib/domain";
 import { db } from "~/server/db";
 import { innovations } from "~/server/db/schema";
+import { localizeCard } from "~/server/library/english";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +21,9 @@ const LIBRARY_URL =
  * Optional `?area=<MapaArea>` filter. CORS-open, cacheable for 5 minutes.
  * The licence differs per card (CC BY 4.0 or a ROPS licence agreement), so
  * it is given on every record together with the card's own source URL.
+ * Each record carries `en`: the AI translation of the card, or null when there
+ * is none or the Polish card changed after it was translated. The response
+ * does not depend on the visitor's language cookie, so it stays cacheable.
  */
 export async function GET(req: NextRequest) {
   const areaParam = req.nextUrl.searchParams.get("area");
@@ -23,7 +32,8 @@ export async function GET(req: NextRequest) {
     return Response.json(
       {
         error:
-          "Nieznany obszar. Dozwolone: " + mapaAreaSchema.options.join(", "),
+          "Nieznany obszar / Unknown area. Dozwolone / allowed: " +
+          mapaAreaSchema.options.join(", "),
       },
       { status: 400, headers: { "Access-Control-Allow-Origin": "*" } },
     );
@@ -38,25 +48,43 @@ export async function GET(req: NextRequest) {
   const origin = req.nextUrl.origin;
   const data = rows
     .filter((r) => !area?.success || r.mapaAreas.includes(area.data))
-    .map((r) => ({
-      id: r.id,
-      slug: r.slug,
-      title: r.title,
-      url: `${origin}/library/${r.slug}`,
-      categories: r.categories,
-      categoryLabels: r.categoryLabels,
-      mapaAreas: r.mapaAreas,
-      sections: r.sections,
-      badge: r.badge,
-      videoUrl: r.videoUrl,
-      folderUrl: r.folderUrl,
-      materialsUrl: r.materialsUrl,
-      licence: r.licence,
-      licenceUrl: r.licenceUrl,
-      sourceUrl: r.sourceUrl,
-      capturedAt: r.capturedAt.toISOString(),
-      sha256: r.sha256,
-    }));
+    .map((r) => {
+      const en = localizeCard(r, "en");
+      return {
+        id: r.id,
+        slug: r.slug,
+        title: r.title,
+        url: `${origin}/library/${r.slug}`,
+        categories: r.categories,
+        categoryLabels: r.categoryLabels,
+        mapaAreas: r.mapaAreas,
+        mapaAreaLabels: r.mapaAreas.map((a) => MAPA_AREA_LABEL[a]),
+        sections: r.sections,
+        badge: r.badge,
+        videoUrl: r.videoUrl,
+        folderUrl: r.folderUrl,
+        materialsUrl: r.materialsUrl,
+        licence: r.licence,
+        licenceUrl: r.licenceUrl,
+        sourceUrl: r.sourceUrl,
+        capturedAt: r.capturedAt.toISOString(),
+        sha256: r.sha256,
+        en:
+          en.lang === "en"
+            ? {
+                title: en.title,
+                categoryLabels: en.categoryLabels,
+                mapaAreaLabels: r.mapaAreas.map((a) => MAPA_AREA_LABEL_EN[a]),
+                sections: en.sections,
+                keywords: en.keywords,
+                badge: en.badge,
+                translatedBy:
+                  "AI (Claude), from the Polish card; the Polish text is authoritative",
+                translatedAt: r.en?.translatedAt ?? null,
+              }
+            : null,
+      };
+    });
 
   return Response.json(
     {
