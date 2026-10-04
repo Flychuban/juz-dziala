@@ -55,20 +55,3 @@ export function looseCaseCode(s: string): string | null {
   if (body.length !== 8) return null;
   return `JD-${body.slice(0, 4)}-${body.slice(4)}`;
 }
-
-/** Any next-intl translator scoped to `cases.modules` (client or server). */
-type ModulesT = ((key: never) => string) & { has: (key: never) => boolean };
-
-/**
- * A plan detail's value in the reader's language: an answer code (`option`,
- * e.g. "ops", "50-200") is named from `cases.modules.plan.option.*`; free
- * text and unknown codes keep the stored value.
- */
-export function planDetailValue(
-  t: ModulesT,
-  d: { key: string; value: string; option?: string },
-): string {
-  if (!d.option) return d.value;
-  const path = `plan.option.${d.key}.${d.option}` as never;
-  return t.has(path) ? t(path) : d.value;
-}

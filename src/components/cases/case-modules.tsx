@@ -17,7 +17,7 @@ import { useLabels } from "~/i18n/use-labels";
 import type { CaseKind } from "~/lib/domain";
 import type { MatchContext } from "~/server/cases/match-context";
 import type { CasePayloads } from "~/server/cases/payloads";
-import { fmtDate, planDetailValue } from "./format";
+import { fmtDate } from "./format";
 
 /**
  * Module payloads inside a case, shared by the author page and the staff
@@ -32,20 +32,23 @@ const box = "border-hairline rounded-lg border p-4";
 const withToken = (path: string, token?: string) =>
   token ? `${path}?t=${encodeURIComponent(token)}` : path;
 
+/**
+ * The plan is a document in its own language (`plan.locale`): its answers,
+ * source and text are shown in it — marked with `lang` when the page is in
+ * the other language (WCAG 3.1.2); the row names follow the page.
+ */
 export function PlanSection({
   plan,
   code,
   defaultOpen = false,
-  contentLang,
 }: {
   plan: NonNullable<CasePayloads["plan"]>;
   code: string;
   defaultOpen?: boolean;
-  /** Language of the plan text when it differs from the page (WCAG 3.1.2). */
-  contentLang?: string;
 }) {
   const t = useTranslations("cases.modules");
   const locale = useLocale();
+  const planLang = plan.locale !== locale ? plan.locale : undefined;
   return (
     <section aria-labelledby="plan-heading" className={box}>
       <h2 id="plan-heading" className="text-xl font-bold">
@@ -57,13 +60,15 @@ export function PlanSection({
             <dt className="text-muted-foreground">
               {t(`plan.detail.${d.key}`)}
             </dt>
-            <dd className="break-words">{planDetailValue(t, d)}</dd>
+            <dd className="break-words" lang={planLang}>
+              {d.value}
+            </dd>
           </div>
         ))}
-        {plan.mode && (
+        {plan.modeLabel && (
           <>
             <dt className="text-muted-foreground">{t("plan.madeWith")}</dt>
-            <dd>{t(`plan.mode.${plan.mode}`)}</dd>
+            <dd lang={planLang}>{plan.modeLabel}</dd>
           </>
         )}
         {plan.submittedAt && (
@@ -107,7 +112,7 @@ export function PlanSection({
         <summary className="min-h-12 cursor-pointer py-2 font-semibold underline">
           {t("plan.showAll")}
         </summary>
-        <div lang={contentLang}>
+        <div lang={planLang}>
           <PlanMarkdown markdown={plan.markdown} className="mt-2" />
         </div>
       </details>

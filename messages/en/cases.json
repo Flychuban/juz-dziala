@@ -194,6 +194,7 @@
       "madeWith": "Plan prepared",
       "mode": {
         "ai": "with the AI assistant",
+        "mixed": "partly by the AI assistant (the rest from the template)",
         "template": "from the template (without AI)"
       },
       "sentToRops": "Sent to ROPS",

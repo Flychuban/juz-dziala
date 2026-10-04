@@ -194,6 +194,7 @@
       "madeWith": "Plan przygotowano",
       "mode": {
         "ai": "z pomocą Asystenta AI",
+        "mixed": "częściowo z pomocą Asystenta AI (reszta z szablonu)",
         "template": "z szablonu (bez AI)"
       },
       "sentToRops": "Wysłano do ROPS",
