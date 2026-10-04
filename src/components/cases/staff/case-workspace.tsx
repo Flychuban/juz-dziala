@@ -1,19 +1,14 @@
 "use client";
 
-import { AlertTriangleIcon, ArrowLeftIcon } from "lucide-react";
+import { AlertTriangleIcon, ArrowLeftIcon, LanguagesIcon } from "lucide-react";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
-import {
-  AUTHOR_ROLE_LABEL,
-  CASE_KIND_LABEL,
-  CASE_STATUS_LABEL,
-  MAPA_AREA_LABEL,
-  URGENCY_LABEL,
-} from "~/lib/domain";
-import { api } from "~/trpc/react";
 import { SampleBadge } from "~/components/kit";
 import { FeedbackSummary } from "~/components/tests/feedback-summary";
+import { useLabels } from "~/i18n/use-labels";
+import { api } from "~/trpc/react";
 import {
   IdeaSection,
   InnovationSection,
@@ -21,9 +16,9 @@ import {
   PlanSection,
 } from "../case-modules";
 import { CaseThread } from "../case-thread";
-import { fmtDateTime } from "../format";
 import { StatusTimeline } from "../status-timeline";
 import { CaseControls, ContactAndDeliveries } from "./case-controls";
+import { fmtDateTime } from "./labels";
 import { StaffReply } from "./staff-reply";
 import { TriagePanel } from "./triage-panel";
 
@@ -31,7 +26,8 @@ import { TriagePanel } from "./triage-panel";
  * One case for staff (ROPS at /admin/cases/[code], an expert at
  * /expert?code=…). Left: the redacted request, match results, the thread and
  * the reply form. Right: AI triage with the editable draft, assignment,
- * status, contact and the delivery log. Polls every 5 s.
+ * status, contact and the delivery log — separated by hairlines, not boxes.
+ * Polls every 5 s.
  */
 export function CaseWorkspace({
   code,
@@ -40,6 +36,9 @@ export function CaseWorkspace({
   code: string;
   basePath: "/admin/cases" | "/expert";
 }) {
+  const t = useTranslations("admin.workspace");
+  const L = useLabels();
+  const locale = useLocale();
   const q = api.admin.inbox.get.useQuery(
     { code },
     {
@@ -61,10 +60,10 @@ export function CaseWorkspace({
     if (!q.data) return;
     const n = q.data.messages.filter((m) => m.authorKind === "author").length;
     if (authorSeen.current !== null && n > authorSeen.current) {
-      setAnnounce("Nowa wiadomość od autora sprawy.");
+      setAnnounce(t("newAuthorMessage"));
     }
     authorSeen.current = n;
-  }, [q.data]);
+  }, [q.data, t]);
 
   const back = (
     <Link
@@ -72,7 +71,7 @@ export function CaseWorkspace({
       className="inline-flex min-h-12 items-center gap-2 font-medium"
     >
       <ArrowLeftIcon aria-hidden="true" className="size-4" />
-      {basePath === "/expert" ? "Wróć do moich spraw" : "Wróć do skrzynki"}
+      {basePath === "/expert" ? t("backExpert") : t("backAdmin")}
     </Link>
   );
 
@@ -81,7 +80,7 @@ export function CaseWorkspace({
       <div className="mx-auto max-w-6xl px-4 py-8 [overflow-wrap:anywhere]">
         {back}
         <p role="status" className="mt-4 text-lg">
-          Wczytuję sprawę {code}…
+          {t("loading", { code })}
         </p>
       </div>
     );
@@ -90,7 +89,7 @@ export function CaseWorkspace({
     return (
       <div className="mx-auto max-w-6xl px-4 py-8 [overflow-wrap:anywhere]">
         {back}
-        <h1 className="mt-4 text-3xl font-bold">Nie można otworzyć sprawy</h1>
+        <h1 className="mt-4 text-3xl font-bold">{t("cannotOpen")}</h1>
         <p role="alert" className="mt-2 text-lg">
           {q.error.message}
         </p>
@@ -100,6 +99,7 @@ export function CaseWorkspace({
 
   const d = q.data;
   const c = d.case;
+  const details = c.areas.length > 0 || !!c.place || (!!d.call && !d.idea);
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 [overflow-wrap:anywhere]">
       {back}
@@ -107,9 +107,9 @@ export function CaseWorkspace({
         <p className="flex flex-wrap items-center gap-2 text-sm">
           <span className="font-mono text-base font-bold">{c.code}</span>{" "}
           <span aria-hidden="true">·</span>{" "}
-          <span>{CASE_KIND_LABEL[c.kind]}</span>{" "}
+          <span>{L.caseKind[c.kind]}</span>{" "}
           <span aria-hidden="true">·</span>{" "}
-          <span className="font-semibold">{CASE_STATUS_LABEL[c.status]}</span>
+          <span className="font-semibold">{L.caseStatus[c.status]}</span>
           {c.urgency && (
             <>
               {" "}
@@ -124,7 +124,7 @@ export function CaseWorkspace({
                 {c.urgency === "high" && (
                   <AlertTriangleIcon aria-hidden="true" className="size-4" />
                 )}
-                Pilność: {URGENCY_LABEL[c.urgency]}
+                {t("urgency", { level: L.urgency[c.urgency] })}
               </span>
             </>
           )}
@@ -137,17 +137,29 @@ export function CaseWorkspace({
         </p>
         <h1 className="text-3xl font-bold break-words">{c.title}</h1>
         <p className="text-muted-foreground">
-          Zgłoszona {fmtDateTime(c.createdAt)} ·{" "}
-          {AUTHOR_ROLE_LABEL[c.authorRole]}
-          {c.onBehalf && " · w imieniu innej osoby"}
+          {t("created", { date: fmtDateTime(c.createdAt, locale) })} ·{" "}
+          {L.authorRole[c.authorRole]}
+          {c.onBehalf && ` · ${t("onBehalf")}`}
         </p>
+        {c.locale === "en" && (
+          <p className="flex items-start gap-2 font-semibold">
+            <LanguagesIcon
+              aria-hidden="true"
+              className="mt-0.5 size-5 shrink-0"
+            />
+            {t("englishAuthor")}
+          </p>
+        )}
+        {c.isSample && (
+          <p className="text-muted-foreground text-sm">{t("sampleNote")}</p>
+        )}
       </header>
       <p aria-live="polite" role="status" className="sr-only">
         {announce}
       </p>
 
-      <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
-        <div className="flex min-w-0 flex-col gap-6">
+      <div className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
+        <div className="flex min-w-0 flex-col gap-8">
           {d.match && <MatchSection match={d.match} />}
 
           {d.plan ? (
@@ -160,38 +172,34 @@ export function CaseWorkspace({
               viewer="staff"
             />
           ) : (
-            <section
-              aria-labelledby="request-heading"
-              className="border-hairline rounded-lg border p-4"
-            >
+            <section aria-labelledby="request-heading">
               <h2 id="request-heading" className="text-xl font-bold">
-                Zgłoszenie
+                {t("request")}
               </h2>
-              <p className="mt-2 whitespace-pre-wrap">{c.body}</p>
+              <p className="mt-2 text-lg whitespace-pre-wrap">{c.body}</p>
               <p className="text-muted-foreground mt-3 text-sm">
-                Tekst po automatycznym usunięciu danych osobowych (telefony,
-                e-maile, PESEL, adresy).
+                {t("redacted")}
               </p>
             </section>
           )}
 
-          {(c.areas.length > 0 || !!c.gminaTeryt || (!!d.call && !d.idea)) && (
-            <dl className="grid gap-x-3 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
+          {details && (
+            <dl className="border-hairline grid gap-x-3 gap-y-1 border-t pt-4 text-sm sm:grid-cols-[auto_1fr]">
               {c.areas.length > 0 && (
                 <>
-                  <dt className="text-muted-foreground">Obszar</dt>
-                  <dd>{c.areas.map((a) => MAPA_AREA_LABEL[a]).join(", ")}</dd>
+                  <dt className="text-muted-foreground">{t("area")}</dt>
+                  <dd>{c.areas.map((a) => L.area[a]).join(", ")}</dd>
                 </>
               )}
-              {c.gminaTeryt && (
+              {c.place && (
                 <>
-                  <dt className="text-muted-foreground">Gmina (TERYT)</dt>
-                  <dd className="font-mono">{c.gminaTeryt}</dd>
+                  <dt className="text-muted-foreground">{t("place")}</dt>
+                  <dd>{c.place}</dd>
                 </>
               )}
               {d.call && !d.idea && (
                 <>
-                  <dt className="text-muted-foreground">Nabór</dt>
+                  <dt className="text-muted-foreground">{t("call")}</dt>
                   <dd>{d.call.name}</dd>
                 </>
               )}
@@ -206,14 +214,14 @@ export function CaseWorkspace({
             />
           )}
           {d.innovation && (c.kind === "test" || c.kind === "feedback") && (
-            <div className="border-hairline rounded-lg border p-4">
+            <div className="border-hairline border-t pt-4">
               <FeedbackSummary innovationId={d.innovation.id} />
             </div>
           )}
 
           <section aria-labelledby="thread-heading">
             <h2 id="thread-heading" className="text-xl font-bold">
-              Wątek
+              {t("thread")}
             </h2>
             <div className="mt-3">
               <CaseThread viewer="staff" messages={d.messages} />
@@ -234,15 +242,15 @@ export function CaseWorkspace({
         </div>
 
         <aside
-          aria-label="Ocena i prowadzenie sprawy"
-          className="flex min-w-0 flex-col gap-6"
+          aria-label={t("aside")}
+          className="flex min-w-0 flex-col gap-8"
         >
           <TriagePanel
             data={d}
             basePath={basePath}
             onUseDraft={(text) => {
               setReply(text);
-              setAnnounce("Szkic wstawiony do pola odpowiedzi.");
+              setAnnounce(t("draftInserted"));
               replyRef.current?.focus();
               replyRef.current?.scrollIntoView({ block: "center" });
             }}
@@ -251,10 +259,10 @@ export function CaseWorkspace({
           <ContactAndDeliveries data={d} />
           <section
             aria-labelledby="ws-timeline-heading"
-            className="border-hairline rounded-lg border p-4"
+            className="border-hairline border-t pt-6"
           >
             <h2 id="ws-timeline-heading" className="text-xl font-bold">
-              Etapy widoczne dla autora
+              {t("timeline")}
             </h2>
             <StatusTimeline
               steps={d.timeline}

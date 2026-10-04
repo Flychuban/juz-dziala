@@ -1,11 +1,38 @@
+import { eq } from "drizzle-orm";
+import { type Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
 import { CaseWorkspace } from "~/components/cases/staff/case-workspace";
 import { InboxList } from "~/components/cases/staff/inbox-list";
+import { SampleBadge } from "~/components/kit";
+import { requireStaff } from "~/components/layout/staff-gate";
+import { personTitle } from "~/server/cases/sample-people";
+import { db } from "~/server/db";
+import { people } from "~/server/db/schema";
 import { normalizeCaseCode } from "~/server/domain/case-code";
 import { api, HydrateClient } from "~/trpc/server";
 
-export const metadata = { title: "Moje sprawy" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("admin.expert");
+  return { title: t("metaTitle") };
+}
+
+/** The signed-in expert, so the page says whose cases these are. */
+async function signedInPerson() {
+  const staff = await requireStaff(["expert"]);
+  if (staff?.role !== "expert") return null;
+  const [p] = await db
+    .select({
+      id: people.id,
+      displayName: people.displayName,
+      title: people.title,
+      isSample: people.isSample,
+    })
+    .from(people)
+    .where(eq(people.id, staff.personId));
+  return p ?? null;
+}
 
 /** An expert's cases: the list, or one case with ?code=JD-…. */
 export default async function Page({
@@ -23,15 +50,26 @@ export default async function Page({
       </HydrateClient>
     );
   }
+  const [t, locale, me] = await Promise.all([
+    getTranslations("admin.expert"),
+    getLocale(),
+    signedInPerson(),
+  ]);
+  const title = me ? personTitle(me, locale) : null;
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 [overflow-wrap:anywhere]">
-      <h1 className="text-3xl font-bold">Moje sprawy</h1>
-      <p className="mt-2 max-w-prose">
-        Sprawy, które Zespół Hubu przydzielił Tobie. O nowych dowiesz się z
-        dzwonka „Powiadomienia”.
-      </p>
+      <h1 className="text-3xl font-bold">{t("title")}</h1>
+      {me && (
+        <p className="mt-2 flex flex-wrap items-center gap-2 font-semibold">
+          {title
+            ? t("signedInAs", { name: me.displayName, title })
+            : me.displayName}
+          {me.isSample && <SampleBadge />}
+        </p>
+      )}
+      <p className="mt-2 max-w-prose">{t("lead")}</p>
       <div className="mt-6">
-        <Suspense fallback={<p role="status">Wczytuję sprawy…</p>}>
+        <Suspense fallback={<p role="status">{t("loading")}</p>}>
           <InboxList basePath="/expert" />
         </Suspense>
       </div>

@@ -145,14 +145,25 @@ describe("summarize and whiteSpots", () => {
       powiatName: "powiat dąbrowski",
     });
     expect(spots[0]!.examples).toHaveLength(2);
-    expect(spots[1]).toMatchObject({
-      area: "none",
-      powiat: null,
-      powiatName: "nie podano",
+  });
+  it("leaves needs without a Mapa area out of the white spots", () => {
+    const spots = whiteSpots(needs);
+    expect(spots).toHaveLength(1);
+    expect(spots.some((s) => s.area === "none")).toBe(false);
+  });
+  it("labels areas and powiats in English", () => {
+    const [spot] = whiteSpots(needs, "en");
+    expect(spot).toMatchObject({
+      areaLabel: "Older people",
+      powiatName: "Dąbrowa Tarnowska County",
     });
+    expect(
+      summarize(needs, "en").byArea.find((a) => a.area === "none")?.label,
+    ).toBe("No area assigned");
   });
   it("names city powiats without the word „powiat”", () => {
     expect(powiatName("1261")).toBe("Kraków");
     expect(powiatName("1201")).toBe("powiat bocheński");
+    expect(powiatName(null, "en")).toBe("not given");
   });
 });

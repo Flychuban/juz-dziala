@@ -1,10 +1,20 @@
+import { type Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { CaseWorkspace } from "~/components/cases/staff/case-workspace";
 import { normalizeCaseCode } from "~/server/domain/case-code";
 import { api, HydrateClient } from "~/trpc/server";
 
-export const metadata = { title: "Sprawa" };
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ code: string }>;
+}): Promise<Metadata> {
+  const t = await getTranslations("admin.workspace");
+  const code = normalizeCaseCode(decodeURIComponent((await params).code));
+  return { title: code ? `${t("metaTitle")} ${code}` : t("metaTitle") };
+}
 
 export default async function Page({
   params,

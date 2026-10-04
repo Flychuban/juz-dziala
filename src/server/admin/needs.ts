@@ -6,7 +6,7 @@
 import { z } from "zod";
 
 import { POWIAT_NAMES } from "~/components/map/powiaty";
-import { MAPA_AREA_LABEL, MAPA_AREAS, type MapaArea } from "~/lib/domain";
+import { labelsFor, MAPA_AREAS, type MapaArea } from "~/lib/domain";
 
 export const TREND_DAYS = [7, 30, 90] as const;
 export type TrendDays = (typeof TREND_DAYS)[number];
@@ -71,14 +71,50 @@ export function weekStart(d: Date): string {
   return x.toISOString().slice(0, 10);
 }
 
-export const powiatName = (teryt: string | null) =>
-  teryt
+/** English names: the seat town + „County"; cities with powiat rights keep their name. */
+const POWIAT_NAMES_EN: Record<string, string> = {
+  "1201": "Bochnia County",
+  "1202": "Brzesko County",
+  "1203": "Chrzanów County",
+  "1204": "Dąbrowa Tarnowska County",
+  "1205": "Gorlice County",
+  "1206": "Kraków County",
+  "1207": "Limanowa County",
+  "1208": "Miechów County",
+  "1209": "Myślenice County",
+  "1210": "Nowy Sącz County",
+  "1211": "Nowy Targ County",
+  "1212": "Olkusz County",
+  "1213": "Oświęcim County",
+  "1214": "Proszowice County",
+  "1215": "Sucha Beskidzka County",
+  "1216": "Tarnów County",
+  "1217": "Tatra County",
+  "1218": "Wadowice County",
+  "1219": "Wieliczka County",
+  "1261": "Kraków",
+  "1262": "Nowy Sącz",
+  "1263": "Tarnów",
+};
+
+/** „powiat bocheński" / "Bochnia County"; cities: „Kraków". */
+export const powiatName = (teryt: string | null, locale = "pl") => {
+  if (locale === "en")
+    return teryt ? (POWIAT_NAMES_EN[teryt] ?? teryt) : "not given";
+  return teryt
     ? POWIAT_NAMES[teryt]
       ? `${teryt.startsWith("126") ? "" : "powiat "}${POWIAT_NAMES[teryt]}`
       : teryt
     : "nie podano";
+};
 
-export function summarize(needs: Need[]) {
+const NO_AREA = { pl: "Bez przypisanego obszaru", en: "No area assigned" };
+const areaLabel = (a: MapaArea | "none", locale: string) =>
+  a === "none"
+    ? NO_AREA[locale === "en" ? "en" : "pl"]
+    : labelsFor(locale).area[a];
+
+export function summarize(needs: Need[], locale = "pl") {
   const byPowiat: Record<string, number> = {};
   const byArea = new Map<MapaArea | "none", { count: number; unmet: number }>();
   const byWeek = new Map<string, { count: number; unmet: number }>();
@@ -121,7 +157,7 @@ export function summarize(needs: Need[]) {
     byArea: [...MAPA_AREAS, "none" as const]
       .map((a) => ({
         area: a,
-        label: a === "none" ? "Bez przypisanego obszaru" : MAPA_AREA_LABEL[a],
+        label: areaLabel(a, locale),
         ...(byArea.get(a) ?? { count: 0, unmet: 0 }),
       }))
       .filter((a) => a.area !== "none" || a.count > 0)
@@ -148,11 +184,15 @@ export type WhiteSpot = {
   sample: boolean;
 };
 
-/** Unmet needs grouped by area × powiat, largest first, with up to 3 redacted phrasings. */
-export function whiteSpots(needs: Need[]): WhiteSpot[] {
+/**
+ * Unmet needs grouped by area × powiat, largest first, with up to 3 redacted
+ * phrasings. A need without a Mapa area is not a „biała plama": nobody can
+ * plan a call for „no area", so it stays in the totals and out of this list.
+ */
+export function whiteSpots(needs: Need[], locale = "pl"): WhiteSpot[] {
   const groups = new Map<string, Need[]>();
-  for (const n of needs.filter((x) => x.unmet)) {
-    for (const a of n.areas.length ? n.areas : (["none"] as const)) {
+  for (const n of needs.filter((x) => x.unmet && x.areas.length > 0)) {
+    for (const a of n.areas) {
       const key = `${a}|${n.powiat ?? ""}`;
       groups.set(key, [...(groups.get(key) ?? []), n]);
     }
@@ -163,10 +203,9 @@ export function whiteSpots(needs: Need[]): WhiteSpot[] {
       const sorted = [...list].sort((a, b) => b.at.getTime() - a.at.getTime());
       return {
         area,
-        areaLabel:
-          area === "none" ? "Bez przypisanego obszaru" : MAPA_AREA_LABEL[area],
+        areaLabel: areaLabel(area, locale),
         powiat: powiat || null,
-        powiatName: powiatName(powiat || null),
+        powiatName: powiatName(powiat || null, locale),
         count: list.length,
         examples: [...new Set(sorted.map((n) => n.text.trim()))]
           .slice(0, 3)
@@ -176,6 +215,7 @@ export function whiteSpots(needs: Need[]): WhiteSpot[] {
     })
     .sort(
       (a, b) =>
-        b.count - a.count || a.areaLabel.localeCompare(b.areaLabel, "pl"),
+        b.count - a.count ||
+        a.areaLabel.localeCompare(b.areaLabel, locale === "en" ? "en" : "pl"),
     );
 }

@@ -4,6 +4,8 @@ import { and, eq, gte, isNull } from "drizzle-orm";
 import { z } from "zod";
 
 import { powiatKey } from "~/components/map/powiaty";
+import { type Locale } from "~/i18n/config";
+import { translatorFor } from "~/i18n/server";
 import { MAPA_AREA_LABEL, type MapaArea } from "~/lib/domain";
 import { aiStructured, userData } from "~/server/ai/structured";
 import {
@@ -12,10 +14,17 @@ import {
 } from "~/server/ai/prompts/admin-call-topic";
 import { type Db } from "~/server/db";
 import { cases, innovations, matchRuns } from "~/server/db/schema";
+import { looksLikeGibberish } from "./gibberish";
 import { isArea, isUnmet, powiatName, type Need } from "./needs";
 
 export * from "./needs";
+export { looksLikeGibberish } from "./gibberish";
 
+/**
+ * Needs of the last `days` days: matching runs plus „need" cases that did not
+ * come from a run. Test inputs and keyboard noise (looksLikeGibberish) are
+ * left out, so they never count as a trend or a „biała plama".
+ */
 export async function loadNeeds(
   db: Db,
   opts: { days: number; area?: MapaArea | null },
@@ -61,7 +70,7 @@ export async function loadNeeds(
       unmet: false,
       isSample: c.isSample,
     })),
-  ];
+  ].filter((n) => !looksLikeGibberish(n.text));
   return opts.area ? needs.filter((n) => n.areas.includes(opts.area!)) : needs;
 }
 
@@ -78,7 +87,13 @@ export type CallTopicDraft = z.infer<typeof callTopicSchema>;
 
 export async function proposeCallTopic(
   db: Db,
-  opts: { area: MapaArea | "none"; powiat: string | null; days: number },
+  opts: {
+    area: MapaArea | "none";
+    powiat: string | null;
+    days: number;
+    /** Language of the draft and of the messages (the staff member's). */
+    locale?: Locale;
+  },
 ): Promise<
   | { ok: true; draft: CallTopicDraft; basedOn: number }
   | { ok: false; message: string }
@@ -91,12 +106,9 @@ export async function proposeCallTopic(
         : n.areas.includes(opts.area)) &&
       (opts.powiat ? n.powiat === opts.powiat : true),
   );
+  const t = translatorFor(opts.locale ?? "pl", "admin");
   if (needs.length === 0)
-    return {
-      ok: false,
-      message:
-        "W tej grupie nie ma niezaspokojonych potrzeb w wybranym okresie.",
-    };
+    return { ok: false, message: t("trends.topic.noNeeds") };
 
   const library =
     opts.area === "none"
@@ -139,6 +151,7 @@ export async function proposeCallTopic(
         library.join("\n") || "(brak kart w tym obszarze)",
       ),
     }),
+    locale: opts.locale,
     effort: "medium",
   });
   if (!res.ok)
@@ -146,8 +159,8 @@ export async function proposeCallTopic(
       ok: false,
       message:
         res.reason === "unavailable"
-          ? "Asystent AI jest niedostępny. Temat naboru trzeba opisać ręcznie."
-          : "Nie udało się przygotować propozycji. Spróbuj ponownie.",
+          ? t("trends.topic.aiUnavailable")
+          : t("trends.topic.failed"),
     };
   return { ok: true, draft: res.data, basedOn: needs.length };
 }

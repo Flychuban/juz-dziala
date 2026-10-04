@@ -1,7 +1,9 @@
 import { cookies } from "next/headers";
 import { type NextRequest } from "next/server";
 
-import { MAPA_AREA_LABEL, mapaAreaSchema } from "~/lib/domain";
+import { localeFromCookieHeader } from "~/i18n/config";
+import { translatorFor } from "~/i18n/server";
+import { labelsFor, mapaAreaSchema, type MapaArea } from "~/lib/domain";
 import {
   loadNeeds,
   powiatName,
@@ -19,15 +21,18 @@ const cell = (v: string | number) => {
 };
 
 /**
- * CSV of needs by week × Mapa area × powiat (ROPS only). Semicolon-separated
- * with a UTF-8 BOM, so it opens correctly in a Polish Excel.
+ * CSV of needs by week × Mapa area × powiat (ROPS only), with headers and
+ * labels in the staff member's language. Semicolon-separated with a UTF-8
+ * BOM, so it opens correctly in a Polish Excel.
  */
 export async function GET(req: NextRequest) {
+  const locale = localeFromCookieHeader(req.headers.get("cookie"));
+  const t = translatorFor(locale, "admin");
   const staff = await verifyStaffSession(
     (await cookies()).get(STAFF_COOKIE)?.value,
   );
   if (staff?.role !== "rops")
-    return new Response("Zaloguj się jako pracownik ROPS.", { status: 401 });
+    return new Response(t("trends.csv.login"), { status: 401 });
 
   const sp = req.nextUrl.searchParams;
   const area = mapaAreaSchema.safeParse(sp.get("area"));
@@ -37,26 +42,26 @@ export async function GET(req: NextRequest) {
     : 30;
   const { cells } = summarize(
     await loadNeeds(db, { days, area: area.success ? area.data : null }),
+    locale,
   );
+  const L = labelsFor(locale);
 
   const header = [
-    "tydzień od",
-    "obszar (kod)",
-    "obszar",
-    "powiat (TERYT)",
-    "powiat",
-    "potrzeby",
-    "bez dopasowania",
+    t("trends.csv.weekFrom"),
+    t("trends.csv.areaCode"),
+    t("trends.csv.area"),
+    t("trends.csv.powiatCode"),
+    t("trends.csv.powiat"),
+    t("trends.csv.needs"),
+    t("trends.csv.unmet"),
   ];
   const lines = cells.map((c) =>
     [
       c.week,
       c.area,
-      c.area === "none"
-        ? "bez obszaru"
-        : MAPA_AREA_LABEL[c.area as keyof typeof MAPA_AREA_LABEL],
+      c.area === "none" ? t("trends.csv.noArea") : L.area[c.area as MapaArea],
       c.powiat,
-      powiatName(c.powiat || null),
+      powiatName(c.powiat || null, locale),
       c.count,
       c.unmet,
     ]
@@ -68,7 +73,7 @@ export async function GET(req: NextRequest) {
   return new Response(csv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="potrzeby-${days}dni-${stamp}.csv"`,
+      "Content-Disposition": `attachment; filename="${t("trends.csv.file")}-${days}${locale === "en" ? "days" : "dni"}-${stamp}.csv"`,
       "Cache-Control": "no-store",
     },
   });

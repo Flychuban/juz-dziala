@@ -1,12 +1,13 @@
 import { type Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 import { DownloadIcon } from "lucide-react";
 
 import { AdminHeader } from "~/components/admin/admin-header";
 import { CallTopicButton } from "~/components/admin/call-topic-button";
 import {
-  countPl,
   EmptyState,
-  formatDatePl,
+  formatDate,
+  formatNumber,
   SampleBadge,
   SourceLine,
 } from "~/components/kit";
@@ -21,12 +22,15 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { MAPA_AREA_LABEL, MAPA_AREAS, mapaAreaSchema } from "~/lib/domain";
+import { labelsFor, MAPA_AREAS, mapaAreaSchema } from "~/lib/domain";
 import { cn } from "~/lib/utils";
 import { TREND_DAYS } from "~/server/admin/trends";
 import { api } from "~/trpc/server";
 
-export const metadata: Metadata = { title: "Trendy i białe plamy" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("admin.trends");
+  return { title: t("metaTitle") };
+}
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 const one = (v: string | string[] | undefined) =>
@@ -40,6 +44,11 @@ export default async function TrendsPage({
 }: {
   searchParams: SearchParams;
 }) {
+  const [t, locale] = await Promise.all([
+    getTranslations("admin.trends"),
+    getLocale(),
+  ]);
+  const L = labelsFor(locale);
   const sp = await searchParams;
   const areaParsed = mapaAreaSchema.safeParse(one(sp.area));
   const area = areaParsed.success ? areaParsed.data : null;
@@ -54,36 +63,24 @@ export default async function TrendsPage({
   ]);
   const maxArea = Math.max(1, ...overview.byArea.map((a) => a.count));
   const allSample = overview.total > 0 && overview.sample === overview.total;
-  const scope = `${area ? MAPA_AREA_LABEL[area] : "wszystkie obszary"}, ostatnie ${days} dni`;
+  const scope = t("scope", {
+    area: area ? L.area[area] : t("allAreasScope"),
+    days,
+  });
   const csvHref = `/admin/trends/export?days=${days}${area ? `&area=${area}` : ""}`;
-  const source = (
-    <SourceLine
-      source="Opisy potrzeb w serwisie Już Działa (zanonimizowane) i sprawy typu „Potrzeba”"
-      date={new Date()}
-    />
-  );
+  const source = <SourceLine source={t("source")} date={new Date()} />;
 
   return (
     <>
-      <AdminHeader
-        title="Trendy i białe plamy"
-        lead={
-          <p>
-            Z czym mieszkańcy przychodzą do serwisu — według obszaru Mapy
-            Wyzwań, powiatu i tygodnia. „Białe plamy” to potrzeby, na które
-            Biblioteka nie ma pewnej odpowiedzi. Widoczne tylko dla zespołu
-            ROPS.
-          </p>
-        }
-      >
+      <AdminHeader title={t("title")} lead={<p>{t("lead")}</p>}>
         <form
           method="get"
           action="/admin/trends"
-          className="grid grid-cols-1 max-w-3xl gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+          className="grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
         >
           <div>
             <label htmlFor="t-area" className="block font-semibold">
-              Obszar
+              {t("filterArea")}
             </label>
             <select
               id="t-area"
@@ -91,17 +88,17 @@ export default async function TrendsPage({
               defaultValue={area ?? ""}
               className={cn(SELECT, "mt-2")}
             >
-              <option value="">Wszystkie obszary</option>
+              <option value="">{t("allAreas")}</option>
               {MAPA_AREAS.map((a) => (
                 <option key={a} value={a}>
-                  {MAPA_AREA_LABEL[a]}
+                  {L.area[a]}
                 </option>
               ))}
             </select>
           </div>
           <div>
             <label htmlFor="t-days" className="block font-semibold">
-              Okres
+              {t("filterDays")}
             </label>
             <select
               id="t-days"
@@ -111,56 +108,54 @@ export default async function TrendsPage({
             >
               {TREND_DAYS.map((d) => (
                 <option key={d} value={d}>
-                  Ostatnie {d} dni
+                  {t("lastDays", { days: d })}
                 </option>
               ))}
             </select>
           </div>
-          <Button type="submit">Pokaż</Button>
+          <Button type="submit">{t("show")}</Button>
         </form>
       </AdminHeader>
 
       <div className="mx-auto max-w-6xl space-y-14 px-4 py-10">
         <section aria-labelledby="totals-heading">
           <h2 id="totals-heading" className="sr-only">
-            Podsumowanie
+            {t("summaryHeading")}
           </h2>
           {allSample ? (
             <p className="mb-6 flex flex-wrap items-center gap-2">
-              <SampleBadge label="dane przykładowe" />
-              Wszystkie potrzeby w tym widoku to dane przykładowe, do pokazania
-              działania panelu.
+              <SampleBadge label={t("allSampleBadge")} />
+              {t("allSample")}
             </p>
           ) : overview.sample > 0 ? (
             <p className="mb-6 flex flex-wrap items-center gap-2">
-              <SampleBadge />W tym{" "}
-              {countPl(overview.sample, "przykładowa", "przykładowe", "przykładowych")}.
+              <SampleBadge />
+              {t("someSample", { count: overview.sample })}
             </p>
           ) : null}
           <dl className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-3">
             {[
-              { label: "Opisane potrzeby", value: overview.total },
-              {
-                label: "Bez pewnego dopasowania (białe plamy)",
-                value: overview.unmet,
-              },
-              { label: "Z podanym powiatem", value: overview.withPowiat },
+              { label: t("totals.total"), value: overview.total },
+              { label: t("totals.unmet"), value: overview.unmet },
+              { label: t("totals.withPowiat"), value: overview.withPowiat },
             ].map((s) => (
               <div key={s.label} className="border-hairline border-t-2 pt-4">
                 <dt className="text-base">{s.label}</dt>
                 <dd className="font-display tabular mt-1 text-5xl font-bold">
-                  {s.value}
+                  {formatNumber(s.value, locale)}
                 </dd>
               </div>
             ))}
           </dl>
-          <p className="text-muted-foreground mt-4 text-sm">Zakres: {scope}.</p>
+          <p className="text-muted-foreground mt-4 text-sm">
+            {t("range", { scope })} {t("junkNote")}
+          </p>
         </section>
 
         {overview.total === 0 ? (
           <EmptyState
-            title="Brak potrzeb w tym okresie"
-            description={<p>Wybierz dłuższy okres albo inny obszar.</p>}
+            title={t("emptyTitle")}
+            description={<p>{t("emptyBody")}</p>}
           />
         ) : (
           <>
@@ -169,17 +164,16 @@ export default async function TrendsPage({
                 id="map-heading"
                 className="font-display text-2xl font-bold md:text-3xl"
               >
-                Potrzeby według powiatu
+                {t("map.heading")}
               </h2>
               <p className="text-foreground/85 mt-2 max-w-[68ch]">
-                Liczba opisanych potrzeb w każdym z 22 powiatów ({scope}). Obok
-                mapy jest tabela z tymi samymi liczbami.
+                {t("map.lead", { scope })}
               </p>
               <div className="mt-6">
                 <PowiatMap
                   values={overview.byPowiat}
-                  label={`Opisane potrzeby według powiatu — ${scope}`}
-                  valueLabel="Potrzeby"
+                  label={t("map.label", { scope })}
+                  valueLabel={t("map.value")}
                   source={source}
                 />
               </div>
@@ -190,11 +184,10 @@ export default async function TrendsPage({
                 id="areas-heading"
                 className="font-display text-2xl font-bold md:text-3xl"
               >
-                Potrzeby według obszaru
+                {t("areas.heading")}
               </h2>
               <p className="text-foreground/85 mt-2 max-w-[68ch]">
-                Jedna potrzeba może dotyczyć kilku obszarów. Ciemniejsza część
-                paska to potrzeby bez dopasowania.
+                {t("areas.lead")}
               </p>
               <ul className="mt-6 max-w-4xl space-y-4">
                 {overview.byArea.map((a) => (
@@ -221,7 +214,9 @@ export default async function TrendsPage({
                       </span>
                       <span className="tabular w-40 shrink-0 text-[0.9375rem] sm:w-72">
                         <span className="font-bold">{a.count}</span>
-                        {a.unmet ? `, w tym ${a.unmet} bez dopasowania` : ""}
+                        {a.unmet
+                          ? t("areas.unmetPart", { count: a.unmet })
+                          : ""}
                       </span>
                     </span>
                   </li>
@@ -233,11 +228,11 @@ export default async function TrendsPage({
               >
                 <span className="flex items-center gap-2">
                   <span className="bg-primary inline-block size-4 rounded-sm" />{" "}
-                  z dopasowaniem
+                  {t("areas.legendMatched")}
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="bg-foreground inline-block size-4 rounded-sm" />{" "}
-                  bez dopasowania
+                  {t("areas.legendUnmet")}
                 </span>
               </p>
             </section>
@@ -248,33 +243,33 @@ export default async function TrendsPage({
                   id="weeks-heading"
                   className="font-display text-2xl font-bold md:text-3xl"
                 >
-                  Tydzień po tygodniu
+                  {t("weeks.heading")}
                 </h2>
                 <Button asChild variant="secondary">
                   <a href={csvHref} download>
                     <DownloadIcon aria-hidden="true" />
-                    Pobierz CSV (tydzień × obszar × powiat)
+                    {t("weeks.csv")}
                   </a>
                 </Button>
               </div>
               <div className="mt-6 max-w-2xl">
                 <Table>
-                  <TableCaption>
-                    Opisane potrzeby w kolejnych tygodniach — {scope}
-                  </TableCaption>
+                  <TableCaption>{t("weeks.caption", { scope })}</TableCaption>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Tydzień od</TableHead>
-                      <TableHead className="text-right">Potrzeby</TableHead>
+                      <TableHead>{t("weeks.weekFrom")}</TableHead>
                       <TableHead className="text-right">
-                        Bez dopasowania
+                        {t("weeks.needs")}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t("weeks.unmet")}
                       </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {overview.byWeek.map((w) => (
                       <TableRow key={w.week}>
-                        <TableCell>{formatDatePl(w.week)}</TableCell>
+                        <TableCell>{formatDate(w.week, locale)}</TableCell>
                         <TableCell className="text-right">{w.count}</TableCell>
                         <TableCell className="text-right">{w.unmet}</TableCell>
                       </TableRow>
@@ -294,32 +289,26 @@ export default async function TrendsPage({
             id="spots-heading"
             className="font-display text-2xl font-bold md:text-3xl"
           >
-            Białe plamy
+            {t("spots.heading")}
           </h2>
           <p className="text-foreground/85 mt-2 max-w-[68ch]">
-            Potrzeby, przy których serwis nie znalazł pewnego rozwiązania w
-            Bibliotece — pogrupowane według obszaru i powiatu. Przykładowe opisy
-            są zanonimizowane. Dla każdej grupy możesz poprosić asystenta AI o
-            szkic tematu naboru.
+            {t("spots.lead")}
           </p>
           {spots.length === 0 ? (
-            <p className="mt-6 font-semibold">
-              W tym okresie każda potrzeba miała dopasowanie.
-            </p>
+            <p className="mt-6 font-semibold">{t("spots.none")}</p>
           ) : (
-            <ol className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-2">
+            <ol className="mt-8 grid grid-cols-1 gap-x-12 lg:grid-cols-2">
               {spots.slice(0, 12).map((s) => (
                 <li
                   key={`${s.area}-${s.powiat}`}
-                  className="border-hairline rounded-lg border p-5"
+                  className="border-hairline border-t pt-5 pb-8"
                 >
                   <h3 className="font-display text-xl font-bold">
                     {s.areaLabel} · {s.powiatName}
                   </h3>
                   <p className="mt-1 flex flex-wrap items-center gap-2">
                     <span className="tabular font-semibold">
-                      {countPl(s.count, "potrzeba", "potrzeby", "potrzeb")} bez
-                      dopasowania
+                      {t("spots.count", { count: s.count })}
                     </span>
                     {s.sample ? <SampleBadge /> : null}
                   </p>
@@ -344,8 +333,7 @@ export default async function TrendsPage({
           )}
           {spots.length > 12 ? (
             <p className="mt-4 text-[0.9375rem]">
-              Pokazujemy 12 największych grup z {spots.length}. Pełne dane są w
-              pliku CSV.
+              {t("spots.more", { count: spots.length })}
             </p>
           ) : null}
         </section>

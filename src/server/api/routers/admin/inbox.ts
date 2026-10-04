@@ -17,6 +17,7 @@ import {
 import { z } from "zod";
 
 import { env } from "~/env";
+import { translatorFor } from "~/i18n/server";
 import {
   CASE_KINDS,
   caseKindSchema,
@@ -26,6 +27,8 @@ import {
   type CaseKind,
   type MapaArea,
 } from "~/lib/domain";
+import { placeLabel } from "~/server/admin/place";
+import { triageSummary, type StaffTriage } from "~/server/admin/triage-shape";
 import { aiAvailable } from "~/server/ai/structured";
 import {
   createTRPCRouter,
@@ -42,8 +45,9 @@ import {
 } from "~/server/cases/queries";
 import { matchContext } from "~/server/cases/match-context";
 import { casePayloads } from "~/server/cases/payloads";
+import { personTitle } from "~/server/cases/sample-people";
 import { triageCase } from "~/server/cases/triage";
-import { TEAM_NAME, type CaseTriage } from "~/server/cases/types";
+import { TEAM_NAME } from "~/server/cases/types";
 import {
   auditLog,
   cases,
@@ -74,21 +78,20 @@ function scope(ctx: StaffCtx): SQL | undefined {
 }
 
 async function scopedCase(ctx: StaffCtx, code: string): Promise<CaseRow> {
+  const t = translatorFor(ctx.locale, "admin");
   const c = await findCaseByCode(code);
   if (!c) {
-    throw new TRPCError({
-      code: "NOT_FOUND",
-      message: "Nie ma sprawy o tym kodzie.",
-    });
+    throw new TRPCError({ code: "NOT_FOUND", message: t("errors.noCase") });
   }
   if (ctx.staff.role === "expert" && c.assigneeId !== ctx.staff.personId) {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "Ta sprawa nie jest przydzielona do Ciebie.",
-    });
+    throw new TRPCError({ code: "FORBIDDEN", message: t("errors.notYours") });
   }
   return c;
 }
+
+/** The Hub team's name in the viewer's language. */
+const teamName = (ctx: Context) =>
+  ctx.locale === "en" ? translatorFor("en", "admin")("labels.team") : TEAM_NAME;
 
 async function audit(
   ctx: StaffCtx,
@@ -165,6 +168,7 @@ export const adminInboxRouter = createTRPCRouter({
           areas: cases.areas,
           assigneeId: cases.assigneeId,
           authorRole: cases.authorRole,
+          locale: cases.locale,
           triage: cases.triage,
           isSample: cases.isSample,
           createdAt: cases.createdAt,
@@ -196,15 +200,17 @@ export const adminInboxRouter = createTRPCRouter({
       const unreadSet = new Set(unread.map((u) => u.caseId));
       const names = new Map(ppl.map((p) => [p.id, p.displayName]));
       const items = rows.map(({ triage, id, ...r }) => {
-        const t = triage as CaseTriage | null;
+        const t = triage as StaffTriage | null;
+        const summary = triageSummary(t, ctx.locale);
         return {
           ...r,
           unread: unreadSet.has(id),
-          summary: t?.summary ?? null,
+          summary: summary?.text ?? null,
+          summaryLang: summary?.lang ?? null,
           triageSource: t?.source ?? null,
           assigneeName:
             r.assigneeId === "rops"
-              ? TEAM_NAME
+              ? teamName(ctx)
               : r.assigneeId
                 ? (names.get(r.assigneeId) ?? r.assigneeId)
                 : null,
@@ -228,7 +234,7 @@ export const adminInboxRouter = createTRPCRouter({
           ),
         );
 
-      const triage = c.triage as CaseTriage | null;
+      const triage = c.triage as StaffTriage | null;
       const [thread, log, ppl, timeline, match, similar, payloads] =
         await Promise.all([
           ctx.db
@@ -311,8 +317,13 @@ export const adminInboxRouter = createTRPCRouter({
         : [];
       const cardInfo = Object.fromEntries(cardRows.map((r) => [r.id, r]));
 
+      // Sample people have English titles for staff who use English.
+      const people_ = ppl.map((p) => ({
+        ...p,
+        title: personTitle(p, ctx.locale),
+      }));
       const suggested = triage?.suggestedExpertId
-        ? (ppl.find((p) => p.id === triage.suggestedExpertId) ?? null)
+        ? (people_.find((p) => p.id === triage.suggestedExpertId) ?? null)
         : null;
 
       return {
@@ -331,11 +342,16 @@ export const adminInboxRouter = createTRPCRouter({
           assigneeId: c.assigneeId,
           gminaTeryt: c.gminaTeryt,
           powiatTeryt: c.powiatTeryt,
+          /** „Bochnia (gmina wiejska), powiat bocheński" — never the bare TERYT code. */
+          place: placeLabel(c.gminaTeryt, c.powiatTeryt, ctx.locale),
+          /** The author's language: replies and the draft use it. */
+          locale: c.locale,
           isSample: c.isSample,
           createdAt: c.createdAt,
           lastActivityAt: c.lastActivityAt,
         },
         triage,
+        teamName: teamName(ctx),
         suggestedExpert: suggested,
         similarCases: similar,
         /** Similar cases the viewer may not open (other experts' cases). */
@@ -343,7 +359,7 @@ export const adminInboxRouter = createTRPCRouter({
           0,
           (triage?.similarCaseIds.length ?? 0) - similar.length,
         ),
-        people: ppl,
+        people: people_,
         messages: thread,
         deliveries: log,
         timeline,
@@ -388,8 +404,12 @@ export const adminInboxRouter = createTRPCRouter({
           })
           .from(people)
           .where(eq(people.id, ctx.staff.personId));
+        // The author reads this name, so it is in the author's language.
+        const ta = translatorFor(c.locale === "en" ? "en" : "pl", "admin");
         authorName = p
-          ? `${p.displayName}, ekspert Hubu${p.isSample ? " (osoba przykładowa)" : ""}`
+          ? p.isSample
+            ? ta("reply.expertNameSample", { name: p.displayName })
+            : ta("reply.expertName", { name: p.displayName })
           : ctx.staff.name;
       }
       const m = await addMessage({
@@ -429,7 +449,7 @@ export const adminInboxRouter = createTRPCRouter({
         if (!p) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Nie ma takiej osoby w sieci ekspertów.",
+            message: translatorFor(ctx.locale, "admin")("errors.noPerson"),
           });
         }
       }
@@ -507,6 +527,7 @@ export const adminInboxRouter = createTRPCRouter({
             status: cases.status,
             urgency: cases.urgency,
             triage: cases.triage,
+            isSample: cases.isSample,
             createdAt: cases.createdAt,
           })
           .from(cases)
@@ -556,10 +577,14 @@ export const adminInboxRouter = createTRPCRouter({
       unreadNotifications: unread[0]?.n ?? 0,
       perKind,
       week: { total: week.length, byKind, byArea },
-      latest: latest.map(({ triage, ...r }) => ({
-        ...r,
-        summary: (triage as CaseTriage | null)?.summary ?? null,
-      })),
+      latest: latest.map(({ triage, ...r }) => {
+        const summary = triageSummary(triage as StaffTriage | null, ctx.locale);
+        return {
+          ...r,
+          summary: summary?.text ?? null,
+          summaryLang: summary?.lang ?? null,
+        };
+      }),
     };
   }),
 });
