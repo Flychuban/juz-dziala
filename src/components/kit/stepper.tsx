@@ -51,6 +51,7 @@ export function Stepper({
   backHref,
   busy = false,
   busyLabel,
+  headingLevel = "h2",
   className,
 }: {
   steps: StepperStep[];
@@ -64,9 +65,12 @@ export function Stepper({
   backHref?: string;
   busy?: boolean;
   busyLabel?: string;
+  /** Level of the question heading; h3 when the form sits under its own h2. */
+  headingLevel?: "h2" | "h3";
   className?: string;
 }) {
   const t = useTranslations("common.kit.stepper");
+  const Heading = headingLevel;
   finishLabel ??= t("send");
   nextLabel ??= t("next");
   backLabel ??= t("back");
@@ -147,14 +151,14 @@ export function Stepper({
         </div>
       </div>
 
-      <h2
+      <Heading
         id={headingId}
         ref={heading}
         tabIndex={-1}
         className="font-display text-2xl leading-tight font-bold tracking-tight outline-none md:text-3xl"
       >
         {active.title}
-      </h2>
+      </Heading>
       {active.description ? (
         <div className="text-foreground/85 mt-2 text-base">
           {active.description}
