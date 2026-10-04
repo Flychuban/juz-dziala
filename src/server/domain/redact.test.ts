@@ -169,3 +169,47 @@ describe("redactPII: mixed", () => {
     expect(redactPII("")).toEqual({ text: "", found: [] });
   });
 });
+
+describe("redactPII: English", () => {
+  const en = (text: string) => redactPII(text, "en");
+
+  it("uses English placeholders on the English site", () => {
+    const r = en(`My PESEL is ${VALID_PESEL}, phone 512 345 678, email jan.testowy@example.com.`);
+    expect(r.text).toBe("My PESEL is [PESEL], phone [phone], email [email].");
+    expect(r.found).toEqual([
+      { kind: "email", count: 1 },
+      { kind: "pesel", count: 1 },
+      { kind: "phone", count: 1 },
+    ]);
+  });
+
+  it("keeps Polish placeholders by default", () => {
+    expect(redactPII("tel. 512 345 678").text).toBe("tel. [telefon]");
+  });
+
+  it("redacts a name after Mr / Mrs / Ms / Dr", () => {
+    expect(en("Mrs Smith from next door and Dr. John Brown").text).toBe("Mrs [person] from next door and Dr. [person]");
+    expect(en("Mr Kowalski").text).toBe("Mr [person]");
+  });
+
+  it("redacts a name after „my name is” and „nazywam się”", () => {
+    expect(en("Hello, my name is Anna Nowak and I need help.").text).toBe("Hello, my name is [person] and I need help.");
+    expect(redactPII("Nazywam się Jan Kowalski.").text).toBe("Nazywam się [osoba].");
+    expect(redactPII("Mam na imię Anna.").text).toBe("Mam na imię [osoba].");
+  });
+
+  it("redacts English street addresses", () => {
+    expect(en("We live at 12 Baker Street in Kraków.").text).toBe("We live at [address] in Kraków.");
+    expect(en("Flat 3, 221B Old Mill Road").text).toBe("[address]");
+    expect(en("She is at 7 Long Lane now").found).toEqual([{ kind: "address", count: 1 }]);
+  });
+
+  it("still redacts a Polish address in an English text", () => {
+    expect(en("Mum lives at ul. Długa 15/4, Kraków").text).toBe("Mum lives at [address], Kraków");
+  });
+
+  it("leaves ages, years and money alone", () => {
+    const text = "My mum is 73, since 2019 she pays 900 zł for 3 rooms.";
+    expect(en(text).text).toBe(text);
+  });
+});

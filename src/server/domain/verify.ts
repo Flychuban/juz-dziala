@@ -7,6 +7,7 @@
  * word must actually occur in what the resident wrote.
  */
 import { z } from "zod";
+import { stemEn } from "./english";
 import type { KeywordResult } from "./keywords";
 import { stem, tokenizeWithOffsets } from "./polish";
 import { mapaAreaSchema, type LibraryCard, type MapaArea } from "./types";
@@ -72,14 +73,19 @@ export function clip(text: string, max: number): string {
   return `${base.replace(/[\s,;:.\-–—]+$/u, "")}…`;
 }
 
-/** Same word, diacritic- and case-insensitive, tolerating a different ending. */
+/**
+ * Same word, diacritic- and case-insensitive, tolerating a different ending:
+ * by prefix, by the Polish stem ("samotna"/"samotność") or by the English one
+ * ("lonely"/"loneliness", "families"/"family").
+ */
 function sameWord(a: string, b: string): boolean {
   const fa = tokenizeWithOffsets(a)[0]?.folded ?? "";
   const fb = tokenizeWithOffsets(b)[0]?.folded ?? "";
   if (!fa || !fb) return false;
   if (fa === fb) return true;
   if (Math.min(fa.length, fb.length) >= 4 && (fa.startsWith(fb) || fb.startsWith(fa))) return true;
-  return fa.length >= 4 && fb.length >= 4 && stem(fa) === stem(fb);
+  if (fa.length < 4 || fb.length < 4) return false;
+  return stem(fa) === stem(fb) || stemEn(fa) === stemEn(fb);
 }
 
 /**

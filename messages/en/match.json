@@ -1,1 +1,171 @@
-{}
+{
+  "meta": {
+    "title": "Ready solutions for you"
+  },
+  "heading": "Ready solutions for you",
+  "yourWords": "Your words:",
+  "placeLabel": "Municipality:",
+  "searchedIn": "{count, plural, one {We searched # card in the ROPS Social Innovation Library.} other {We searched # cards in the ROPS Social Innovation Library.}}",
+  "changeQuery": "Change your description",
+  "progress": {
+    "start": "{count, plural, one {Checking # ROPS innovation card…} other {Checking # ROPS innovation cards…}}",
+    "compare": "Comparing them with your description…",
+    "quotes": "Checking the quotes in the cards…",
+    "slow": "This is taking longer than usual. You can already see the first results. We wait no longer than {seconds} seconds."
+  },
+  "live": {
+    "verified": "Done. {count, plural, one {# solution checked} other {# solutions checked}} by AI.",
+    "abstained": "We don't have a reliable match.",
+    "failed": "The AI check didn't work. We're showing the search results.",
+    "failedNone": "The AI couldn't check your description just now.",
+    "retrying": "Checking again…"
+  },
+  "notes": {
+    "ai_unavailable": "The AI check is switched off at the moment. We're showing search results for the words in your description.",
+    "ai_error": "The AI check didn't work. We're showing search results for the words in your description.",
+    "ai_no_better": "The AI didn't find any more reliable matches. We're showing search results for the words in your description.",
+    "ai_error_none": "The AI couldn't check your description just now, and the word search alone found nothing certain. Try again in a moment or ask ROPS for help.",
+    "retry": "Try again"
+  },
+  "abstain": {
+    "heading": "We don't have a reliable match",
+    "body": "We don't have a reliable match in the ROPS Library. You can pass this to a ROPS expert with one click.",
+    "alternatives": "We'd rather say so than suggest a solution that doesn't fit you. You can also <rephrase>describe it differently</rephrase> or <browse>browse the Library</browse>."
+  },
+  "resultsLabel": "Results",
+  "fact": {
+    "heading": "Good to know",
+    "page": "p. {page}",
+    "edition": "edition: {month}"
+  },
+  "similar": {
+    "heading": "Similar requests",
+    "none": "In the last {days} days nobody else asked about “{area}”. Your request will help ROPS see this need.",
+    "some": "In the last {days} days {count, plural, one {# person asked} other {# people asked}} about “{area}”.",
+    "powiat": "{count} of them from your county.",
+    "powiatNamed": "{count} of them from your county ({name}).",
+    "privacy": "We count anonymous searches on this site, without what people wrote."
+  },
+  "print": "Print",
+  "stickyHelp": "Ask ROPS for help",
+  "funding": {
+    "heading": "Where to find money to implement it",
+    "general": "Call for social innovations: {status}{window}.",
+    "demo": "Sample data.",
+    "link": "See the call",
+    "none": "Our data shows no open call for social innovations right now. Ask ROPS about the next calls, or ask the social welfare centre in your municipality.",
+    "noneLink": "Grant calls in the Hub network",
+    "listedNote": "If a solution shows the „Usługa Wrażliwa” programme, it is on that programme's list of innovations to implement.",
+    "window": ", {from} – {to}",
+    "windowTo": ", until {to}"
+  },
+  "card": {
+    "verified": "Checked by AI",
+    "preliminary": "Preliminary results",
+    "keyword": "Word search result",
+    "srIndex": "Solution {n}: ",
+    "source": "ROPS Social Innovation Library, card “{title}”",
+    "moreQuotes": "Show more quotes from the card ({count})",
+    "translated": "Translated from the Polish card",
+    "original": "Polish original",
+    "firstStep": "First step:",
+    "whoCanUse": "Who can use it (from the card):",
+    "askHelp": "Ask ROPS for help",
+    "askHelpSr": " about: {title}",
+    "details": "Details",
+    "titleSr": ": {title}",
+    "video": "Video",
+    "hideVideo": "Hide video",
+    "actions": "More about this solution: {title}",
+    "read": {
+      "fromCard": "From the card: {text}",
+      "firstStep": "First step: {text}",
+      "whoCanUse": "Who can use it: {text}"
+    }
+  },
+  "path": {
+    "heading": "Your path",
+    "solution": "Solution",
+    "seeCard": "See the card",
+    "runBy": "Who runs it",
+    "runByAuthors": "The solution's authors (from the card).",
+    "runsIn": "Runs in: {place}.",
+    "sample": "Sample data.",
+    "helps": "Who will help",
+    "hubTeam": "The ROPS Hub team",
+    "hubDetail": "Ask for help below — a member of ROPS staff will reply.",
+    "mentorRole": {
+      "mentor": "Mentor",
+      "expert": "Expert"
+    },
+    "mentorDetail": "{role} — {areas}",
+    "mentorLink": "Mentor network",
+    "money": "Where the money comes from",
+    "seeBelow": "See below",
+    "seeBelowDetail": "We describe the grant call once, under all the results.",
+    "seeBelowLink": "Where to find money",
+    "noneTitle": "Ask the social welfare centre in your municipality",
+    "noneDetail": "Our data shows no open call for this solution right now.",
+    "listedTitle": "ROPS programme „Usługa Wrażliwa”",
+    "listedClosedTitle": "ROPS programme „Usługa Wrażliwa” (call closed — ask ROPS about the next one)",
+    "listedDetail": "This solution is on the list of innovations to implement. Call: {status}{window}.",
+    "listedClosedDetail": "This solution is on the programme's list of innovations to implement.",
+    "listedLink": "See the call",
+    "listedClosedLink": "See the last call"
+  },
+  "orgType": {
+    "fundacja": "Foundation",
+    "stowarzyszenie": "Association",
+    "uczelnia": "University",
+    "jst": "Local government",
+    "ops": "Social welfare centre",
+    "firma": "Company",
+    "inna": "Other institution"
+  },
+  "crisis": {
+    "heading": "If you or someone close to you is in danger — call now",
+    "body": "You don't have to deal with this alone. These calls are free. We show solutions from the Library below, but first make sure you are safe.",
+    "call": " — call",
+    "hours": "Open: {hours}",
+    "checked": "We checked these numbers on their operators' websites (as of {date}):",
+    "checkedNoDate": "We checked these numbers on their operators' websites:"
+  },
+  "help": {
+    "created": "Request sent to ROPS",
+    "heading": "Would you like help from a person?",
+    "body": "A member of ROPS staff will read your description (without personal data) and reply. You don't need an account — you'll get a case code.",
+    "open": "Ask ROPS for help",
+    "abstainHeading": "Pass this to a ROPS expert",
+    "abstainBody": "With one click you send your description (without personal data) to a ROPS expert. You'll get a case code — use it to check the reply.",
+    "quickSend": "Pass to a ROPS expert",
+    "quickSending": "Sending…",
+    "chooseContact": "I'd rather get a phone call or e-mail",
+    "step": "Step 1 of 2",
+    "stepHeading": "How should we contact you?",
+    "about": "Request for help about: “{title}”.",
+    "contactLegend": "How to contact you",
+    "missingPref": "Please choose how we should reply.",
+    "emailLabel": "Your e-mail address",
+    "phoneLabel": "Your phone number",
+    "contactHint": "We'll encrypt it. Only the ROPS staff member who answers your case will see it.",
+    "onBehalf": "I'm asking on behalf of someone else",
+    "back": "Back",
+    "submit": "Ask ROPS for help",
+    "sending": "Sending…",
+    "errors": {
+      "rate": "Too many requests in a short time. Please try again in a few minutes.",
+      "failed": "Your request couldn't be sent. Check your connection and try again."
+    }
+  },
+  "caseText": {
+    "title": "Request for help",
+    "query": "Description (without personal data): {query}",
+    "askedAbout": "The request is about the solution: “{title}”.",
+    "abstained": "Matching result: no reliable match in the ROPS Library.",
+    "shown": "Solutions shown: {titles}.",
+    "quoted": "“{title}”"
+  },
+  "errors": {
+    "notFound": "We couldn't find this search."
+  }
+}

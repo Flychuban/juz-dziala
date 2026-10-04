@@ -8,6 +8,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import type { Locale } from "~/i18n/config";
 import { isMapaArea, type MapaArea } from "~/server/domain/types";
 
 // ---------------------------------------------------------------------------
@@ -214,6 +215,27 @@ export function knowledgeFactsFor(locale: string): Map<MapaArea, LocalizedKnowle
   }
   localizedCache[key] = out;
   return out;
+}
+
+let knowledgeEnCache: Map<MapaArea, KnowledgeFact> | null = null;
+/** data/knowledge.en.json: the same structure, translated. */
+export function knowledgeFactsEn(): Map<MapaArea, KnowledgeFact> {
+  knowledgeEnCache ??= parseKnowledge(englishKnowledgeJson(readJson("knowledge.en.json")));
+  return knowledgeEnCache;
+}
+
+/**
+ * The „Warto wiedzieć" fact for an area in the page's language: English from
+ * knowledge.en.json when it has the same figure, else the Polish one with
+ * `lang: "pl"` (the page then marks it lang="pl").
+ */
+export function knowledgeFact(area: MapaArea, locale: Locale): (KnowledgeFact & { lang: Locale }) | null {
+  const pl = knowledgeFacts().get(area) ?? null;
+  if (locale === "en") {
+    const en = knowledgeFactsEn().get(area);
+    if (en) return { ...en, lang: "en" };
+  }
+  return pl ? { ...pl, lang: "pl" } : null;
 }
 
 let gminaCache: Gmina[] | null = null;

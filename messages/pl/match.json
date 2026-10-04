@@ -1,1 +1,171 @@
-{}
+{
+  "meta": {
+    "title": "Gotowe rozwiązania dla Ciebie"
+  },
+  "heading": "Gotowe rozwiązania dla Ciebie",
+  "yourWords": "Twoje słowa:",
+  "placeLabel": "Gmina:",
+  "searchedIn": "{count, plural, one {Szukaliśmy w # karcie Biblioteki Innowacji Społecznych ROPS.} other {Szukaliśmy w # kartach Biblioteki Innowacji Społecznych ROPS.}}",
+  "changeQuery": "Zmień opis",
+  "progress": {
+    "start": "{count, plural, one {Sprawdzamy # kartę innowacji ROPS…} few {Sprawdzamy # karty innowacji ROPS…} many {Sprawdzamy # kart innowacji ROPS…} other {Sprawdzamy # karty innowacji ROPS…}}",
+    "compare": "Porównujemy z Twoim opisem…",
+    "quotes": "Sprawdzamy cytaty w kartach…",
+    "slow": "To trwa dłużej niż zwykle. Wstępne wyniki już widzisz. Czekamy najwyżej {seconds} sekund."
+  },
+  "live": {
+    "verified": "Gotowe. {count, plural, one {# rozwiązanie sprawdzone} few {# rozwiązania sprawdzone} many {# rozwiązań sprawdzonych} other {# rozwiązania sprawdzonego}} przez AI.",
+    "abstained": "Nie mamy pewnego dopasowania.",
+    "failed": "Nie udało się sprawdzić wyników przez AI. Pokazujemy wyniki wyszukiwania.",
+    "failedNone": "Nie udało się teraz sprawdzić Twojego opisu przez AI.",
+    "retrying": "Sprawdzamy ponownie…"
+  },
+  "notes": {
+    "ai_unavailable": "Sprawdzanie przez AI jest teraz wyłączone. Pokazujemy wyniki wyszukiwania słów z Twojego opisu.",
+    "ai_error": "Nie udało się sprawdzić wyników przez AI. Pokazujemy wyniki wyszukiwania słów z Twojego opisu.",
+    "ai_no_better": "AI nie znalazło pewniejszych dopasowań. Pokazujemy wyniki wyszukiwania słów z Twojego opisu.",
+    "ai_error_none": "Nie udało się teraz sprawdzić Twojego opisu przez AI, a samo wyszukiwanie słów nie dało pewnych wyników. Spróbuj ponownie za chwilę albo poproś ROPS o pomoc.",
+    "retry": "Spróbuj ponownie"
+  },
+  "abstain": {
+    "heading": "Nie mamy pewnego dopasowania",
+    "body": "Nie mamy pewnego dopasowania w Bibliotece ROPS. Możesz przekazać to ekspertowi ROPS jednym kliknięciem.",
+    "alternatives": "Wolimy to niż podsunąć rozwiązanie, które do Ciebie nie pasuje. Możesz też <rephrase>opisać sprawę inaczej</rephrase> albo <browse>przejrzeć Bibliotekę</browse>."
+  },
+  "resultsLabel": "Wyniki",
+  "fact": {
+    "heading": "Warto wiedzieć",
+    "page": "s. {page}",
+    "edition": "wydanie: {month}"
+  },
+  "similar": {
+    "heading": "Podobne zgłoszenia",
+    "none": "W ostatnich {days} dniach nikt inny nie pytał o obszar „{area}”. Twoje zgłoszenie pomoże ROPS zobaczyć tę potrzebę.",
+    "some": "W ostatnich {days} dniach {count, plural, one {# osoba pytała} few {# osoby pytały} many {# osób pytało} other {# osoby pytało}} o obszar „{area}”.",
+    "powiat": "Z tego {count} z Twojego powiatu.",
+    "powiatNamed": "Z tego {count} z Twojego powiatu ({name}).",
+    "privacy": "Liczymy anonimowe wyszukiwania w serwisie, bez treści opisów."
+  },
+  "print": "Drukuj",
+  "stickyHelp": "Poproś ROPS o pomoc",
+  "funding": {
+    "heading": "Skąd wziąć pieniądze na wdrożenie",
+    "general": "Nabór na innowacje społeczne: {status}{window}.",
+    "demo": "Dane przykładowe.",
+    "link": "Zobacz nabór",
+    "none": "W naszych danych nie ma teraz otwartego naboru na innowacje społeczne. Zapytaj ROPS o najbliższe nabory albo ośrodek pomocy społecznej w swojej gminie.",
+    "noneLink": "Nabory w sieci Hubu",
+    "listedNote": "Jeśli przy rozwiązaniu jest program „Usługa Wrażliwa”, to rozwiązanie jest na liście innowacji do wdrożenia w tym programie.",
+    "window": ", {from} – {to}",
+    "windowTo": ", do {to}"
+  },
+  "card": {
+    "verified": "Sprawdzone przez AI",
+    "preliminary": "Wstępne wyniki",
+    "keyword": "Wynik wyszukiwania słów",
+    "srIndex": "Rozwiązanie {n}: ",
+    "source": "Biblioteka Innowacji Społecznych ROPS, karta „{title}”",
+    "moreQuotes": "Pokaż więcej cytatów z karty ({count})",
+    "translated": "Tłumaczenie z polskiej karty",
+    "original": "Polski oryginał",
+    "firstStep": "Pierwszy krok:",
+    "whoCanUse": "Kto może skorzystać (z karty):",
+    "askHelp": "Poproś ROPS o pomoc",
+    "askHelpSr": " w sprawie: {title}",
+    "details": "Szczegóły",
+    "titleSr": ": {title}",
+    "video": "Film",
+    "hideVideo": "Ukryj film",
+    "actions": "Więcej o rozwiązaniu: {title}",
+    "read": {
+      "fromCard": "Z karty: {text}",
+      "firstStep": "Pierwszy krok: {text}",
+      "whoCanUse": "Kto może skorzystać: {text}"
+    }
+  },
+  "path": {
+    "heading": "Twoja ścieżka",
+    "solution": "Rozwiązanie",
+    "seeCard": "Zobacz kartę",
+    "runBy": "Kto to prowadzi",
+    "runByAuthors": "Autorzy rozwiązania (z karty).",
+    "runsIn": "Działa w: {place}.",
+    "sample": "Dane przykładowe.",
+    "helps": "Kto pomoże",
+    "hubTeam": "Zespół Hubu ROPS",
+    "hubDetail": "Poproś o pomoc niżej — odpowie pracownik ROPS.",
+    "mentorRole": {
+      "mentor": "Mentor",
+      "expert": "Ekspert"
+    },
+    "mentorDetail": "{role} — {areas}",
+    "mentorLink": "Sieć mentorów",
+    "money": "Skąd pieniądze",
+    "seeBelow": "Zobacz poniżej",
+    "seeBelowDetail": "Nabór opisujemy raz, pod wszystkimi wynikami.",
+    "seeBelowLink": "Skąd wziąć pieniądze",
+    "noneTitle": "Zapytaj w ośrodku pomocy społecznej w swojej gminie",
+    "noneDetail": "W naszych danych nie ma teraz otwartego naboru na to rozwiązanie.",
+    "listedTitle": "Program ROPS „Usługa Wrażliwa”",
+    "listedClosedTitle": "Program ROPS „Usługa Wrażliwa” (nabór zakończony — kolejne nabory: zapytaj ROPS)",
+    "listedDetail": "To rozwiązanie jest na liście innowacji do wdrożenia. Nabór: {status}{window}.",
+    "listedClosedDetail": "To rozwiązanie jest na liście innowacji do wdrożenia w tym programie.",
+    "listedLink": "Zobacz nabór",
+    "listedClosedLink": "Zobacz ostatni nabór"
+  },
+  "orgType": {
+    "fundacja": "Fundacja",
+    "stowarzyszenie": "Stowarzyszenie",
+    "uczelnia": "Uczelnia",
+    "jst": "Samorząd",
+    "ops": "Ośrodek pomocy społecznej",
+    "firma": "Firma",
+    "inna": "Inna instytucja"
+  },
+  "crisis": {
+    "heading": "Jeśli Ty albo ktoś bliski jest w niebezpieczeństwie — zadzwoń teraz",
+    "body": "Nie musisz zostawać z tym sam(a). Te telefony są bezpłatne. Rozwiązania z Biblioteki pokazujemy niżej, ale najpierw zadbaj o bezpieczeństwo.",
+    "call": " — zadzwoń",
+    "hours": "Czynny: {hours}",
+    "checked": "Numery sprawdziliśmy na stronach ich operatorów (stan na {date}):",
+    "checkedNoDate": "Numery sprawdziliśmy na stronach ich operatorów:"
+  },
+  "help": {
+    "created": "Prośba wysłana do ROPS",
+    "heading": "Potrzebujesz pomocy człowieka?",
+    "body": "Pracownik ROPS przeczyta Twój opis (bez danych osobowych) i odpowie. Nie musisz zakładać konta — dostaniesz kod sprawy.",
+    "open": "Poproś ROPS o pomoc",
+    "abstainHeading": "Przekaż to ekspertowi ROPS",
+    "abstainBody": "Jednym kliknięciem wyślesz ekspertowi ROPS swój opis (bez danych osobowych). Dostaniesz kod sprawy — pod nim sprawdzisz odpowiedź.",
+    "quickSend": "Przekaż ekspertowi ROPS",
+    "quickSending": "Przekazujemy…",
+    "chooseContact": "Wolę telefon albo e-mail",
+    "step": "Krok 1 z 2",
+    "stepHeading": "Jak mamy się z Tobą skontaktować?",
+    "about": "Prośba o pomoc w sprawie: „{title}”.",
+    "contactLegend": "Sposób kontaktu",
+    "missingPref": "Wybierz, jak mamy odpowiedzieć.",
+    "emailLabel": "Twój adres e-mail",
+    "phoneLabel": "Twój numer telefonu",
+    "contactHint": "Zaszyfrujemy go. Zobaczy go tylko pracownik ROPS, który odpowie na Twoją sprawę.",
+    "onBehalf": "Zgłaszam w imieniu innej osoby",
+    "back": "Wstecz",
+    "submit": "Poproś ROPS o pomoc",
+    "sending": "Wysyłamy…",
+    "errors": {
+      "rate": "Za dużo zgłoszeń w krótkim czasie. Spróbuj za kilka minut.",
+      "failed": "Nie udało się wysłać prośby. Sprawdź połączenie i spróbuj ponownie."
+    }
+  },
+  "caseText": {
+    "title": "Prośba o pomoc",
+    "query": "Opis (bez danych osobowych): {query}",
+    "askedAbout": "Prośba dotyczy rozwiązania: „{title}”.",
+    "abstained": "Wynik dopasowania: brak pewnego dopasowania w Bibliotece ROPS.",
+    "shown": "Pokazane rozwiązania: {titles}.",
+    "quoted": "„{title}”"
+  },
+  "errors": {
+    "notFound": "Nie znaleźliśmy tego wyszukiwania."
+  }
+}

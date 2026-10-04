@@ -86,3 +86,68 @@ describe("CRISIS_RESOURCES", () => {
     expect(CRISIS_RESOURCES.find((r) => r.phone === "112")?.hours).toBeNull();
   });
 });
+
+describe("detectCrisis: English", () => {
+  it.each([
+    ["I want to die.", "suicide"],
+    ["My son has suicidal thoughts", "suicide"],
+    ["She said she would kill herself", "suicide"],
+    ["I don't want to live anymore", "suicide"],
+    ["Dad wants to end his life", "suicide"],
+    ["there's no reason to live", "suicide"],
+    ["My daughter is self-harming", "self_harm"],
+    ["he cuts himself", "self_harm"],
+    ["My husband hits me", "violence"],
+    ["He beats my mum every week", "violence"],
+    ["He threatened to kill us", "violence"],
+    ["there is domestic violence at home", "violence"],
+    ["I fear for my life", "violence"],
+    ["Grandma is not breathing", "danger"],
+    ["my neighbour is unconscious", "danger"],
+    ["I think she took an overdose", "danger"],
+    ["We have no food left", "danger"],
+    ["He hasn't eaten for days", "danger"],
+    ["It's winter and he has nowhere to sleep", "danger"],
+    ["Our neighbour hits his children", "child"],
+    ["the kids next door are always hungry", "child"],
+  ])("flags %s", (text, category) => {
+    const r = detectCrisis(text);
+    expect(r.urgent).toBe(true);
+    expect(r.categories).toContain(category);
+  });
+
+  it.each([
+    "Is there a suicide prevention programme for schools?",
+    "I run domestic violence training for social workers.",
+    "self-harm awareness campaign",
+    "He has nowhere to sleep at the moment",
+    "Is there a food bank near us? We have no food bank in the village.",
+    "My mum is 73, lives alone and mixes up her pills.",
+    "My son has depression and won't go to school.",
+    "The office is not responding to my letters.",
+  ])("does not flag %s", (text) => {
+    expect(detectCrisis(text).urgent).toBe(false);
+  });
+
+  it("still flags a personal mention next to a programme mention", () => {
+    const r = detectCrisis("My son has suicidal thoughts. Is there a suicide prevention programme?");
+    expect(r.urgent).toBe(true);
+    expect(r.matched).toEqual(["suicidal"]);
+  });
+});
+
+describe("CRISIS_RESOURCES: English", () => {
+  it("has an English name and description for every number, hours only where the operator states them", () => {
+    for (const r of CRISIS_RESOURCES) {
+      expect(r.en.name.length).toBeGreaterThan(0);
+      expect(r.en.who.length).toBeGreaterThan(10);
+      expect(r.en.hours === null).toBe(r.hours === null);
+    }
+  });
+});
+
+describe("detectCrisis: English, someone collapsed", () => {
+  it("flags a person lying and not responding", () => {
+    expect(detectCrisis("Grandad is lying on the floor and not responding").categories).toContain("danger");
+  });
+});

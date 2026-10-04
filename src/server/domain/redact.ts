@@ -1,10 +1,13 @@
 /**
  * Removes personal data from a resident's text before it is stored, logged or
- * sent to a model. Placeholders are Polish, because the text stays Polish.
+ * sent to a model. Every rule runs in both languages (a Polish address in an
+ * English text is still an address); only the placeholders follow the
+ * language the person writes in: „[telefon]" in Polish, "[phone]" in English.
  *
  * Order matters: e-mail first (its local part may hold digits), then the 26-digit
  * account number (which contains 11- and 9-digit runs), then PESEL, then phone,
- * then street address, then a name after an honorific.
+ * then street address (Polish, then English), then a name after an honorific or
+ * after „nazywam się" / "my name is".
  *
  * Deliberately NOT redacted: years, ages ("73 lata"), money amounts and postal
  * codes on their own. Over-redaction there would destroy the meaning of a story
@@ -18,6 +21,8 @@ export type RedactionResult = {
   found: { kind: PiiKind; count: number }[];
 };
 
+export type RedactLocale = "pl" | "en";
+
 export const PII_PLACEHOLDERS: Readonly<Record<PiiKind, string>> = {
   email: "[e-mail]",
   iban: "[numer konta]",
@@ -26,6 +31,25 @@ export const PII_PLACEHOLDERS: Readonly<Record<PiiKind, string>> = {
   address: "[adres]",
   name: "[osoba]",
 };
+
+export const PII_PLACEHOLDERS_EN: Readonly<Record<PiiKind, string>> = {
+  email: "[email]",
+  iban: "[account number]",
+  pesel: "[PESEL]",
+  phone: "[phone]",
+  address: "[address]",
+  name: "[person]",
+};
+
+const PLACEHOLDERS_BY_LOCALE: Readonly<Record<RedactLocale, Readonly<Record<PiiKind, string>>>> = {
+  pl: PII_PLACEHOLDERS,
+  en: PII_PLACEHOLDERS_EN,
+};
+
+/** Every placeholder in either language, longest first (for stripping them from matcher input). */
+export const ALL_PII_PLACEHOLDERS: readonly string[] = [
+  ...new Set([...Object.values(PII_PLACEHOLDERS), ...Object.values(PII_PLACEHOLDERS_EN)]),
+].sort((a, b) => b.length - a.length);
 
 const PESEL_WEIGHTS = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3] as const;
 
@@ -70,10 +94,34 @@ const ADDRESS = new RegExp(
   "gu",
 );
 
+/**
+ * An English street address: a house number (optionally after "Flat 3,"), one
+ * to four capitalised words, then a street type: "12 Baker Street",
+ * "Flat 2, 7 Long Lane", "221B Old Mill Road".
+ */
+const STREET_TYPE_EN =
+  "(?:Street|St\\.?|Road|Rd\\.?|Avenue|Ave\\.?|Lane|Ln\\.?|Close|Drive|Way|Place|Court|Ct\\.?|Crescent|Gardens|Terrace|Square|Grove|Row|Walk|Mews|Parade|Boulevard|Hill)";
+const ADDRESS_EN = new RegExp(
+  `(?<![\\p{L}\\p{N}])(?:(?:[Ff]lat|[Aa]partment|[Aa]pt\\.?)[ \\u00A0]+[0-9]{1,4}[\\p{L}]?,?[ \\u00A0]+)?[0-9]{1,4}[\\p{L}]?,?[ \\u00A0]+(?:\\p{Lu}[\\p{L}'-]*[ \\u00A0]+){1,4}${STREET_TYPE_EN}(?![\\p{L}])`,
+  "gu",
+);
+
 /** Honorific + one or two capitalised name words (Kowalska, Anna Nowak, Nowak-Wiśniewska). */
 const NAME_WORD = "\\p{Lu}\\p{Ll}+(?:-\\p{Lu}\\p{Ll}+)?";
 const HONORIFIC_NAME = new RegExp(
   `(?<![\\p{L}])([Pp]an(?:a|u|em|ie|i|ią)?)[ \\u00A0]+${NAME_WORD}(?:[ \\u00A0]+${NAME_WORD})?`,
+  "gu",
+);
+/** Mr / Mrs / Ms / Miss / Mx / Dr (with or without a full stop) + one or two capitalised name words. */
+const HONORIFIC_NAME_EN = new RegExp(
+  `(?<![\\p{L}])(Mrs|Mr|Ms|Miss|Mx|Dr)(\\.?)[ \\u00A0]+${NAME_WORD}(?:[ \\u00A0]+${NAME_WORD})?`,
+  "gu",
+);
+/** An honorific is not a name: „Nazywam się Pani [osoba]" was already handled by the rule above. */
+const HONORIFIC_WORD = "(?:Pan(?:a|u|em|ie|i|ią)?|Mrs|Mr|Ms|Miss|Mx|Dr)";
+/** „nazywam się Jan Kowalski", „mam na imię Anna", "my name is John Smith", "I'm called Anna". */
+const SELF_NAME = new RegExp(
+  `(?<![\\p{L}])((?:[Nn]azywam[ \\u00A0]+się|[Mm]am[ \\u00A0]+na[ \\u00A0]+imię|[Mm]y[ \\u00A0]+name[ \\u00A0]+is|I'm[ \\u00A0]+called|I[ \\u00A0]+am[ \\u00A0]+called))[ \\u00A0]+(?!${HONORIFIC_WORD}(?![\\p{L}]))${NAME_WORD}(?:[ \\u00A0]+${NAME_WORD})?`,
   "gu",
 );
 
@@ -81,32 +129,53 @@ type Rule = {
   kind: PiiKind;
   pattern: RegExp;
   /** Return the replacement, or null to leave this match alone. */
-  replace: (match: string, groups: string[], offset: number, input: string) => string | null;
+  replace: (
+    match: string,
+    groups: string[],
+    offset: number,
+    input: string,
+    placeholders: Readonly<Record<PiiKind, string>>,
+  ) => string | null;
 };
 
 const RULES: readonly Rule[] = [
-  { kind: "email", pattern: EMAIL, replace: () => PII_PLACEHOLDERS.email },
-  { kind: "iban", pattern: IBAN, replace: () => PII_PLACEHOLDERS.iban },
+  { kind: "email", pattern: EMAIL, replace: (_m, _g, _o, _i, p) => p.email },
+  { kind: "iban", pattern: IBAN, replace: (_m, _g, _o, _i, p) => p.iban },
   {
     kind: "pesel",
     pattern: PESEL,
-    replace: (m) => (isValidPesel(m) ? PII_PLACEHOLDERS.pesel : null),
+    replace: (m, _g, _o, _i, p) => (isValidPesel(m) ? p.pesel : null),
   },
   {
     kind: "phone",
     pattern: PHONE,
-    replace: (m, _g, offset, input) =>
-      CURRENCY_AFTER.test(input.slice(offset + m.length)) ? null : PII_PLACEHOLDERS.phone,
+    replace: (m, _g, offset, input, p) => (CURRENCY_AFTER.test(input.slice(offset + m.length)) ? null : p.phone),
   },
-  { kind: "address", pattern: ADDRESS, replace: () => PII_PLACEHOLDERS.address },
+  { kind: "address", pattern: ADDRESS, replace: (_m, _g, _o, _i, p) => p.address },
+  { kind: "address", pattern: ADDRESS_EN, replace: (_m, _g, _o, _i, p) => p.address },
   {
     kind: "name",
     pattern: HONORIFIC_NAME,
-    replace: (_m, groups) => `${groups[0] ?? "Pani"} ${PII_PLACEHOLDERS.name}`,
+    replace: (_m, groups, _o, _i, p) => `${groups[0] ?? "Pani"} ${p.name}`,
+  },
+  {
+    kind: "name",
+    pattern: HONORIFIC_NAME_EN,
+    replace: (_m, groups, _o, _i, p) => `${groups[0] ?? "Mr"}${groups[1] ?? ""} ${p.name}`,
+  },
+  {
+    kind: "name",
+    pattern: SELF_NAME,
+    replace: (_m, groups, _o, _i, p) => `${groups[0] ?? ""} ${p.name}`,
   },
 ];
 
-export function redactPII(text: string): RedactionResult {
+/**
+ * @param locale  The language the person writes in; picks the placeholders
+ *                („[telefon]" / "[phone]"). Every rule runs in both languages.
+ */
+export function redactPII(text: string, locale: RedactLocale = "pl"): RedactionResult {
+  const placeholders = PLACEHOLDERS_BY_LOCALE[locale];
   let out = text.normalize("NFC");
   const found: { kind: PiiKind; count: number }[] = [];
   for (const rule of RULES) {
@@ -118,12 +187,16 @@ export function redactPII(text: string): RedactionResult {
       const groups = args.slice(1, offsetIndex) as string[];
       const offset = args[offsetIndex] as number;
       const input = args[offsetIndex + 1] as string;
-      const replacement = rule.replace(match, groups, offset, input);
+      const replacement = rule.replace(match, groups, offset, input, placeholders);
       if (replacement === null) return match;
       count++;
       return replacement;
     });
-    if (count > 0) found.push({ kind: rule.kind, count });
+    if (count > 0) {
+      const same = found.find((f) => f.kind === rule.kind);
+      if (same) same.count += count;
+      else found.push({ kind: rule.kind, count });
+    }
   }
   return { text: out, found };
 }

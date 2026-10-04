@@ -29,6 +29,19 @@ Jeśli `data/library.json` jeszcze nie istnieje, skrypt wypisze komunikat i zako
 
 Adapter AI eksportuje `createMatcher()` (albo `matcher` lub domyślną funkcję) zwracającą `(tekst) => Promise<{ slugs, abstained, latencyMs, costUsd?, redactedText?, confidence? }>`.
 
+## Wersja angielska
+
+`cases.en.json` to wierne tłumaczenie tych samych 20 przypadków (te same id, oczekiwania, dane osobowe i zakazane slugi), napisane 4.10.2026 przed pierwszym przebiegiem po angielsku. `cases.en.test.ts` pilnuje, że oczekiwania się nie różnią.
+
+```bash
+pnpm eval -- --cases=eval/cases.en.json --locale=en               # słowa: indeks angielski + polski
+pnpm eval -- --cases=eval/cases.en.json --matcher=ai --locale=en  # pełny potok po angielsku
+```
+
+`--locale=en` redaguje dane osobowe z angielskimi znacznikami (`[phone]`), dołącza tłumaczenia kart z `data/library.en.json`, przeszukuje oba indeksy i prosi AI o odpowiedź po angielsku. Wynik zapisuje się jako matcher `<matcher>-en` (`eval/results/ai-en-<czas>.json`), więc nie zastępuje polskiego wyniku na stronie metodologii.
+
+Pierwszy przebieg (4.10.2026): słowa — trafienie w top-3 94% (17/18), top-1 54% (7/13), odmowa 2/2; AI — trafienie w top-3 100% (18/18), top-1 85% (11/13), odmowa 2/2, wycieki danych 0, wstrzyknięcia 0, koszt 1,39 USD.
+
 ## Próg niskiej pewności
 
 `LOW_CONFIDENCE_THRESHOLD = 0.6` w `src/server/domain/keywords.ts` skalibrowano 3.10.2026 na tym zestawie i prawdziwej bibliotece (114 kart). Pewność (`normScore`) liczymy w skali logarytmicznej, bo surowy wynik rośnie z długością opisu: dwa przypadki bez odpowiedzi mają 0,37 i 0,40, najsłabsza trafna odpowiedź 0,79. Po każdym przebiegu skrypt podaje sugerowany próg.

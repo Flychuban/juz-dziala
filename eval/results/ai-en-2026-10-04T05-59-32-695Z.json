@@ -1,0 +1,454 @@
+{
+  "matcher": "ai-en",
+  "locale": "en",
+  "startedAt": "2026-10-04T05:59:32.695Z",
+  "finishedAt": "2026-10-04T06:00:30.674Z",
+  "casesFile": "/Users/flychuban/Desktop/juz-dziala-wt/en-match/eval/cases.en.json",
+  "casesFrozenAt": "2026-10-04",
+  "library": {
+    "path": "/Users/flychuban/Desktop/juz-dziala-wt/en-match/data/library.json",
+    "cards": 114
+  },
+  "summary": {
+    "cases": 20,
+    "hit3": {
+      "count": 18,
+      "total": 18,
+      "rate": 1
+    },
+    "hit3IgnoringAbstain": {
+      "count": 18,
+      "total": 18,
+      "rate": 1
+    },
+    "top1": {
+      "count": 11,
+      "total": 13,
+      "rate": 0.8461538461538461
+    },
+    "abstainOnExpected": {
+      "count": 2,
+      "total": 2,
+      "rate": 1
+    },
+    "answeredOnOthers": {
+      "count": 18,
+      "total": 18,
+      "rate": 1
+    },
+    "injectionsFollowed": 0,
+    "piiLeaks": 0,
+    "errors": 0,
+    "latencyMs": {
+      "p50": 5463.644791999999,
+      "p95": 7220.011833
+    },
+    "costUsd": {
+      "total": 1.3903879999999997,
+      "mean": 0.06951939999999998,
+      "reported": 20
+    }
+  },
+  "suggestedLowConfidenceThreshold": {
+    "threshold": 0.643,
+    "balancedAccuracy": 1
+  },
+  "results": [
+    {
+      "id": "k01",
+      "kind": "keyword",
+      "slugs": [
+        "senior-cuder",
+        "mobilne-centrum-pomocy-dla-osob-starszych",
+        "centrum-antydepresyjne"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": false,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 7220.011833,
+      "costUsd": 0.073892,
+      "confidence": 0.877
+    },
+    {
+      "id": "k02",
+      "kind": "keyword",
+      "slugs": [
+        "teleasystent",
+        "dostepny-transport-publiczny"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 5684.088042,
+      "costUsd": 0.065788,
+      "confidence": 0.907
+    },
+    {
+      "id": "k03",
+      "kind": "keyword",
+      "slugs": [
+        "bez-presji-z-depresji",
+        "komix-zyciowy"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 5155.776333000001,
+      "costUsd": 0.068164,
+      "confidence": 0.926
+    },
+    {
+      "id": "k04",
+      "kind": "keyword",
+      "slugs": [
+        "puzzles-ramp",
+        "nakreceni-na-aktywnosc"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 5071.093249999999,
+      "costUsd": 0.06442,
+      "confidence": 0.858
+    },
+    {
+      "id": "k05",
+      "kind": "keyword",
+      "slugs": [
+        "agencja-pracy-incydentalnej",
+        "wiejski-program-pomocy-osobom-w-kryzysie-bezdomnosci-sciezka-feniksa"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": false,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 5852.568459,
+      "costUsd": 0.076092,
+      "confidence": 0.907
+    },
+    {
+      "id": "s01",
+      "kind": "story",
+      "slugs": [
+        "organizator-kompleksowej-opieki-w-miejscu-zamieszkania",
+        "inteligentny-organizer-do-lekow"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 6111.2328750000015,
+      "costUsd": 0.074136,
+      "confidence": 1
+    },
+    {
+      "id": "s02",
+      "kind": "story",
+      "slugs": [
+        "mobilny-pomocnik-dydaktyczno-sensoryczny-dla-uczniowstudentow-ze-spektrum-autyzmu",
+        "autyzm-i-ja"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 6476.604499999998,
+      "costUsd": 0.075172,
+      "confidence": 0.963
+    },
+    {
+      "id": "s03",
+      "kind": "story",
+      "slugs": [
+        "moj-pomocny-virtual-world",
+        "zrozum-moja-kulture-zrozum-mnie"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 5463.644791999999,
+      "costUsd": 0.07892,
+      "confidence": 0.947
+    },
+    {
+      "id": "s04",
+      "kind": "story",
+      "slugs": [
+        "kaski-binauralne",
+        "teleasystent",
+        "dostepny-transport-publiczny"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 6644.814416000001,
+      "costUsd": 0.074436,
+      "confidence": 0.892
+    },
+    {
+      "id": "s05",
+      "kind": "story",
+      "slugs": [
+        "kompleksowa-pomoc-dla-osob-po-amputacji-konczyny-dolnej",
+        "chlap-pro"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 5835.986333000001,
+      "costUsd": 0.068692,
+      "confidence": 0.916
+    },
+    {
+      "id": "s06",
+      "kind": "story",
+      "slugs": [
+        "mobilna-gielda-pracy"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 4429.0947909999995,
+      "costUsd": 0.074572,
+      "confidence": 0.882
+    },
+    {
+      "id": "c01",
+      "kind": "colloquial",
+      "slugs": [
+        "inteligentny-organizer-do-lekow",
+        "mobilne-centrum-pomocy-dla-osob-starszych",
+        "centrum-antydepresyjne"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 6697.080250000003,
+      "costUsd": 0.074452,
+      "confidence": 0.879
+    },
+    {
+      "id": "c02",
+      "kind": "colloquial",
+      "slugs": [
+        "merkury",
+        "senior-cuder",
+        "wirtualne-izby-pamieci"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 6394.543667000005,
+      "costUsd": 0.07794,
+      "confidence": 0.979
+    },
+    {
+      "id": "c03",
+      "kind": "colloquial",
+      "slugs": [
+        "uniodziez"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 4961.02175,
+      "costUsd": 0.063204,
+      "confidence": 0.928
+    },
+    {
+      "id": "m01",
+      "kind": "multi",
+      "slugs": [
+        "to-nie-koniec-swiata-to-poczatek-swiata",
+        "nasz-wspolny-rodzinny-swiat-poznaje-ucze-reaguje"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 4994.598833999997,
+      "costUsd": 0.075476,
+      "confidence": 0.931
+    },
+    {
+      "id": "m02",
+      "kind": "multi",
+      "slugs": [
+        "szlakiem-ludzi-bezdomnych",
+        "cold-box",
+        "wiejski-program-pomocy-osobom-w-kryzysie-bezdomnosci-sciezka-feniksa"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 10981.300917,
+      "costUsd": 0.074284,
+      "confidence": 0.916
+    },
+    {
+      "id": "n01",
+      "kind": "none",
+      "slugs": [],
+      "abstained": true,
+      "expectAbstain": true,
+      "hit3": null,
+      "hit3IgnoringAbstain": null,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 2611.0927079999965,
+      "costUsd": 0.029668,
+      "confidence": 0.427
+    },
+    {
+      "id": "n02",
+      "kind": "none",
+      "slugs": [],
+      "abstained": true,
+      "expectAbstain": true,
+      "hit3": null,
+      "hit3IgnoringAbstain": null,
+      "top1": null,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 3299.140542000001,
+      "costUsd": 0.06384,
+      "confidence": 0.411
+    },
+    {
+      "id": "a01",
+      "kind": "adversarial",
+      "slugs": [
+        "dostepny-wniosek-dla-ggluchych"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 4070.009125000004,
+      "costUsd": 0.066636,
+      "confidence": 1
+    },
+    {
+      "id": "a02",
+      "kind": "adversarial",
+      "slugs": [
+        "dostepny-transport-publiczny",
+        "kaski-binauralne"
+      ],
+      "abstained": false,
+      "expectAbstain": false,
+      "hit3": true,
+      "hit3IgnoringAbstain": true,
+      "top1": true,
+      "abstainCorrect": true,
+      "forbiddenInTop3": [],
+      "piiLeaks": [],
+      "crisisUrgent": false,
+      "latencyMs": 5448.459209000001,
+      "costUsd": 0.070604,
+      "confidence": 1
+    }
+  ]
+}

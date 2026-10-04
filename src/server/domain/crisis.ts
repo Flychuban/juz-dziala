@@ -1,7 +1,8 @@
 /**
  * Detects texts that need a crisis response before (or instead of) a library
  * match: suicidal ideation, self-harm, acute violence, immediate danger to life,
- * a child at risk.
+ * a child at risk. Polish and English patterns run on every text (a person may
+ * write in either language whatever the site's language is).
  *
  * Matching runs on folded text (lowercase, Polish diacritics stripped), so
  * "NIE CHCE ZYC" and "nie chcę żyć" are the same. Word edges are written with
@@ -29,6 +30,8 @@ type CrisisRule = {
   pattern: RegExp;
   /** A mention that may be neutral when it follows a programme/prevention word. */
   neutralizable?: boolean;
+  /** Flag only when this also occurs somewhere in the text ("nowhere to sleep" + winter). */
+  requires?: RegExp;
 };
 
 const S = "(?<![\\p{L}\\p{N}])"; // word start
@@ -91,6 +94,68 @@ const RULES: readonly CrisisRule[] = [
   { id: "molest", category: "child", pattern: rx(`${S}molest\\p{L}*`), neutralizable: true },
   { id: "wykorzystuje-seksualnie", category: "child", pattern: rx(`${S}(?:wykorzyst\\p{L}*${SEP}seksualn\\p{L}*|seksualn\\p{L}*${SEP}wykorzyst\\p{L}*)`), neutralizable: true },
   { id: "dziecko-glodne", category: "child", pattern: rx(`${S}(?:dziecko|dzieci)${SEP}(?:${WORD}${SEP}){0,3}glodn\\p{L}*`) },
+
+  // ── English ───────────────────────────────────────────────────────────────
+  // Suicidal ideation
+  { id: "en-suicide", category: "suicide", pattern: rx(`${S}suicid\\p{L}*`), neutralizable: true },
+  { id: "en-kill-myself", category: "suicide", pattern: rx(`${S}kill(?:s|ing|ed)?${SEP}(?:myself|himself|herself|themselves|themself)${E}`) },
+  { id: "en-want-to-die", category: "suicide", pattern: rx(`${S}(?:want|wants|wanted|wanting|going|ready)${SEP}to${SEP}die${E}`) },
+  { id: "en-end-my-life", category: "suicide", pattern: rx(`${S}(?:end|ending|take|taking)${SEP}(?:my|his|her|their)${SEP}(?:own${SEP})?li(?:fe|ves)${E}`) },
+  {
+    id: "en-dont-want-to-live",
+    category: "suicide",
+    pattern: rx(`${S}(?:don${SEP}t|do${SEP}not|doesn${SEP}t|does${SEP}not|no${SEP}longer)${SEP}want(?:s)?${SEP}to${SEP}(?:live|be${SEP}alive|go${SEP}on)${E}`),
+  },
+  { id: "en-no-reason-to-live", category: "suicide", pattern: rx(`${S}(?:no${SEP}(?:reason|point)${SEP}(?:to|in)${SEP}(?:live|living|go${SEP}on)|not${SEP}worth${SEP}living|better${SEP}off${SEP}dead)${E}`) },
+  { id: "en-hang-myself", category: "suicide", pattern: rx(`${S}hang(?:s|ing|ed)?${SEP}(?:myself|himself|herself|themselves)${E}`) },
+
+  // Self-harm
+  { id: "en-self-harm", category: "self_harm", pattern: rx(`${S}self${SEP}?harm\\p{L}*`), neutralizable: true },
+  { id: "en-cuts-herself", category: "self_harm", pattern: rx(`${S}(?:cut|cuts|cutting|hurt|hurts|hurting|harm|harms|harming|burn|burns|burning)${SEP}(?:myself|himself|herself|themselves|themself)${E}`) },
+
+  // Acute violence
+  {
+    id: "en-hits-me",
+    category: "violence",
+    pattern: rx(`${S}(?:hits|hit|hitting|beats|beat|beating|kicks|kicked|chokes|choked|strangles|strangled|punches|punched)${SEP}(?:me|her|him|us|them|my${SEP}(?:mum|mom|mother|wife|husband|partner|sister))${E}`),
+  },
+  { id: "en-threatens-to-kill", category: "violence", pattern: rx(`${S}threaten\\p{L}*${SEP}(?:${WORD}${SEP}){0,2}(?:to${SEP})?kill${E}`) },
+  { id: "en-will-kill-me", category: "violence", pattern: rx(`${S}(?:will|ll|going${SEP}to|gonna)${SEP}kill${SEP}(?:me|us|her|him|you|the${SEP}(?:children|kids))${E}`) },
+  { id: "en-domestic-violence", category: "violence", pattern: rx(`${S}domestic${SEP}(?:violence|abuse)${E}`), neutralizable: true },
+  { id: "en-abuses-me", category: "violence", pattern: rx(`${S}(?:abuses|abused|abusing)${SEP}(?:me|her|him|us|them)${E}`) },
+  { id: "en-fear-for-my-life", category: "violence", pattern: rx(`${S}(?:afraid|scared|fear|fearing|frightened)${SEP}for${SEP}(?:my|her|his|our|their)${SEP}li(?:fe|ves)${E}`) },
+
+  // Immediate danger to life
+  { id: "en-not-breathing", category: "danger", pattern: rx(`${S}(?:not|isn${SEP}t|stopped)${SEP}breathing${E}`) },
+  { id: "en-unconscious", category: "danger", pattern: rx(`${S}(?:unconscious|unresponsive|passed${SEP}out|won${SEP}t${SEP}wake${SEP}up)${E}`) },
+  {
+    id: "en-collapsed-not-responding",
+    category: "danger",
+    pattern: rx(`${S}(?:collapsed|fell|fallen|lying|on${SEP}the${SEP}floor)(?:${SEP}${WORD}){0,5}?${SEP}(?:not|isn${SEP}t)${SEP}(?:responding|moving|reacting)${E}`),
+  },
+  { id: "en-overdose", category: "danger", pattern: rx(`${S}overdos\\p{L}*|${S}swallowed${SEP}(?:${WORD}${SEP}){0,2}(?:pills|tablets)${E}`) },
+  {
+    id: "en-no-food",
+    category: "danger",
+    pattern: rx(`${S}(?:no${SEP}food(?!${SEP}(?:banks?|parcels?|vouchers?|stamps?))|nothing${SEP}to${SEP}eat|(?:hasn|haven)${SEP}t${SEP}eaten${SEP}(?:for|in)${SEP}(?:days|\\p{N}+${SEP}days|a${SEP}week)|starving)${E}`),
+  },
+  {
+    id: "en-nowhere-to-sleep-winter",
+    category: "danger",
+    pattern: rx(`${S}(?:nowhere${SEP}to${SEP}sleep|no${SEP}(?:place|where)${SEP}to${SEP}sleep|sleep(?:s|ing)?${SEP}(?:outside|rough|on${SEP}the${SEP}streets?))${E}`),
+    requires: rx(`${S}(?:winter|freezing|frost\\p{L}*|snow\\p{L}*|below${SEP}zero|sub${SEP}?zero|minus${SEP}\\p{N}+)`),
+  },
+
+  // A child at risk
+  {
+    id: "en-hits-child",
+    category: "child",
+    pattern: rx(`${S}(?:hits|hit|hitting|beats|beat|beating|kicks|kicked)${SEP}(?:my|the|his|her|their|our)${SEP}(?:child|children|kid|kids|son|daughter|grandson|granddaughter|baby)${E}`),
+  },
+  { id: "en-child-beaten", category: "child", pattern: rx(`${S}(?:child|children|kid|kids|son|daughter|baby)${SEP}(?:is|are|was|were|being|gets|get)${SEP}(?:being${SEP})?(?:beaten|hit|abused)${E}`) },
+  { id: "en-molest", category: "child", pattern: rx(`${S}molest\\p{L}*`), neutralizable: true },
+  { id: "en-sexual-abuse", category: "child", pattern: rx(`${S}sexual(?:ly)?${SEP}abus\\p{L}*`), neutralizable: true },
+  { id: "en-child-hungry", category: "child", pattern: rx(`${S}(?:child|children|kid|kids|son|daughter|baby)${SEP}(?:${WORD}${SEP}){0,4}(?:hungry|starving)${E}`) },
 ];
 
 /**
@@ -99,18 +164,25 @@ const RULES: readonly CrisisRule[] = [
  * przeciwdziałania przemocy domowej".
  */
 const NEUTRAL_BEFORE = new RegExp(
-  `${S}(?:profilakty|zapobieg|prewencj|przeciwdzial|program|szkoleni|kampani|warsztat|konferencj|statysty|badani|raport|edukacj|webinar)\\p{L}*[^.!?]{0,25}$`,
+  `${S}(?:profilakty|zapobieg|prewencj|przeciwdzial|program|szkoleni|kampani|warsztat|konferencj|statysty|badani|raport|edukacj|webinar|prevent|awareness|training|campaign|workshop|conferenc|statistic|research|report|educat|course|policy|policies)\\p{L}*[^.!?]{0,25}$`,
   "u",
 );
 /** ...unless the same stretch says somebody is thinking of it or doing it. */
 const PERSONAL_BEFORE = new RegExp(
-  `${S}(?:mysl|mysli|probow|probuj|grozi|chce|chcial|mowi|powiedzial|pisze|pisal)\\p{L}*[^.!?]{0,25}$`,
+  `${S}(?:mysl|mysli|probow|probuj|grozi|chce|chcial|mowi|powiedzial|pisze|pisal|think|thought|tried|tries|trying|attempt|threat|want|says|said|talk|writes|wrote|feel|felt)\\p{L}*[^.!?]{0,25}$`,
   "u",
 );
 
-function isNeutralMention(folded: string, start: number): boolean {
+/** English puts the programme word after the topic: "suicide prevention", "domestic violence training". */
+const NEUTRAL_AFTER = new RegExp(
+  `^[^\\p{L}\\p{N}.!?]{0,3}(?:prevention|awareness|statistics|rates?|training|programmes?|programs?|campaigns?|research|workshops?|polic(?:y|ies)|courses?|conferences?)${E}`,
+  "u",
+);
+
+function isNeutralMention(folded: string, start: number, end: number): boolean {
   const before = folded.slice(Math.max(0, start - 60), start);
-  return NEUTRAL_BEFORE.test(before) && !PERSONAL_BEFORE.test(before);
+  if (PERSONAL_BEFORE.test(before)) return false;
+  return NEUTRAL_BEFORE.test(before) || NEUTRAL_AFTER.test(folded.slice(end, end + 40));
 }
 
 export function detectCrisis(text: string): CrisisResult {
@@ -120,8 +192,12 @@ export function detectCrisis(text: string): CrisisResult {
   const matched: string[] = [];
   const categories: CrisisCategory[] = [];
   for (const rule of RULES) {
+    if (rule.requires) {
+      rule.requires.lastIndex = 0;
+      if (!rule.requires.test(folded)) continue;
+    }
     for (const m of folded.matchAll(rule.pattern)) {
-      if (rule.neutralizable && isNeutralMention(folded, m.index)) continue;
+      if (rule.neutralizable && isNeutralMention(folded, m.index, m.index + m[0].length)) continue;
       const phrase = norm.slice(m.index, m.index + m[0].length);
       if (!matched.includes(phrase)) matched.push(phrase);
       if (!categories.includes(rule.category)) categories.push(rule.category);
@@ -141,6 +217,8 @@ export type CrisisResource = {
   verifiedAt: string;
   /** The operator's own words that the entry rests on, quoted verbatim. */
   evidence: string;
+  /** The same entry in English (a translation of the fields above; nothing added). */
+  en: { name: string; hours: string | null; who: string };
 };
 
 /**
@@ -166,6 +244,11 @@ export const CRISIS_RESOURCES: readonly CrisisResource[] = [
     verifiedAt: "2026-10-03",
     evidence:
       "112 to numer alarmowy, bezpłatny i dostępny na terenie całej Unii Europejskiej zarówno z telefonów stacjonarnych, jak i komórkowych. Numer alarmowy 112 można wybrać w telefonie nieposiadającym karty SIM.",
+    en: {
+      name: "Emergency number 112",
+      hours: null,
+      who: "A threat to life, health, safety, property or the environment (emergencies). Free from landlines and mobiles, even without a SIM card.",
+    },
   },
   {
     name: "Centrum Wsparcia dla Osób Dorosłych w Kryzysie Psychicznym",
@@ -176,6 +259,11 @@ export const CRISIS_RESOURCES: readonly CrisisResource[] = [
     verifiedAt: "2026-10-03",
     evidence:
       "Centrum Wsparcia 24 godziny na dobę 7 dni w tygodniu … Zadzwoń pod bezpłatny numer 800 70 2222 (logo: „Centrum Wsparcia dla Osób Dorosłych w Kryzysie Psychicznym”).",
+    en: {
+      name: "Support Centre for Adults in Mental Health Crisis (Centrum Wsparcia)",
+      hours: "24 hours a day, 7 days a week",
+      who: "Adults in a mental health crisis and the people close to them: a conversation, advice, psychological support or a talk with a psychiatrist. Free number.",
+    },
   },
   {
     name: "Telefon Zaufania dla Dzieci i Młodzieży (Fundacja Dajemy Dzieciom Siłę)",
@@ -186,6 +274,11 @@ export const CRISIS_RESOURCES: readonly CrisisResource[] = [
     verifiedAt: "2026-10-03",
     evidence:
       "116111 - telefon zaufania dla dzieci i młodzieży … Telefon działa codziennie – 7 dni w tygodniu, 24 godziny na dobę! … © Fundacja Dajemy Dzieciom Siłę",
+    en: {
+      name: "Helpline for Children and Young People (Fundacja Dajemy Dzieciom Siłę)",
+      hours: "every day, 24 hours a day",
+      who: "Children and young people. Calls are confidential.",
+    },
   },
   {
     name: "Kryzysowy Telefon Zaufania (platforma 116sos.pl)",
@@ -195,5 +288,10 @@ export const CRISIS_RESOURCES: readonly CrisisResource[] = [
     sourceUrl: "https://116sos.pl/",
     verifiedAt: "2026-10-03",
     evidence: "Zadzwoń telefon 116 123 dostępny 24/7 … Wsparcie dla osób dorosłych 24/7 Bezpłatne Bezpieczne Anonimowo",
+    en: {
+      name: "Crisis Helpline (116sos.pl)",
+      hours: "24/7",
+      who: "Adults in emotional crisis and the people close to them. Free and anonymous.",
+    },
   },
 ];

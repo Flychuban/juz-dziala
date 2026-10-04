@@ -195,3 +195,19 @@ describe("sanitizeAreas", () => {
     expect(sanitizeAreas(["seniors", "bogus", "seniors", 3, "health"])).toEqual(["seniors", "health"]);
   });
 });
+
+describe("filterUserTerms: English", () => {
+  const text = "My Mum is 73, LIVES ALONE in the countryside and her loneliness is getting worse.";
+
+  it("keeps English words and phrases as written, case-insensitively", () => {
+    expect(filterUserTerms(["lives alone", "mum", "73"], text)).toEqual(["LIVES ALONE", "Mum", "73"]);
+  });
+
+  it("tolerates another form of the same English word", () => {
+    expect(filterUserTerms(["lonely"], text)).toEqual(["loneliness"]);
+  });
+
+  it("drops what the resident did not write", () => {
+    expect(filterUserTerms(["grandmother", "dementia"], text)).toEqual([]);
+  });
+});
