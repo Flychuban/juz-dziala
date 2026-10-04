@@ -1,0 +1,5 @@
+{
+  "login": "Please sign in.",
+  "forbidden": "You don't have permission.",
+  "rateLimit": "Too many requests. Please try again in a moment."
+}

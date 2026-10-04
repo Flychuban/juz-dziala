@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { ExternalLinkIcon } from "lucide-react";
 
 import { cn } from "~/lib/utils";
@@ -20,6 +21,7 @@ export function ExternalLink({
   className?: string;
   showIcon?: boolean;
 }) {
+  const t = useTranslations("common.kit");
   return (
     <a
       href={href}
@@ -37,7 +39,7 @@ export function ExternalLink({
           className="ml-1 inline-block size-[0.9em] -translate-y-px align-middle"
         />
       ) : null}
-      <span className="sr-only"> (otwiera się w nowej karcie)</span>
+      <span className="sr-only"> {t("newTab")}</span>
     </a>
   );
 }

@@ -171,3 +171,127 @@ export const SITE = {
   ownerLine: "Instytucja Województwa Małopolskiego",
   hub: "Małopolski Hub Innowacji Społecznych",
 } as const;
+
+/* ───────────────────────── English labels ─────────────────────────
+ * Same keys as the Polish maps above. Screens read labels through
+ * `labelsFor(locale)` (async server components) or `useLabels()` (from
+ * "~/i18n/use-labels", client and non-async server components), never the
+ * Polish maps directly.
+ */
+export const MAPA_AREA_LABEL_EN: Record<MapaArea, string> = {
+  family: "Family and foster care",
+  homelessness: "Homelessness",
+  disability: "Disability",
+  poverty: "Poverty",
+  migrants: "Integration of foreigners",
+  health: "Health",
+  mental_health: "Mental health",
+  seniors: "Older people",
+};
+export const SECTION_LABEL_EN: Record<SectionKey, string> = {
+  solution: "What is the solution?",
+  problems: "Which problems does it address?",
+  targetGroup: "Target group",
+  whoCanUse: "Who can use it?",
+  doesItWork: "Does it work?",
+  authors: "Authors",
+};
+export const INNOVATION_STATUS_LABEL_EN: Record<InnovationStatus, string> = {
+  draft: "Draft",
+  verified: "Checked",
+  published: "Published",
+};
+export const CASE_KIND_LABEL_EN: Record<CaseKind, string> = {
+  need: "Need",
+  idea: "Idea",
+  question: "Question for an expert",
+  test: "Testing sign-up",
+  feedback: "Feedback on an innovation",
+  adapt: "Service implementation",
+};
+export const CASE_STATUS_LABEL_EN: Record<CaseStatus, string> = {
+  new: "New",
+  triaged: "Assessed",
+  in_progress: "In progress",
+  answered: "Answered",
+  closed: "Closed",
+};
+export const URGENCY_LABEL_EN: Record<Urgency, string> = {
+  low: "Low",
+  medium: "Medium",
+  high: "High",
+};
+export const CONTACT_PREF_LABEL_EN: Record<ContactPref, string> = {
+  email: "E-mail",
+  sms: "Text message (SMS)",
+  phone: "Phone — please call me",
+  none: "I'll check myself with my case code",
+};
+export const AUTHOR_ROLE_LABEL_EN: Record<AuthorRole, string> = {
+  resident: "Resident",
+  ngo: "Non-governmental organisation",
+  jst: "Municipality / county",
+  ops: "Social welfare centre (OPS / CUS / PCPR)",
+  other: "Other institution",
+};
+export const STAFF_ROLE_LABEL_EN: Record<StaffRole, string> = {
+  rops: "ROPS staff member",
+  expert: "Expert / mentor",
+  jst: "Municipality",
+};
+export const CALL_STATUS_LABEL_EN: Record<CallStatus, string> = {
+  planned: "Planned",
+  open: "Open",
+  closed: "Closed",
+  demo: "Sample call (demo)",
+};
+export const IDEA_STAGE_LABEL_EN: Record<IdeaStage, string> = {
+  idea: "Idea",
+  prototype: "Prototype",
+  tested: "Tested",
+  ready: "Ready to implement",
+};
+export const SITE_EN = {
+  name: "Już Działa",
+  tagline:
+    "Someone in Małopolska has already solved your problem. We'll show you who — and connect you.",
+  owner: "Regional Social Policy Centre in Kraków (ROPS)",
+  ownerShort: "ROPS Kraków",
+  ownerLine: "An institution of the Małopolska Region",
+  hub: "Małopolska Social Innovation Hub",
+} as const;
+
+const LABELS_PL = {
+  area: MAPA_AREA_LABEL,
+  section: SECTION_LABEL,
+  innovationStatus: INNOVATION_STATUS_LABEL,
+  caseKind: CASE_KIND_LABEL,
+  caseStatus: CASE_STATUS_LABEL,
+  urgency: URGENCY_LABEL,
+  contactPref: CONTACT_PREF_LABEL,
+  authorRole: AUTHOR_ROLE_LABEL,
+  staffRole: STAFF_ROLE_LABEL,
+  callStatus: CALL_STATUS_LABEL,
+  ideaStage: IDEA_STAGE_LABEL,
+  site: SITE as { [K in keyof typeof SITE]: string },
+};
+export type Labels = typeof LABELS_PL;
+const LABELS_EN: Labels = {
+  area: MAPA_AREA_LABEL_EN,
+  section: SECTION_LABEL_EN,
+  innovationStatus: INNOVATION_STATUS_LABEL_EN,
+  caseKind: CASE_KIND_LABEL_EN,
+  caseStatus: CASE_STATUS_LABEL_EN,
+  urgency: URGENCY_LABEL_EN,
+  contactPref: CONTACT_PREF_LABEL_EN,
+  authorRole: AUTHOR_ROLE_LABEL_EN,
+  staffRole: STAFF_ROLE_LABEL_EN,
+  callStatus: CALL_STATUS_LABEL_EN,
+  ideaStage: IDEA_STAGE_LABEL_EN,
+  site: SITE_EN,
+};
+
+/** Every label map in one language. `locale` is "pl" | "en" (see ~/i18n/config). */
+export function labelsFor(locale: string): Labels {
+  return locale === "en" ? LABELS_EN : LABELS_PL;
+}

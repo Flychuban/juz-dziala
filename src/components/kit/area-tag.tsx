@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import { MAPA_AREA_LABEL, type MapaArea } from "~/lib/domain";
+import { useLabels } from "~/i18n/use-labels";
+import { type MapaArea } from "~/lib/domain";
 import { cn } from "~/lib/utils";
 
 /**
@@ -16,7 +17,7 @@ export function AreaTag({
   href?: string;
   className?: string;
 }) {
-  const label = MAPA_AREA_LABEL[area] ?? area;
+  const label = useLabels().area[area] ?? area;
   const base =
     "border-hairline bg-surface text-foreground inline-flex w-fit max-w-full items-center gap-1.5 rounded-sm border px-2 py-0.5 text-sm leading-snug font-semibold [overflow-wrap:anywhere]";
   if (href) {

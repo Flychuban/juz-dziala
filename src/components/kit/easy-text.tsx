@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { BookOpenTextIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
@@ -32,6 +33,7 @@ export function EasyText({
   context?: "card" | "result";
   className?: string;
 }) {
+  const t = useTranslations("common.kit.easy");
   const globalEasy = useEasyMode();
   const [override, setOverride] = useState<boolean | null>(null);
   const open = override ?? globalEasy;
@@ -57,23 +59,22 @@ export function EasyText({
         onClick={() => setOverride(!open)}
       >
         <BookOpenTextIcon aria-hidden="true" />
-        {open ? "Ukryj tekst łatwy" : "Tekst łatwy"}
+        {open ? t("hide") : t("show")}
         <span className="sr-only">: {title}</span>
       </Button>
-      <div id={panelId} aria-live="polite">
+      {/* One short live line, not the whole text: several panels may open at once. */}
+      <p aria-live="polite" className="sr-only">
+        {open && q.isSuccess && sentences.length ? t("ready") : ""}
+      </p>
+      <div id={panelId}>
         {open ? (
           <section
-            aria-label="Tekst łatwy do czytania"
+            aria-label={t("region")}
             className="border-primary bg-surface mt-4 rounded-md border-l-4 px-5 py-4"
           >
-            <p className="text-muted-foreground text-sm font-semibold">
-              Tekst łatwy do czytania (przygotowany automatycznie na podstawie
-              karty)
-            </p>
+            <p className="text-muted-foreground text-sm font-semibold">{t("auto")}</p>
             {q.isLoading ? (
-              <p className="mt-2 text-lg">
-                Przygotowujemy wersję łatwą do czytania…
-              </p>
+              <p className="mt-2 text-lg">{t("loading")}</p>
             ) : sentences.length ? (
               <>
                 <div className="mt-2 max-w-[60ch] space-y-1.5 text-lg leading-relaxed">
@@ -85,10 +86,7 @@ export function EasyText({
               </>
             ) : (
               <p className="mt-2 text-lg">
-                Wersja łatwa do czytania będzie dostępna wkrótce.{" "}
-                {context === "card"
-                  ? "Poniżej jest pełny opis z karty."
-                  : "Pełny opis jest na stronie rozwiązania („Szczegóły”)."}
+                {t("soon")} {context === "card" ? t("fullBelow") : t("fullOnDetails")}
               </p>
             )}
           </section>

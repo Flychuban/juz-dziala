@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
+
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { PlayIcon } from "lucide-react";
@@ -27,6 +29,8 @@ export function VideoEmbed({
   title: string;
   className?: string;
 }) {
+  const t = useTranslations("common.kit.video");
+  const locale = useLocale();
   const id = youtubeId(url);
   const [playing, setPlaying] = useState(false);
   const frame = useRef<HTMLIFrameElement>(null);
@@ -42,8 +46,8 @@ export function VideoEmbed({
           {playing ? (
             <iframe
               ref={frame}
-              src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&hl=pl&cc_lang_pref=pl&cc_load_policy=1`}
-              title={`Film: ${title}`}
+              src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&hl=${locale}&cc_lang_pref=${locale}&cc_load_policy=1`}
+              title={t("frameTitle", { title })}
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
               referrerPolicy="strict-origin-when-cross-origin"
@@ -53,7 +57,7 @@ export function VideoEmbed({
             <button
               type="button"
               onClick={() => setPlaying(true)}
-              aria-label={`Odtwórz film: ${title}`}
+              aria-label={t("playLabel", { title })}
               className="group absolute inset-0 flex size-full items-end text-left"
             >
               <Image
@@ -70,7 +74,7 @@ export function VideoEmbed({
                     className="ml-0.5 size-5 fill-current"
                   />
                 </span>
-                Odtwórz film
+                {t("play")}
               </span>
             </button>
           )}
@@ -81,12 +85,12 @@ export function VideoEmbed({
           href={url}
           className="text-foreground inline-flex min-h-11 items-center"
         >
-          Obejrzyj na YouTube
+          {t("watch")}
         </ExternalLink>
         {id && !playing ? (
           <span className="text-muted-foreground">
             {" "}
-            · Film załaduje się dopiero po kliknięciu.
+            · {t("loadsOnClick")}
           </span>
         ) : null}
       </p>

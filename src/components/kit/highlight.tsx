@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { cn } from "~/lib/utils";
 import { findTermRanges } from "./terms";
 
@@ -49,19 +50,20 @@ export function Highlight({
  */
 export function UserTerms({
   terms,
-  label = "Twoje słowa",
+  label,
   className,
 }: {
   terms: readonly string[];
   label?: string;
   className?: string;
 }) {
+  const tk = useTranslations("common.kit");
   const unique = [...new Set(terms.map((t) => t.trim()).filter(Boolean))];
   if (unique.length === 0) return null;
   return (
     <ul
       data-slot="user-terms"
-      aria-label={label}
+      aria-label={label ?? tk("yourWords")}
       className={cn("flex flex-wrap gap-2", className)}
     >
       {unique.map((t) => (

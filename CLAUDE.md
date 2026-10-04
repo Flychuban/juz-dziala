@@ -10,8 +10,8 @@ Read `docs/UX.md` before building a screen.
 
 ## Non-negotiable rules
 
-- **Every word a user sees is Polish. Every route, file name, identifier and JSON key is
-  English.** Never transliterate a route.
+- **Polish is the default; the whole site also works in English.** Every route, file name,
+  identifier and JSON key is English; never transliterate a route. See „Languages" below.
 - **Never invent.** A match must quote a real card sentence, resolved by sentence id on the
   server (`src/server/domain/verify.ts`). Money, dates and figures come from a source or are
   shown as „[DO UZUPEŁNIENIA]" / „do weryfikacji". If unsure, abstain and route to an expert.
@@ -32,12 +32,38 @@ Read `docs/UX.md` before building a screen.
   - Targets are ≥ 48 px (`min-h-12`), and every input has a visible label.
   - Errors are text, never colour alone. Icons always come with text.
   - Focus moves to new results (`aria-live`). Use one question per screen in resident forms.
-  - Use `lang="pl"` and semantic landmarks. Never remove the focus ring.
+  - `<html lang>` follows the visitor's language; wrap untranslated Polish content in
+    `lang="pl"`. Use semantic landmarks. Never remove the focus ring.
 - **Design:** use the tokens in `src/styles/globals.css` and the shadcn components in
   `src/components/ui` (the UI contract).
   - Use hairlines (`border-hairline`), not shadows.
   - Never: gradients, glass effects, `shadow-xl`, purple, emoji as bullets, or a centred
     hero above three feature cards.
+
+## Languages (next-intl, no URL prefix)
+
+- The language is the `jd_lang` cookie (`pl` default | `en`), set by `/api/lang?to=en&next=…`
+  (the toolbar link) or `?lang=en` on any URL. Never detect it from the browser.
+- **No user-visible string lives in a component.** Strings live in
+  `messages/{pl,en}/<namespace>.json` — one namespace per module, owned by that module. Polish
+  is unchanged from what the screen said before; English is plain British English written for
+  residents, not a literal translation. Plurals use ICU (`{count, plural, one {…} few {…}
+  many {…} other {…}}` in Polish, `one`/`other` in English).
+- Server components: `const t = await getTranslations("ns")` (async) or `useTranslations("ns")`
+  (non-async). Client components: `useTranslations("ns")`. Code outside React (mail,
+  notifications, tRPC errors, route handlers): `translatorFor(locale, "ns")` from
+  `~/i18n/server`. tRPC procedures read `ctx.locale`.
+- Labels for enums (areas, statuses, kinds…): `useLabels()` (`~/i18n/use-labels`) or
+  `labelsFor(locale)` from `~/lib/domain` — never `MAPA_AREA_LABEL` etc. directly in UI.
+- Dates and numbers: `formatDate(value, locale)` / `formatNumber(value, locale)` from
+  `~/components/kit` (Europe/Warsaw). Relative ages: `relativeAge(d, t)` (`~/i18n/relative`).
+- Content: library cards have `innovations.en` (sentence ids kept), calls have `calls.en`;
+  knowledge/canvas/learn have `data/*.en.json`. Untranslated content renders in `lang="pl"`.
+- AI: pass `locale` to `aiStructured`/`aiStream`; it appends the English directive to the end
+  of the user turn (the cached system prompt never changes). A case stores its author's
+  `locale`; anything sent to the author uses it.
+- `src/i18n/messages.test.ts` fails on a key missing in English or Polish letters in English
+  text (proper names: `messages/proper-names.json`; quoted Polish terms „…” are allowed).
 
 ## Shape
 

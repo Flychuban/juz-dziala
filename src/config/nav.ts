@@ -1,63 +1,51 @@
 /** Navigation is generated from here; module agents never edit the shell. */
-export type NavItem = { href: string; label: string; description?: string };
+import { type Messages } from "~/i18n/messages";
+
+/** A key of `common.nav` in messages/{pl,en}/common.json. */
+export type NavKey = keyof Messages["common"]["nav"];
+export type NavDef = { href: string; key: NavKey };
+/** A resolved, translated link (what the client components render). */
+export type NavItem = { href: string; label: string };
 
 /** Residents: five items, plain words. */
-export const PUBLIC_NAV: NavItem[] = [
-  {
-    href: "/",
-    label: "Opisz problem",
-    description: "Znajdź gotowe rozwiązanie",
-  },
-  {
-    href: "/library",
-    label: "Gotowe rozwiązania",
-    description: "Biblioteka Innowacji Społecznych",
-  },
-  {
-    href: "/ideas/new",
-    label: "Mam pomysł",
-    description: "Zgłoś pomysł na innowację",
-  },
-  {
-    href: "/knowledge",
-    label: "Wiedza",
-    description: "Kondycja Małopolski i materiały",
-  },
-  {
-    href: "/case",
-    label: "Moja sprawa",
-    description: "Sprawdź odpowiedź kodem sprawy",
-  },
+export const PUBLIC_NAV: NavDef[] = [
+  { href: "/", key: "home" },
+  { href: "/library", key: "library" },
+  { href: "/ideas/new", key: "ideas" },
+  { href: "/knowledge", key: "knowledge" },
+  { href: "/case", key: "case" },
 ];
 
-/** Secondary links (home "doors" and footer). */
-export const SECONDARY_NAV: NavItem[] = [
-  { href: "/test", label: "Testuj innowacje" },
-  { href: "/network", label: "Sieć i mentorzy" },
-  { href: "/adapt", label: "Zaplanuj usługę (dla instytucji)" },
-  { href: "/municipality", label: "Dla gminy" },
-  { href: "/learn", label: "Materiały" },
-  { href: "/methodology", label: "Jak działa dopasowanie" },
+/** Secondary links (footer). */
+export const SECONDARY_NAV: NavDef[] = [
+  { href: "/network", key: "network" },
+  { href: "/test", key: "test" },
+  { href: "/adapt", key: "adapt" },
+  { href: "/municipality", key: "municipality" },
+  { href: "/learn", key: "learn" },
+  { href: "/methodology", key: "methodology" },
 ];
 
-export const STAFF_NAV: NavItem[] = [
-  { href: "/admin", label: "Pulpit" },
-  { href: "/admin/cases", label: "Sprawy" },
-  { href: "/admin/library", label: "Biblioteka" },
-  { href: "/admin/calls", label: "Nabory" },
-  { href: "/admin/trends", label: "Trendy i białe plamy" },
-  { href: "/admin/ai", label: "AI: koszty i jakość" },
+export const STAFF_NAV: NavDef[] = [
+  { href: "/admin", key: "admin" },
+  { href: "/admin/cases", key: "adminCases" },
+  { href: "/admin/library", key: "adminLibrary" },
+  { href: "/admin/calls", key: "adminCalls" },
+  { href: "/admin/trends", key: "adminTrends" },
+  { href: "/admin/ai", key: "adminAi" },
 ];
 
-export const EXPERT_NAV: NavItem[] = [
-  { href: "/expert", label: "Moje sprawy" },
+export const EXPERT_NAV: NavDef[] = [{ href: "/expert", key: "expert" }];
+
+export const FOOTER_NAV: NavDef[] = [
+  { href: "/accessibility", key: "accessibility" },
+  { href: "/easy-read", key: "easyRead" },
+  { href: "/sign-language", key: "signLanguage" },
+  { href: "/about.txt", key: "aboutTxt" },
+  { href: "/api/v1/innovations", key: "api" },
 ];
 
-export const FOOTER_NAV: NavItem[] = [
-  { href: "/accessibility", label: "Deklaracja dostępności" },
-  { href: "/easy-read", label: "Tekst łatwy do czytania" },
-  { href: "/sign-language", label: "Informacja w PJM" },
-  { href: "/about.txt", label: "O serwisie (plik tekstowy)" },
-  { href: "/api/v1/innovations", label: "Otwarte API" },
-  { href: "/methodology", label: "Jak działa dopasowanie" },
-];
+/** Resolves keys to labels with a `common.nav` translator. */
+export function resolveNav(defs: NavDef[], t: (key: NavKey) => string): NavItem[] {
+  return defs.map((d) => ({ href: d.href, label: t(d.key) }));
+}

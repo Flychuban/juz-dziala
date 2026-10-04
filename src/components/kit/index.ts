@@ -18,7 +18,9 @@ export { ExternalLink } from "./external-link";
 export {
   countPl,
   fold,
+  formatDate,
   formatDatePl,
+  formatNumber,
   formatNumberPl,
   isoDate,
   pluralPl,

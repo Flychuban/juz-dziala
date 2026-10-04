@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 import { cn } from "~/lib/utils";
 
 /**
@@ -8,12 +10,13 @@ import { cn } from "~/lib/utils";
  * @param label  Override the visible word, e.g. „przykładowy" / „przykładowa".
  */
 export function SampleBadge({
-  label = "przykładowe",
+  label,
   className,
 }: {
   label?: string;
   className?: string;
 }) {
+  const t = useTranslations("common.kit.sample");
   return (
     <span
       data-slot="sample-badge"
@@ -22,8 +25,8 @@ export function SampleBadge({
         className,
       )}
     >
-      {label}
-      <span className="sr-only"> (dane przykładowe, nieprawdziwe)</span>
+      {label ?? t("label")}
+      <span className="sr-only"> {t("sr")}</span>
     </span>
   );
 }

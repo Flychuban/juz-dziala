@@ -1,5 +1,6 @@
+import { useLocale, useTranslations } from "next-intl";
 import { cn } from "~/lib/utils";
-import { formatNumberPl } from "./format";
+import { formatNumber } from "./format";
 
 /**
  * Stat — one figure with what it measures and where it comes from.
@@ -28,6 +29,8 @@ export function Stat({
   year?: number | string | null;
   className?: string;
 }) {
+  const t = useTranslations("common.kit.source");
+  const locale = useLocale();
   return (
     <figure
       data-slot="stat"
@@ -44,12 +47,12 @@ export function Stat({
         </p>
       ) : null}
       <p className="font-display text-foreground tabular text-4xl leading-none font-bold tracking-tight md:text-5xl">
-        {formatNumberPl(value)}
+        {formatNumber(value, locale)}
       </p>
       <figcaption className="mt-3 flex flex-1 flex-col gap-3">
         <span className="text-foreground text-base leading-snug">{label}</span>
         <span className="text-muted-foreground mt-auto text-sm leading-snug">
-          Źródło:{" "}
+          {t("label")}:{" "}
           {sourceHref ? (
             <a
               href={sourceHref}

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
@@ -43,12 +45,12 @@ export function Stepper({
   initialStep = 0,
   onStepChange,
   onFinish,
-  finishLabel = "Wyślij",
-  nextLabel = "Dalej",
-  backLabel = "Wstecz",
+  finishLabel,
+  nextLabel,
+  backLabel,
   backHref,
   busy = false,
-  busyLabel = "Wysyłanie…",
+  busyLabel,
   className,
 }: {
   steps: StepperStep[];
@@ -64,6 +66,11 @@ export function Stepper({
   busyLabel?: string;
   className?: string;
 }) {
+  const t = useTranslations("common.kit.stepper");
+  finishLabel ??= t("send");
+  nextLabel ??= t("next");
+  backLabel ??= t("back");
+  busyLabel ??= t("sending");
   const [inner, setInner] = useState(initialStep);
   const current = Math.min(
     Math.max(controlledStep ?? inner, 0),
@@ -98,9 +105,19 @@ export function Stepper({
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (busy || !active) return;
+    const form = e.currentTarget;
     const problem = active.validate?.() ?? null;
     if (problem) {
       setError(problem);
+      // Move focus to the first field of this step so the person can fix it at once.
+      requestAnimationFrame(() => {
+        const field = form.querySelector<HTMLElement>(
+          "[data-step-content] input, [data-step-content] textarea, [data-step-content] select",
+        );
+        field?.setAttribute("aria-invalid", "true");
+        field?.setAttribute("aria-describedby", errorId);
+        field?.focus();
+      });
       return;
     }
     setError(null);
@@ -117,7 +134,7 @@ export function Stepper({
     >
       <div className="mb-6">
         <p className="text-muted-foreground tabular text-base font-semibold">
-          Krok {current + 1} z {steps.length}
+          {t("progress", { current: current + 1, total: steps.length })}
         </p>
         <div
           aria-hidden="true"
@@ -144,7 +161,7 @@ export function Stepper({
         </div>
       ) : null}
 
-      <div className="mt-6" key={active.id}>
+      <div className="mt-6" key={active.id} data-step-content>
         {active.content}
       </div>
 
@@ -154,7 +171,7 @@ export function Stepper({
           role="alert"
           className="border-destructive text-foreground mt-4 border-l-4 pl-3 font-semibold"
         >
-          <span className="text-destructive">Uwaga: </span>
+          <span className="text-destructive">{t("attention")} </span>
           {error}
         </p>
       ) : null}

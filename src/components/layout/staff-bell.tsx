@@ -2,10 +2,11 @@
 
 import { BellIcon, BellRingIcon } from "lucide-react";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { ageLabel } from "~/components/cases/format";
+import { relativeAge } from "~/i18n/relative";
 import {
   Popover,
   PopoverContent,
@@ -15,8 +16,6 @@ import { SITE } from "~/lib/domain";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
-const BADGE_SUFFIX = `Nowa sprawa · ${SITE.name}`;
-
 /**
  * Staff notification bell: polls every 5 s (also in a background tab), shows
  * the unread count, puts „(N) Nowa sprawa · Już Działa" in the tab title and,
@@ -24,6 +23,11 @@ const BADGE_SUFFIX = `Nowa sprawa · ${SITE.name}`;
  * new item. Screen readers hear new items through a polite live region.
  */
 export function StaffBell() {
+  const t = useTranslations("common.bell");
+  const tt = useTranslations("common.time");
+  const tc = useTranslations("common");
+  const locale = useLocale();
+  const BADGE_SUFFIX = `${t("tabBadge")} · ${SITE.name}`;
   const router = useRouter();
   const pathname = usePathname();
   const utils = api.useUtils();
@@ -75,7 +79,7 @@ export function StaffBell() {
       obs.disconnect();
       if (base && document.title === badge) document.title = base;
     };
-  }, [unread, pathname]);
+  }, [unread, pathname, BADGE_SUFFIX]);
 
   // New items → live region + desktop notification (never on first load).
   useEffect(() => {
@@ -90,8 +94,8 @@ export function StaffBell() {
     if (!fresh.length) return;
     setLive(
       fresh.length === 1
-        ? `Nowe powiadomienie: ${fresh[0]!.title}`
-        : `Nowe powiadomienia: ${fresh.length}`,
+        ? t("liveOne", { title: fresh[0]!.title })
+        : t("liveMany", { count: fresh.length }),
     );
     if (permission !== "granted") return;
     for (const i of fresh.slice(0, 3)) {
@@ -99,7 +103,7 @@ export function StaffBell() {
         const n = new Notification(i.title, {
           body: i.body ?? undefined,
           tag: i.id,
-          lang: "pl",
+          lang: locale,
         });
         n.onclick = () => {
           window.focus();
@@ -111,7 +115,7 @@ export function StaffBell() {
         /* some browsers only allow notifications from a service worker */
       }
     }
-  }, [q.data, permission, router, markReadMutate]);
+  }, [q.data, permission, router, markReadMutate, t, locale]);
 
   const allHref = q.data?.role === "expert" ? "/expert" : "/admin/cases";
 
@@ -129,7 +133,7 @@ export function StaffBell() {
           }}
           className="border-input hover:bg-accent inline-flex min-h-12 max-w-full items-center rounded-md border px-3 text-left text-sm font-medium"
         >
-          Włącz powiadomienia na pulpicie
+          {t("enableDesktop")}
         </button>
       )}
       <Popover open={open} onOpenChange={setOpen}>
@@ -146,17 +150,14 @@ export function StaffBell() {
             ) : (
               <BellIcon aria-hidden="true" className="size-4" />
             )}
-            Powiadomienia
+            {t("title")}
             {unread > 0 ? (
               <span className="bg-primary text-primary-foreground inline-flex min-w-6 items-center justify-center rounded-full px-1.5 text-sm font-bold tabular-nums">
                 {unread}
-                <span className="sr-only">
-                  {" "}
-                  {unread === 1 ? "nowe" : "nowych"}
-                </span>
+                <span className="sr-only"> {t("unreadSr", { count: unread })}</span>
               </span>
             ) : (
-              <span className="sr-only">(brak nowych)</span>
+              <span className="sr-only">{t("noneNew")}</span>
             )}
           </button>
         </PopoverTrigger>
@@ -166,7 +167,7 @@ export function StaffBell() {
         >
           <div className="border-hairline flex items-center justify-between gap-2 border-b p-3">
             <p className="font-semibold">
-              Powiadomienia{unread > 0 ? ` (${unread} nowe)` : ""}
+              {unread > 0 ? t("titleWithCount", { count: unread }) : t("title")}
             </p>
             {unread > 0 && (
               <button
@@ -174,16 +175,16 @@ export function StaffBell() {
                 onClick={() => markRead.mutate({ all: true })}
                 className="hover:bg-accent min-h-11 rounded-md px-2 text-sm underline"
               >
-                Oznacz wszystkie jako przeczytane
+                {t("markAll")}
               </button>
             )}
           </div>
           {q.isPending ? (
-            <p className="p-3">Wczytuję…</p>
+            <p className="p-3">{tc("loading")}</p>
           ) : q.error ? (
-            <p className="p-3">Nie udało się wczytać powiadomień.</p>
+            <p className="p-3">{t("loadError")}</p>
           ) : q.data.items.length === 0 ? (
-            <p className="p-3">Brak powiadomień.</p>
+            <p className="p-3">{t("empty")}</p>
           ) : (
             <ul className="max-h-[60vh] overflow-y-auto">
               {q.data.items.map((i) => (
@@ -202,7 +203,7 @@ export function StaffBell() {
                     <span className="flex items-baseline gap-2 font-semibold">
                       {!i.readAt && (
                         <span className="text-brand-accent text-xs font-bold uppercase">
-                          Nowe
+                          {t("new")}
                         </span>
                       )}
                       <span className="text-foreground">{i.title}</span>
@@ -213,7 +214,7 @@ export function StaffBell() {
                       </span>
                     )}
                     <span className="text-muted-foreground text-xs">
-                      {ageLabel(i.createdAt)}
+                      {relativeAge(i.createdAt, tt)}
                     </span>
                   </Link>
                 </li>
@@ -226,7 +227,7 @@ export function StaffBell() {
               onClick={() => setOpen(false)}
               className="hover:bg-accent flex min-h-11 items-center rounded-md px-2 text-sm font-medium"
             >
-              Wszystkie sprawy
+              {t("all")}
             </Link>
           </div>
         </PopoverContent>

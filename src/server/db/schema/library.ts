@@ -5,6 +5,24 @@ import { createTable } from "./_table";
 
 export type CardSentence = { id: string; section: SectionKey; text: string };
 
+/**
+ * English version of a card, translated sentence by sentence with the ids kept
+ * (data/library.en.json → seed). A match still quotes the Polish sentence by id;
+ * English mode shows `sentences[id]` labelled as a translation. `sourceSha` is
+ * the sha256 of the Polish sections it was made from: when staff edit the card,
+ * the translation is stale and the Polish original is shown (lang="pl").
+ */
+export type InnovationEn = {
+  title: string;
+  sections: Record<SectionKey, string>;
+  sentences: Record<string, string>;
+  keywords: string[];
+  categoryLabels: string[];
+  badge?: string | null;
+  sourceSha: string;
+  translatedAt: string;
+};
+
 /** A ROPS library card. `id` is stable ("c001"), assigned at ingest. */
 export const innovations = createTable(
   "innovation",
@@ -26,6 +44,10 @@ export const innovations = createTable(
     licenceUrl: d.text(),
     /** Cached „tekst łatwy do czytania" version (AI, reviewed). */
     easyText: d.text(),
+    /** English translation (see InnovationEn); null until translated. */
+    en: d.jsonb().$type<InnovationEn>(),
+    /** Cached easy-to-read text in English. */
+    easyTextEn: d.text(),
     status: d.text().$type<InnovationStatus>().notNull().default("published"),
     /** Open for testers in module IV. */
     testingOpen: d.boolean().notNull().default(false),

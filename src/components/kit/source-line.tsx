@@ -1,5 +1,7 @@
+import { useLocale, useTranslations } from "next-intl";
+
 import { cn } from "~/lib/utils";
-import { formatDatePl, isoDate } from "./format";
+import { formatDate, isoDate } from "./format";
 
 /**
  * SourceLine — the line under every claim:
@@ -18,7 +20,7 @@ export function SourceLine({
   href,
   date,
   detail,
-  label = "Źródło",
+  label,
   className,
 }: {
   source: string;
@@ -28,7 +30,8 @@ export function SourceLine({
   label?: string;
   className?: string;
 }) {
-  const formatted = formatDatePl(date);
+  const t = useTranslations("common.kit.source");
+  const formatted = formatDate(date, useLocale());
   return (
     <p
       data-slot="source-line"
@@ -37,7 +40,7 @@ export function SourceLine({
         className,
       )}
     >
-      <span className="font-semibold">{label}:</span>{" "}
+      <span className="font-semibold">{label ?? t("label")}:</span>{" "}
       {href ? (
         <a
           href={href}
@@ -51,7 +54,7 @@ export function SourceLine({
       {detail ? <>, {detail}</> : null}
       {formatted ? (
         <>
-          , stan na <time dateTime={isoDate(date)}>{formatted}</time>
+          , {t("asOf")} <time dateTime={isoDate(date)}>{formatted}</time>
         </>
       ) : null}
     </p>

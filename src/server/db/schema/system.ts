@@ -15,6 +15,8 @@ export const notifications = createTable(
     kind: d.text().notNull(),
     title: d.text().notNull(),
     body: d.text(),
+    /** English title/body for staff who use the site in English. */
+    en: d.jsonb().$type<{ title: string; body?: string | null }>(),
     href: d.text(),
     readAt: d.timestamp({ withTimezone: true }),
     createdAt: d

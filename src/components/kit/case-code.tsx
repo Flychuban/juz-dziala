@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CheckIcon, CopyIcon, PrinterIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
@@ -19,7 +20,7 @@ import { spellCode } from "./format";
  */
 export function CaseCode({
   code,
-  label = "Twój kod sprawy",
+  label,
   showPrint = true,
   className,
 }: {
@@ -28,6 +29,8 @@ export function CaseCode({
   showPrint?: boolean;
   className?: string;
 }) {
+  const t = useTranslations("common.kit.caseCode");
+  const locale = useLocale();
   const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -59,9 +62,10 @@ export function CaseCode({
         className,
       )}
     >
-      <p className="text-muted-foreground text-base font-semibold">{label}</p>
+      <p className="text-muted-foreground text-base font-semibold">{label ?? t("label")}</p>
       <p className="mt-2">
-        <span className="sr-only">{spellCode(code)}</span>
+        {/* select-none: copying the code must not copy the spoken spelling */}
+        <span className="sr-only select-none">{spellCode(code, locale)}</span>
         <span
           aria-hidden="true"
           className="text-foreground block font-mono text-[2rem] leading-tight font-bold tracking-[0.12em] break-all select-all sm:text-5xl"
@@ -76,7 +80,7 @@ export function CaseCode({
           ) : (
             <CopyIcon aria-hidden="true" />
           )}
-          {status === "copied" ? "Skopiowano" : "Kopiuj kod"}
+          {status === "copied" ? t("copied") : t("copy")}
         </Button>
         {showPrint ? (
           <Button
@@ -85,16 +89,12 @@ export function CaseCode({
             onClick={() => window.print()}
           >
             <PrinterIcon aria-hidden="true" />
-            Drukuj
+            {t("print")}
           </Button>
         ) : null}
       </div>
       <p aria-live="polite" className="mt-2 min-h-6 text-base">
-        {status === "copied"
-          ? "Kod sprawy jest w schowku."
-          : status === "failed"
-            ? "Nie udało się skopiować. Zapisz kod ręcznie."
-            : ""}
+        {status === "copied" ? t("inClipboard") : status === "failed" ? t("copyFailed") : ""}
       </p>
     </div>
   );

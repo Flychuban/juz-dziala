@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Suspense, useEffect, useState } from "react";
+
+import { LanguageSwitch } from "./language-switch";
 
 /**
- * A− / A+, high contrast and „Tekst łatwy" (easy-to-read mode). Each
- * preference is an attribute on <html> (data-text-size, data-contrast,
- * data-easy) applied before paint by the root layout, and persisted in
- * localStorage when allowed; everything works without storage.
+ * A− / A+, high contrast, „Tekst łatwy" (easy-to-read mode) and the language
+ * switch. Each display preference is an attribute on <html> (data-text-size,
+ * data-contrast, data-easy) applied before paint by the root layout, and
+ * persisted in localStorage when allowed; everything works without storage.
  * Toggles use aria-pressed and show their state visibly (filled button).
  */
 const SIZES = ["", "lg", "xl"] as const;
@@ -24,6 +27,7 @@ const BTN =
   "border-input bg-background text-foreground hover:bg-accent inline-flex min-h-12 items-center justify-center rounded-md border px-3 text-sm font-semibold disabled:opacity-50 aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background";
 
 export function AccessibilityToolbar() {
+  const t = useTranslations("common.toolbar");
   const [size, setSize] = useState<(typeof SIZES)[number]>("");
   const [contrast, setContrast] = useState(false);
   const [easy, setEasy] = useState(false);
@@ -44,28 +48,22 @@ export function AccessibilityToolbar() {
   const idx = SIZES.indexOf(size);
 
   return (
-    <div
-      role="group"
-      aria-label="Ustawienia wyświetlania"
-      className="flex flex-wrap items-center gap-1"
-    >
+    <div role="group" aria-label={t("group")} className="flex flex-wrap items-center gap-1">
       <button
         type="button"
         onClick={() => applySize(SIZES[Math.max(0, idx - 1)] ?? "")}
         disabled={idx <= 0}
         className={`${BTN} min-w-12 px-2`}
-        aria-label="A− — zmniejsz tekst"
+        aria-label={t("smaller")}
       >
         A−
       </button>
       <button
         type="button"
-        onClick={() =>
-          applySize(SIZES[Math.min(SIZES.length - 1, idx + 1)] ?? "xl")
-        }
+        onClick={() => applySize(SIZES[Math.min(SIZES.length - 1, idx + 1)] ?? "xl")}
         disabled={idx >= SIZES.length - 1}
         className={`${BTN} min-w-12 px-2 text-base`}
-        aria-label="A+ — powiększ tekst"
+        aria-label={t("larger")}
       >
         A+
       </button>
@@ -81,7 +79,7 @@ export function AccessibilityToolbar() {
         }}
         className={BTN}
       >
-        Kontrast
+        {t("contrast")}
       </button>
       <button
         type="button"
@@ -95,8 +93,11 @@ export function AccessibilityToolbar() {
         }}
         className={BTN}
       >
-        Tekst łatwy
+        {t("easy")}
       </button>
+      <Suspense fallback={null}>
+        <LanguageSwitch />
+      </Suspense>
     </div>
   );
 }

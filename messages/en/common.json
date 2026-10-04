@@ -1,0 +1,167 @@
+{
+  "skipToContent": "Skip to content",
+  "demoBanner": "Demo version — please don't enter real personal data.",
+  "loading": "Loading…",
+  "notFound": {
+    "title": "This page doesn't exist",
+    "body": "The address may have changed or contain a typo.",
+    "home": "Back to the home page"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "body": "The page didn't display correctly. Reload it — that usually helps.",
+    "reload": "Reload the page",
+    "home": "Back to the home page"
+  },
+  "header": {
+    "mainNav": "Main navigation",
+    "staffNav": "Staff panel",
+    "menu": "Menu"
+  },
+  "nav": {
+    "home": "Describe a problem",
+    "homeHint": "Find a ready-made solution",
+    "library": "Ready solutions",
+    "libraryHint": "Social Innovation Library",
+    "ideas": "I have an idea",
+    "ideasHint": "Submit an idea for a social innovation",
+    "knowledge": "Knowledge",
+    "knowledgeHint": "The state of Małopolska and learning materials",
+    "case": "My case",
+    "caseHint": "Check the reply with your case code",
+    "test": "Test innovations",
+    "network": "Network, mentors and partners",
+    "adapt": "Plan a service (for institutions)",
+    "municipality": "For municipalities",
+    "learn": "Learning materials",
+    "methodology": "How matching works",
+    "admin": "Dashboard",
+    "adminCases": "Cases",
+    "adminLibrary": "Library",
+    "adminCalls": "Grant calls",
+    "adminTrends": "Trends and blind spots",
+    "adminAi": "AI: cost and quality",
+    "expert": "My cases",
+    "accessibility": "Accessibility statement",
+    "easyRead": "Easy-to-read information",
+    "signLanguage": "Polish Sign Language (PJM)",
+    "aboutTxt": "About the service (text file)",
+    "api": "Open API"
+  },
+  "toolbar": {
+    "group": "Display settings",
+    "smaller": "A− — smaller text",
+    "larger": "A+ — larger text",
+    "contrast": "Contrast",
+    "easy": "Easy read"
+  },
+  "lang": {
+    "switchLabel": "Polski",
+    "switchHint": "Przełącz serwis na język polski",
+    "current": "Language: English"
+  },
+  "demo": {
+    "mode": "Demo mode",
+    "modeNow": "Demo mode: {role}",
+    "resident": "Resident",
+    "residentNoLogin": "Resident (no login)",
+    "hint": "See the platform through the eyes of different users. Login exists only for the presentation."
+  },
+  "staffGate": {
+    "title": "Staff area",
+    "body": "This part of the platform requires login. In the prototype you can enter with one click as: {role}.",
+    "enter": "Enter as: {role} (demo)",
+    "sso": "In production: sign-in with a work account (SSO)."
+  },
+  "bell": {
+    "enableDesktop": "Turn on desktop notifications",
+    "title": "Notifications",
+    "unreadSr": "{count, plural, other {new}}",
+    "noneNew": "(nothing new)",
+    "titleWithCount": "Notifications ({count} new)",
+    "markAll": "Mark all as read",
+    "loadError": "Couldn't load notifications.",
+    "empty": "No notifications.",
+    "new": "New",
+    "all": "All cases",
+    "liveOne": "New notification: {title}",
+    "liveMany": "New notifications: {count}",
+    "tabBadge": "New case"
+  },
+  "footer": {
+    "runBy": "Run by: {owner}. Prototype built at HackYeah 2026. Sample data is marked „sample”.",
+    "shortcuts": "Shortcuts",
+    "info": "Accessibility and information",
+    "sources": "Innovation descriptions come from the ROPS Kraków Social Innovation Library (licences shown on each card) and were translated from Polish. Every piece of information shows its source."
+  },
+  "time": {
+    "justNow": "just now",
+    "minutesAgo": "{n} min ago",
+    "hoursAgo": "{n} h ago",
+    "daysAgo": "{n, plural, one {# day} other {# days}} ago"
+  },
+  "kit": {
+    "readAloud": "Read aloud",
+    "stop": "Stop",
+    "easy": {
+      "show": "Easy read",
+      "hide": "Hide easy read",
+      "region": "Easy-to-read text",
+      "auto": "Easy-to-read text (prepared automatically from the card)",
+      "loading": "Preparing the easy-to-read version…",
+      "ready": "The easy-to-read text is ready.",
+      "soon": "The easy-to-read version will be available soon.",
+      "fullBelow": "The full description from the card is below.",
+      "fullOnDetails": "The full description is on the solution's page („Details”)."
+    },
+    "source": {
+      "label": "Source",
+      "asOf": "as of"
+    },
+    "sample": {
+      "label": "sample",
+      "sr": "(sample data, not real)"
+    },
+    "caseCode": {
+      "label": "Your case code",
+      "copy": "Copy code",
+      "copied": "Copied",
+      "print": "Print",
+      "inClipboard": "The case code is in your clipboard.",
+      "copyFailed": "Couldn't copy. Please write the code down."
+    },
+    "stepper": {
+      "progress": "Step {current} of {total}",
+      "next": "Next",
+      "back": "Back",
+      "send": "Send",
+      "sending": "Sending…",
+      "attention": "Please note:"
+    },
+    "path": {
+      "heading": "Your path",
+      "step": "Step {n}:",
+      "details": "Details"
+    },
+    "timeline": {
+      "label": "Case stages",
+      "done": "done",
+      "current": "now",
+      "todo": "still ahead",
+      "now": "Now"
+    },
+    "video": {
+      "play": "Play the film",
+      "playLabel": "Play the film: {title}",
+      "frameTitle": "Film: {title}",
+      "watch": "Watch on YouTube",
+      "loadsOnClick": "The film loads only after you click."
+    },
+    "newTab": "(opens in a new tab)",
+    "translated": "Translated from the Polish card",
+    "original": "Polish original",
+    "breadcrumb": "You are here",
+    "backTo": "Back: {label}",
+    "yourWords": "Your words"
+  }
+}

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SquareIcon, Volume2Icon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Button } from "~/components/ui/button";
 
@@ -25,12 +26,11 @@ function chunk(text: string, max = 220): string[] {
   return out;
 }
 
-function polishVoice(): SpeechSynthesisVoice | undefined {
+/** A voice for the language ("pl-PL" / "en-GB"), else any voice of that language. */
+function voiceFor(tag: string): SpeechSynthesisVoice | undefined {
   const voices = window.speechSynthesis.getVoices();
-  return (
-    voices.find((v) => v.lang === "pl-PL") ??
-    voices.find((v) => v.lang.toLowerCase().startsWith("pl"))
-  );
+  const base = tag.slice(0, 2).toLowerCase();
+  return voices.find((v) => v.lang === tag) ?? voices.find((v) => v.lang.toLowerCase().startsWith(base));
 }
 
 /**
@@ -44,15 +44,21 @@ function polishVoice(): SpeechSynthesisVoice | undefined {
  */
 export function ReadAloud({
   text,
-  label = "Czytaj na głos",
+  label,
+  lang,
   variant = "outline",
   className,
 }: {
   text: string;
   label?: string;
+  /** Language of `text` ("pl" | "en"); defaults to the page language. */
+  lang?: string;
   variant?: "outline" | "secondary" | "ghost";
   className?: string;
 }) {
+  const t = useTranslations("common.kit");
+  const pageLocale = useLocale();
+  const tag = (lang ?? pageLocale) === "en" ? "en-GB" : "pl-PL";
   const [supported, setSupported] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const run = useRef(0);
@@ -82,7 +88,7 @@ export function ReadAloud({
     synth.cancel();
     const myRun = ++run.current;
     const parts = chunk(text);
-    const voice = polishVoice();
+    const voice = voiceFor(tag);
     let i = 0;
     const next = () => {
       if (run.current !== myRun) return;
@@ -92,7 +98,7 @@ export function ReadAloud({
         return;
       }
       const u = new SpeechSynthesisUtterance(part);
-      u.lang = "pl-PL";
+      u.lang = tag;
       if (voice) u.voice = voice;
       u.rate = 0.95;
       u.onend = next;
@@ -117,7 +123,7 @@ export function ReadAloud({
       ) : (
         <Volume2Icon aria-hidden="true" />
       )}
-      {speaking ? "Zatrzymaj" : label}
+      {speaking ? t("stop") : (label ?? t("readAloud"))}
     </Button>
   );
 }

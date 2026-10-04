@@ -1,18 +1,20 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { MenuIcon, XIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { type NavItem } from "~/config/nav";
 import { cn } from "~/lib/utils";
 import { NavLinks } from "./nav-links";
 
 /**
- * „Menu" for phones (hidden from md up): one 48 px disclosure button that
- * opens the main navigation, the staff panel links (when signed in) and the
- * demo-mode switcher (passed as children). Closes on navigation and Escape,
- * returning focus to the button.
+ * „Menu" for phones (hidden from md up): a native <details> disclosure, so it
+ * opens even before JavaScript loads. The panel drops below the header row and
+ * holds the main navigation, the staff links (when signed in) and the
+ * demo-mode switcher (children). Closes on navigation and on Escape, returning
+ * focus to „Menu".
  */
 export function MobileMenu({
   items,
@@ -27,61 +29,49 @@ export function MobileMenu({
   children?: React.ReactNode;
   className?: string;
 }) {
-  const [open, setOpen] = useState(false);
-  const panelId = useId();
-  const button = useRef<HTMLButtonElement>(null);
+  const t = useTranslations("common.header");
+  const ref = useRef<HTMLDetailsElement>(null);
   const pathname = usePathname();
 
-  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    if (ref.current) ref.current.open = false;
+  }, [pathname]);
 
   useEffect(() => {
-    if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpen(false);
-        button.current?.focus();
+      const d = ref.current;
+      if (e.key === "Escape" && d?.open) {
+        d.open = false;
+        d.querySelector("summary")?.focus();
       }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, []);
+
+  const close = () => {
+    if (ref.current) ref.current.open = false;
+  };
 
   return (
-    <>
-      <button
-        ref={button}
-        type="button"
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => setOpen((o) => !o)}
-        className={cn(
-          "border-input bg-background text-foreground hover:bg-accent inline-flex min-h-12 shrink-0 items-center gap-2 rounded-md border px-4 font-semibold aria-expanded:bg-accent",
-          className,
-        )}
-      >
-        {open ? (
-          <XIcon aria-hidden="true" className="size-5" />
-        ) : (
-          <MenuIcon aria-hidden="true" className="size-5" />
-        )}
-        Menu
-      </button>
-      <div
-        id={panelId}
-        hidden={!open}
-        className="border-hairline basis-full border-t pt-3 pb-1 md:hidden"
-      >
-        <nav aria-label="Główna nawigacja">
-          <NavLinks items={items} layout="stack" onNavigate={() => setOpen(false)} />
+    <details ref={ref} className={cn("group", className)}>
+      <summary className="border-input bg-background text-foreground hover:bg-accent group-open:bg-accent inline-flex min-h-12 shrink-0 cursor-pointer list-none items-center gap-2 rounded-md border px-4 font-semibold [&::-webkit-details-marker]:hidden">
+        <MenuIcon aria-hidden="true" className="size-5 group-open:hidden" />
+        <XIcon aria-hidden="true" className="hidden size-5 group-open:block" />
+        {t("menu")}
+      </summary>
+      <div className="border-hairline bg-background absolute inset-x-0 top-full z-40 border-y px-4 pt-3 pb-4">
+        <nav aria-label={t("mainNav")}>
+          <NavLinks items={items} layout="stack" onNavigate={close} />
         </nav>
         {staffItems.length > 0 ? (
-          <nav aria-label="Panel pracownika" className="border-hairline mt-3 border-t pt-3">
+          <nav aria-label={t("staffNav")} className="border-hairline mt-3 border-t pt-3">
             {staffLabel ? <p className="text-muted-foreground px-3 pb-1 text-sm font-semibold">{staffLabel}</p> : null}
-            <NavLinks items={staffItems} layout="stack" onNavigate={() => setOpen(false)} />
+            <NavLinks items={staffItems} layout="stack" onNavigate={close} />
           </nav>
         ) : null}
         {children ? <div className="border-hairline mt-3 border-t px-3 pt-4">{children}</div> : null}
       </div>
-    </>
+    </details>
   );
 }

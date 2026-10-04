@@ -7,6 +7,8 @@ import { sql } from "drizzle-orm";
 import superjson from "superjson";
 import { ZodError, z } from "zod";
 
+import { localeFromCookieHeader } from "~/i18n/config";
+import { translatorFor } from "~/i18n/server";
 import { type StaffRole } from "~/lib/domain";
 import {
   readCookie,
@@ -22,10 +24,13 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
     readCookie(opts.headers, STAFF_COOKIE),
   );
   const sessionId = readCookie(opts.headers, SESSION_COOKIE) ?? null;
+  /** The visitor's language ("pl" | "en"), from the jd_lang cookie. */
+  const locale = localeFromCookieHeader(opts.headers.get("cookie"));
   return {
     db,
     staff,
     sessionId,
+    locale,
     ...opts,
   };
 };
@@ -63,10 +68,10 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
 export const roleProcedure = (...roles: StaffRole[]) =>
   publicProcedure.use(({ ctx, next }) => {
     if (!ctx.staff) {
-      throw new TRPCError({ code: "UNAUTHORIZED", message: "Zaloguj się." });
+      throw new TRPCError({ code: "UNAUTHORIZED", message: translatorFor(ctx.locale, "errors")("login") });
     }
     if (ctx.staff.role !== "rops" && !roles.includes(ctx.staff.role)) {
-      throw new TRPCError({ code: "FORBIDDEN", message: "Brak uprawnień." });
+      throw new TRPCError({ code: "FORBIDDEN", message: translatorFor(ctx.locale, "errors")("forbidden") });
     }
     return next({ ctx: { ...ctx, staff: ctx.staff } });
   });
@@ -123,7 +128,7 @@ export async function rateLimit(
     if ((await hit(ctx.db, key, windowSec)) > max) {
       throw new TRPCError({
         code: "TOO_MANY_REQUESTS",
-        message: "Za dużo zapytań w krótkim czasie. Spróbuj za chwilę.",
+        message: translatorFor(ctx.locale, "errors")("rateLimit"),
       });
     }
   }

@@ -54,6 +54,16 @@ export type Criterion = {
 };
 
 /** Grant calls („nabory"). Publishing or changing one notifies subscribers. */
+export type CallEn = {
+  name: string;
+  program?: string | null;
+  operator?: string | null;
+  eligibility: string[];
+  formFields: FormField[];
+  criteria: Criterion[];
+  notes?: string | null;
+};
+
 export const calls = createTable("call", (d) => ({
   id: d.text().primaryKey(),
   name: d.text().notNull(),
@@ -71,6 +81,8 @@ export const calls = createTable("call", (d) => ({
   areas: d.text().array().$type<MapaArea[]>().notNull().default([]),
   sourceUrl: d.text(),
   notes: d.text(),
+  /** English version of the call's prose (data/calls.en.json → seed). */
+  en: d.jsonb().$type<CallEn>(),
   updatedAt: d
     .timestamp({ withTimezone: true })
     .notNull()

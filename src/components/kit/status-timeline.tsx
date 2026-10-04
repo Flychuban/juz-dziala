@@ -1,7 +1,8 @@
+import { useLocale, useTranslations } from "next-intl";
 import { CheckIcon } from "lucide-react";
 
 import { cn } from "~/lib/utils";
-import { formatDatePl, isoDate } from "./format";
+import { formatDate, isoDate } from "./format";
 
 export type TimelineItem = {
   /** What happens at this stage, e.g. „Sprawa przyjęta". */
@@ -13,11 +14,6 @@ export type TimelineItem = {
   note?: string | null;
 };
 
-const STATE_TEXT: Record<TimelineItem["state"], string> = {
-  done: "zakończone",
-  current: "teraz",
-  todo: "przed nami",
-};
 
 /**
  * StatusTimeline — where a sprawa stands. A vertical ordered list; each
@@ -29,22 +25,24 @@ const STATE_TEXT: Record<TimelineItem["state"], string> = {
  */
 export function StatusTimeline({
   items,
-  label = "Etapy sprawy",
+  label,
   className,
 }: {
   items: TimelineItem[];
   label?: string;
   className?: string;
 }) {
+  const t = useTranslations("common.kit.timeline");
+  const locale = useLocale();
   return (
     <ol
       data-slot="status-timeline"
-      aria-label={label}
+      aria-label={label ?? t("label")}
       className={cn("relative", className)}
     >
       {items.map((item, i) => {
         const last = i === items.length - 1;
-        const date = formatDatePl(item.date);
+        const date = formatDate(item.date, locale);
         return (
           <li
             key={`${item.label}-${i}`}
@@ -86,13 +84,13 @@ export function StatusTimeline({
                 )}
               >
                 {item.label}
-                <span className="sr-only"> ({STATE_TEXT[item.state]})</span>
+                <span className="sr-only"> ({t(item.state)})</span>
                 {item.state === "current" ? (
                   <span
                     aria-hidden="true"
                     className="border-primary text-primary ml-2 inline-flex rounded-sm border px-1.5 text-sm font-bold"
                   >
-                    Teraz
+                    {t("now")}
                   </span>
                 ) : null}
               </p>

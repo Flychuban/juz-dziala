@@ -1,0 +1,167 @@
+{
+  "skipToContent": "Przejdź do treści",
+  "demoBanner": "Wersja demonstracyjna — nie wpisuj prawdziwych danych.",
+  "loading": "Wczytuję…",
+  "notFound": {
+    "title": "Nie ma takiej strony",
+    "body": "Adres mógł się zmienić albo zawiera literówkę.",
+    "home": "Wróć na stronę główną"
+  },
+  "error": {
+    "title": "Coś poszło nie tak",
+    "body": "Strona nie wyświetliła się poprawnie. Odśwież ją — zwykle to wystarczy.",
+    "reload": "Odśwież stronę",
+    "home": "Wróć na stronę główną"
+  },
+  "header": {
+    "mainNav": "Główna nawigacja",
+    "staffNav": "Panel pracownika",
+    "menu": "Menu"
+  },
+  "nav": {
+    "home": "Opisz problem",
+    "homeHint": "Znajdź gotowe rozwiązanie",
+    "library": "Gotowe rozwiązania",
+    "libraryHint": "Biblioteka Innowacji Społecznych",
+    "ideas": "Mam pomysł",
+    "ideasHint": "Zgłoś pomysł na innowację",
+    "knowledge": "Wiedza",
+    "knowledgeHint": "Kondycja Małopolski i materiały",
+    "case": "Moja sprawa",
+    "caseHint": "Sprawdź odpowiedź kodem sprawy",
+    "test": "Testuj innowacje",
+    "network": "Sieć, mentorzy i partnerzy",
+    "adapt": "Zaplanuj usługę (dla instytucji)",
+    "municipality": "Dla gminy",
+    "learn": "Materiały",
+    "methodology": "Jak działa dopasowanie",
+    "admin": "Pulpit",
+    "adminCases": "Sprawy",
+    "adminLibrary": "Biblioteka",
+    "adminCalls": "Nabory",
+    "adminTrends": "Trendy i białe plamy",
+    "adminAi": "AI: koszty i jakość",
+    "expert": "Moje sprawy",
+    "accessibility": "Deklaracja dostępności",
+    "easyRead": "Tekst łatwy do czytania",
+    "signLanguage": "Informacja w PJM",
+    "aboutTxt": "O serwisie (plik tekstowy)",
+    "api": "Otwarte API"
+  },
+  "toolbar": {
+    "group": "Ustawienia wyświetlania",
+    "smaller": "A− — zmniejsz tekst",
+    "larger": "A+ — powiększ tekst",
+    "contrast": "Kontrast",
+    "easy": "Tekst łatwy"
+  },
+  "lang": {
+    "switchLabel": "English",
+    "switchHint": "Switch the website to English",
+    "current": "Język: polski"
+  },
+  "demo": {
+    "mode": "Tryb demonstracyjny",
+    "modeNow": "Tryb demonstracyjny: {role}",
+    "resident": "Mieszkaniec",
+    "residentNoLogin": "Mieszkaniec (bez logowania)",
+    "hint": "Zobacz platformę oczami różnych użytkowników. Logowanie tylko na potrzeby prezentacji."
+  },
+  "staffGate": {
+    "title": "Strefa pracownika",
+    "body": "Ta część platformy jest dostępna po zalogowaniu. W prototypie możesz wejść jednym kliknięciem jako: {role}.",
+    "enter": "Wejdź jako: {role} (demo)",
+    "sso": "W wersji produkcyjnej: logowanie przez konto służbowe (SSO)."
+  },
+  "bell": {
+    "enableDesktop": "Włącz powiadomienia na pulpicie",
+    "title": "Powiadomienia",
+    "unreadSr": "{count, plural, one {nowe} few {nowe} many {nowych} other {nowych}}",
+    "noneNew": "(brak nowych)",
+    "titleWithCount": "Powiadomienia ({count, plural, one {# nowe} few {# nowe} many {# nowych} other {# nowych}})",
+    "markAll": "Oznacz wszystkie jako przeczytane",
+    "loadError": "Nie udało się wczytać powiadomień.",
+    "empty": "Brak powiadomień.",
+    "new": "Nowe",
+    "all": "Wszystkie sprawy",
+    "liveOne": "Nowe powiadomienie: {title}",
+    "liveMany": "Nowe powiadomienia: {count}",
+    "tabBadge": "Nowa sprawa"
+  },
+  "footer": {
+    "runBy": "Prowadzi: {owner}. Prototyp przygotowany na HackYeah 2026. Dane przykładowe są oznaczone jako „przykładowe”.",
+    "shortcuts": "Na skróty",
+    "info": "Dostępność i informacje",
+    "sources": "Opisy innowacji pochodzą z Biblioteki Innowacji Społecznych ROPS Kraków (licencje podane przy każdej karcie). Każda informacja ma podane źródło."
+  },
+  "time": {
+    "justNow": "przed chwilą",
+    "minutesAgo": "{n} min temu",
+    "hoursAgo": "{n} godz. temu",
+    "daysAgo": "{n, plural, one {# dzień} other {# dni}} temu"
+  },
+  "kit": {
+    "readAloud": "Czytaj na głos",
+    "stop": "Zatrzymaj",
+    "easy": {
+      "show": "Tekst łatwy",
+      "hide": "Ukryj tekst łatwy",
+      "region": "Tekst łatwy do czytania",
+      "auto": "Tekst łatwy do czytania (przygotowany automatycznie na podstawie karty)",
+      "loading": "Przygotowujemy wersję łatwą do czytania…",
+      "ready": "Tekst łatwy jest gotowy.",
+      "soon": "Wersja łatwa do czytania będzie dostępna wkrótce.",
+      "fullBelow": "Poniżej jest pełny opis z karty.",
+      "fullOnDetails": "Pełny opis jest na stronie rozwiązania („Szczegóły”)."
+    },
+    "source": {
+      "label": "Źródło",
+      "asOf": "stan na"
+    },
+    "sample": {
+      "label": "przykładowe",
+      "sr": "(dane przykładowe, nieprawdziwe)"
+    },
+    "caseCode": {
+      "label": "Twój kod sprawy",
+      "copy": "Kopiuj kod",
+      "copied": "Skopiowano",
+      "print": "Drukuj",
+      "inClipboard": "Kod sprawy jest w schowku.",
+      "copyFailed": "Nie udało się skopiować. Zapisz kod ręcznie."
+    },
+    "stepper": {
+      "progress": "Krok {current} z {total}",
+      "next": "Dalej",
+      "back": "Wstecz",
+      "send": "Wyślij",
+      "sending": "Wysyłanie…",
+      "attention": "Uwaga:"
+    },
+    "path": {
+      "heading": "Twoja ścieżka",
+      "step": "Krok {n}:",
+      "details": "Szczegóły"
+    },
+    "timeline": {
+      "label": "Etapy sprawy",
+      "done": "zakończone",
+      "current": "teraz",
+      "todo": "przed nami",
+      "now": "Teraz"
+    },
+    "video": {
+      "play": "Odtwórz film",
+      "playLabel": "Odtwórz film: {title}",
+      "frameTitle": "Film: {title}",
+      "watch": "Obejrzyj na YouTube",
+      "loadsOnClick": "Film załaduje się dopiero po kliknięciu."
+    },
+    "newTab": "(otwiera się w nowej karcie)",
+    "translated": "Przetłumaczone z polskiej karty",
+    "original": "Oryginał po polsku",
+    "breadcrumb": "Jesteś tutaj",
+    "backTo": "Wróć: {label}",
+    "yourWords": "Twoje słowa"
+  }
+}

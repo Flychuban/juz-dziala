@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ChevronLeftIcon } from "lucide-react";
 
@@ -34,6 +35,7 @@ export function PageHeader({
   width?: "default" | "narrow";
   className?: string;
 }) {
+  const t = useTranslations("common.kit");
   const parent = breadcrumbs?.at(-1);
   return (
     <header
@@ -47,14 +49,14 @@ export function PageHeader({
         )}
       >
         {breadcrumbs && breadcrumbs.length > 0 ? (
-          <nav aria-label="Jesteś tutaj" className="mb-6 md:mb-8">
+          <nav aria-label={t("breadcrumb")} className="mb-6 md:mb-8">
             {parent ? (
               <Link
                 href={parent.href}
                 className="text-foreground inline-flex min-h-11 items-center gap-1 font-semibold underline decoration-1 underline-offset-4 md:hidden"
               >
                 <ChevronLeftIcon aria-hidden="true" className="size-5" />
-                Wróć: {parent.label}
+                {t("backTo", { label: parent.label })}
               </Link>
             ) : null}
             <ol className="text-muted-foreground hidden flex-wrap items-center gap-x-2 text-[0.9375rem] md:flex">

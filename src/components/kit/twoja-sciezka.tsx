@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
 
@@ -35,7 +36,7 @@ export const PATH_STEP_LABELS = [
  */
 export function TwojaSciezka({
   steps,
-  heading = "Twoja ścieżka",
+  heading,
   headingLevel = "h2",
   className,
 }: {
@@ -44,6 +45,7 @@ export function TwojaSciezka({
   headingLevel?: "h2" | "h3";
   className?: string;
 }) {
+  const t = useTranslations("common.kit.path");
   const H = headingLevel;
   const cols =
     steps.length >= 5
@@ -58,7 +60,7 @@ export function TwojaSciezka({
       data-slot="twoja-sciezka"
       className={cn("border-hairline rounded-lg border p-4 sm:p-5 md:p-6", className)}
     >
-      <H className="font-display text-xl font-bold tracking-tight">{heading}</H>
+      <H className="font-display text-xl font-bold tracking-tight">{heading ?? t("heading")}</H>
       <ol className={cn("mt-5 grid grid-cols-1 gap-0 md:gap-6", cols)}>
         {steps.map((step, i) => {
           const last = i === steps.length - 1;
@@ -82,7 +84,7 @@ export function TwojaSciezka({
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-muted-foreground text-sm font-bold tracking-wide">
-                  <span className="sr-only">Krok {i + 1}: </span>
+                  <span className="sr-only">{t("step", { n: i + 1 })} </span>
                   {step.label}
                 </p>
                 <p className="font-display mt-0.5 text-lg leading-snug font-bold">
@@ -98,7 +100,7 @@ export function TwojaSciezka({
                     href={step.href}
                     className="text-primary mt-1 inline-flex min-h-11 items-center gap-1.5 font-semibold underline decoration-1 underline-offset-4 hover:decoration-2"
                   >
-                    {step.linkLabel ?? "Szczegóły"}
+                    {step.linkLabel ?? t("details")}
                     <span className="sr-only">: {step.label}</span>
                     <ArrowRightIcon aria-hidden="true" className="size-4" />
                   </Link>

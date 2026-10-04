@@ -34,6 +34,8 @@ export const matchRuns = createTable(
       .default("keyword"),
     crisis: d.boolean().notNull().default(false),
     abstained: d.boolean().notNull().default(false),
+    /** Language the person used the site in ("pl" | "en"). */
+    locale: d.text().$type<"pl" | "en">().notNull().default("pl"),
     caseId: d.uuid(),
     sessionId: d.text(),
     isSample: d.boolean().notNull().default(false),
@@ -68,6 +70,8 @@ export const cases = createTable(
     /** „Zgłaszam w imieniu" — reported on behalf of someone. */
     onBehalf: d.boolean().notNull().default(false),
     contactPref: d.text().$type<ContactPref>().notNull().default("none"),
+    /** The author's language ("pl" | "en"): replies, receipts and drafts use it. */
+    locale: d.text().$type<"pl" | "en">().notNull().default("pl"),
     /** AES-GCM encrypted contact; staff-only. */
     contactEnc: d.text(),
     /** Masked contact for display, e.g. j***@g***.com */

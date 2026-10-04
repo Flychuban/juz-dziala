@@ -12,6 +12,14 @@ const DATE_FMT = new Intl.DateTimeFormat("pl-PL", {
 
 const NUMBER_FMT = new Intl.NumberFormat("pl-PL");
 
+const DATE_FMT_EN = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "Europe/Warsaw",
+});
+const NUMBER_FMT_EN = new Intl.NumberFormat("en-GB");
+
 /** Parses a Date, ISO string or timestamp; returns null when invalid. */
 export function toDate(value: Date | string | number | null | undefined) {
   if (value === null || value === undefined || value === "") return null;
@@ -23,6 +31,22 @@ export function toDate(value: Date | string | number | null | undefined) {
 export function formatDatePl(value: Date | string | number | null | undefined) {
   const d = toDate(value);
   return d ? DATE_FMT.format(d) : "";
+}
+
+/** „3 października 2026" / "3 October 2026" — by language ("pl" | "en"). */
+export function formatDate(
+  value: Date | string | number | null | undefined,
+  locale: string,
+) {
+  const d = toDate(value);
+  if (!d) return "";
+  return (locale === "en" ? DATE_FMT_EN : DATE_FMT).format(d);
+}
+
+/** Number grouping by language ("12 345" / "12,345"). Strings pass through. */
+export function formatNumber(value: number | string, locale: string) {
+  if (typeof value !== "number") return value;
+  return (locale === "en" ? NUMBER_FMT_EN : NUMBER_FMT).format(value);
 }
 
 /** ISO date (YYYY-MM-DD) for <time dateTime>. */
@@ -85,9 +109,9 @@ function foldChar(ch: string) {
 }
 
 /** „J D myślnik 7 K 3 Q myślnik …" — the code spelled out for screen readers. */
-export function spellCode(code: string) {
+export function spellCode(code: string, locale = "pl") {
   return code
     .split("")
-    .map((c) => (c === "-" ? "myślnik" : c))
+    .map((c) => (c === "-" ? (locale === "en" ? "dash" : "myślnik") : c))
     .join(" ");
 }

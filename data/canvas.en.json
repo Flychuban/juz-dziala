@@ -1,0 +1,988 @@
+{
+  "source": {
+    "title": "Social Innovation Canvas",
+    "url": "https://rops.krakow.pl/mpliki/IS/Moj_folder/INNO_AGH_-_SOCIAL_CANVAS.pdf",
+    "publisher": "INNO AGH (Krakowskie Centrum Innowacyjnych Technologii INNOAGH sp. z o.o.)",
+    "basedOn": "This canvas is based on the Social Innovation Canvas created by The New Global School. https://theglobal.school/social-innovation-canvas/",
+    "version": "1.0",
+    "versionDate": "2026-05-05",
+    "capturedAt": "2026-10-03T15:41:03.492Z",
+    "sha256": "ae38f539b484a4c40ed91aced94847bbf09673634f1a382b7c177ad27a0dc8c0"
+  },
+  "sheets": [
+    {
+      "key": "sheet1",
+      "title": "#01 SOCIAL INNOVATION CANVAS",
+      "page": 1,
+      "sections": [
+        {
+          "key": "problem",
+          "label": "PROBLEM",
+          "prompt": null,
+          "subfields": [
+            "Intensity",
+            "Frequency",
+            "Scale of the problem"
+          ],
+          "fields": [
+            {
+              "key": "intensity",
+              "label": "Intensity",
+              "prompt": "Mark how bad things are without your solution:",
+              "kind": "single",
+              "options": [
+                {
+                  "label": "A very serious problem",
+                  "description": "It causes stress, exclusion or real harm."
+                },
+                {
+                  "label": "A major obstacle",
+                  "description": "The problem regularly blocks important activities."
+                },
+                {
+                  "label": "Makes things difficult",
+                  "description": "People have to look for alternatives and lose time or energy."
+                },
+                {
+                  "label": "A minor nuisance",
+                  "description": "People can live with it; the problem is more irritating than blocking."
+                }
+              ],
+              "questions": []
+            },
+            {
+              "key": "frequency",
+              "label": "Frequency",
+              "prompt": "Colour in to show how often the problem your solution addresses occurs:",
+              "kind": "single",
+              "options": [
+                {
+                  "label": "Very often",
+                  "description": "Every day or almost every day."
+                },
+                {
+                  "label": "Often",
+                  "description": "Every week or regularly."
+                },
+                {
+                  "label": "Sometimes",
+                  "description": "A few times a year or a month."
+                },
+                {
+                  "label": "Rarely",
+                  "description": "Once in a while – once a year or less often."
+                }
+              ],
+              "questions": []
+            },
+            {
+              "key": "scale",
+              "label": "Scale of the problem",
+              "prompt": "Mark how many people are affected by the problem:",
+              "kind": "single",
+              "options": [
+                {
+                  "label": "Individuals",
+                  "description": "It affects a few people or a small group."
+                },
+                {
+                  "label": "A narrow group",
+                  "description": "It affects a specific community, e.g. pupils at one school, people from one area, or staff of a particular institution."
+                },
+                {
+                  "label": "A large group",
+                  "description": "It affects many people in a city, region, sector or larger community."
+                },
+                {
+                  "label": "A very wide group",
+                  "description": "It affects a large part of society or many similar groups in different places."
+                }
+              ],
+              "questions": []
+            }
+          ]
+        },
+        {
+          "key": "changeActors",
+          "label": "ACTORS OF CHANGE",
+          "prompt": null,
+          "subfields": [
+            "Support change",
+            "Hinder change"
+          ],
+          "fields": [
+            {
+              "key": "supporters",
+              "label": "Support change",
+              "prompt": "List the people, groups or institutions that see the need for change, support your idea or can help put it into practice.",
+              "kind": "text",
+              "options": [],
+              "questions": [
+                "Who needs this change most?",
+                "Who could benefit from the solution?",
+                "Who is already saying the problem needs to be solved?",
+                "Who could back you, recommend you or open doors for you?",
+                "Who has the energy, influence or resources to help?"
+              ]
+            },
+            {
+              "key": "blockers",
+              "label": "Hinder change",
+              "prompt": "List the people, groups or institutions that may not want the change, may fear it, may lose out because of it or may make implementation difficult.",
+              "kind": "text",
+              "options": [],
+              "questions": [
+                "Who may not understand the need for change?",
+                "Who may fear extra work, costs or risk?",
+                "Who may lose influence, control or their current role?",
+                "Who might say “this won’t work”?",
+                "Who could block a decision, funding or access to users?"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "solution",
+          "label": "SOLUTION",
+          "prompt": null,
+          "subfields": [
+            "Accessibility and value of the solution",
+            "Readiness for implementation",
+            "Simplicity and clarity"
+          ],
+          "fields": [
+            {
+              "key": "valueForCost",
+              "label": "Accessibility and value of the solution",
+              "prompt": null,
+              "kind": "single",
+              "options": [
+                {
+                  "label": "The cost is greater than the benefit",
+                  "description": "The solution uses a lot of money, time or effort, and the effect is barely visible."
+                },
+                {
+                  "label": "The benefit and cost are similar",
+                  "description": "The solution may help, but it is not clear whether it is worth using."
+                },
+                {
+                  "label": "The benefit is greater than the cost",
+                  "description": "The solution offers noticeable value at a reasonable price."
+                },
+                {
+                  "label": "Very high value at low cost",
+                  "description": "The solution helps effectively, and the barrier to entry is low (low costs, time savings, ease of use)."
+                }
+              ],
+              "questions": []
+            },
+            {
+              "key": "readiness",
+              "label": "Readiness for implementation",
+              "prompt": null,
+              "kind": "single",
+              "options": [
+                {
+                  "label": "Idea",
+                  "description": "We have a concept, but the solution has not yet been checked with users."
+                },
+                {
+                  "label": "Prototype",
+                  "description": "We have a first version of the solution, but it still needs testing and improvement."
+                },
+                {
+                  "label": "Tested solution",
+                  "description": "The solution has been checked with real users and we know what needs improving"
+                },
+                {
+                  "label": "Ready for implementation",
+                  "description": "The solution can be launched in a real place, with real users and known resources."
+                }
+              ],
+              "questions": []
+            },
+            {
+              "key": "clarity",
+              "label": "Simplicity and clarity",
+              "prompt": "Does a person seeing your solution for the first time quickly understand who it is for, how it works and what it offers? Mark the option that is most true:",
+              "kind": "single",
+              "options": [
+                {
+                  "label": "The solution is unclear",
+                  "description": "It takes a long time to explain what it is about. People often ask basic questions."
+                },
+                {
+                  "label": "The solution is partly clear",
+                  "description": "People understand the general idea, but do not yet know exactly how to use it."
+                },
+                {
+                  "label": "The solution is clear",
+                  "description": "Most people quickly understand what problem we are solving, how the solution works and what they need to do to use it."
+                },
+                {
+                  "label": "People can explain it themselves",
+                  "description": "A person from the target group can explain the solution in their own words after briefly coming across it / using it."
+                }
+              ],
+              "questions": []
+            }
+          ]
+        },
+        {
+          "key": "costStructure",
+          "label": "COST STRUCTURE",
+          "prompt": null,
+          "subfields": [
+            "Fixed costs",
+            "Variable costs"
+          ],
+          "fields": [
+            {
+              "key": "fixedCosts",
+              "label": "Fixed costs",
+              "prompt": "You pay these regardless of the number of users. They have to be paid even when few people use the solution or nobody uses it yet. → Mark / add the costs you pay or should pay for the solution to work:",
+              "kind": "multi",
+              "options": [
+                {
+                  "label": "team salaries",
+                  "description": null
+                },
+                {
+                  "label": "rent / space",
+                  "description": null
+                },
+                {
+                  "label": "maintaining the app or website",
+                  "description": null
+                },
+                {
+                  "label": "tool subscriptions",
+                  "description": null
+                },
+                {
+                  "label": "project coordination",
+                  "description": null
+                },
+                {
+                  "label": "accounting / administration",
+                  "description": null
+                },
+                {
+                  "label": "basic promotion",
+                  "description": null
+                },
+                {
+                  "label": "equipment needed to start",
+                  "description": null
+                }
+              ],
+              "questions": []
+            },
+            {
+              "key": "variableCosts",
+              "label": "Variable costs",
+              "prompt": "These grow when more people use the solution or when you carry out more activities. What does it cost each time you help another person or group, or organise another activity? → Mark / add the variable costs that may arise:",
+              "kind": "multi",
+              "options": [
+                {
+                  "label": "materials for participants",
+                  "description": null
+                },
+                {
+                  "label": "a specialist’s time per person",
+                  "description": null
+                },
+                {
+                  "label": "dojazdy",
+                  "description": null
+                },
+                {
+                  "label": "catering",
+                  "description": null
+                },
+                {
+                  "label": "printing materials",
+                  "description": null
+                },
+                {
+                  "label": "technical support for each additional person",
+                  "description": null
+                }
+              ],
+              "questions": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sheet2",
+      "title": "#02 SOCIAL INNOVATION CANVAS",
+      "page": 2,
+      "sections": [
+        {
+          "key": "recipients",
+          "label": "USERS AND STAKEHOLDERS",
+          "prompt": null,
+          "subfields": [
+            "Main user",
+            "Customer / payer",
+            "Authority / institution / decision-maker"
+          ],
+          "fields": [
+            {
+              "key": "mainUser",
+              "label": "Main user",
+              "prompt": "Who is this solution really meant to help?",
+              "kind": "multi",
+              "options": [
+                {
+                  "label": "dzieci",
+                  "description": null
+                },
+                {
+                  "label": "young people",
+                  "description": null
+                },
+                {
+                  "label": "rodzice",
+                  "description": null
+                },
+                {
+                  "label": "seniorzy",
+                  "description": null
+                },
+                {
+                  "label": "people with disabilities",
+                  "description": null
+                },
+                {
+                  "label": "nauczyciele",
+                  "description": null
+                },
+                {
+                  "label": "staff of institutions",
+                  "description": null
+                },
+                {
+                  "label": "people in crisis",
+                  "description": null
+                },
+                {
+                  "label": "community organisations",
+                  "description": null
+                },
+                {
+                  "label": "residents of a specific place",
+                  "description": null
+                },
+                {
+                  "label": "another group",
+                  "description": null
+                }
+              ],
+              "questions": []
+            },
+            {
+              "key": "payer",
+              "label": "Customer / payer",
+              "prompt": "Who takes out their wallet or releases a budget so that your solution can work?",
+              "kind": "multi",
+              "options": [
+                {
+                  "label": "the user themselves",
+                  "description": null
+                },
+                {
+                  "label": "parent / carer",
+                  "description": null
+                },
+                {
+                  "label": "school",
+                  "description": null
+                },
+                {
+                  "label": "firma",
+                  "description": null
+                },
+                {
+                  "label": "city council / municipality (gmina)",
+                  "description": null
+                },
+                {
+                  "label": "foundation / community organisation",
+                  "description": null
+                },
+                {
+                  "label": "grantodawca",
+                  "description": null
+                },
+                {
+                  "label": "sponsor",
+                  "description": null
+                },
+                {
+                  "label": "NFZ / public institution",
+                  "description": null
+                },
+                {
+                  "label": "pracodawca",
+                  "description": null
+                },
+                {
+                  "label": "another group",
+                  "description": null
+                }
+              ],
+              "questions": []
+            },
+            {
+              "key": "decisionMaker",
+              "label": "Authority / institution / decision-maker",
+              "prompt": "Whose consent, recommendation or decision is needed for the solution to be used?",
+              "kind": "multi",
+              "options": [
+                {
+                  "label": "head teacher",
+                  "description": null
+                },
+                {
+                  "label": "nauczyciel",
+                  "description": null
+                },
+                {
+                  "label": "lekarz",
+                  "description": null
+                },
+                {
+                  "label": "terapeuta",
+                  "description": null
+                },
+                {
+                  "label": "social worker",
+                  "description": null
+                },
+                {
+                  "label": "public office",
+                  "description": null
+                },
+                {
+                  "label": "local leader",
+                  "description": null
+                },
+                {
+                  "label": "community organisation",
+                  "description": null
+                },
+                {
+                  "label": "rodzic",
+                  "description": null
+                },
+                {
+                  "label": "opiekun",
+                  "description": null
+                },
+                {
+                  "label": "manager",
+                  "description": null
+                },
+                {
+                  "label": "ekspert",
+                  "description": null
+                },
+                {
+                  "label": "funding institution",
+                  "description": null
+                },
+                {
+                  "label": "another person/institution",
+                  "description": null
+                }
+              ],
+              "questions": []
+            }
+          ]
+        },
+        {
+          "key": "revenue",
+          "label": "Revenue streams",
+          "prompt": null,
+          "subfields": [
+            "Main revenue $$",
+            "Scaling revenue $$$"
+          ],
+          "fields": [
+            {
+              "key": "mainIncome",
+              "label": "Main revenue $$",
+              "prompt": "What is the basic source of money? What are customers most likely to pay for first?",
+              "kind": "single",
+              "options": [
+                {
+                  "label": "We don’t know yet",
+                  "description": "We have no clear idea who would pay and for what."
+                },
+                {
+                  "label": "We have an idea",
+                  "description": "We know what could be a source of revenue, but we have not checked it with a potential customer."
+                },
+                {
+                  "label": "We have a specific offer",
+                  "description": "We know what we offer, to whom, and why someone would pay for it or invest in keeping the solution running."
+                },
+                {
+                  "label": "We have confirmation",
+                  "description": "Someone has already paid us or has told us they are ready to support our solution financially."
+                }
+              ],
+              "questions": [
+                "If you have a proposal or idea for the main source of funding, list it below:"
+              ]
+            },
+            {
+              "key": "incomeScaling",
+              "label": "Scaling income $$$",
+              "prompt": "What additional things could you sell or fund in the future?",
+              "kind": "single",
+              "options": [
+                {
+                  "label": "No clear additional sources",
+                  "description": "For now we see only one source of funding (the main one, above) and we do not know how income could grow."
+                },
+                {
+                  "label": "There are chances of additional money",
+                  "description": "We have a few ideas for additional sources of income, but they have not been tested yet."
+                },
+                {
+                  "label": "We see real paths for growth",
+                  "description": "We know what additional services, packages or implementations can be sold after the first success."
+                },
+                {
+                  "label": "Our way of working can be replicated",
+                  "description": "The solution can be sold or funded in many places, for many groups or through many channels."
+                }
+              ],
+              "questions": [
+                "If you have a proposal or idea for the main source of additional income, list it below:"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "valueProposition",
+          "label": "VALUE PROPOSITION",
+          "prompt": null,
+          "subfields": [
+            "Emotional",
+            "Functional"
+          ],
+          "fields": [
+            {
+              "key": "emotional",
+              "label": "Emotional: What will recipients feel thanks to the solution?",
+              "prompt": "Tick no more than 2–3 of the most important emotional values or add your own.",
+              "kind": "multi",
+              "options": [
+                {
+                  "label": "Safety",
+                  "description": null
+                },
+                {
+                  "label": "Peace of mind",
+                  "description": null
+                },
+                {
+                  "label": "Confidence",
+                  "description": null
+                },
+                {
+                  "label": "Less loneliness",
+                  "description": null
+                },
+                {
+                  "label": "Greater sense of control",
+                  "description": null
+                },
+                {
+                  "label": "Better health",
+                  "description": null
+                },
+                {
+                  "label": "Independence",
+                  "description": null
+                },
+                {
+                  "label": "Motivation",
+                  "description": null
+                },
+                {
+                  "label": "Social inclusion",
+                  "description": null
+                },
+                {
+                  "label": "Feeling seen",
+                  "description": null
+                },
+                {
+                  "label": "Better mood",
+                  "description": null
+                },
+                {
+                  "label": "Greater life satisfaction",
+                  "description": null
+                }
+              ],
+              "questions": []
+            },
+            {
+              "key": "functional",
+              "label": "Functional: What exactly does the solution improve?",
+              "prompt": "Tick no more than 2–3 of the most important functional values or add your own.",
+              "kind": "multi",
+              "options": [
+                {
+                  "label": "Reduces costs",
+                  "description": null
+                },
+                {
+                  "label": "Saves time",
+                  "description": null
+                },
+                {
+                  "label": "Increases effectiveness",
+                  "description": null
+                },
+                {
+                  "label": "Improves quality",
+                  "description": null
+                },
+                {
+                  "label": "Simplifies the process",
+                  "description": null
+                },
+                {
+                  "label": "Increases accessibility",
+                  "description": null
+                },
+                {
+                  "label": "Extends the reach of support",
+                  "description": null
+                },
+                {
+                  "label": "Reduces the burden",
+                  "description": null
+                },
+                {
+                  "label": "Improves safety",
+                  "description": null
+                },
+                {
+                  "label": "Increases social impact",
+                  "description": null
+                },
+                {
+                  "label": "Reduces negative impact on the environment",
+                  "description": null
+                },
+                {
+                  "label": "Helps make better decisions",
+                  "description": null
+                }
+              ],
+              "questions": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sheet3",
+      "title": "#03 SOCIAL INNOVATION CANVAS",
+      "page": 3,
+      "sections": [
+        {
+          "key": "channels",
+          "label": "Channels",
+          "prompt": null,
+          "subfields": [
+            "DIRECT: How do people reach you directly?",
+            "DIRECT: Who can help you reach recipients?",
+            "ADDITIONAL: What additional channels can you use?"
+          ],
+          "fields": [
+            {
+              "key": "direct",
+              "label": "DIRECT",
+              "prompt": "How do people reach you directly?",
+              "kind": "multi",
+              "options": [
+                {
+                  "label": "own website",
+                  "description": null
+                },
+                {
+                  "label": "own application form",
+                  "description": null
+                },
+                {
+                  "label": "own shop / purchasing system",
+                  "description": null
+                },
+                {
+                  "label": "phone or email contact",
+                  "description": null
+                },
+                {
+                  "label": "face-to-face meetings",
+                  "description": null
+                },
+                {
+                  "label": "own workshops",
+                  "description": null
+                },
+                {
+                  "label": "own social media",
+                  "description": null
+                },
+                {
+                  "label": "own app",
+                  "description": null
+                },
+                {
+                  "label": "newsletter",
+                  "description": null
+                },
+                {
+                  "label": "self-organised events",
+                  "description": null
+                },
+                {
+                  "label": "inne",
+                  "description": null
+                }
+              ],
+              "questions": []
+            },
+            {
+              "key": "intermediaries",
+              "label": "DIRECT",
+              "prompt": "Who can help you reach recipients?",
+              "kind": "multi",
+              "options": [
+                {
+                  "label": "school",
+                  "description": null
+                },
+                {
+                  "label": "local office / municipality (gmina)",
+                  "description": null
+                },
+                {
+                  "label": "community organisation",
+                  "description": null
+                },
+                {
+                  "label": "ekspert",
+                  "description": null
+                },
+                {
+                  "label": "doctor / therapist",
+                  "description": null
+                },
+                {
+                  "label": "nauczyciel",
+                  "description": null
+                },
+                {
+                  "label": "social worker",
+                  "description": null
+                },
+                {
+                  "label": "local leader",
+                  "description": null
+                },
+                {
+                  "label": "firma",
+                  "description": null
+                },
+                {
+                  "label": "partner",
+                  "description": null
+                },
+                {
+                  "label": "ambasador",
+                  "description": null
+                },
+                {
+                  "label": "handlowiec",
+                  "description": null
+                },
+                {
+                  "label": "other group",
+                  "description": null
+                }
+              ],
+              "questions": []
+            },
+            {
+              "key": "additional",
+              "label": "ADDITIONAL",
+              "prompt": "What additional channels can you use?",
+              "kind": "multi",
+              "options": [
+                {
+                  "label": "online campaign",
+                  "description": null
+                },
+                {
+                  "label": "webinary",
+                  "description": null
+                },
+                {
+                  "label": "digital platform",
+                  "description": null
+                },
+                {
+                  "label": "local events",
+                  "description": null
+                },
+                {
+                  "label": "ambassador programme",
+                  "description": null
+                },
+                {
+                  "label": "educational materials",
+                  "description": null
+                },
+                {
+                  "label": "expert recommendations",
+                  "description": null
+                },
+                {
+                  "label": "cooperation with institutions",
+                  "description": null
+                },
+                {
+                  "label": "newsletter",
+                  "description": null
+                },
+                {
+                  "label": "online community",
+                  "description": null
+                },
+                {
+                  "label": "inne",
+                  "description": null
+                },
+                {
+                  "label": "other person/institution",
+                  "description": null
+                }
+              ],
+              "questions": []
+            }
+          ]
+        },
+        {
+          "key": "partners",
+          "label": "Partner constellation",
+          "prompt": "Think about it: who is a partner or could become one? How exactly do they help? In which area do they add value? Remember: one partner can help in several ways at once.",
+          "subfields": [
+            "How to do it more cheaply?",
+            "How to reach recipients?",
+            "How to deliver better value?",
+            "Partner status"
+          ],
+          "fields": [
+            {
+              "key": "cheaper",
+              "label": "How to do it more cheaply?",
+              "prompt": "List below: which partners can reduce the costs of the solution? How?",
+              "kind": "text",
+              "options": [],
+              "questions": []
+            },
+            {
+              "key": "reach",
+              "label": "How to reach recipients?",
+              "prompt": "List below: which partners can support communication and distribution of the solution? Through which channels?",
+              "kind": "text",
+              "options": [],
+              "questions": []
+            },
+            {
+              "key": "betterValue",
+              "label": "How to deliver better value?",
+              "prompt": "List below: which partners can strengthen the value proposition of the solution? How?",
+              "kind": "text",
+              "options": [],
+              "questions": []
+            },
+            {
+              "key": "partnerStatus",
+              "label": "Partner status",
+              "prompt": "Mark the status of each partner next to their name:",
+              "kind": "single",
+              "options": [
+                {
+                  "label": "Confirmed partner",
+                  "description": "symbol: star"
+                },
+                {
+                  "label": "Partner you are in talks with",
+                  "description": "symbol: square"
+                },
+                {
+                  "label": "Potential partner",
+                  "description": "symbol: plus"
+                }
+              ],
+              "questions": []
+            }
+          ]
+        },
+        {
+          "key": "impact",
+          "label": "Impact",
+          "prompt": "What does your solution change — for the person, the community and the world around? Mark the relevant boxes with an “x”.",
+          "subfields": [
+            "Person",
+            "Community",
+            "Environment"
+          ],
+          "fields": [
+            {
+              "key": "impactMatrix",
+              "label": "Impact: person / community / environment",
+              "prompt": "Mark the relevant boxes with an “x”.",
+              "kind": "matrix",
+              "options": [
+                {
+                  "label": "Small impact",
+                  "description": "The change is small or still unclear."
+                },
+                {
+                  "label": "Possible impact",
+                  "description": "We see potential for change, but we do not have confirmation yet."
+                },
+                {
+                  "label": "Clear impact",
+                  "description": "The solution brings a specific, noticeable change."
+                },
+                {
+                  "label": "Strong impact",
+                  "description": "The change is large, important and confirmed by users, the community or data."
+                }
+              ],
+              "questions": [
+                "Person — How does it change the user's life? What becomes easier, safer, calmer or more accessible?",
+                "Community — How does it help a larger group? Does it increase access, reduce exclusion, strengthen cooperation or improve the quality of support?",
+                "Environment — How does it change the world around? Does it reduce waste, use of resources, transport, energy or other harm to the environment?"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

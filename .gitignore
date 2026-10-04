@@ -49,3 +49,4 @@ yarn-error.log*
 # playwright
 /test-results/
 /playwright-report/
+.env*

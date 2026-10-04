@@ -145,12 +145,49 @@ export type AiResult<T> =
  */
 export type UserContent = string | Anthropic.Beta.BetaContentBlockParam[];
 
+/** Output language. Polish prompts stay as they are; English adds one directive. */
+export type AiLocale = "pl" | "en";
+
+/**
+ * The English directive goes at the END of the user turn, never into the system
+ * prompt, so the cached system prefix (1 h TTL) is identical in both languages.
+ */
+const EN_DIRECTIVE =
+  "JĘZYK ODPOWIEDZI: angielski (British English). Wszystkie teksty przeznaczone dla człowieka pisz po angielsku, prostymi słowami — także jeśli wyżej jest napisane „po polsku”. Nie tłumacz identyfikatorów, kodów ani nazw własnych organizacji i programów (np. „Usługa Wrażliwa”, „GOPS”). Słowa użytkownika (userTerms) przepisuj dokładnie tak, jak je napisał.";
+
+export function withLocale(user: UserContent, locale: AiLocale | undefined): UserContent {
+  if (locale !== "en") return user;
+  if (typeof user === "string") return `${user}\n\n${EN_DIRECTIVE}`;
+  return [...user, { type: "text", text: EN_DIRECTIVE }];
+}
+
+/** Lines aiStream writes instead of a document; consumers match them exactly. */
+export const AI_STREAM_LINES = {
+  pl: {
+    unavailable: "_Asystent AI jest chwilowo niedostępny._",
+    failed: "_Nie udało się wygenerować dokumentu._",
+    error: "_Wystąpił błąd generowania. Spróbuj ponownie._",
+  },
+  en: {
+    unavailable: "_The AI assistant is temporarily unavailable._",
+    failed: "_The document could not be generated._",
+    error: "_Something went wrong while generating. Please try again._",
+  },
+} as const;
+
+/** True when a call would actually reach Claude now (key set, hourly budget left). */
+export async function aiReady(): Promise<boolean> {
+  return aiAvailable() && !(await overHourlyBudget());
+}
+
 export async function aiStructured<S extends z.ZodType>(opts: {
   fn: string;
   schema: S;
   system: SystemBlock[];
   /** Plain text, or content blocks (e.g. a PDF document block before the instructions). */
   user: UserContent;
+  /** Output language; default Polish. */
+  locale?: AiLocale;
   effort?: Effort;
   maxTokens?: number;
   timeoutMs?: number;
@@ -167,7 +204,7 @@ export async function aiStructured<S extends z.ZodType>(opts: {
         betas: [...BETAS],
         fallbacks: "default",
         system: systemParam(opts.system),
-        messages: [{ role: "user", content: opts.user }],
+        messages: [{ role: "user", content: withLocale(opts.user, opts.locale) }],
         output_config: { effort, format: betaZodOutputFormat(opts.schema) },
       },
       { timeout: opts.timeoutMs ?? 45_000 },
@@ -237,17 +274,22 @@ export function aiStream(opts: {
   fn: string;
   system: SystemBlock[];
   user: string;
+  /** Output language; default Polish. Failure lines follow it (AI_STREAM_LINES). */
+  locale?: AiLocale;
   effort?: Effort;
   maxTokens?: number;
+  /** Abort the model after this long; the stream then closes cleanly. */
+  deadlineMs?: number;
 }): ReadableStream<Uint8Array> {
   const effort = opts.effort ?? "medium";
+  const lines = AI_STREAM_LINES[opts.locale ?? "pl"];
   const started = Date.now();
   const enc = new TextEncoder();
   return new ReadableStream<Uint8Array>({
     async start(controller) {
       if (!aiAvailable() || (await overHourlyBudget())) {
         controller.enqueue(
-          enc.encode("_Asystent AI jest chwilowo niedostępny._"),
+          enc.encode(lines.unavailable),
         );
         controller.close();
         return;
@@ -259,9 +301,12 @@ export function aiStream(opts: {
           betas: [...BETAS],
           fallbacks: "default",
           system: systemParam(opts.system),
-          messages: [{ role: "user", content: opts.user }],
+          messages: [{ role: "user", content: withLocale(opts.user, opts.locale) as string }],
           output_config: { effort },
         });
+        const deadline = opts.deadlineMs
+          ? setTimeout(() => stream.abort(), opts.deadlineMs)
+          : null;
         for await (const ev of stream) {
           if (
             ev.type === "content_block_delta" &&
@@ -271,6 +316,7 @@ export function aiStream(opts: {
           }
         }
         const final = await stream.finalMessage();
+        if (deadline) clearTimeout(deadline);
         await logCall({
           fn: opts.fn,
           effort,
@@ -281,7 +327,7 @@ export function aiStream(opts: {
         });
         if (final.stop_reason === "refusal") {
           controller.enqueue(
-            enc.encode("\n\n_Nie udało się wygenerować dokumentu._"),
+            enc.encode(`\n\n${lines.failed}`),
           );
         }
       } catch (e) {
@@ -295,7 +341,7 @@ export function aiStream(opts: {
           error: message,
         });
         controller.enqueue(
-          enc.encode("\n\n_Wystąpił błąd generowania. Spróbuj ponownie._"),
+          enc.encode(`\n\n${lines.error}`),
         );
       } finally {
         controller.close();
