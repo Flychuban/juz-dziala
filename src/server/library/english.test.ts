@@ -102,6 +102,17 @@ describe("localizeCard", () => {
     );
     expect(v.sections.solution).toContain("\n");
   });
+  it("keeps the translated sections when sentence ids do not line up", () => {
+    const resplit = {
+      ...c,
+      sentences: c.sentences.map((s) => ({ ...s, id: `${s.id}x` })),
+      en: en[c.id]!,
+    };
+    const v = localizeCard(resplit, "en");
+    expect(v.lang).toBe("en");
+    expect(v.sentences).toEqual([]);
+    expect(v.sections.solution).toBe(en[c.id]!.sections.solution);
+  });
   it("falls back to Polish (glossary category labels kept) when the translation is missing or stale", () => {
     const missing = localizeCard({ ...c, en: null }, "en");
     expect(missing.lang).toBe("pl");

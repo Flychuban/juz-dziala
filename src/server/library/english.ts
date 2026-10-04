@@ -7,7 +7,9 @@
  * longer matches and the Polish original is shown instead, marked lang="pl".
  *
  * Other modules (match, municipality, adapt, testing) can use `localizeCard`
- * to show a card in the visitor's language with the same rule.
+ * to show a card in the visitor's language with the same rule. Its
+ * `sentences` are the translated card sentences by id (empty in the rare case
+ * the stored sentence ids do not match the translation's).
  */
 import { createHash } from "node:crypto";
 
@@ -51,17 +53,15 @@ type CardLike = {
 };
 
 /**
- * The card's English version when it is complete and made from the current
- * Polish text; otherwise null (missing, stale, or a sentence id is missing).
+ * The card's English version when it was made from the current Polish text
+ * (sourceSha matches); otherwise null (missing or stale).
  */
 export function freshEnglish(
-  card: Omit<CardLike, "keywords" | "categoryLabels" | "badge">,
+  card: Omit<CardLike, "keywords" | "categoryLabels" | "badge" | "sentences">,
 ): InnovationEn | null {
   const en = card.en;
-  if (!en?.title?.trim() || !en.sections || !en.sentences || !en.sourceSha)
-    return null;
+  if (!en?.title?.trim() || !en.sections || !en.sourceSha) return null;
   if (sourceShaOf(card.sections, card.title) !== en.sourceSha) return null;
-  if (card.sentences.some((s) => !en.sentences[s.id]?.trim())) return null;
   return en;
 }
 
@@ -126,22 +126,31 @@ export function localizeCard(card: CardLike, locale: string): LocalizedCard {
       : card.categoryLabels;
   const en = freshEnglish(card);
   if (!en) return { ...polish, categoryLabels: glossaryLabels };
+  // Sentence ids normally all match. If the stored card was split into
+  // sentences differently (an older seed), the text is still the translated
+  // one — only the sentence-by-sentence layout is unavailable.
+  const byId = en.sentences ?? {};
+  const allSentences = card.sentences.every((s) => !!byId[s.id]?.trim());
   return {
     lang: "en",
     title: en.title.trim(),
     sections: Object.fromEntries(
       SECTION_KEYS.map((k) => [
         k,
-        layoutLike(
-          card.sections[k] ?? "",
-          card.sentences
-            .filter((s) => s.section === k)
-            .map((s) => ({ pl: s.text, en: en.sentences[s.id]! })),
-          en.sections[k] ?? "",
-        ),
+        allSentences
+          ? layoutLike(
+              card.sections[k] ?? "",
+              card.sentences
+                .filter((s) => s.section === k)
+                .map((s) => ({ pl: s.text, en: byId[s.id]! })),
+              en.sections[k] ?? "",
+            )
+          : (en.sections[k] ?? ""),
       ]),
     ) as Record<SectionKey, string>,
-    sentences: card.sentences.map((s) => ({ ...s, text: en.sentences[s.id]! })),
+    sentences: allSentences
+      ? card.sentences.map((s) => ({ ...s, text: byId[s.id]! }))
+      : [],
     keywords: en.keywords ?? [],
     categoryLabels: glossaryLabels,
     badge: card.badge ? (en.badge ?? card.badge) : null,

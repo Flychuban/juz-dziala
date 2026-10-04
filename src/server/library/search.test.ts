@@ -21,6 +21,7 @@ describe("englishStem", () => {
       ["carers", "carer"],
       ["services", "service"],
       ["disabilities", "disability"],
+      ["loneliness", "lonely"],
     ] as const) {
       expect(prefixRe(englishStem(a)).test(b)).toBe(true);
       expect(prefixRe(englishStem(b)).test(a)).toBe(true);
@@ -28,7 +29,7 @@ describe("englishStem", () => {
   });
   it("leaves short words and double s alone", () => {
     expect(englishStem("bus")).toBe("bus");
-    expect(englishStem("loneliness")).toBe("loneliness");
+    expect(englishStem("access")).toBe("access");
   });
 });
 
@@ -41,7 +42,7 @@ describe("queryWords", () => {
   });
   it("gives each word an English and a Polish stem in English mode, without English stopwords", () => {
     expect(queryWords("loneliness of the older people", "en")).toEqual([
-      { pl: "lonelin", en: "loneliness" },
+      { pl: "lonelin", en: "lonel" },
       { pl: "olde", en: "older" },
       { pl: "peopl", en: "people" },
     ]);

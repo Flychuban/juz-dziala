@@ -131,6 +131,10 @@ export default async function InnovationPage({ params }: { params: Params }) {
     ),
   ];
   const isZip = card.materialsUrl?.toLowerCase().endsWith(".zip");
+  // The ROPS licence agreement is the one licence written in Polish words.
+  const licenceText = card.licence?.startsWith("Umowa licencyjna z ROPS")
+    ? t("licenceAgreement")
+    : card.licence;
   const materialsLang =
     locale === "en" ? (
       <span className="text-foreground/85 font-normal">
@@ -436,10 +440,10 @@ export default async function InnovationPage({ params }: { params: Params }) {
                     href={card.licenceUrl}
                     className="font-semibold"
                   >
-                    {card.licence}
+                    {licenceText}
                   </ExternalLink>
                 ) : (
-                  <span className="font-semibold">{card.licence}</span>
+                  <span className="font-semibold">{licenceText}</span>
                 )
               ) : (
                 <span className="text-muted-foreground">{t("noLicence")}</span>

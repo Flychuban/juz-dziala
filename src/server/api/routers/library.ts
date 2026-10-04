@@ -369,7 +369,7 @@ async function getEasyText(
     fn: en ? "library.easyText.en" : "library.easyText",
     schema: z.object({ text: z.string() }),
     system: [{ text: EASY_TEXT_SYSTEM, cache: true }],
-    user: easyTextUser(userData("karta", cardText)),
+    user: easyTextUser(userData("karta", cardText), ctx.locale),
     locale: ctx.locale,
     effort: "low",
     maxTokens: 2000,

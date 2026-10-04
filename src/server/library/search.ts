@@ -45,8 +45,15 @@ export function polishStem(t: string): string {
       : t;
 }
 
-/** „families"/„family" → „famil"; „carers" → „carer"; „housing" → „hous". */
+/**
+ * „families"/„family" → „famil"; „carers" → „carer"; „housing" → „hous";
+ * „loneliness"/„lonely" → „lonel".
+ */
 export function englishStem(t: string): string {
+  if (t.length > 7 && t.endsWith("ness")) {
+    const base = t.slice(0, -4);
+    return base.endsWith("i") ? base.slice(0, -1) : base;
+  }
   if (t.length > 5 && t.endsWith("ies")) return t.slice(0, -3);
   if (t.length > 6 && t.endsWith("ing")) return t.slice(0, -3);
   if (t.length > 4 && t.endsWith("y")) return t.slice(0, -1);
