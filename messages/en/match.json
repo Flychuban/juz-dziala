@@ -15,7 +15,7 @@
   },
   "live": {
     "verified": "Done. {count, plural, one {# solution checked} other {# solutions checked}} by AI.",
-    "abstained": "We don't have a confident match.",
+    "abstained": "We don't have a reliable match.",
     "failed": "The AI check didn't work. We're showing the search results.",
     "failedNone": "The AI couldn't check your description just now.",
     "retrying": "Checking again…"
@@ -23,13 +23,13 @@
   "notes": {
     "ai_unavailable": "The AI check is switched off at the moment. We're showing search results for the words in your description.",
     "ai_error": "The AI check didn't work. We're showing search results for the words in your description.",
-    "ai_no_better": "The AI didn't find any more confident matches. We're showing search results for the words in your description.",
+    "ai_no_better": "The AI didn't find any more reliable matches. We're showing search results for the words in your description.",
     "ai_error_none": "The AI couldn't check your description just now, and the word search alone found nothing certain. Try again in a moment or ask ROPS for help.",
     "retry": "Try again"
   },
   "abstain": {
-    "heading": "We don't have a confident match",
-    "body": "We don't have a confident match in the ROPS Library. You can pass this to a ROPS expert with one click.",
+    "heading": "We don't have a reliable match",
+    "body": "We don't have a reliable match in the ROPS Library. You can pass this to a ROPS expert with one click.",
     "alternatives": "We'd rather say so than suggest a solution that doesn't fit you. You can also <rephrase>describe it differently</rephrase> or <browse>browse the Library</browse>."
   },
   "resultsLabel": "Results",
@@ -61,7 +61,7 @@
   },
   "card": {
     "verified": "Checked by AI",
-    "preliminary": "First results",
+    "preliminary": "Preliminary results",
     "keyword": "Word search result",
     "srIndex": "Solution {n}: ",
     "source": "ROPS Social Innovation Library, card “{title}”",
@@ -91,7 +91,7 @@
     "runByAuthors": "The solution's authors (from the card).",
     "runsIn": "Runs in: {place}.",
     "sample": "Sample data.",
-    "helps": "Who can help",
+    "helps": "Who will help",
     "hubTeam": "The ROPS Hub team",
     "hubDetail": "Ask for help below — a member of ROPS staff will reply.",
     "mentorRole": {
@@ -161,7 +161,7 @@
     "title": "Request for help",
     "query": "Description (without personal data): {query}",
     "askedAbout": "The request is about the solution: “{title}”.",
-    "abstained": "Matching result: no confident match in the ROPS Library.",
+    "abstained": "Matching result: no reliable match in the ROPS Library.",
     "shown": "Solutions shown: {titles}.",
     "quoted": "“{title}”"
   },

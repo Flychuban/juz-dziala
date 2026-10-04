@@ -23,11 +23,15 @@ const DOORS = [
 
 const FORM_ERRORS: readonly FormError[] = ["short", "long", "rate", "failed"];
 
-export default async function HomePage({ searchParams }: { searchParams: Promise<{ error?: string | string[] }> }) {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string | string[]; gmina?: string | string[] }>;
+}) {
   const t = await getTranslations("home");
   const site = labelsFor(await getLocale()).site;
-  const errorParam = (await searchParams).error;
-  const initialError = FORM_ERRORS.find((e) => e === errorParam) ?? null;
+  const params = await searchParams;
+  const initialError = FORM_ERRORS.find((e) => e === params.error) ?? null;
   let cards: number | null = null;
   try {
     cards = (await getLibrary()).cards.length;
@@ -35,6 +39,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     console.error("[home] library unavailable", e);
   }
   const options = gminas().map((g) => ({ teryt: g.teryt, name: g.name, kind: g.kind, powiatName: g.powiatName }));
+  // „Zgłoś lokalne wyzwanie" on a gmina page links to /?gmina=<TERYT>: preselect it when it is a real gmina.
+  const gminaParam = typeof params.gmina === "string" ? params.gmina.trim() : "";
+  const initialGmina = /^\d{7}$/u.test(gminaParam) ? (options.find((g) => g.teryt === gminaParam) ?? null) : null;
   const powiaty = await powiatCount();
   const figures = [
     cards !== null ? t("figures.cards", { count: cards }) : null,
@@ -56,7 +63,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <p className="text-foreground/85 mt-4 max-w-[48ch] text-xl leading-relaxed">{site.tagline}</p>
             {figures.length > 0 && <p className="text-foreground mt-4 font-semibold lg:hidden">{figures.join(" · ")}</p>}
             <div className="border-hairline bg-background mt-7 rounded-lg border p-5 max-[22rem]:border-0 max-[22rem]:bg-transparent max-[22rem]:p-0 sm:p-7">
-              <ProblemForm gminas={options} initialError={initialError} />
+              <ProblemForm gminas={options} initialError={initialError} initialGmina={initialGmina} />
             </div>
           </div>
           <figure className="hidden lg:mt-24 lg:block">

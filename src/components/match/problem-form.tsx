@@ -24,12 +24,21 @@ export type FormError = "short" | "long" | "rate" | "failed";
  * until the results page has replaced this one, so a double click cannot start
  * two runs.
  */
-export function ProblemForm({ gminas, initialError = null }: { gminas: GminaOption[]; initialError?: FormError | null }) {
+export function ProblemForm({
+  gminas,
+  initialError = null,
+  initialGmina = null,
+}: {
+  gminas: GminaOption[];
+  initialError?: FormError | null;
+  /** Preselected from /?gmina=<TERYT> (a gmina page's „Zgłoś lokalne wyzwanie"). */
+  initialGmina?: GminaOption | null;
+}) {
   const t = useTranslations("home.form");
   const router = useRouter();
   const utils = api.useUtils();
   const [text, setText] = useState("");
-  const [gmina, setGmina] = useState<GminaOption | null>(null);
+  const [gmina, setGmina] = useState<GminaOption | null>(initialGmina);
   const [error, setError] = useState<FormError | null>(initialError);
   /** Set on submit, cleared only on an error: the page is about to change. */
   const [leaving, setLeaving] = useState(false);
