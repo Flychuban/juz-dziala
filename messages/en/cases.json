@@ -194,8 +194,8 @@
       "madeWith": "Plan prepared",
       "mode": {
         "ai": "with the AI assistant",
-        "template": "from the template (without AI)",
-        "mixed": "partly by the AI assistant (the rest from the template)"
+        "mixed": "partly by the AI assistant (the rest from the template)",
+        "template": "from the template (without AI)"
       },
       "sentToRops": "Sent to ROPS",
       "ropsHasPlan": "ROPS already has an implementation plan for this innovation from the grant call „{call}”.",

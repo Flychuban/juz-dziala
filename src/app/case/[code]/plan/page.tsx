@@ -4,11 +4,10 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { PlanMarkdown } from "~/components/adapt/plan-markdown";
-import { fmtDate, planDetailValue } from "~/components/cases/format";
+import { fmtDate } from "~/components/cases/format";
 import { PrintButton } from "~/components/cases/print-button";
 import { labelsFor } from "~/lib/domain";
 import { caseForPage } from "~/server/cases/access";
-import { caseLocale } from "~/server/cases/author-text";
 import { casePayloads } from "~/server/cases/payloads";
 import { normalizeCaseCode } from "~/server/domain/case-code";
 
@@ -50,7 +49,8 @@ export default async function Page({
   if (!plan) notFound();
   const tm = await getTranslations("cases.modules");
   const site = labelsFor(locale).site;
-  const planLang = caseLocale(c.locale);
+  // The plan is a document in its own language; mark it when the page differs.
+  const planLang = plan.locale !== locale ? plan.locale : undefined;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 [overflow-wrap:anywhere] print:max-w-none print:p-0">
@@ -75,9 +75,19 @@ export default async function Page({
             <dt className="text-muted-foreground print:text-black">
               {tm(`plan.detail.${d.key}`)}
             </dt>
-            <dd className="break-words">{planDetailValue(tm, d)}</dd>
+            <dd className="break-words" lang={planLang}>
+              {d.value}
+            </dd>
           </div>
         ))}
+        {plan.modeLabel && (
+          <>
+            <dt className="text-muted-foreground print:text-black">
+              {tm("plan.madeWith")}
+            </dt>
+            <dd lang={planLang}>{plan.modeLabel}</dd>
+          </>
+        )}
         {plan.submittedAt && (
           <>
             <dt className="text-muted-foreground print:text-black">
@@ -87,7 +97,7 @@ export default async function Page({
           </>
         )}
       </dl>
-      <div lang={planLang !== locale ? planLang : undefined}>
+      <div lang={planLang}>
         <PlanMarkdown markdown={plan.markdown} className="mt-6" />
       </div>
       <p className="text-muted-foreground mt-10 text-sm print:text-black">

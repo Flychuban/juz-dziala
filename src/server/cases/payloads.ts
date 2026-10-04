@@ -3,6 +3,8 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
+import type { Locale } from "~/i18n/config";
+import { translatorFor } from "~/i18n/server";
 import type { MapaArea, IdeaStage } from "~/lib/domain";
 import {
   BUDGET_LABEL,
@@ -14,6 +16,7 @@ import {
   type StaffRange,
   type Timeframe,
 } from "~/server/adapt/options";
+import { caseLocale } from "./author-text";
 import { db } from "~/server/db";
 import { calls, innovations } from "~/server/db/schema";
 import { IMPACT_DIMENSIONS, notesKey } from "~/server/ideas/canvas-def";
@@ -35,7 +38,10 @@ import type { CaseRow } from "./queries";
 
 const storedPlanSchema = z.object({
   markdown: z.string().min(1),
+  /** Who wrote the plan: "ai", "mixed" (AI + template) or "template". */
   mode: z.string().optional(),
+  /** The language the plan was written in (newer plans); else the case's. */
+  locale: z.enum(["pl", "en"]).optional(),
   inputs: z
     .object({
       institution: z.string().optional(),
@@ -60,7 +66,7 @@ const storedPlanSchema = z.object({
   submittedAt: z.string().optional(),
 });
 
-/** Keys of the plan's detail rows; the UI names them (messages `cases.plan.detail.*`). */
+/** Keys of the plan's detail rows; the UI names them (messages `cases.modules.plan.detail.*`). */
 export type PlanDetailKey =
   | "innovation"
   | "gmina"
@@ -71,51 +77,78 @@ export type PlanDetailKey =
   | "groupSize"
   | "needs";
 
+export type PlanMode = "ai" | "mixed" | "template";
+
 export type PlanPayload = {
   markdown: string;
-  /** How the plan was written: by the AI assistant, partly (mixed), or from the template. */
-  mode: "ai" | "mixed" | "template" | null;
+  /** The plan's language: its own `locale`, else the case's. Labels below use it. */
+  locale: Locale;
+  /** Who wrote the plan: with the AI assistant, partly, or from the template. */
+  mode: PlanMode | null;
+  /** `mode` in words, in the plan's language („z pomocą Asystenta AI"…). */
+  modeLabel: string | null;
   /**
-   * `value` is the Polish text as stored/labelled; `option` is the raw answer
-   * (e.g. "ops", "50-200") so the UI can name it in the reader's language.
+   * Answers in the plan's language. `option` is the raw answer (e.g. "ops",
+   * "50-200") for code that needs it; free text is shown as stored.
    */
   details: { key: PlanDetailKey; value: string; option?: string }[];
   ramowyPlan: { callName: string; sourceUrl: string | null } | null;
   submittedAt: string | null;
 };
 
-const label = <K extends string>(map: Record<K, string>, v?: string) =>
-  v && v in map ? map[v as K] : null;
+const planModeOf = (v?: string): PlanMode | null =>
+  v === "ai" || v === "mixed" || v === "template" ? v : v ? "template" : null;
 
-function planPayload(raw: unknown): PlanPayload | null {
+/** An answer code named in `locale` (messages), else the stored Polish label. */
+function optionValue<K extends string>(
+  locale: Locale,
+  key: "institution" | "staff" | "budget" | "timeframe",
+  polish: Record<K, string>,
+  v?: string,
+): { value: string; option: string } | null {
+  if (!v || !(v in polish)) return null;
+  const t = translatorFor(locale, "cases");
+  const path = `modules.plan.option.${key}.${v}` as never;
+  return { value: t.has(path) ? t(path) : polish[v as K], option: v };
+}
+
+function planPayload(raw: unknown, fallbackLocale: Locale): PlanPayload | null {
   const p = storedPlanSchema.safeParse(raw);
   if (!p.success) return null;
   const d = p.data;
   const i = d.inputs ?? {};
-  const rows: [PlanDetailKey, string | null | undefined, string?][] = [
-    ["innovation", d.innovationTitle],
-    ["gmina", d.gminaName],
-    [
+  const locale = d.locale ?? fallbackLocale;
+  const text = (key: PlanDetailKey, value?: string | null) =>
+    value ? { key, value } : null;
+  const option = (
+    key: "institution" | "staff" | "budget" | "timeframe",
+    found: { value: string; option: string } | null,
+  ) => (found ? { key, ...found } : null);
+  const rows = [
+    text("innovation", d.innovationTitle),
+    text("gmina", d.gminaName),
+    option(
       "institution",
-      label<Institution>(INSTITUTION_LABEL, i.institution),
-      i.institution,
-    ],
-    ["staff", label<StaffRange>(STAFF_LABEL, i.staff), i.staff],
-    ["budget", label<BudgetRange>(BUDGET_LABEL, i.budget), i.budget],
-    [
+      optionValue<Institution>(locale, "institution", INSTITUTION_LABEL, i.institution),
+    ),
+    option("staff", optionValue<StaffRange>(locale, "staff", STAFF_LABEL, i.staff)),
+    option("budget", optionValue<BudgetRange>(locale, "budget", BUDGET_LABEL, i.budget)),
+    option(
       "timeframe",
-      label<Timeframe>(TIMEFRAME_LABEL, i.timeframe),
-      i.timeframe,
-    ],
-    ["groupSize", i.groupSize != null ? String(i.groupSize) : null],
-    ["needs", i.needs],
+      optionValue<Timeframe>(locale, "timeframe", TIMEFRAME_LABEL, i.timeframe),
+    ),
+    text("groupSize", i.groupSize != null ? String(i.groupSize) : null),
+    text("needs", i.needs),
   ];
+  const mode = planModeOf(d.mode);
   return {
     markdown: d.markdown,
-    mode: d.mode === "ai" || d.mode === "mixed" ? d.mode : d.mode ? "template" : null,
-    details: rows.flatMap(([key, value, option]) =>
-      value ? [{ key, value, ...(option ? { option } : {}) }] : [],
-    ),
+    locale,
+    mode,
+    modeLabel: mode
+      ? translatorFor(locale, "cases")(`modules.plan.mode.${mode}`)
+      : null,
+    details: rows.filter((r): r is NonNullable<typeof r> => r !== null),
     ramowyPlan: d.ramowyPlan
       ? {
           callName: d.ramowyPlan.callName,
@@ -276,7 +309,7 @@ export async function casePayloads(
       : null,
   ]);
   return {
-    plan: c.kind === "adapt" ? planPayload(c.plan) : null,
+    plan: c.kind === "adapt" ? planPayload(c.plan, caseLocale(c.locale)) : null,
     idea,
     innovation,
     call,

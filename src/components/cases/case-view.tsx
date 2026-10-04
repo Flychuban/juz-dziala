@@ -114,7 +114,6 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
 
   const c = q.data;
   const ownToken = c.privateLink ? key : undefined;
-  const otherLang = c.locale !== locale ? c.locale : undefined;
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 [overflow-wrap:anywhere] print:max-w-none print:p-0">
       {easy && (
@@ -173,7 +172,7 @@ export function CaseView({ code, token }: { code: string; token?: string }) {
 
       {c.plan && (
         <div className="mt-8">
-          <PlanSection plan={c.plan} code={c.code} contentLang={otherLang} />
+          <PlanSection plan={c.plan} code={c.code} />
         </div>
       )}
       {c.idea && (

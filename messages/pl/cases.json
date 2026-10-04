@@ -194,8 +194,8 @@
       "madeWith": "Plan przygotowano",
       "mode": {
         "ai": "z pomocą Asystenta AI",
-        "template": "z szablonu (bez AI)",
-        "mixed": "częściowo z pomocą Asystenta AI (reszta z szablonu)"
+        "mixed": "częściowo z pomocą Asystenta AI (reszta z szablonu)",
+        "template": "z szablonu (bez AI)"
       },
       "sentToRops": "Wysłano do ROPS",
       "ropsHasPlan": "ROPS ma już Ramowy Plan Wdrożenia tej innowacji z naboru „{call}”.",
