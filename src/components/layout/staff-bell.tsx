@@ -23,6 +23,7 @@ import { api } from "~/trpc/react";
  * new item. Screen readers hear new items through a polite live region.
  */
 export function StaffBell() {
+  const hiddenSince = useRef(Date.now());
   const t = useTranslations("common.bell");
   const tt = useTranslations("common.time");
   const tc = useTranslations("common");
@@ -31,9 +32,16 @@ export function StaffBell() {
   const router = useRouter();
   const pathname = usePathname();
   const utils = api.useUtils();
+  // 5 s while the tab is visible; 30 s in a background tab, so the tab title
+  // still shows „(1) Nowa sprawa"; nothing after 30 min hidden (a forgotten tab
+  // must not poll all night). Coming back to the tab refetches at once.
   const q = api.notifications.forStaff.useQuery(undefined, {
-    refetchInterval: 5000,
+    refetchInterval: () => {
+      if (typeof document === "undefined" || document.visibilityState === "visible") return 5000;
+      return Date.now() - hiddenSince.current > 30 * 60_000 ? false : 30_000;
+    },
     refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
   });
   const markRead = api.notifications.markRead.useMutation({
     onSuccess: () => utils.notifications.forStaff.invalidate(),
@@ -46,6 +54,16 @@ export function StaffBell() {
   const [live, setLive] = useState("");
   const seen = useRef<Set<string> | null>(null);
   const unread = q.data?.unread ?? 0;
+
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === "hidden") hiddenSince.current = Date.now();
+      else void q.refetch();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
