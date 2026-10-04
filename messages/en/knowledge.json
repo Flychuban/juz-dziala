@@ -77,7 +77,7 @@
     },
     "statSource": "Statistics Poland (GUS), Local Data Bank",
     "source": "Statistics Poland (GUS), Local Data Bank (BDL)",
-    "sourceDetail": "„Ludność wg grup wieku i płci” (population by age group and sex, {subject}), as of 31 December {year}; shares and changes calculated from municipal data",
+    "sourceDetail": "„Ludność wg grup wieku i płci” (population by age group and sex, {subject}), figures for 31 December {year}; shares and changes calculated from municipal data",
     "more": "More data about the region:",
     "moreLink": "Internetowy Obserwator Statystyk Społecznych (ROPS Kraków's online social statistics observatory, in Polish)"
   },

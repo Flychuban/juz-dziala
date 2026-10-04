@@ -77,7 +77,7 @@
     },
     "statSource": "GUS, Bank Danych Lokalnych",
     "source": "GUS, Bank Danych Lokalnych",
-    "sourceDetail": "„Ludność wg grup wieku i płci” ({subject}), stan na 31 grudnia {year} r.; udziały i zmiany policzone z danych dla gmin",
+    "sourceDetail": "„Ludność wg grup wieku i płci” ({subject}), dane na 31 grudnia {year} r.; udziały i zmiany policzone z danych dla gmin",
     "more": "Więcej danych o regionie:",
     "moreLink": "Internetowy Obserwator Statystyk Społecznych ROPS w Krakowie"
   },
